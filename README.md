@@ -1,4 +1,4 @@
 # ConFuzz
 --------------------------------------
 
-** Concurrency fuzzing for C/C++ multi-threaded programs. **
+**Concurrency fuzzing for C/C++ multi-threaded programs.**
