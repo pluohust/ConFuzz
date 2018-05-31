@@ -1,0 +1,1096 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vdb.extensions.windows &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vdb.extensions" href="../extensions.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../extensions.html" accesskey="U">vdb.extensions</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vdb.extensions.windows</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">getopt</span>
+
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">vtrace.tools.win32heap</span> <span class="kn">as</span> <span class="nn">win32heap</span>
+<span class="kn">import</span> <span class="nn">vtrace.tools.win32aslr</span> <span class="kn">as</span> <span class="nn">win32_aslr</span>
+<span class="kn">import</span> <span class="nn">vtrace.tools.iathook</span> <span class="kn">as</span> <span class="nn">vt_iathook</span>
+<span class="kn">import</span> <span class="nn">vtrace.tools.win32stealth</span> <span class="kn">as</span> <span class="nn">win32_stealth</span>
+<span class="kn">import</span> <span class="nn">vtrace.util</span> <span class="kn">as</span> <span class="nn">v_util</span>
+
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.cli</span> <span class="kn">as</span> <span class="nn">e_cli</span>
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+
+<span class="kn">import</span> <span class="nn">PE</span>
+<span class="kn">import</span> <span class="nn">vstruct.defs.pe</span> <span class="kn">as</span> <span class="nn">vs_pe</span>
+
+<div class="viewcode-block" id="teb"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.teb">[docs]</a><span class="k">def</span> <span class="nf">teb</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print out the TEB for the current or specified thread.</span>
+
+<span class="sd">    Usage: teb [threadid]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">threads</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span>
+    <span class="n">tid</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">taddr</span> <span class="o">=</span> <span class="n">threads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">taddr</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Invalid Thread ID: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">tid</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">teb</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&quot;ntdll.TEB&quot;</span><span class="p">,</span> <span class="n">taddr</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">teb</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">va</span><span class="o">=</span><span class="n">taddr</span><span class="p">,</span> <span class="n">reprmax</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="peb"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.peb">[docs]</a><span class="k">def</span> <span class="nf">peb</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print the PEB</span>
+
+<span class="sd">    Usage: peb</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+    <span class="n">pebaddr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;PEB&quot;</span><span class="p">)</span>
+    <span class="n">peb</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&quot;ntdll.PEB&quot;</span><span class="p">,</span> <span class="n">pebaddr</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">peb</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">pebaddr</span><span class="p">,</span> <span class="n">reprmax</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="regkeys"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.regkeys">[docs]</a><span class="k">def</span> <span class="nf">regkeys</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show all the registry keys the target process currently has open.</span>
+
+<span class="sd">    Usage: regkeys</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Open Registry Keys:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">fd</span><span class="p">,</span><span class="n">ftype</span><span class="p">,</span><span class="n">fname</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">getFds</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">ftype</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">FD_REGKEY</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="einfo"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.einfo">[docs]</a><span class="k">def</span> <span class="nf">einfo</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show all the current exception information.</span>
+
+<span class="sd">    -P    Toggle the &quot;PendingSignal&quot; meta key which controls</span>
+<span class="sd">          delivery (or handling) of the current exception.</span>
+
+<span class="sd">    Usage: einfo [options]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&#39;P&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;einfo&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-P&#39;</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;PendingSignal&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;OrigSignal&#39;</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;PendingSignal&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">newp</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;OrigSignal&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+                <span class="n">t</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;PendingSignal&#39;</span><span class="p">,</span> <span class="n">newp</span><span class="p">)</span>
+
+    <span class="n">exc</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;Win32Event&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">exc</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;No Exception Information Found&quot;</span><span class="p">)</span>
+    <span class="n">ecode</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;ExceptionCode&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">eaddr</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;ExceptionAddress&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">chance</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="n">exc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;FirstChance&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+        <span class="n">chance</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">einfo</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;ExceptionInformation&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="c">#FIXME get extended infoz</span>
+    <span class="c">#FIXME unify with cli thing</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Win32 Exception 0x</span><span class="si">%.8x</span><span class="s"> at 0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s"> chance)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ecode</span><span class="p">,</span> <span class="n">eaddr</span><span class="p">,</span> <span class="n">chance</span><span class="p">))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Exception Information: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">hex</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">einfo</span><span class="p">]))</span>
+    <span class="n">dbool</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">getCurrentSignal</span><span class="p">()</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">dbool</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Deliver Exception: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">dbool</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="seh"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.seh">[docs]</a><span class="k">def</span> <span class="nf">seh</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Walk and print the SEH chain for the current (or specified) thread.</span>
+
+<span class="sd">    Usage: seh [threadid]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">tinfo</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">tinfo</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Unknown Thread Id: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">tid</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">teb</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&quot;ntdll.TEB&quot;</span><span class="p">,</span> <span class="n">tinfo</span><span class="p">)</span>
+    <span class="n">addr</span> <span class="o">=</span> <span class="nb">long</span><span class="p">(</span><span class="n">teb</span><span class="o">.</span><span class="n">NtTib</span><span class="o">.</span><span class="n">ExceptionList</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;REG        HANDLER&quot;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">addr</span> <span class="o">!=</span> <span class="mh">0xffffffff</span><span class="p">:</span>
+        <span class="c">#FIXME print out which frame these are in</span>
+        <span class="n">er</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&quot;ntdll.EXCEPTION_REGISTRATION_RECORD&quot;</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">er</span><span class="o">.</span><span class="n">Handler</span><span class="p">))</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="nb">long</span><span class="p">(</span><span class="n">er</span><span class="o">.</span><span class="n">Next</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="safeseh"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.safeseh">[docs]</a><span class="k">def</span> <span class="nf">safeseh</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show the SafeSEH status of all the loaded DLLs or list the</span>
+<span class="sd">    handlers for a particular dll by normalized name.</span>
+
+<span class="sd">    Usage: safeseh [libname]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">libs</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">libs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Unknown library: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">:&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">peFromMemoryObject</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Error: </span><span class="si">%s</span><span class="s"> (0x</span><span class="si">%.8x</span><span class="s">) </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">IMAGE_LOAD_CONFIG</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">va</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">IMAGE_LOAD_CONFIG</span><span class="o">.</span><span class="n">SEHandlerTable</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">va</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">IMAGE_LOAD_CONFIG</span><span class="o">.</span><span class="n">SEHandlerCount</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="s">&quot;&lt;</span><span class="si">%d</span><span class="s">L&quot;</span> <span class="o">%</span> <span class="n">count</span><span class="p">):</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="s">0x</span><span class="si">%.8x</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base</span><span class="o">+</span><span class="n">h</span><span class="p">,</span> <span class="n">vdb</span><span class="o">.</span><span class="n">reprPointer</span><span class="p">(</span><span class="n">base</span><span class="o">+</span><span class="n">h</span><span class="p">)))</span>
+                <span class="k">return</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;None...&quot;</span><span class="p">)</span>
+            
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lnames</span> <span class="o">=</span> <span class="n">libs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">lnames</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">lnames</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">libs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">peFromMemoryObject</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Error: </span><span class="si">%s</span><span class="s"> (0x</span><span class="si">%.8x</span><span class="s">) </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+                <span class="k">continue</span>
+
+            <span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">IMAGE_LOAD_CONFIG</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">va</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">IMAGE_LOAD_CONFIG</span><span class="o">.</span><span class="n">SEHandlerTable</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">va</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">enabled</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="c">#print name</span>
+                <span class="c">#print p.IMAGE_LOAD_CONFIG</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="se">\t</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">enabled</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="validate_heaps"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.validate_heaps">[docs]</a><span class="k">def</span> <span class="nf">validate_heaps</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple routine that works like the built in windows</span>
+<span class="sd">    heap checkers to show where blocks and/or freelist</span>
+<span class="sd">    is potentially dorked.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Validating:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">heap</span> <span class="ow">in</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">getHeaps</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;heap&quot;</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span> <span class="n">heap</span><span class="o">.</span><span class="n">address</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">heap</span><span class="o">.</span><span class="n">getFreeLists</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c">#import traceback</span>
+            <span class="c">#traceback.print_exc()</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">heap</span><span class="o">.</span><span class="n">getSegments</span><span class="p">():</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;segment&quot;</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">9</span><span class="p">),</span><span class="n">seg</span><span class="o">.</span><span class="n">address</span><span class="p">))</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">blist</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">getChunks</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">chunk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">blist</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">heap</span><span class="o">.</span><span class="n">_win7_heap</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="n">pchunk</span> <span class="o">=</span> <span class="n">blist</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="n">PreviousSize</span> <span class="o">!=</span> <span class="n">pchunk</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="n">Size</span><span class="p">:</span>
+                        <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Corruption! (block at 0x</span><span class="si">%.8x</span><span class="s"> (size: </span><span class="si">%d</span><span class="s">) block at 0x</span><span class="si">%.8x</span><span class="s"> (prevsize: </span><span class="si">%d</span><span class="s">)&#39;</span> <span class="o">%</span> 
+                                  <span class="p">(</span><span class="n">pchunk</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">pchunk</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="n">Size</span><span class="p">,</span> <span class="n">chunk</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">chunk</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="n">PreviousSize</span><span class="p">))</span>
+                        <span class="k">break</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span><span class="n">e</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="heaps"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.heaps">[docs]</a><span class="k">def</span> <span class="nf">heaps</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show Win32 Heap Information.</span>
+
+<span class="sd">    Usage: heaps [-F &lt;heapaddr&gt;] [-C &lt;address&gt;] [-L &lt;segmentaddr&gt;]</span>
+<span class="sd">    -F &lt;heapaddr&gt; print the freelist for the heap</span>
+<span class="sd">    -C &lt;address&gt;  Find and print the heap chunk containing &lt;address&gt;</span>
+<span class="sd">    -S &lt;segmentaddr&gt; Print the chunks for the given heap segment</span>
+<span class="sd">    -L &lt;heapaddr&gt; Print the look aside list for the given heap</span>
+<span class="sd">    -V Validate the heaps (check next/prev sizes and free list)</span>
+<span class="sd">    -l &lt;heapaddr&gt; Leak detection (list probable leaked chunks)</span>
+<span class="sd">    -U &lt;heapaddr&gt; Show un-commited ranges for the specified heap</span>
+<span class="sd">    (no options lists heaps and segments)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&#39;amd64&#39;</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;WARNING: not all 64bit heap stuff works quite right yet!&quot;</span><span class="p">)</span>
+
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">freelist_heap</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">chunkfind_addr</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">chunklist_seg</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">lookaside_heap</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">leakfind_heap</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">uncommit_heap</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;F:C:S:L:l:U:V&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;heaps&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-F&quot;</span><span class="p">:</span>
+            <span class="n">freelist_heap</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-C&quot;</span><span class="p">:</span>
+            <span class="n">chunkfind_addr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-L&quot;</span><span class="p">:</span>
+            <span class="n">lookaside_heap</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-S&quot;</span><span class="p">:</span>
+            <span class="n">chunklist_seg</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-V&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">validate_heaps</span><span class="p">(</span><span class="n">vdb</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-l&quot;</span><span class="p">:</span>
+            <span class="n">leakfind_heap</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-U&#39;</span><span class="p">:</span>
+            <span class="n">uncommit_heap</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">lookaside_heap</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">haddrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">address</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">getHeaps</span><span class="p">(</span><span class="n">t</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">lookaside_heap</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">haddrs</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> is NOT a valid heap!&quot;</span> <span class="o">%</span> <span class="n">lookaside_heap</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">heap</span> <span class="o">=</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">Win32Heap</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">lookaside_heap</span><span class="p">)</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;[Index] [Chunks]&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">heap</span><span class="o">.</span><span class="n">getLookAsideLists</span><span class="p">()):</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%d</span><span class="s">]&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;    </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">c</span><span class="p">)))</span>
+
+    <span class="k">elif</span> <span class="n">uncommit_heap</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="n">haddrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">address</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">getHeaps</span><span class="p">(</span><span class="n">t</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">uncommit_heap</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">haddrs</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> is NOT a valid heap!&quot;</span> <span class="o">%</span> <span class="n">uncommit_heap</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">heap</span> <span class="o">=</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">Win32Heap</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">uncommit_heap</span><span class="p">)</span>
+        <span class="n">ucrdict</span> <span class="o">=</span> <span class="n">heap</span><span class="o">.</span><span class="n">getUCRDict</span><span class="p">()</span>
+        <span class="n">addrs</span> <span class="o">=</span> <span class="n">ucrdict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">addrs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">addrs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Heap 0x</span><span class="si">%.8x</span><span class="s"> has 0 uncommited-ranges!&#39;</span> <span class="o">%</span> <span class="n">uncommit_heap</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Uncommited ranges for heap: 0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">uncommit_heap</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ucraddr</span> <span class="ow">in</span> <span class="n">addrs</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">ucrdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ucraddr</span><span class="p">)</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ucraddr</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+
+        <span class="k">return</span>
+
+    <span class="k">elif</span> <span class="n">freelist_heap</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">haddrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">address</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">getHeaps</span><span class="p">(</span><span class="n">t</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">freelist_heap</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">haddrs</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> is NOT a valid heap!&quot;</span> <span class="o">%</span> <span class="n">freelist_heap</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">heap</span> <span class="o">=</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">Win32Heap</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">freelist_heap</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">l</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">heap</span><span class="o">.</span><span class="n">getFreeLists</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Freelist Index: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;   </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">chunkfind_addr</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">heap</span><span class="p">,</span><span class="n">seg</span><span class="p">,</span><span class="n">chunk</span> <span class="o">=</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">getHeapSegChunk</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">chunkfind_addr</span><span class="p">)</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Address  0x</span><span class="si">%.8x</span><span class="s"> found in:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">chunkfind_addr</span><span class="p">,))</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Heap:    0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">heap</span><span class="o">.</span><span class="n">address</span><span class="p">))</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Segment: 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">address</span><span class="p">))</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Chunk:   0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">) FLAGS: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">),</span><span class="n">chunk</span><span class="o">.</span><span class="n">reprFlags</span><span class="p">()))</span>
+
+    <span class="k">elif</span> <span class="n">chunklist_seg</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">heap</span> <span class="ow">in</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">getHeaps</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">heap</span><span class="o">.</span><span class="n">getSegments</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">chunklist_seg</span> <span class="o">==</span> <span class="n">seg</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Chunks for segment at 0x</span><span class="si">%.8x</span><span class="s"> (X == in use)&quot;</span> <span class="o">%</span> <span class="n">chunklist_seg</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">seg</span><span class="o">.</span><span class="n">getChunks</span><span class="p">():</span>
+                        <span class="n">c</span> <span class="o">=</span> <span class="s">&quot; &quot;</span>
+                        <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">isBusy</span><span class="p">():</span>
+                            <span class="n">c</span> <span class="o">=</span> <span class="s">&quot;X&quot;</span>
+                        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> </span><span class="si">%s</span><span class="s"> (</span><span class="si">%d</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">address</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)))</span>
+                    <span class="k">return</span>
+
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Segment 0x</span><span class="si">%.8x</span><span class="s"> not found!&quot;</span> <span class="o">%</span> <span class="n">chunklist_seg</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">leakfind_heap</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># FIXME do this the slow way for now...</span>
+        <span class="n">haddrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="o">.</span><span class="n">address</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">getHeaps</span><span class="p">(</span><span class="n">t</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">leakfind_heap</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">haddrs</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> is NOT a valid heap!&quot;</span> <span class="o">%</span> <span class="n">leakfind_heap</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">h</span> <span class="o">=</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">Win32Heap</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">leakfind_heap</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">h</span><span class="o">.</span><span class="n">getSegments</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">seg</span><span class="o">.</span><span class="n">getChunks</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">seg</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="c"># Obviously, only check for leaks if they are in use...</span>
+                <span class="c"># FIXME we will need to check the lookaside also...</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="o">.</span><span class="n">isBusy</span><span class="p">():</span>
+                    <span class="k">continue</span>
+                <span class="n">addr</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">getDataAddress</span><span class="p">()</span>
+                <span class="c"># FIXME get size and endian from trace</span>
+                <span class="n">pat</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">buildbytes</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">searchMemory</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> may be leaked!&quot;</span> <span class="o">%</span> <span class="n">addr</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Heap</span><span class="se">\t\t</span><span class="s">Segment&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">heap</span> <span class="ow">in</span> <span class="n">win32heap</span><span class="o">.</span><span class="n">getHeaps</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+            <span class="n">flags</span> <span class="o">=</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">heap</span><span class="o">.</span><span class="n">getFlagNames</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">heap</span><span class="o">.</span><span class="n">getSegments</span><span class="p">():</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="se">\t</span><span class="s">0x</span><span class="si">%.8x</span><span class="se">\t</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">heap</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">flags</span><span class="p">))</span>
+</div>
+<span class="n">IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE</span> <span class="o">=</span> <span class="mh">0x0040</span>
+
+<div class="viewcode-block" id="showaslr"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.showaslr">[docs]</a><span class="k">def</span> <span class="nf">showaslr</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">peFromMemoryObject</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Error: </span><span class="si">%s</span><span class="s"> (0x</span><span class="si">%.8x</span><span class="s">) </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+        <span class="k">return</span>
+    <span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">OptionalHeader</span><span class="o">.</span><span class="n">DllCharacteristics</span>
+    <span class="k">if</span> <span class="n">c</span> <span class="o">&amp;</span> <span class="n">IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE</span><span class="p">:</span>
+        <span class="n">enabled</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="se">\t</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">libname</span><span class="p">,</span> <span class="n">enabled</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="aslr"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.aslr">[docs]</a><span class="k">def</span> <span class="nf">aslr</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine which PE&#39;s in the current process address space</span>
+<span class="sd">    support Vista&#39;s ASLR implementation by the presence of the</span>
+<span class="sd">    IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE (0x0040) bit in the </span>
+<span class="sd">    DllCharacteristics field of the PE header.</span>
+
+<span class="sd">    Usage: aslr [libname]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">libs</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">libs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Unknown library: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">showaslr</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">lnames</span> <span class="o">=</span> <span class="n">libs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">lnames</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">lnames</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">libs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">showaslr</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</div>
+<span class="k">def</span> <span class="nf">_printPageHits</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">hits</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;[  eip  ]  [ mem addr ] [ access ]&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">unique</span><span class="p">:</span>
+        <span class="n">newhits</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="p">[</span><span class="n">newhits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hits</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">newhits</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">h</span><span class="p">)]</span>
+        <span class="n">hits</span> <span class="o">=</span> <span class="n">newhits</span>
+
+    <span class="k">for</span> <span class="n">eip</span><span class="p">,</span><span class="n">addr</span><span class="p">,</span><span class="n">perm</span> <span class="ow">in</span> <span class="n">hits</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> 0x</span><span class="si">%.8x</span><span class="s">   </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">eip</span><span class="p">,</span><span class="n">addr</span><span class="p">,</span><span class="n">e_mem</span><span class="o">.</span><span class="n">getPermName</span><span class="p">(</span><span class="n">perm</span><span class="p">)))</span>
+
+<div class="viewcode-block" id="pagewatch"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.pagewatch">[docs]</a><span class="k">def</span> <span class="nf">pagewatch</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enable write access watching on a given memory page.  This works</span>
+<span class="sd">    by setting the page to read-only and then specially handling the</span>
+<span class="sd">    access violations as though they were hardware Watchpoints.</span>
+
+<span class="sd">    Usage: pagewatch [options] [&lt;addr_expression&gt;]</span>
+<span class="sd">    -C - Clear the current pagewatch log</span>
+<span class="sd">    -F - Toggle auto-continue behavior (run and record vs. stop on hit)</span>
+<span class="sd">    -L - List the current hits from the pagewatch log</span>
+<span class="sd">    -M - Add page watches to the entire memory map from addr_expression</span>
+<span class="sd">    -R - Use to enable *read* watching while adding a page watch</span>
+<span class="sd">    -S &lt;addr&gt; - Show touches to the specified address</span>
+<span class="sd">    -P &lt;addr&gt; - Show memory touched by specifed program counter (eip)</span>
+<span class="sd">    -u - When listing, show only *unique* entries</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;CFLMP:RS:u&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;pagewatch&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;pagewatch&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;pagewatch&#39;</span><span class="p">,</span> <span class="p">[])</span>
+
+    <span class="k">if</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;pagerun&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;pagerun&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+    <span class="n">domap</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">unique</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">watchread</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-C&quot;</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;pagewatch&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Pagewatch log cleared&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-F&#39;</span><span class="p">:</span>
+            <span class="n">pr</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;pagerun&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="n">pr</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">pr</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;pagerun&#39;</span><span class="p">,</span> <span class="n">pr</span><span class="p">)</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Pagewatch Auto Continue: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pr</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-L&quot;</span><span class="p">:</span>
+            <span class="n">hits</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;pagewatch&#39;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="n">_printPageHits</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">hits</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="n">unique</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-M&quot;</span><span class="p">:</span>
+            <span class="n">domap</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-R&#39;</span><span class="p">:</span>
+            <span class="n">watchread</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-S&quot;</span><span class="p">:</span>
+            <span class="n">saddr</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+            <span class="n">hits</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;pagewatch&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">hits</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;No pagewatch log!&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">hits</span> <span class="o">=</span> <span class="p">[</span> <span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hits</span> <span class="k">if</span> <span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">saddr</span> <span class="p">]</span>
+            <span class="n">_printPageHits</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">hits</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="n">unique</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-P&quot;</span><span class="p">:</span>
+            <span class="n">saddr</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+            <span class="n">hits</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;pagewatch&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">hits</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;No pagewatch log!&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="n">hits</span> <span class="o">=</span> <span class="p">[</span> <span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hits</span> <span class="k">if</span> <span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">saddr</span> <span class="p">]</span>
+            <span class="n">_printPageHits</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">hits</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="n">unique</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-u&#39;</span><span class="p">:</span>
+            <span class="n">unique</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;pagewatch&#39;</span><span class="p">)</span>
+
+    <span class="n">baseaddr</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c"># Page align</span>
+    <span class="n">baseaddr</span> <span class="o">=</span> <span class="n">baseaddr</span> <span class="o">&amp;</span> <span class="mh">0xfffff000</span>
+    <span class="n">maxaddr</span> <span class="o">=</span> <span class="n">baseaddr</span> <span class="o">+</span> <span class="mi">4096</span>
+
+    <span class="nb">map</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">baseaddr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid memory map address 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">baseaddr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">domap</span><span class="p">:</span>
+        <span class="n">baseaddr</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">maxaddr</span>  <span class="o">=</span> <span class="n">baseaddr</span> <span class="o">+</span> <span class="nb">map</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">bpset</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">breakpoints</span>
+    <span class="k">while</span> <span class="n">baseaddr</span> <span class="o">&lt;</span> <span class="n">maxaddr</span><span class="p">:</span>
+        <span class="c"># Skip ones that are already there!</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bpset</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">baseaddr</span><span class="p">):</span>
+            <span class="n">wp</span> <span class="o">=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">PageWatchpoint</span><span class="p">(</span><span class="n">baseaddr</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">watchread</span><span class="o">=</span><span class="n">watchread</span><span class="p">)</span>
+            <span class="n">wpid</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span>
+        <span class="n">baseaddr</span> <span class="o">+=</span> <span class="mi">4096</span>
+</div>
+<div class="viewcode-block" id="stealth"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.stealth">[docs]</a><span class="k">def</span> <span class="nf">stealth</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enable basic debugger stealth.  This has the following effects:</span>
+
+<span class="sd">    Change PEB to show BeingDebugged == 0</span>
+<span class="sd">    Special breakpoint on CheckRemoteDebuggerPresent</span>
+
+<span class="sd">    WARNING:</span>
+<span class="sd">    break/sendBreak() behave VERY strange with this because the</span>
+<span class="sd">    kernel aparently doesn&#39;t think he needs to post the exception</span>
+<span class="sd">    to the debugger?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;Win32Stealth&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">win32_stealth</span><span class="o">.</span><span class="n">unstealthify</span><span class="p">(</span><span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="p">)</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Stealth disabled&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">win32_stealth</span><span class="o">.</span><span class="n">stealthify</span><span class="p">(</span><span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="p">)</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Stealth enabled&quot;</span><span class="p">)</span>
+
+</div>
+<span class="n">gflag_stuff</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&#39;loader_snaps&#39;</span><span class="p">,</span> <span class="s">&#39;ntdll.ShowSnaps&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;B&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;loader_debug&#39;</span><span class="p">,</span> <span class="s">&#39;ntdll.LdrpDebugFlags&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;I&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xffffffff</span><span class="p">),</span>
+<span class="p">]</span>
+
+<div class="viewcode-block" id="gflags"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.gflags">[docs]</a><span class="k">def</span> <span class="nf">gflags</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Support a subset of gflags like behavior on windows.  This enables</span>
+<span class="sd">    features *exclusively* by direct process manipulation and does NOT</span>
+<span class="sd">    set any registry settings or persist across processes...</span>
+
+<span class="sd">    Usage: gflags [toggle_type]</span>
+
+<span class="sd">    NOTE: Most of these options require symbols!</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="n">optnames</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gflag_stuff</span> <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">argv</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">opt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">optnames</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Unknown/Unsupported Option: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">opt</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">for</span> <span class="n">hname</span><span class="p">,</span> <span class="n">symname</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">offval</span><span class="p">,</span> <span class="n">onval</span> <span class="ow">in</span> <span class="n">gflag_stuff</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="n">hname</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">addr</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">symname</span><span class="p">)</span>
+                    <span class="n">cur</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">cur</span> <span class="o">==</span> <span class="n">offval</span><span class="p">:</span>
+                        <span class="n">newval</span> <span class="o">=</span> <span class="n">onval</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">newval</span> <span class="o">=</span> <span class="n">offval</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">writeMemoryFormat</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">newval</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Symbol Failure: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">symname</span><span class="p">)</span>
+                <span class="k">break</span>
+
+    <span class="k">for</span> <span class="n">hname</span><span class="p">,</span> <span class="n">symname</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">offval</span><span class="p">,</span> <span class="n">onval</span> <span class="ow">in</span> <span class="n">gflag_stuff</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s">&#39;Unknown&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">symname</span><span class="p">)</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="n">offval</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="s">&#39;Off&#39;</span>
+            <span class="k">elif</span> <span class="n">val</span> <span class="o">==</span> <span class="n">onval</span><span class="p">:</span>
+                <span class="n">status</span> <span class="o">=</span> <span class="s">&#39;On&#39;</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> : </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hname</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">status</span><span class="p">))</span>
+
+</div>
+<div class="viewcode-block" id="pe"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.pe">[docs]</a><span class="k">def</span> <span class="nf">pe</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show extended info about loaded PE binaries.</span>
+
+<span class="sd">    Usage: pe [opts] [&lt;libname&gt;...]</span>
+<span class="sd">    -I      Show PE import files.</span>
+<span class="sd">    -m      Toggle inmem/ondisk behavior (directly mapped DLLs)</span>
+<span class="sd">    -N      Show full NT header</span>
+<span class="sd">    -t      Show PE timestamp information</span>
+<span class="sd">    -E      Show PE exports</span>
+<span class="sd">    -S      Show PE sections</span>
+<span class="sd">    -v      Show FileVersion from VS_VERSIONINFO</span>
+<span class="sd">    -V      Show all keys from VS_VERSIONINFO</span>
+
+<span class="sd">    NOTE: &quot;libname&quot; may be a vtrace expression:</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">        # Show the imports from a PE loaded at 0x777c0000</span>
+<span class="sd">        pe -I 0x777c0000</span>
+
+<span class="sd">        # Show the exports from advapi32.dll</span>
+<span class="sd">        pe -E advapi32</span>
+
+<span class="sd">        # Show the build timestamp of the PE pointed to by a register</span>
+<span class="sd">        pe -t esi+10</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#-v      Show PE version information</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;EImNStvV&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;pe&#39;</span><span class="p">)</span>
+
+    <span class="n">inmem</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="n">showsecs</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">showvers</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">showtime</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">showimps</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">shownthd</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">showexps</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">showvsin</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-I&#39;</span><span class="p">:</span>
+            <span class="n">showimps</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-t&#39;</span><span class="p">:</span>
+            <span class="n">showtime</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-v&#39;</span><span class="p">:</span>
+            <span class="n">showvers</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-V&#39;</span><span class="p">:</span>
+            <span class="n">showvsin</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-N&#39;</span><span class="p">:</span>
+            <span class="n">shownthd</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-m&#39;</span><span class="p">:</span>
+            <span class="n">inmem</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-S&#39;</span><span class="p">:</span>
+            <span class="n">showsecs</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-E&#39;</span><span class="p">:</span>
+            <span class="n">showexps</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span>
+    <span class="n">bases</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryPaths&quot;</span><span class="p">)</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="n">args</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getNormalizedLibNames</span><span class="p">()</span>
+
+    <span class="n">names</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">columnstr</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">libname</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">bases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">libname</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">paths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="s">&quot;unknown&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pobj</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">peFromMemoryObject</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Error: </span><span class="si">%s</span><span class="s"> (0x</span><span class="si">%.8x</span><span class="s">) </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">libname</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">showimps</span><span class="p">:</span>
+            <span class="n">ldeps</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">rva</span><span class="p">,</span><span class="n">lname</span><span class="p">,</span><span class="n">fname</span> <span class="ow">in</span> <span class="n">pobj</span><span class="o">.</span><span class="n">getImports</span><span class="p">():</span>
+                    <span class="n">ldeps</span><span class="p">[</span><span class="n">lname</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">lnames</span> <span class="o">=</span> <span class="n">ldeps</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">lnames</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s"> - </span><span class="si">%.30s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">libname</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lnames</span><span class="p">)))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Import Parser Error On </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">libname</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">showvers</span><span class="p">:</span>
+            <span class="n">version</span> <span class="o">=</span> <span class="s">&#39;Unknown!&#39;</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="n">pobj</span><span class="o">.</span><span class="n">getVS_VERSIONINFO</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">vs</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="n">vs</span><span class="o">.</span><span class="n">getVersionValue</span><span class="p">(</span><span class="s">&#39;FileVersion&#39;</span><span class="p">)</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">libname</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">30</span><span class="p">),</span><span class="n">version</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">showvsin</span><span class="p">:</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="n">pobj</span><span class="o">.</span><span class="n">getVS_VERSIONINFO</span><span class="p">()</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;==== </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">libname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">vs</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;no VS_VERSIONINFO...&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vskeys</span> <span class="o">=</span> <span class="n">vs</span><span class="o">.</span><span class="n">getVersionKeys</span><span class="p">()</span>
+                <span class="n">vskeys</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">vskey</span> <span class="ow">in</span> <span class="n">vskeys</span><span class="p">:</span>
+                    <span class="n">vsval</span> <span class="o">=</span> <span class="n">vs</span><span class="o">.</span><span class="n">getVersionValue</span><span class="p">(</span><span class="n">vskey</span><span class="p">)</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vskey</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span> <span class="n">vsval</span><span class="p">[:</span><span class="mi">50</span><span class="p">]))</span>
+
+        <span class="k">elif</span> <span class="n">showtime</span><span class="p">:</span>
+            <span class="n">tstamp</span> <span class="o">=</span> <span class="n">pobj</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">FileHeader</span><span class="o">.</span><span class="n">TimeDateStamp</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s"> - </span><span class="si">%.30s</span><span class="s"> 0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">libname</span><span class="p">,</span> <span class="n">tstamp</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">shownthd</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">pobj</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">reprmax</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">showsecs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">pobj</span><span class="o">.</span><span class="n">getSections</span><span class="p">():</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">reprmax</span><span class="o">=</span><span class="mi">32</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">showexps</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;[Ord] [Address] [Name]&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">fva</span><span class="p">,</span> <span class="nb">ord</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">pobj</span><span class="o">.</span><span class="n">getExports</span><span class="p">():</span>
+                <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%.4d</span><span class="s"> 0x</span><span class="si">%.8x</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">ord</span><span class="p">,</span> <span class="n">fva</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s"> - </span><span class="si">%.30s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">libname</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="bindiff"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.bindiff">[docs]</a><span class="k">def</span> <span class="nf">bindiff</span><span class="p">(</span><span class="n">mem1</span><span class="p">,</span> <span class="n">mem2</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">imax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mem1</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">imax</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">while</span> <span class="n">mem1</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">!=</span> <span class="n">mem2</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="ow">and</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">imax</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c"># We found a discrepency</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="n">i</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">size</span><span class="p">))</span>
+            <span class="n">i</span><span class="o">+=</span><span class="n">r</span>
+        <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="deaslr"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.deaslr">[docs]</a><span class="k">def</span> <span class="nf">deaslr</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Rebase the specified address expression as though the origin</span>
+<span class="sd">    library had gotten it&#39;s suggested base address rather than</span>
+<span class="sd">    being ASLR&#39;d.</span>
+
+<span class="sd">    Usage: deaslr &lt;addr_expr&gt;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;deaslr&#39;</span><span class="p">)</span>
+
+    <span class="n">addr</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">newaddr</span> <span class="o">=</span> <span class="n">win32_aslr</span><span class="o">.</span><span class="n">deAslr</span><span class="p">(</span><span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;aslr: 0x</span><span class="si">%.8x</span><span class="s"> deaslr: 0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">newaddr</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="sympath"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.sympath">[docs]</a><span class="k">def</span> <span class="nf">sympath</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Set the symbol path for the tracer.  This will currently only</span>
+<span class="sd">    effect *subsequent* library loads!</span>
+
+<span class="sd">    Usage: sympath &lt;new_path&gt;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;NtSymbolPath&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+    <span class="n">sympath</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;NtSymbolPath&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sympath</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">sympath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s">&#39;_NT_SYMBOL_PATH&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Current Symbol Path: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">sympath</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="stepb"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.stepb">[docs]</a><span class="k">def</span> <span class="nf">stepb</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Use the extended intel hardware support to step to the next branch</span>
+<span class="sd">    target.</span>
+
+<span class="sd">    Usage: stepb</span>
+<span class="sd">    </span>
+<span class="sd">    NOTE: This will *not* work inside VMware / VirtualBox.  Other hypervisors</span>
+<span class="sd">          may vary... (it will simply single step)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;stepb&#39;</span><span class="p">)</span>
+
+    <span class="n">orig</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&#39;BranchStep&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&#39;BranchStep&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="c"># For now, lets cheat so we get FastStep behavior for free...</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">do_stepi</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&#39;BranchStep&#39;</span><span class="p">,</span> <span class="n">orig</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="hooks"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.hooks">[docs]</a><span class="k">def</span> <span class="nf">hooks</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Check the executable regions of the target process for any</span>
+<span class="sd">    hooks by comparing against the PE on disk.  This will</span>
+<span class="sd">    account for relocations and import entries.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">bases</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span>
+    <span class="n">paths</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryPaths&quot;</span><span class="p">)</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">bname</span> <span class="ow">in</span> <span class="n">bases</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">bases</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bname</span><span class="p">)</span>
+        <span class="n">fpath</span> <span class="o">=</span> <span class="n">paths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+        <span class="n">pobj</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">PE</span><span class="p">(</span><span class="nb">file</span><span class="p">(</span><span class="n">fpath</span><span class="p">,</span><span class="s">&#39;rb&#39;</span><span class="p">))</span>
+        <span class="n">filebase</span> <span class="o">=</span> <span class="n">pobj</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">OptionalHeader</span><span class="o">.</span><span class="n">ImageBase</span>
+
+        <span class="n">skips</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c"># Get relocations for skipping</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">relrva</span><span class="p">,</span> <span class="n">reltype</span> <span class="ow">in</span> <span class="n">pobj</span><span class="o">.</span><span class="n">getRelocations</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+                <span class="n">skips</span><span class="p">[</span><span class="n">base</span><span class="o">+</span><span class="n">relrva</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c"># Add the import entries to skip</span>
+        <span class="k">for</span> <span class="n">iva</span><span class="p">,</span><span class="n">libname</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="n">pobj</span><span class="o">.</span><span class="n">getImports</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+                <span class="n">skips</span><span class="p">[</span><span class="n">base</span><span class="o">+</span><span class="n">iva</span><span class="o">+</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">pobj</span><span class="o">.</span><span class="n">getSections</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">sec</span><span class="o">.</span><span class="n">Characteristics</span> <span class="o">&amp;</span> <span class="n">PE</span><span class="o">.</span><span class="n">IMAGE_SCN_MEM_EXECUTE</span><span class="p">:</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="n">sec</span><span class="o">.</span><span class="n">VirtualSize</span>
+                <span class="n">va</span> <span class="o">=</span> <span class="n">base</span> <span class="o">+</span> <span class="n">sec</span><span class="o">.</span><span class="n">VirtualAddress</span>
+                <span class="n">fileva</span> <span class="o">=</span> <span class="n">filebase</span> <span class="o">+</span> <span class="n">sec</span><span class="o">.</span><span class="n">VirtualAddress</span>
+                <span class="n">filebytes</span> <span class="o">=</span> <span class="n">pobj</span><span class="o">.</span><span class="n">readAtRva</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">VirtualAddress</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">VirtualSize</span><span class="p">)</span>
+                <span class="n">procbytes</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">off</span><span class="p">,</span><span class="n">size</span> <span class="ow">in</span> <span class="n">bindiff</span><span class="p">(</span><span class="n">filebytes</span><span class="p">,</span> <span class="n">procbytes</span><span class="p">):</span>
+                    <span class="n">difva</span> <span class="o">=</span> <span class="n">va</span> <span class="o">+</span> <span class="n">off</span>
+                    <span class="n">fdifva</span> <span class="o">=</span> <span class="n">fileva</span> <span class="o">+</span> <span class="n">off</span>
+                    <span class="c"># Check for a relocation covering this...</span>
+                    <span class="k">if</span> <span class="n">skips</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">difva</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="n">dmem</span> <span class="o">=</span> <span class="n">procbytes</span><span class="p">[</span><span class="n">off</span><span class="p">:</span><span class="n">off</span><span class="o">+</span><span class="n">size</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+                    <span class="n">dfil</span> <span class="o">=</span> <span class="n">filebytes</span><span class="p">[</span><span class="n">off</span><span class="p">:</span><span class="n">off</span><span class="o">+</span><span class="n">size</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">difva</span><span class="p">,</span> <span class="n">difva</span><span class="p">)</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39; (0x</span><span class="si">%.8x</span><span class="s">) (</span><span class="si">%d</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdifva</span><span class="p">,</span><span class="n">size</span><span class="p">))</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39; mem: </span><span class="si">%s</span><span class="s"> file: </span><span class="si">%s</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dmem</span><span class="p">,</span> <span class="n">dfil</span><span class="p">))</span>
+
+                    <span class="n">sym</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">symobj</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="n">difva</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">vdb</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+                        <span class="n">vdb</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> + </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">),</span><span class="n">difva</span><span class="o">-</span><span class="nb">long</span><span class="p">(</span><span class="n">sym</span><span class="p">)),</span> <span class="n">difva</span><span class="p">)</span>
+                    <span class="n">vdb</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span> <span class="n">vdb</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39;No Hooks Found!</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="jit"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.jit">[docs]</a><span class="k">def</span> <span class="nf">jit</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Enable/Disable the current VDB location as the current Just-In-Time</span>
+<span class="sd">    debugger for windows applications.</span>
+
+<span class="sd">    Usage: jitenable [-D]</span>
+<span class="sd">    -E  Enable VDB JIT debugging</span>
+<span class="sd">    -D  Disable JIT debugging</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="o">.</span><span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;ED&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;jit&#39;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">_winreg</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Error Importing _winreg: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">HKLM</span> <span class="o">=</span> <span class="n">_winreg</span><span class="o">.</span><span class="n">HKEY_LOCAL_MACHINE</span>
+    <span class="n">HKCU</span> <span class="o">=</span> <span class="n">_winreg</span><span class="o">.</span><span class="n">HKEY_CURRENT_USER</span>
+    <span class="n">REG_SZ</span> <span class="o">=</span> <span class="n">_winreg</span><span class="o">.</span><span class="n">REG_SZ</span>
+
+    <span class="n">regpath</span> <span class="o">=</span> <span class="s">r&#39;SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug&#39;</span>
+    <span class="c">#wow64path = r&#39;SOFTWARE\Wow6432Node\Microsoft\Windows NT\CurrentVersion\AeDebug&#39;</span>
+
+    <span class="c">#regkey = _winreg.CreateKey(HKLM, regpath)</span>
+    <span class="n">regkey</span> <span class="o">=</span> <span class="n">_winreg</span><span class="o">.</span><span class="n">CreateKey</span><span class="p">(</span><span class="n">HKLM</span><span class="p">,</span> <span class="n">regpath</span><span class="p">)</span>
+
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;JIT Currently: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">_winreg</span><span class="o">.</span><span class="n">QueryValueEx</span><span class="p">(</span><span class="n">regkey</span><span class="p">,</span> <span class="s">&#39;Debugger&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">setval</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-D&#39;</span><span class="p">:</span>
+            <span class="n">setval</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+        <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-E&#39;</span><span class="p">:</span>
+            <span class="n">vdbpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">setval</span> <span class="o">=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> -r -p </span><span class="si">%%</span><span class="s">ld -e </span><span class="si">%%</span><span class="s">Id&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">vdbpath</span><span class="p">)</span>
+            <span class="c">#_winreg.SetValue(HKLM</span>
+
+    <span class="k">if</span> <span class="n">setval</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Setting JIT: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">setval</span><span class="p">,))</span>
+        <span class="n">_winreg</span><span class="o">.</span><span class="n">SetValueEx</span><span class="p">(</span><span class="n">regkey</span><span class="p">,</span> <span class="s">&#39;Debugger&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">REG_SZ</span><span class="p">,</span> <span class="n">setval</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="svclist"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.svclist">[docs]</a><span class="k">def</span> <span class="nf">svclist</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    List the running service names and pids.</span>
+
+<span class="sd">    Usage: svclist</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">descrs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pid</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">descr</span> <span class="ow">in</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">_getSvcList</span><span class="p">():</span>
+        <span class="n">pids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span>  <span class="n">pid</span><span class="p">)</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">descrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">descr</span><span class="p">)</span>
+
+    <span class="n">names</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">columnstr</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pids</span><span class="p">)):</span>
+        <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%8s</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pids</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">descrs</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</div>
+<div class="viewcode-block" id="injectso"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.injectso">[docs]</a><span class="k">def</span> <span class="nf">injectso</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Inject a shared object (DLL) into the target process.</span>
+
+<span class="sd">    Usage: injectso &lt;dllname&gt;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">vdb</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;injectso&#39;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">trace</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">injectso</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</div>
+<span class="n">token_elevation_types</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="s">&#39;UAC Not Present&#39;</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s">&#39;Default Elevation&#39;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s">&#39;Elevated&#39;</span><span class="p">,</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s">&#39;Low&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+<div class="viewcode-block" id="uac"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.uac">[docs]</a><span class="k">def</span> <span class="nf">uac</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Display the current UAC status of the target process.</span>
+<span class="sd">    (User Account Control)</span>
+
+<span class="sd">    Usage: uac</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">trace</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_getUacStatus</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;UAC Status: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">token_elevation_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="hookiat"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.hookiat">[docs]</a><span class="k">def</span> <span class="nf">hookiat</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Hook the specified IAT entries by munging a pointer and emulating</span>
+<span class="sd">    &quot;breakpoint&quot; like behavior on the resultant memory access errors.  Basically,</span>
+<span class="sd">    break on import call...</span>
+
+<span class="sd">    Usage: hookiat &lt;libname&gt; [ &lt;implibname&gt; [ &lt;impfuncname&gt; ] ]</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        hookiat calc</span>
+<span class="sd">        hookiat calc kernel32</span>
+<span class="sd">        hookiat calc kernel32 LoadLibraryA</span>
+
+<span class="sd">    NOTE: Once added, you may use &quot;bp&quot; and commands like &quot;bpedit&quot; to modify,</span>
+<span class="sd">    remove, or add code to &quot;iat hooks&quot;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">argv</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">arglen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arglen</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;hookiat&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">arglen</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;hookiat&#39;</span><span class="p">)</span>
+
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Adding IAT Hooks (use bp/bpedit cmds to review/modify...)&#39;</span><span class="p">)</span>
+    <span class="n">hooks</span> <span class="o">=</span> <span class="n">vt_iathook</span><span class="o">.</span><span class="n">hookIat</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="o">*</span><span class="n">argv</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hooks</span><span class="p">):</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;[ bpid ] [ IAT Name ]&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">iatname</span><span class="p">,</span> <span class="n">bpid</span> <span class="ow">in</span> <span class="n">hooks</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;[</span><span class="si">%6d</span><span class="s">] </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bpid</span><span class="p">,</span> <span class="n">iatname</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Added </span><span class="si">%d</span><span class="s"> hooks.&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">hooks</span><span class="p">))</span>
+
+<span class="c"># The necissary module extension function</span></div>
+<div class="viewcode-block" id="vdbExtension"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.windows.vdbExtension">[docs]</a><span class="k">def</span> <span class="nf">vdbExtension</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">hookiat</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">pe</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">peb</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">einfo</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">heaps</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">regkeys</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">seh</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">safeseh</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">teb</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">pagewatch</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">stealth</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">aslr</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">hooks</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">gflags</span><span class="p">)</span>
+    <span class="c">#db.registerCmdExtension(deaslr)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">sympath</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">jit</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">svclist</span><span class="p">)</span>
+    <span class="c">#db.registerCmdExtension(stepb)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">injectso</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">uac</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../extensions.html" >vdb.extensions</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

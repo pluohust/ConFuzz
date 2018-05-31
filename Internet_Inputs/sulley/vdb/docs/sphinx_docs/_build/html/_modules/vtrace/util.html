@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.util &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vtrace" href="../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.util</h1><div class="highlight"><pre>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">vtrace.notifiers</span> <span class="kn">as</span> <span class="nn">v_notifiers</span>
+<span class="kn">import</span> <span class="nn">vtrace.rmi</span> <span class="kn">as</span> <span class="nn">v_rmi</span>
+
+<div class="viewcode-block" id="TraceManager"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager">[docs]</a><span class="k">class</span> <span class="nc">TraceManager</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A trace-manager is a utility class to extend from when you may be dealing</span>
+<span class="sd">    with multiple tracer objects.  It allows for persistant mode settings and</span>
+<span class="sd">    persistent metadata as well as bundling a DistributedNotifier.  You may also</span>
+<span class="sd">    extend from this to get auto-magic remote stuff for your managed traces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dnotif</span> <span class="o">=</span> <span class="n">v_notifiers</span><span class="o">.</span><span class="n">DistributedNotifier</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># See docs for trace modes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># Like traces, but persistant</span>
+
+<div class="viewcode-block" id="TraceManager.manageTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.manageTrace">[docs]</a>    <span class="k">def</span> <span class="nf">manageTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set all the modes/meta/notifiers in this trace for management</span>
+<span class="sd">        by this TraceManager.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="k">if</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">remote</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="n">v_rmi</span><span class="o">.</span><span class="n">getCallbackProxy</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnotif</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnotif</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceManager.unManageTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.unManageTrace">[docs]</a>    <span class="k">def</span> <span class="nf">unManageTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Untie this trace manager from the trace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">remote</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">deregisterNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="n">v_rmi</span><span class="o">.</span><span class="n">getCallbackProxy</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnotif</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">deregisterNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnotif</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceManager.setMode"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.setMode">[docs]</a>    <span class="k">def</span> <span class="nf">setMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="TraceManager.getMode"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.getMode">[docs]</a>    <span class="k">def</span> <span class="nf">getMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceManager.setMeta"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.setMeta">[docs]</a>    <span class="k">def</span> <span class="nf">setMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="TraceManager.getMeta"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.getMeta">[docs]</a>    <span class="k">def</span> <span class="nf">getMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceManager.registerNotifier"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.registerNotifier">[docs]</a>    <span class="k">def</span> <span class="nf">registerNotifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">notif</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dnotif</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">notif</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceManager.deregisterNotifier"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.deregisterNotifier">[docs]</a>    <span class="k">def</span> <span class="nf">deregisterNotifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">notif</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dnotif</span><span class="o">.</span><span class="n">deregisterNotifier</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">notif</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceManager.fireLocalNotifiers"><a class="viewcode-back" href="../../vtrace.html#vtrace.util.TraceManager.fireLocalNotifiers">[docs]</a>    <span class="k">def</span> <span class="nf">fireLocalNotifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deliver a local event to the DistributedNotifier managing</span>
+<span class="sd">        the traces. (used to locally bump notifiers)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dnotif</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,405 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tools Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tools-package">
+<h1>tools Package<a class="headerlink" href="#tools-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">tools</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vtrace.tools"></span><p>Extra tools (mostly for windows)</p>
+</div>
+<div class="section" id="module-vtrace.tools.iathook">
+<span id="iathook-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">iathook</span></tt> Module<a class="headerlink" href="#module-vtrace.tools.iathook" title="Permalink to this headline">¶</a></h2>
+<p>Code for hooking import address tables by making them invalid
+pointers and catching the exceptions...</p>
+<dl class="class">
+<dt id="vtrace.tools.iathook.IatHook">
+<em class="property">class </em><tt class="descclassname">vtrace.tools.iathook.</tt><tt class="descname">IatHook</tt><big>(</big><em>ptraddr</em>, <em>iatname</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/iathook.html#IatHook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.iathook.IatHook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.watchpoints.Watchpoint" title="vtrace.watchpoints.Watchpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.watchpoints.Watchpoint</span></tt></a></p>
+<p>Abuse the PageWatch subsystem to allow function pointers to be
+frob&#8217;d to create breakpoint like behavior.</p>
+<dl class="method">
+<dt id="vtrace.tools.iathook.IatHook.activate">
+<tt class="descname">activate</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/iathook.html#IatHook.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.iathook.IatHook.activate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.iathook.IatHook.deactivate">
+<tt class="descname">deactivate</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/iathook.html#IatHook.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.iathook.IatHook.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.iathook.IatHook.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/iathook.html#IatHook.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.iathook.IatHook.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="vtrace.tools.iathook.IatHook.newptr">
+<tt class="descname">newptr</tt><em class="property"> = 4227592192L</em><a class="headerlink" href="#vtrace.tools.iathook.IatHook.newptr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.iathook.IatHook.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/iathook.html#IatHook.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.iathook.IatHook.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.iathook.IatHook.resolveAddr">
+<tt class="descname">resolveAddr</tt><big>(</big><em>trace</em>, <em>addr</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/iathook.html#IatHook.resolveAddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.iathook.IatHook.resolveAddr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.iathook.hookIat">
+<tt class="descclassname">vtrace.tools.iathook.</tt><tt class="descname">hookIat</tt><big>(</big><em>trace</em>, <em>libname</em>, <em>implib='*'</em>, <em>impfunc='*'</em>, <em>fast=False</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/iathook.html#hookIat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.iathook.hookIat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook the IAT with special &#8220;breakpoint&#8221; like objects which
+handle the memory access errors and document the calls...
+Set fast=True for them to be &#8220;Fastbreak&#8221; breakpoints.</p>
+<p>This returns a list of (name, bpid) tuples...</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd><dl class="first last docutils">
+<dt>for impname, bpid in hookIat(t, &#8216;ws2_32&#8217;)</dt>
+<dd>t.setBreakpointCode(bpid, codestr)
+...</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.tools.win32alloc">
+<span id="win32alloc-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">win32alloc</span></tt> Module<a class="headerlink" href="#module-vtrace.tools.win32alloc" title="Permalink to this headline">¶</a></h2>
+<p>A module with some cute toys for monitoring allocations.</p>
+<dl class="class">
+<dt id="vtrace.tools.win32alloc.ReturnBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.tools.win32alloc.</tt><tt class="descname">ReturnBreak</tt><big>(</big><em>addr</em>, <em>chsize</em>, <em>chflags</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32alloc.html#ReturnBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32alloc.ReturnBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<dl class="method">
+<dt id="vtrace.tools.win32alloc.ReturnBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32alloc.html#ReturnBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32alloc.ReturnBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.tools.win32alloc.RtlAllocateHeapBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.tools.win32alloc.</tt><tt class="descname">RtlAllocateHeapBreak</tt><big>(</big><em>addr</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32alloc.html#RtlAllocateHeapBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32alloc.RtlAllocateHeapBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<dl class="method">
+<dt id="vtrace.tools.win32alloc.RtlAllocateHeapBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32alloc.html#RtlAllocateHeapBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32alloc.RtlAllocateHeapBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32alloc.clearHeapAllocs">
+<tt class="descclassname">vtrace.tools.win32alloc.</tt><tt class="descname">clearHeapAllocs</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32alloc.html#clearHeapAllocs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32alloc.clearHeapAllocs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32alloc.getHeapAllocs">
+<tt class="descclassname">vtrace.tools.win32alloc.</tt><tt class="descname">getHeapAllocs</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32alloc.html#getHeapAllocs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32alloc.getHeapAllocs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of (caller_eip, heap_chunk, size, flags) tuples</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32alloc.watchHeapAllocs">
+<tt class="descclassname">vtrace.tools.win32alloc.</tt><tt class="descname">watchHeapAllocs</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32alloc.html#watchHeapAllocs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32alloc.watchHeapAllocs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a breakpoint to ntdll.RtlAllocateHeap to watch for
+allocations and track who made them...</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.tools.win32aslr">
+<span id="win32aslr-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">win32aslr</span></tt> Module<a class="headerlink" href="#module-vtrace.tools.win32aslr" title="Permalink to this headline">¶</a></h2>
+<p>Utilities for windows tracer objects.</p>
+<dl class="function">
+<dt id="vtrace.tools.win32aslr.deAslr">
+<tt class="descclassname">vtrace.tools.win32aslr.</tt><tt class="descname">deAslr</tt><big>(</big><em>trace</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32aslr.html#deAslr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32aslr.deAslr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an address in an ASLR&#8217;d library, rebase
+it back to the address as it would be if the
+given PE were at it&#8217;s suggested address...</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.tools.win32heap">
+<span id="win32heap-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">win32heap</span></tt> Module<a class="headerlink" href="#module-vtrace.tools.win32heap" title="Permalink to this headline">¶</a></h2>
+<p>Windows heap allocation helper module</p>
+<dl class="exception">
+<dt id="vtrace.tools.win32heap.ChunkNotFound">
+<em class="property">exception </em><tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">ChunkNotFound</tt><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#ChunkNotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.ChunkNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vtrace.tools.win32heap.FreeListCorruption">
+<em class="property">exception </em><tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">FreeListCorruption</tt><big>(</big><em>heap</em>, <em>index</em>, <em>prevchunk</em>, <em>badchunk</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#FreeListCorruption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.FreeListCorruption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vtrace.tools.win32heap.HeapCorruptionException">
+<em class="property">exception </em><tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">HeapCorruptionException</tt><big>(</big><em>heap</em>, <em>segment</em>, <em>prevchunk</em>, <em>badchunk</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#HeapCorruptionException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.HeapCorruptionException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.tools.win32heap.Win32Chunk">
+<em class="property">class </em><tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">Win32Chunk</tt><big>(</big><em>trace</em>, <em>heap</em>, <em>address</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Chunk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Chunk" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Chunk.getDataAddress">
+<tt class="descname">getDataAddress</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Chunk.getDataAddress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Chunk.getDataAddress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Chunk.getDataBytes">
+<tt class="descname">getDataBytes</tt><big>(</big><em>maxsize=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Chunk.getDataBytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Chunk.getDataBytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Chunk.getDataSize">
+<tt class="descname">getDataSize</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Chunk.getDataSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Chunk.getDataSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Chunk.getFlinkBlink">
+<tt class="descname">getFlinkBlink</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Chunk.getFlinkBlink"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Chunk.getFlinkBlink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Chunk.isBusy">
+<tt class="descname">isBusy</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Chunk.isBusy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Chunk.isBusy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Chunk.isLast">
+<tt class="descname">isLast</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Chunk.isLast"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Chunk.isLast" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Chunk.reprFlags">
+<tt class="descname">reprFlags</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Chunk.reprFlags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Chunk.reprFlags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.tools.win32heap.Win32Heap">
+<em class="property">class </em><tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">Win32Heap</tt><big>(</big><em>trace</em>, <em>address</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Heap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Heap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Heap.getFlagNames">
+<tt class="descname">getFlagNames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Heap.getFlagNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Heap.getFlagNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Heap.getFreeLists">
+<tt class="descname">getFreeLists</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Heap.getFreeLists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Heap.getFreeLists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the free lists in this heap.
+(Not including look-aside)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Heap.getLookAsideLists">
+<tt class="descname">getLookAsideLists</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Heap.getLookAsideLists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Heap.getLookAsideLists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the lookaside list for this heap</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Heap.getSegments">
+<tt class="descname">getSegments</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Heap.getSegments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Heap.getSegments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of Win32Segment objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Heap.getUCRDict">
+<tt class="descname">getUCRDict</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Heap.getUCRDict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Heap.getUCRDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a dictionary of &lt;ucr_address&gt;:&lt;ucr_size&gt; items.</p>
+<p>(If this windows version doesn&#8217;t support UCRs, the dict will be empty)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Heap.hasLookAside">
+<tt class="descname">hasLookAside</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Heap.hasLookAside"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Heap.hasLookAside" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does this heap have a lookaside?</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.tools.win32heap.Win32Segment">
+<em class="property">class </em><tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">Win32Segment</tt><big>(</big><em>trace</em>, <em>heap</em>, <em>address</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Segment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Segment" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Segment.getChunks">
+<tt class="descname">getChunks</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Segment.getChunks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Segment.getChunks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Segment.getLastChunk">
+<tt class="descname">getLastChunk</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Segment.getLastChunk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Segment.getLastChunk" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.tools.win32heap.Win32Segment.getSegmentEnd">
+<tt class="descname">getSegmentEnd</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#Win32Segment.getSegmentEnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.Win32Segment.getSegmentEnd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32heap.getHeapSegChunk">
+<tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">getHeapSegChunk</tt><big>(</big><em>trace</em>, <em>address</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#getHeapSegChunk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.getHeapSegChunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and return the heap, segment, and chunk for the given addres
+(or exception).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32heap.getHeaps">
+<tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">getHeaps</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#getHeaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.getHeaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the win32 heaps (returns a list of Win32Heap objects)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32heap.reprHeapFlags">
+<tt class="descclassname">vtrace.tools.win32heap.</tt><tt class="descname">reprHeapFlags</tt><big>(</big><em>flags</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32heap.html#reprHeapFlags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32heap.reprHeapFlags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.tools.win32stealth">
+<span id="win32stealth-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">win32stealth</span></tt> Module<a class="headerlink" href="#module-vtrace.tools.win32stealth" title="Permalink to this headline">¶</a></h2>
+<p>Try to prevent an executable from knowing it&#8217;s being debugged.</p>
+<dl class="class">
+<dt id="vtrace.tools.win32stealth.StealthBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.tools.win32stealth.</tt><tt class="descname">StealthBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32stealth.html#StealthBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32stealth.StealthBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>A breakpoint to fake out CheckRemoteDebuggerPresent.</p>
+<dl class="method">
+<dt id="vtrace.tools.win32stealth.StealthBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32stealth.html#StealthBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32stealth.StealthBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32stealth.stealthify">
+<tt class="descclassname">vtrace.tools.win32stealth.</tt><tt class="descname">stealthify</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32stealth.html#stealthify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32stealth.stealthify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32stealth.unstealthify">
+<tt class="descclassname">vtrace.tools.win32stealth.</tt><tt class="descname">unstealthify</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32stealth.html#unstealthify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32stealth.unstealthify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.tools.win32stealth.writeBeingDebugged">
+<tt class="descclassname">vtrace.tools.win32stealth.</tt><tt class="descname">writeBeingDebugged</tt><big>(</big><em>trace</em>, <em>val</em><big>)</big><a class="reference internal" href="_modules/vtrace/tools/win32stealth.html#writeBeingDebugged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.tools.win32stealth.writeBeingDebugged" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">tools Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">tools</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-vtrace.tools.iathook"><tt class="docutils literal"><span class="pre">iathook</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.tools.win32alloc"><tt class="docutils literal"><span class="pre">win32alloc</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.tools.win32aslr"><tt class="docutils literal"><span class="pre">win32aslr</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.tools.win32heap"><tt class="docutils literal"><span class="pre">win32heap</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.tools.win32stealth"><tt class="docutils literal"><span class="pre">win32stealth</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vtrace.tools.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

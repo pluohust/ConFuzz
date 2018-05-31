@@ -1,0 +1,545 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.memory &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="envi" href="../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.memory</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing memory utilities and the definition of the</span>
+<span class="sd">memory access API used by all vtoys trace/emulators/workspaces.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Memory Map Permission Flags</span>
+<span class="n">MM_NONE</span> <span class="o">=</span> <span class="mh">0x0</span>
+<span class="n">MM_READ</span> <span class="o">=</span> <span class="mh">0x4</span>
+<span class="n">MM_WRITE</span> <span class="o">=</span> <span class="mh">0x2</span>
+<span class="n">MM_EXEC</span> <span class="o">=</span> <span class="mh">0x1</span>
+<span class="n">MM_SHARED</span> <span class="o">=</span> <span class="mh">0x08</span>
+
+<span class="n">MM_READ_WRITE</span> <span class="o">=</span> <span class="n">MM_READ</span> <span class="o">|</span> <span class="n">MM_WRITE</span>
+<span class="n">MM_READ_EXEC</span>  <span class="o">=</span>  <span class="n">MM_READ</span> <span class="o">|</span> <span class="n">MM_EXEC</span>
+<span class="n">MM_RWX</span> <span class="o">=</span> <span class="n">MM_READ</span> <span class="o">|</span> <span class="n">MM_WRITE</span> <span class="o">|</span> <span class="n">MM_EXEC</span>
+
+<span class="n">pnames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;No Access&#39;</span><span class="p">,</span> <span class="s">&#39;Execute&#39;</span><span class="p">,</span> <span class="s">&#39;Write&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;Read&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="getPermName"><a class="viewcode-back" href="../../envi.html#envi.memory.getPermName">[docs]</a><span class="k">def</span> <span class="nf">getPermName</span><span class="p">(</span><span class="n">perm</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return the human readable name for a *single* memory</span>
+<span class="sd">    perm enumeration value.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">pnames</span><span class="p">[</span><span class="n">perm</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="reprPerms"><a class="viewcode-back" href="../../envi.html#envi.memory.reprPerms">[docs]</a><span class="k">def</span> <span class="nf">reprPerms</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+    <span class="n">plist</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="n">MM_SHARED</span><span class="p">:</span>
+        <span class="n">plist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="n">MM_READ</span><span class="p">:</span>
+        <span class="n">plist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;r&#39;</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="n">MM_WRITE</span><span class="p">:</span>
+        <span class="n">plist</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;w&#39;</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="o">&amp;</span> <span class="n">MM_EXEC</span><span class="p">:</span>
+        <span class="n">plist</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;x&#39;</span>
+
+    <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">plist</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="parsePerms"><a class="viewcode-back" href="../../envi.html#envi.memory.parsePerms">[docs]</a><span class="k">def</span> <span class="nf">parsePerms</span><span class="p">(</span><span class="n">pstr</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">pstr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;s&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="n">ret</span> <span class="o">|=</span> <span class="n">MM_SHARED</span>
+    <span class="k">if</span> <span class="n">pstr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="n">ret</span> <span class="o">|=</span> <span class="n">MM_READ</span>
+    <span class="k">if</span> <span class="n">pstr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="n">ret</span> <span class="o">|=</span> <span class="n">MM_WRITE</span>
+    <span class="k">if</span> <span class="n">pstr</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="n">ret</span> <span class="o">|=</span> <span class="n">MM_EXEC</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="IMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory">[docs]</a><span class="k">class</span> <span class="nc">IMemory</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the interface spec (and a few helper utils)</span>
+<span class="sd">    for the unified memory object interface.</span>
+
+<span class="sd">    NOTE: If your actual underlying memory format is such</span>
+<span class="sd">    that over-riding anything (like isValidPointer!) can</span>
+<span class="sd">    be faster than the default implementation, DO IT!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archmod</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imem_psize</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="s">&quot;P&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imem_arch</span> <span class="o">=</span> <span class="n">archmod</span>
+        <span class="c"># If the specified an arch module, use that!</span>
+        <span class="k">if</span> <span class="n">archmod</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imem_psize</span> <span class="o">=</span> <span class="n">archmod</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">()</span>
+
+<div class="viewcode-block" id="IMemory.getPointerSize"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.getPointerSize">[docs]</a>    <span class="k">def</span> <span class="nf">getPointerSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imem_arch</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="IMemory.readMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.readMemory">[docs]</a>    <span class="k">def</span> <span class="nf">readMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read memory from the specified virtual address for size bytes</span>
+<span class="sd">        and return it as a python string.</span>
+
+<span class="sd">        Example: mem.readMemory(0x41414141, 20) -&gt; &quot;A...&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;must implement readMemory!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.writeMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.writeMemory">[docs]</a>    <span class="k">def</span> <span class="nf">writeMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write the given bytes to the specified virtual address.</span>
+
+<span class="sd">        Example: mem.writeMemory(0x41414141, &quot;VISI&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;must implement writeMemory!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.protectMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.protectMemory">[docs]</a>    <span class="k">def</span> <span class="nf">protectMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the protections for the given memory map. On most platforms</span>
+<span class="sd">        the va/size *must* exactly match an existing memory map.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;must implement protectMemory!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.probeMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.probeMemory">[docs]</a>    <span class="k">def</span> <span class="nf">probeMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check to be sure that the given virtual address and size</span>
+<span class="sd">        is contained within one memory map, and check that the</span>
+<span class="sd">        perms are contained within the permission bits</span>
+<span class="sd">        for the memory map. (MM_READ | MM_WRITE | MM_EXEC | ...)</span>
+
+<span class="sd">        Example probeMemory(0x41414141, 20, envi.memory.MM_WRITE)</span>
+<span class="sd">        (check if the memory for 20 bytes at 0x41414141 is writable)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="n">mapva</span><span class="p">,</span> <span class="n">mapsize</span><span class="p">,</span> <span class="n">mapperm</span><span class="p">,</span> <span class="n">mapfile</span> <span class="o">=</span> <span class="nb">map</span>
+        <span class="n">mapend</span> <span class="o">=</span> <span class="n">mapva</span><span class="o">+</span><span class="n">mapsize</span>
+        <span class="k">if</span> <span class="n">va</span><span class="o">+</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">mapend</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="n">mapperm</span> <span class="o">&amp;</span> <span class="n">perm</span> <span class="o">!=</span> <span class="n">perm</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="IMemory.allocateMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.allocateMemory">[docs]</a>    <span class="k">def</span> <span class="nf">allocateMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="n">MM_RWX</span><span class="p">,</span> <span class="n">suggestaddr</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;must implement allocateMemory!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.addMemoryMap"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.addMemoryMap">[docs]</a>    <span class="k">def</span> <span class="nf">addMemoryMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapva</span><span class="p">,</span> <span class="n">perms</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;must implement addMemoryMap!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.getMemoryMaps"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.getMemoryMaps">[docs]</a>    <span class="k">def</span> <span class="nf">getMemoryMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;must implement getMemoryMaps!&quot;</span><span class="p">)</span>
+
+    <span class="c"># Mostly helpers from here down...</span></div>
+<div class="viewcode-block" id="IMemory.readMemoryFormat"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.readMemoryFormat">[docs]</a>    <span class="k">def</span> <span class="nf">readMemoryFormat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">fmt</span><span class="p">):</span>
+        <span class="c"># Somehow, pointers are &quot;signed&quot; when they</span>
+        <span class="c"># get chopped up by python&#39;s struct package</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imem_psize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;P&quot;</span><span class="p">,</span><span class="s">&quot;I&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">imem_psize</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;P&quot;</span><span class="p">,</span><span class="s">&quot;Q&quot;</span><span class="p">)</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.getSegmentInfo"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.getSegmentInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getSegmentInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mh">0xffffffff</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.readMemValue"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.readMemValue">[docs]</a>    <span class="k">def</span> <span class="nf">readMemValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">bytes</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="c">#FIXME change this (and all uses of it) to passing in format...</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Read Gave Wrong Length At 0x</span><span class="si">%.8x</span><span class="s"> (va: 0x</span><span class="si">%.8x</span><span class="s"> wanted </span><span class="si">%d</span><span class="s"> got </span><span class="si">%d</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">(),</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;H&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;I&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;Q&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="IMemory.writeMemoryFormat"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.writeMemoryFormat">[docs]</a>    <span class="k">def</span> <span class="nf">writeMemoryFormat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Write a python format sequence of variables out to memory after</span>
+<span class="sd">        serializing using struct pack...</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            trace.writeMemoryFormat(va, &#39;&lt;PBB&#39;, 10, 30, 99)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imem_psize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;P&quot;</span><span class="p">,</span><span class="s">&quot;I&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">imem_psize</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="n">fmt</span> <span class="o">=</span> <span class="n">fmt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;P&quot;</span><span class="p">,</span><span class="s">&quot;Q&quot;</span><span class="p">)</span>
+        <span class="n">mbytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">mbytes</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.getMemoryMap"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.getMemoryMap">[docs]</a>    <span class="k">def</span> <span class="nf">getMemoryMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a tuple of mapva,size,perms,filename for the memory</span>
+<span class="sd">        map which contains the specified address (or None).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">mapva</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perms</span><span class="p">,</span><span class="n">mname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMaps</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">va</span> <span class="o">&gt;=</span> <span class="n">mapva</span> <span class="ow">and</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">mapva</span><span class="o">+</span><span class="n">size</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">mapva</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perms</span><span class="p">,</span><span class="n">mname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="IMemory.isValidPointer"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.isValidPointer">[docs]</a>    <span class="k">def</span> <span class="nf">isValidPointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="IMemory.isReadable"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.isReadable">[docs]</a>    <span class="k">def</span> <span class="nf">isReadable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="n">maptup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">maptup</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">maptup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">MM_READ</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.isWriteable"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.isWriteable">[docs]</a>    <span class="k">def</span> <span class="nf">isWriteable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="n">maptup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">maptup</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">maptup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">MM_WRITE</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.isExecutable"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.isExecutable">[docs]</a>    <span class="k">def</span> <span class="nf">isExecutable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="n">maptup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">maptup</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">maptup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">MM_EXEC</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.isShared"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.isShared">[docs]</a>    <span class="k">def</span> <span class="nf">isShared</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="n">maptup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">maptup</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">maptup</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">MM_SHARED</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="IMemory.searchMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.searchMemory">[docs]</a>    <span class="k">def</span> <span class="nf">searchMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needle</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A quick cheater way to searchMemoryRange() for each</span>
+<span class="sd">        of the current memory maps.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">va</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perm</span><span class="p">,</span><span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMaps</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">searchMemoryRange</span><span class="p">(</span><span class="n">needle</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">))</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span> <span class="c"># Some platforms dont let debuggers read non-readable mem</span>
+
+        <span class="k">return</span> <span class="n">results</span>
+</div>
+<div class="viewcode-block" id="IMemory.searchMemoryRange"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.searchMemoryRange">[docs]</a>    <span class="k">def</span> <span class="nf">searchMemoryRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needle</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search the specified memory range (address -&gt; size)</span>
+<span class="sd">        for the string needle.   Return a list of addresses</span>
+<span class="sd">        where the match occurs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">regex</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">needle</span><span class="p">,</span> <span class="n">memory</span><span class="p">):</span>
+                <span class="n">off</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">address</span><span class="o">+</span><span class="n">off</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">:</span>
+                <span class="n">loc</span> <span class="o">=</span> <span class="n">memory</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">needle</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">loc</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="c"># No more to be found ;)</span>
+                    <span class="k">break</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">address</span><span class="o">+</span><span class="n">loc</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">loc</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">needle</span><span class="p">)</span> <span class="c"># Skip one past our matcher</span>
+
+        <span class="k">return</span> <span class="n">results</span>
+</div>
+<div class="viewcode-block" id="IMemory.parseOpcode"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.parseOpcode">[docs]</a>    <span class="k">def</span> <span class="nf">parseOpcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Parse an opcode from the specified virtual address.</span>
+
+<span class="sd">        Example: op = m.parseOpcode(0x7c773803)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imem_arch</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;IMemory got no architecture module (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">))</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">imem_arch</span><span class="o">.</span><span class="n">makeOpcode</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IMemory.findOpcode"><a class="viewcode-back" href="../../envi.html#envi.memory.IMemory.findOpcode">[docs]</a>    <span class="k">def</span> <span class="nf">findOpcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">opcode</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">loc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Starts at the current EIP (self.getProgramCounter()), and </span>
+<span class="sd">        searches each instruction for the instruction requested. </span>
+
+<span class="sd">        Returns the address of the first found opcode, than returns. </span>
+
+<span class="sd">        Example:</span>
+<span class="sd">        # Find the first &#39;popad&#39; opcode</span>
+<span class="sd">          In [1]: popad_loc = trace.findOpcode(opcode=&quot;popad&quot;,verbose=True)</span>
+<span class="sd">          [+] 0x1020cd0L pushad</span>
+<span class="sd">          [+] 0x1020cd1L mov esi,0x0101a000</span>
+<span class="sd">          [+] 0x1020cd6L lea edi,dword [esi - 102400]</span>
+<span class="sd">          [+] 0x1020cdcL push edi</span>
+<span class="sd">          [+] 0x1020cddL or ebp,0xffffffff</span>
+<span class="sd">          --SNIP--</span>
+<span class="sd">          [+] 0x1020e49L push edi</span>
+<span class="sd">          [+] 0x1020e4aL call ebp</span>
+<span class="sd">          [+] 0x1020e4cL pop eax</span>
+<span class="sd">          [+] 0x1020e4dL popad</span>
+<span class="sd">          Location - 0x01020E4D</span>
+
+<span class="sd">        # Using popad&#39;s location, search for the next &#39;jmp&#39;</span>
+<span class="sd">          In [2]: jmp = trace.findOpcode(loc=popad_loc.va, opcode=&quot;jmp&quot;, verbose=True)</span>
+<span class="sd">          [+] 0x1020e4dL popad</span>
+<span class="sd">          [+] 0x1020e4eL lea eax,dword [esp - 128]</span>
+<span class="sd">          [+] 0x1020e52L push 0</span>
+<span class="sd">          [+] 0x1020e54L cmp esp,eax</span>
+<span class="sd">          [+] 0x1020e56L jnz 0x01020e52</span>
+<span class="sd">          [+] 0x1020e58L sub esp,0xffffff80</span>
+<span class="sd">          [+] 0x1020e5bL jmp 0x01012475</span>
+<span class="sd">          Location - 0x01020E5B</span>
+
+<span class="sd">        # Or you can do it simply</span>
+
+
+<span class="sd">        #TODO Extend to take in expressions.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c"># If location is specified use that, otherwise use EIP</span>
+        <span class="k">if</span> <span class="n">loc</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">loc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">opcode</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;You didn&#39;t give me an opcode dude!&quot;</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">while</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">offset</span> <span class="o">+</span> <span class="n">size</span><span class="p">):</span>
+            <span class="n">cur_opcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseOpcode</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;[+] &#39;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">(</span><span class="n">cur_opcode</span><span class="o">.</span><span class="n">va</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; &#39;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="n">cur_opcode</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cur_opcode</span><span class="o">.</span><span class="n">mnem</span> <span class="o">==</span> <span class="n">opcode</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> 
+                    <span class="k">print</span> <span class="s">&quot;Location - 0x&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="s">&quot;</span><span class="si">%0.8x</span><span class="s">&quot;</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">%</span> <span class="n">cur_opcode</span><span class="o">.</span><span class="n">va</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cur_opcode</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">cur_opcode</span><span class="o">.</span><span class="n">size</span>
+
+
+</div></div>
+<div class="viewcode-block" id="MemoryObject"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject">[docs]</a><span class="k">class</span> <span class="nc">MemoryObject</span><span class="p">(</span><span class="n">IMemory</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archmod</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Take a set of memory maps (va, perms, fname, bytes) and put them in</span>
+<span class="sd">        a sparse space finder. You may specify your own page-size to optimize</span>
+<span class="sd">        the search for an architecture.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">IMemory</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archmod</span><span class="o">=</span><span class="n">archmod</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c">#FIXME MemoryObject: def allocateMemory(self, size, perms=MM_RWX, suggestaddr=0):</span>
+
+<div class="viewcode-block" id="MemoryObject.addMemoryMap"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject.addMemoryMap">[docs]</a>    <span class="k">def</span> <span class="nf">addMemoryMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">perms</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a memory map to this object...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">msize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">msize</span><span class="p">,</span> <span class="n">perms</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+        <span class="n">hlpr</span> <span class="o">=</span> <span class="p">[</span><span class="n">va</span><span class="p">,</span> <span class="n">va</span><span class="o">+</span><span class="n">msize</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hlpr</span><span class="p">)</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="MemoryObject.getMemorySnap"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject.getMemorySnap">[docs]</a>    <span class="k">def</span> <span class="nf">getMemorySnap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Take a memory snapshot which may be restored later.</span>
+
+<span class="sd">        Example: snap = mem.getMemorySnap()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span> <span class="nb">list</span><span class="p">(</span><span class="n">mdef</span><span class="p">)</span> <span class="k">for</span> <span class="n">mdef</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span> <span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MemoryObject.setMemorySnap"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject.setMemorySnap">[docs]</a>    <span class="k">def</span> <span class="nf">setMemorySnap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snap</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Restore a previously saved memory snapshot.</span>
+
+<span class="sd">        Example: mem.setMemorySnap(snap)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">md</span><span class="p">)</span> <span class="k">for</span> <span class="n">md</span> <span class="ow">in</span> <span class="n">snap</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MemoryObject.getMemoryMap"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject.getMemoryMap">[docs]</a>    <span class="k">def</span> <span class="nf">getMemoryMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the va,size,perms,fname tuple for this memory map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">mva</span><span class="p">,</span> <span class="n">mmaxva</span><span class="p">,</span> <span class="n">mmap</span><span class="p">,</span> <span class="n">mbytes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">va</span> <span class="o">&gt;=</span> <span class="n">mva</span> <span class="ow">and</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">mmaxva</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">mmap</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="MemoryObject.getMemoryMaps"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject.getMemoryMaps">[docs]</a>    <span class="k">def</span> <span class="nf">getMemoryMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span> <span class="n">mmap</span> <span class="k">for</span> <span class="n">mva</span><span class="p">,</span> <span class="n">mmaxva</span><span class="p">,</span> <span class="n">mmap</span><span class="p">,</span> <span class="n">mbytes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span> <span class="p">]</span>
+</div>
+<div class="viewcode-block" id="MemoryObject.readMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject.readMemory">[docs]</a>    <span class="k">def</span> <span class="nf">readMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">mva</span><span class="p">,</span> <span class="n">mmaxva</span><span class="p">,</span> <span class="n">mmap</span><span class="p">,</span> <span class="n">mbytes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">va</span> <span class="o">&gt;=</span> <span class="n">mva</span> <span class="ow">and</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">mmaxva</span><span class="p">:</span>
+                <span class="n">mva</span><span class="p">,</span> <span class="n">msize</span><span class="p">,</span> <span class="n">mperms</span><span class="p">,</span> <span class="n">mfname</span> <span class="o">=</span> <span class="n">mmap</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mperms</span> <span class="o">&amp;</span> <span class="n">MM_READ</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">envi</span><span class="o">.</span><span class="n">SegmentationViolation</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">va</span> <span class="o">-</span> <span class="n">mva</span>
+                <span class="k">return</span> <span class="n">mbytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="n">size</span><span class="p">]</span>
+        <span class="k">raise</span> <span class="n">envi</span><span class="o">.</span><span class="n">SegmentationViolation</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryObject.writeMemory"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject.writeMemory">[docs]</a>    <span class="k">def</span> <span class="nf">writeMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">mapdef</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span><span class="p">:</span>
+            <span class="n">mva</span><span class="p">,</span> <span class="n">mmaxva</span><span class="p">,</span> <span class="n">mmap</span><span class="p">,</span> <span class="n">mbytes</span> <span class="o">=</span> <span class="n">mapdef</span>
+            <span class="k">if</span> <span class="n">va</span> <span class="o">&gt;=</span> <span class="n">mva</span> <span class="ow">and</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">mmaxva</span><span class="p">:</span>
+                <span class="n">mva</span><span class="p">,</span> <span class="n">msize</span><span class="p">,</span> <span class="n">mperms</span><span class="p">,</span> <span class="n">mfname</span> <span class="o">=</span> <span class="n">mmap</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">mperms</span> <span class="o">&amp;</span> <span class="n">MM_WRITE</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">envi</span><span class="o">.</span><span class="n">SegmentationViolation</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">va</span> <span class="o">-</span> <span class="n">mva</span>
+                <span class="n">mapdef</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">mbytes</span><span class="p">[:</span><span class="n">offset</span><span class="p">]</span> <span class="o">+</span> <span class="nb">bytes</span> <span class="o">+</span> <span class="n">mbytes</span><span class="p">[</span><span class="n">offset</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">):]</span>
+                <span class="k">return</span>
+
+        <span class="k">raise</span> <span class="n">envi</span><span class="o">.</span><span class="n">SegmentationViolation</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryObject.getByteDef"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryObject.getByteDef">[docs]</a>    <span class="k">def</span> <span class="nf">getByteDef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An optimized routine which returns the existing</span>
+<span class="sd">        segment bytes sequence without creating a new</span>
+<span class="sd">        string object *AND* an offset of va into the </span>
+<span class="sd">        buffer.  Used internally for optimized memory</span>
+<span class="sd">        handling.  Returns (offset, bytes)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">mapdef</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_map_defs</span><span class="p">:</span>
+            <span class="n">mva</span><span class="p">,</span> <span class="n">mmaxva</span><span class="p">,</span> <span class="n">mmap</span><span class="p">,</span> <span class="n">mbytes</span> <span class="o">=</span> <span class="n">mapdef</span>
+            <span class="k">if</span> <span class="n">va</span> <span class="o">&gt;=</span> <span class="n">mva</span> <span class="ow">and</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">mmaxva</span><span class="p">:</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">va</span> <span class="o">-</span> <span class="n">mva</span>
+                <span class="k">return</span> <span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">mbytes</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">envi</span><span class="o">.</span><span class="n">SegmentationViolation</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="MemoryFile"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryFile">[docs]</a><span class="k">class</span> <span class="nc">MemoryFile</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A file like object to wrap around a memory object.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memobj</span><span class="p">,</span> <span class="n">baseaddr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">baseaddr</span> <span class="o">=</span> <span class="n">baseaddr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">baseaddr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span> <span class="o">=</span> <span class="n">memobj</span>
+
+<div class="viewcode-block" id="MemoryFile.seek"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryFile.seek">[docs]</a>    <span class="k">def</span> <span class="nf">seek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">baseaddr</span> <span class="o">+</span> <span class="n">offset</span>
+</div>
+<div class="viewcode-block" id="MemoryFile.read"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryFile.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+=</span> <span class="n">size</span>
+        <span class="k">return</span> <span class="n">ret</span>
+        </div>
+<div class="viewcode-block" id="MemoryFile.write"><a class="viewcode-back" href="../../envi.html#envi.memory.MemoryFile.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="memdiff"><a class="viewcode-back" href="../../envi.html#envi.memory.memdiff">[docs]</a><span class="k">def</span> <span class="nf">memdiff</span><span class="p">(</span><span class="n">bytes1</span><span class="p">,</span> <span class="n">bytes2</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return a list of (offset, size) tuples showing any memory</span>
+<span class="sd">    differences between the given bytes.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bytes1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">size</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bytes2</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;memdiff *requires* same size bytes&#39;</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bytes1</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span> <span class="o">!=</span> <span class="n">bytes2</span><span class="p">[</span><span class="n">offset</span><span class="p">]:</span>
+            <span class="n">beginoff</span> <span class="o">=</span> <span class="n">offset</span>
+            <span class="c"># Gather up all the difference bytes.</span>
+            <span class="k">while</span> <span class="p">(</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">size</span> <span class="ow">and</span>
+                    <span class="n">bytes1</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span> <span class="o">!=</span> <span class="n">bytes2</span><span class="p">[</span><span class="n">offset</span><span class="p">]):</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">beginoff</span><span class="p">,</span> <span class="n">offset</span><span class="o">-</span><span class="n">beginoff</span><span class="p">))</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

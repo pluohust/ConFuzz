@@ -1,0 +1,185 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.watchpoints &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vtrace" href="../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.watchpoints</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Watchpoint Objects</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">from</span> <span class="nn">vtrace</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtrace.breakpoints</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="Watchpoint"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.Watchpoint">[docs]</a><span class="k">class</span> <span class="nc">Watchpoint</span><span class="p">(</span><span class="n">Breakpoint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The basic &quot;break on access&quot; watchpoint.  Extended from </span>
+<span class="sd">    Breakpoints and handled almost exactly the same way...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="s">&quot;rw&quot;</span><span class="p">):</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">expression</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wpsize</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wpperms</span> <span class="o">=</span> <span class="n">perms</span>
+
+<div class="viewcode-block" id="Watchpoint.inittrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.Watchpoint.inittrace">[docs]</a>    <span class="k">def</span> <span class="nf">inittrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="c"># No need to get a breakinstr</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="Watchpoint.resolvedaddr"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.Watchpoint.resolvedaddr">[docs]</a>    <span class="k">def</span> <span class="nf">resolvedaddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="c"># We needn&#39;t save the memory at our addr...</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="Watchpoint.getName"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.Watchpoint.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bname</span> <span class="o">=</span> <span class="n">Breakpoint</span><span class="o">.</span><span class="n">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s"> </span><span class="si">%d</span><span class="s"> bytes)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wpperms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wpsize</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Watchpoint.activate"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.Watchpoint.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">trace</span><span class="o">.</span><span class="n">archAddWatchpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wpsize</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wpperms</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span>
+</div>
+<div class="viewcode-block" id="Watchpoint.deactivate"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.Watchpoint.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">archRemWatchpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span>
+</div></div>
+<div class="viewcode-block" id="PageWatchpoint"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.PageWatchpoint">[docs]</a><span class="k">class</span> <span class="nc">PageWatchpoint</span><span class="p">(</span><span class="n">Watchpoint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A special &quot;watchpoint&quot; that uses memory permissions to</span>
+<span class="sd">    watch for accesses to whole memory maps.  This *requires* OS</span>
+<span class="sd">    help and only works on platforms which support:</span>
+<span class="sd">    * platformProtectMemory()</span>
+<span class="sd">    * signal/exceptions which denote the fault address on SEGV</span>
+
+<span class="sd">    NOTE: These *must* be added page aligned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">watchread</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">Watchpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">expression</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="s">&#39;rw&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orig_perms</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_new_perms</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">MM_READ</span>
+        <span class="k">if</span> <span class="n">watchread</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_new_perms</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">MM_NONE</span>
+
+<div class="viewcode-block" id="PageWatchpoint.resolvedaddr"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.PageWatchpoint.resolvedaddr">[docs]</a>    <span class="k">def</span> <span class="nf">resolvedaddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orig_perms</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">addr</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="PageWatchpoint.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.PageWatchpoint.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">pw</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;pagewatch&#39;</span><span class="p">)</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+        <span class="n">vaddr</span><span class="p">,</span><span class="n">vperm</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">platformGetMemFault</span><span class="p">()</span>
+        <span class="n">pw</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pc</span><span class="p">,</span> <span class="n">vaddr</span><span class="p">,</span> <span class="n">vperm</span><span class="p">))</span>
+        <span class="c"># Change to/from fastbreak on pagerun...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;pagerun&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PageWatchpoint.getName"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.PageWatchpoint.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">bname</span> <span class="o">=</span> <span class="n">Breakpoint</span><span class="o">.</span><span class="n">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s"> </span><span class="si">%d</span><span class="s"> bytes)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bname</span><span class="p">,</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">reprPerms</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_perms</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">wpsize</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PageWatchpoint.activate"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.PageWatchpoint.activate">[docs]</a>    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="c">#trace.requireNotRunning()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">protectMemory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wpsize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_perms</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span>
+</div>
+<div class="viewcode-block" id="PageWatchpoint.deactivate"><a class="viewcode-back" href="../../vtrace.html#vtrace.watchpoints.PageWatchpoint.deactivate">[docs]</a>    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="c">#trace.requireNotRunning()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">protectMemory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wpsize</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_orig_perms</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

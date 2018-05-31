@@ -1,0 +1,116 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.defs.macho.fat &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="vstruct.defs.macho" href="../macho.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../vstruct.html" >vstruct</a> &raquo;</li>
+          <li><a href="../macho.html" accesskey="U">vstruct.defs.macho</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.defs.macho.fat</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+<span class="kn">from</span> <span class="nn">vstruct.primitives</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">vstruct.primitives</span> <span class="kn">as</span> <span class="nn">vs_prim</span>
+
+<span class="k">class</span> <span class="nc">fat_header</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+<div class="viewcode-block" id="fat_header"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.fat.fat_header">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">magic</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nfat_arch</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">fat_arch</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="fat_arch"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.fat.fat_arch">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cputype</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># cpu specifier (int) */</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpusubtype</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># machine specifier (int) */</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># file offset to this object file */</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># size of this object file */</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">align</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>  <span class="c"># alignment as a power of 2 */</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../vstruct.html" >vstruct</a> &raquo;</li>
+          <li><a href="../macho.html" >vstruct.defs.macho</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

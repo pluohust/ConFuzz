@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vdb.renderers</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vdb-module.html">Package&nbsp;vdb</a> ::
+        Module&nbsp;renderers
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vdb.renderers-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vdb.renderers-module.html">Module vdb.renderers</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">A home for the vdb specific memory renderers.</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package envi=envi-module.html"><a title="envi" class="py-name" href="#" onclick="return doclink('link-0', 'envi', 'link-0');">envi</a></tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-1', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module envi.bits=envi.bits-module.html"><a title="envi.bits" class="py-name" href="#" onclick="return doclink('link-2', 'bits', 'link-2');">bits</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_bits</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-3', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module envi.memory=envi.memory-module.html,Module envi.qt.memory=envi.qt.memory-module.html"><a title="envi.memory
+envi.qt.memory" class="py-name" href="#" onclick="return doclink('link-4', 'memory', 'link-4');">memory</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_mem</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-5" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-5', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Package envi.memcanvas=envi.memcanvas-module.html,Module envi.qt.memcanvas=envi.qt.memcanvas-module.html"><a title="envi.memcanvas
+envi.qt.memcanvas" class="py-name" href="#" onclick="return doclink('link-6', 'memcanvas', 'link-6');">memcanvas</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_canvas</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"> </tt>
+<a name="OpcodeRenderer"></a><div id="OpcodeRenderer-def"><a name="L10"></a><tt class="py-lineno"> 10</tt> <a class="py-toggle" href="#" id="OpcodeRenderer-toggle" onclick="return toggle('OpcodeRenderer');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vdb.renderers.OpcodeRenderer-class.html">OpcodeRenderer</a><tt class="py-op">(</tt><tt class="py-base-class">e_canvas</tt><tt class="py-op">.</tt><tt class="py-base-class">MemoryRenderer</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="OpcodeRenderer-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="OpcodeRenderer-expanded"><a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"> </tt>
+<a name="OpcodeRenderer.__init__"></a><div id="OpcodeRenderer.__init__-def"><a name="L12"></a><tt class="py-lineno"> 12</tt> <a class="py-toggle" href="#" id="OpcodeRenderer.__init__-toggle" onclick="return toggle('OpcodeRenderer.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.renderers.OpcodeRenderer-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="OpcodeRenderer.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="OpcodeRenderer.__init__-expanded"><a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line">        <tt id="link-7" class="py-name" targets="Variable envi.arm.a=envi.arm-module.html#a"><a title="envi.arm.a" class="py-name" href="#" onclick="return doclink('link-7', 'a', 'link-7');">a</a></tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method visgraph.graphcore.Graph.getMeta()=visgraph.graphcore.Graph-class.html#getMeta,Method vtrace.Trace.getMeta()=vtrace.Trace-class.html#getMeta,Method vtrace.util.TraceManager.getMeta()=vtrace.util.TraceManager-class.html#getMeta"><a title="visgraph.graphcore.Graph.getMeta
+vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-8', 'getMeta', 'link-8');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">"Architecture"</tt><tt class="py-op">)</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt> <tt class="py-op">=</tt> <tt id="link-9" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-9', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method envi.Emulator.getArchModule()=envi.Emulator-class.html#getArchModule,Function envi.getArchModule()=envi-module.html#getArchModule"><a title="envi.Emulator.getArchModule
+envi.getArchModule" class="py-name" href="#" onclick="return doclink('link-10', 'getArchModule', 'link-10');">getArchModule</a></tt><tt class="py-op">(</tt><tt id="link-11" class="py-name"><a title="envi.arm.a" class="py-name" href="#" onclick="return doclink('link-11', 'a', 'link-7');">a</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">pwidth</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Method envi.ArchitectureModule.getPointerSize()=envi.ArchitectureModule-class.html#getPointerSize,Method envi.archs.amd64.Amd64Module.getPointerSize()=envi.archs.amd64.Amd64Module-class.html#getPointerSize,Method envi.archs.arm.ArmModule.getPointerSize()=envi.archs.arm.ArmModule-class.html#getPointerSize,Method envi.archs.i386.i386Module.getPointerSize()=envi.archs.i386.i386Module-class.html#getPointerSize,Method envi.memory.IMemory.getPointerSize()=envi.memory.IMemory-class.html#getPointerSize,Method vtrace.envitools.TraceEmulator.getPointerSize()=vtrace.envitools.TraceEmulator-class.html#getPointerSize"><a title="envi.ArchitectureModule.getPointerSize
+envi.archs.amd64.Amd64Module.getPointerSize
+envi.archs.arm.ArmModule.getPointerSize
+envi.archs.i386.i386Module.getPointerSize
+envi.memory.IMemory.getPointerSize
+vtrace.envitools.TraceEmulator.getPointerSize" class="py-name" href="#" onclick="return doclink('link-12', 'getPointerSize', 'link-12');">getPointerSize</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="OpcodeRenderer.render"></a><div id="OpcodeRenderer.render-def"><a name="L17"></a><tt class="py-lineno"> 17</tt> <a class="py-toggle" href="#" id="OpcodeRenderer.render-toggle" onclick="return toggle('OpcodeRenderer.render');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.renderers.OpcodeRenderer-class.html#render">render</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mcanv</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="OpcodeRenderer.render-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="OpcodeRenderer.render-expanded"><a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line">        <tt class="py-name">vastr</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method envi.ArchitectureModule.pointerString()=envi.ArchitectureModule-class.html#pointerString,Method envi.archs.amd64.Amd64Module.pointerString()=envi.archs.amd64.Amd64Module-class.html#pointerString,Method envi.archs.arm.ArmModule.pointerString()=envi.archs.arm.ArmModule-class.html#pointerString,Method envi.archs.i386.i386Module.pointerString()=envi.archs.i386.i386Module-class.html#pointerString"><a title="envi.ArchitectureModule.pointerString
+envi.archs.amd64.Amd64Module.pointerString
+envi.archs.arm.ArmModule.pointerString
+envi.archs.i386.i386Module.pointerString" class="py-name" href="#" onclick="return doclink('link-13', 'pointerString', 'link-13');">pointerString</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">        <tt class="py-comment"># NOTE: we assume the memobj is a trace</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line">        <tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Method envi.expression.MemoryExpressionLocals.mem()=envi.expression.MemoryExpressionLocals-class.html#mem"><a title="envi.expression.MemoryExpressionLocals.mem" class="py-name" href="#" onclick="return doclink('link-14', 'mem', 'link-14');">mem</a></tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line">        <tt id="link-15" class="py-name" targets="Method envi.expression.MemoryExpressionLocals.sym()=envi.expression.MemoryExpressionLocals-class.html#sym"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-15', 'sym', 'link-15');">sym</a></tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method envi.resolver.SymbolResolver.getSymByAddr()=envi.resolver.SymbolResolver-class.html#getSymByAddr,Method vtrace.Trace.getSymByAddr()=vtrace.Trace-class.html#getSymByAddr"><a title="envi.resolver.SymbolResolver.getSymByAddr
+vtrace.Trace.getSymByAddr" class="py-name" href="#" onclick="return doclink('link-16', 'getSymByAddr', 'link-16');">getSymByAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-17" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-17', 'sym', 'link-15');">sym</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addVaText()=envi.memcanvas.MemoryCanvas-class.html#addVaText,Method vwidget.memview.MemoryView.addVaText()=vwidget.memview.MemoryView-class.html#addVaText"><a title="envi.memcanvas.MemoryCanvas.addVaText
+vwidget.memview.MemoryView.addVaText" class="py-name" href="#" onclick="return doclink('link-18', 'addVaText', 'link-18');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt id="link-19" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-19', 'sym', 'link-15');">sym</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">=</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addText()=envi.memcanvas.MemoryCanvas-class.html#addText,Method envi.memcanvas.StringMemoryCanvas.addText()=envi.memcanvas.StringMemoryCanvas-class.html#addText,Method envi.qt.memcanvas.VQMemoryCanvas.addText()=envi.qt.memcanvas.VQMemoryCanvas-class.html#addText,Method vwidget.memview.MemoryView.addText()=vwidget.memview.MemoryView-class.html#addText,Method vwidget.memview.ScrolledMemoryView.addText()=vwidget.memview.ScrolledMemoryView-class.html#addText"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-20', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">":\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">        <tt class="py-name">p</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method envi.memory.IMemory.readMemory()=envi.memory.IMemory-class.html#readMemory,Method envi.memory.MemoryObject.readMemory()=envi.memory.MemoryObject-class.html#readMemory,Method envi.util.CopyOnWrite.readMemory()=envi.util.CopyOnWrite-class.html#readMemory,Method vtrace.Trace.readMemory()=vtrace.Trace-class.html#readMemory"><a title="envi.memory.IMemory.readMemory
+envi.memory.MemoryObject.readMemory
+envi.util.CopyOnWrite.readMemory
+vtrace.Trace.readMemory" class="py-name" href="#" onclick="return doclink('link-21', 'readMemory', 'link-21');">readMemory</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">        <tt class="py-name">op</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Method envi.ArchitectureModule.makeOpcode()=envi.ArchitectureModule-class.html#makeOpcode,Method envi.archs.arm.ArmModule.makeOpcode()=envi.archs.arm.ArmModule-class.html#makeOpcode,Method envi.archs.i386.i386Module.makeOpcode()=envi.archs.i386.i386Module-class.html#makeOpcode,Method envi.arm.ArmModule.makeOpcode()=envi.arm.ArmModule-class.html#makeOpcode"><a title="envi.ArchitectureModule.makeOpcode
+envi.archs.arm.ArmModule.makeOpcode
+envi.archs.i386.i386Module.makeOpcode
+envi.arm.ArmModule.makeOpcode" class="py-name" href="#" onclick="return doclink('link-22', 'makeOpcode', 'link-22');">makeOpcode</a></tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">=</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">        <tt class="py-name">obytes</tt> <tt class="py-op">=</tt> <tt class="py-name">p</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-name">min</tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">.</tt><tt class="py-name">size</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addVaText
+vwidget.memview.MemoryView.addVaText" class="py-name" href="#" onclick="return doclink('link-23', 'addVaText', 'link-18');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-name">vastr</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">=</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-24', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">": %s "</tt> <tt class="py-op">%</tt> <tt class="py-name">obytes</tt><tt class="py-op">.</tt><tt class="py-name">encode</tt><tt class="py-op">(</tt><tt class="py-string">'hex'</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">ljust</tt><tt class="py-op">(</tt><tt class="py-number">17</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-name">op</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method envi.Opcode.render()=envi.Opcode-class.html#render,Method envi.Operand.render()=envi.Operand-class.html#render,Method envi.archs.amd64.disasm.Amd64RipRelOper.render()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#render,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.render()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#render,Method envi.archs.arm.armdisasm.ArmImmOper.render()=envi.archs.arm.armdisasm.ArmImmOper-class.html#render,Method envi.archs.arm.armdisasm.ArmOffsetOper.render()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#render,Method envi.archs.arm.armdisasm.ArmOpcode.render()=envi.archs.arm.armdisasm.ArmOpcode-class.html#render,Method envi.archs.arm.armdisasm.ArmRegListOper.render()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#render,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.render()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#render,Method envi.archs.arm.armdisasm.ArmRegOper.render()=envi.archs.arm.armdisasm.ArmRegOper-class.html#render,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.render()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#render,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.render()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#render,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.render()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#render,Method envi.archs.i386.disasm.i386ImmMemOper.render()=envi.archs.i386.disasm.i386ImmMemOper-class.html#render,Method envi.archs.i386.disasm.i386ImmOper.render()=envi.archs.i386.disasm.i386ImmOper-class.html#render,Method envi.archs.i386.disasm.i386Opcode.render()=envi.archs.i386.disasm.i386Opcode-class.html#render,Method envi.archs.i386.disasm.i386PcRelOper.render()=envi.archs.i386.disasm.i386PcRelOper-class.html#render,Method envi.archs.i386.disasm.i386RegMemOper.render()=envi.archs.i386.disasm.i386RegMemOper-class.html#render,Method envi.archs.i386.disasm.i386RegOper.render()=envi.archs.i386.disasm.i386RegOper-class.html#render,Method envi.archs.i386.disasm.i386SibOper.render()=envi.archs.i386.disasm.i386SibOper-class.html#render,Method envi.memcanvas.MemoryCanvas.render()=envi.memcanvas.MemoryCanvas-class.html#render,Method envi.memcanvas.MemoryRenderer.render()=envi.memcanvas.MemoryRenderer-class.html#render,Method envi.memcanvas.renderers.ByteRend.render()=envi.memcanvas.renderers.ByteRend-class.html#render,Method vdb.gui.extensions.windows.VdbHeapRenderer.render()=vdb.gui.extensions.windows.VdbHeapRenderer-class.html#render,Method vdb.gui.extensions.windows.VdbHeapView.render()=vdb.gui.extensions.windows.VdbHeapView-class.html#render,Method vdb.renderers.DerefRenderer.render()=vdb.renderers.DerefRenderer-class.html#render,Method vdb.renderers.OpcodeRenderer.render()=vdb.renderers.OpcodeRenderer-class.html#render,Method vdb.renderers.SymbolRenderer.render()=vdb.renderers.SymbolRenderer-class.html#render,Method vwidget.memview.ScrolledMemoryView.render()=vwidget.memview.ScrolledMemoryView-class.html#render"><a title="envi.Opcode.render
+envi.Operand.render
+envi.archs.amd64.disasm.Amd64RipRelOper.render
+envi.archs.arm.armdisasm.ArmImmOffsetOper.render
+envi.archs.arm.armdisasm.ArmImmOper.render
+envi.archs.arm.armdisasm.ArmOffsetOper.render
+envi.archs.arm.armdisasm.ArmOpcode.render
+envi.archs.arm.armdisasm.ArmRegListOper.render
+envi.archs.arm.armdisasm.ArmRegOffsetOper.render
+envi.archs.arm.armdisasm.ArmRegOper.render
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.render
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.render
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.render
+envi.archs.i386.disasm.i386ImmMemOper.render
+envi.archs.i386.disasm.i386ImmOper.render
+envi.archs.i386.disasm.i386Opcode.render
+envi.archs.i386.disasm.i386PcRelOper.render
+envi.archs.i386.disasm.i386RegMemOper.render
+envi.archs.i386.disasm.i386RegOper.render
+envi.archs.i386.disasm.i386SibOper.render
+envi.memcanvas.MemoryCanvas.render
+envi.memcanvas.MemoryRenderer.render
+envi.memcanvas.renderers.ByteRend.render
+vdb.gui.extensions.windows.VdbHeapRenderer.render
+vdb.gui.extensions.windows.VdbHeapView.render
+vdb.renderers.DerefRenderer.render
+vdb.renderers.OpcodeRenderer.render
+vdb.renderers.SymbolRenderer.render
+vwidget.memview.ScrolledMemoryView.render" class="py-name" href="#" onclick="return doclink('link-25', 'render', 'link-25');">render</a></tt><tt class="py-op">(</tt><tt class="py-name">mcanv</tt><tt class="py-op">)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-26', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="SymbolRenderer"></a><div id="SymbolRenderer-def"><a name="L35"></a><tt class="py-lineno"> 35</tt> <a class="py-toggle" href="#" id="SymbolRenderer-toggle" onclick="return toggle('SymbolRenderer');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vdb.renderers.SymbolRenderer-class.html">SymbolRenderer</a><tt class="py-op">(</tt><tt class="py-base-class">e_canvas</tt><tt class="py-op">.</tt><tt class="py-base-class">MemoryRenderer</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SymbolRenderer-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SymbolRenderer-expanded"><a name="SymbolRenderer.__init__"></a><div id="SymbolRenderer.__init__-def"><a name="L36"></a><tt class="py-lineno"> 36</tt> <a class="py-toggle" href="#" id="SymbolRenderer.__init__-toggle" onclick="return toggle('SymbolRenderer.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.renderers.SymbolRenderer-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SymbolRenderer.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SymbolRenderer.__init__-expanded"><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt id="link-27" class="py-name"><a title="envi.arm.a" class="py-name" href="#" onclick="return doclink('link-27', 'a', 'link-7');">a</a></tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="visgraph.graphcore.Graph.getMeta
+vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-28', 'getMeta', 'link-8');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">"Architecture"</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt> <tt class="py-op">=</tt> <tt id="link-29" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-29', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="envi.Emulator.getArchModule
+envi.getArchModule" class="py-name" href="#" onclick="return doclink('link-30', 'getArchModule', 'link-10');">getArchModule</a></tt><tt class="py-op">(</tt><tt id="link-31" class="py-name"><a title="envi.arm.a" class="py-name" href="#" onclick="return doclink('link-31', 'a', 'link-7');">a</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">pwidth</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="envi.ArchitectureModule.getPointerSize
+envi.archs.amd64.Amd64Module.getPointerSize
+envi.archs.arm.ArmModule.getPointerSize
+envi.archs.i386.i386Module.getPointerSize
+envi.memory.IMemory.getPointerSize
+vtrace.envitools.TraceEmulator.getPointerSize" class="py-name" href="#" onclick="return doclink('link-32', 'getPointerSize', 'link-12');">getPointerSize</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"> </tt>
+<a name="SymbolRenderer.render"></a><div id="SymbolRenderer.render-def"><a name="L41"></a><tt class="py-lineno"> 41</tt> <a class="py-toggle" href="#" id="SymbolRenderer.render-toggle" onclick="return toggle('SymbolRenderer.render');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.renderers.SymbolRenderer-class.html#render">render</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mcanv</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SymbolRenderer.render-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SymbolRenderer.render-expanded"><a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-comment"># This is only used with tracer based stuff...</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">        <tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="envi.expression.MemoryExpressionLocals.mem" class="py-name" href="#" onclick="return doclink('link-33', 'mem', 'link-14');">mem</a></tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-name">vastr</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="envi.ArchitectureModule.pointerString
+envi.archs.amd64.Amd64Module.pointerString
+envi.archs.arm.ArmModule.pointerString
+envi.archs.i386.i386Module.pointerString" class="py-name" href="#" onclick="return doclink('link-34', 'pointerString', 'link-13');">pointerString</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-comment"># NOTE: we assume the memobj is a trace</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">        <tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="envi.expression.MemoryExpressionLocals.mem" class="py-name" href="#" onclick="return doclink('link-35', 'mem', 'link-14');">mem</a></tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">p</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name" targets="Method envi.memory.IMemory.readMemoryFormat()=envi.memory.IMemory-class.html#readMemoryFormat"><a title="envi.memory.IMemory.readMemoryFormat" class="py-name" href="#" onclick="return doclink('link-36', 'readMemoryFormat', 'link-36');">readMemoryFormat</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-string">'P'</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-name">isptr</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name" targets="Method envi.memory.IMemory.isValidPointer()=envi.memory.IMemory-class.html#isValidPointer"><a title="envi.memory.IMemory.isValidPointer" class="py-name" href="#" onclick="return doclink('link-37', 'isValidPointer', 'link-37');">isValidPointer</a></tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-name">pstr</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="envi.ArchitectureModule.pointerString
+envi.archs.amd64.Amd64Module.pointerString
+envi.archs.arm.ArmModule.pointerString
+envi.archs.i386.i386Module.pointerString" class="py-name" href="#" onclick="return doclink('link-38', 'pointerString', 'link-13');">pointerString</a></tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addVaText
+vwidget.memview.MemoryView.addVaText" class="py-name" href="#" onclick="return doclink('link-39', 'addVaText', 'link-18');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-name">vastr</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">=</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-40', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">": "</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isptr</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addVaText
+vwidget.memview.MemoryView.addVaText" class="py-name" href="#" onclick="return doclink('link-41', 'addVaText', 'link-18');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-name">pstr</tt><tt class="py-op">,</tt> <tt class="py-name">p</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-42', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-name">pstr</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isptr</tt><tt class="py-op">:</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">            <tt id="link-43" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-43', 'sym', 'link-15');">sym</a></tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="envi.resolver.SymbolResolver.getSymByAddr
+vtrace.Trace.getSymByAddr" class="py-name" href="#" onclick="return doclink('link-44', 'getSymByAddr', 'link-16');">getSymByAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">,</tt> <tt class="py-name">exact</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-45" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-45', 'sym', 'link-15');">sym</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-46', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">' %s + %d'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-47" class="py-name" targets="Method envi.Operand.repr()=envi.Operand-class.html#repr,Method envi.archs.amd64.disasm.Amd64RipRelOper.repr()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocOper.repr()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.repr()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmEndianOper.repr()=envi.archs.arm.armdisasm.ArmEndianOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.repr()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmImmOper.repr()=envi.archs.arm.armdisasm.ArmImmOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmOffsetOper.repr()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegListOper.repr()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.repr()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegOper.repr()=envi.archs.arm.armdisasm.ArmRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#repr,Method envi.archs.i386.disasm.i386ImmMemOper.repr()=envi.archs.i386.disasm.i386ImmMemOper-class.html#repr,Method envi.archs.i386.disasm.i386ImmOper.repr()=envi.archs.i386.disasm.i386ImmOper-class.html#repr,Method envi.archs.i386.disasm.i386PcRelOper.repr()=envi.archs.i386.disasm.i386PcRelOper-class.html#repr,Method envi.archs.i386.disasm.i386RegMemOper.repr()=envi.archs.i386.disasm.i386RegMemOper-class.html#repr,Method envi.archs.i386.disasm.i386RegOper.repr()=envi.archs.i386.disasm.i386RegOper-class.html#repr,Method envi.archs.i386.disasm.i386SibOper.repr()=envi.archs.i386.disasm.i386SibOper-class.html#repr,Method envi.archs.z80.disasm.z80ImmOper.repr()=envi.archs.z80.disasm.z80ImmOper-class.html#repr,Method envi.archs.z80.disasm.z80RegMem.repr()=envi.archs.z80.disasm.z80RegMem-class.html#repr"><a title="envi.Operand.repr
+envi.archs.amd64.disasm.Amd64RipRelOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOper.repr
+envi.archs.arm.armdisasm.ArmCoprocRegOper.repr
+envi.archs.arm.armdisasm.ArmEndianOper.repr
+envi.archs.arm.armdisasm.ArmImmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmImmOper.repr
+envi.archs.arm.armdisasm.ArmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr
+envi.archs.arm.armdisasm.ArmRegListOper.repr
+envi.archs.arm.armdisasm.ArmRegOffsetOper.repr
+envi.archs.arm.armdisasm.ArmRegOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr
+envi.archs.i386.disasm.i386ImmMemOper.repr
+envi.archs.i386.disasm.i386ImmOper.repr
+envi.archs.i386.disasm.i386PcRelOper.repr
+envi.archs.i386.disasm.i386RegMemOper.repr
+envi.archs.i386.disasm.i386RegOper.repr
+envi.archs.i386.disasm.i386SibOper.repr
+envi.archs.z80.disasm.z80ImmOper.repr
+envi.archs.z80.disasm.z80RegMem.repr" class="py-name" href="#" onclick="return doclink('link-47', 'repr', 'link-47');">repr</a></tt><tt class="py-op">(</tt><tt id="link-48" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-48', 'sym', 'link-15');">sym</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">p</tt><tt class="py-op">-</tt><tt class="py-name">long</tt><tt class="py-op">(</tt><tt id="link-49" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-49', 'sym', 'link-15');">sym</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-50', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">'\n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">pwidth</tt> </tt>
+</div></div><a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"> </tt>
+<a name="DerefRenderer"></a><div id="DerefRenderer-def"><a name="L68"></a><tt class="py-lineno"> 68</tt> <a class="py-toggle" href="#" id="DerefRenderer-toggle" onclick="return toggle('DerefRenderer');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vdb.renderers.DerefRenderer-class.html">DerefRenderer</a><tt class="py-op">(</tt><tt class="py-base-class">e_canvas</tt><tt class="py-op">.</tt><tt class="py-base-class">MemoryRenderer</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DerefRenderer-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="DerefRenderer-expanded"><a name="DerefRenderer.__init__"></a><div id="DerefRenderer.__init__-def"><a name="L69"></a><tt class="py-lineno"> 69</tt> <a class="py-toggle" href="#" id="DerefRenderer.__init__-toggle" onclick="return toggle('DerefRenderer.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.renderers.DerefRenderer-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DerefRenderer.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="DerefRenderer.__init__-expanded"><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">        <tt id="link-51" class="py-name"><a title="envi.arm.a" class="py-name" href="#" onclick="return doclink('link-51', 'a', 'link-7');">a</a></tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="visgraph.graphcore.Graph.getMeta
+vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-52', 'getMeta', 'link-8');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">"Architecture"</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt> <tt class="py-op">=</tt> <tt id="link-53" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-53', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="envi.Emulator.getArchModule
+envi.getArchModule" class="py-name" href="#" onclick="return doclink('link-54', 'getArchModule', 'link-10');">getArchModule</a></tt><tt class="py-op">(</tt><tt id="link-55" class="py-name"><a title="envi.arm.a" class="py-name" href="#" onclick="return doclink('link-55', 'a', 'link-7');">a</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">pwidth</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="envi.ArchitectureModule.getPointerSize
+envi.archs.amd64.Amd64Module.getPointerSize
+envi.archs.arm.ArmModule.getPointerSize
+envi.archs.i386.i386Module.getPointerSize
+envi.memory.IMemory.getPointerSize
+vtrace.envitools.TraceEmulator.getPointerSize" class="py-name" href="#" onclick="return doclink('link-56', 'getPointerSize', 'link-12');">getPointerSize</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="DerefRenderer.render"></a><div id="DerefRenderer.render-def"><a name="L74"></a><tt class="py-lineno"> 74</tt> <a class="py-toggle" href="#" id="DerefRenderer.render-toggle" onclick="return toggle('DerefRenderer.render');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.renderers.DerefRenderer-class.html#render">render</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mcanv</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DerefRenderer.render-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="DerefRenderer.render-expanded"><a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-name">vastr</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="envi.ArchitectureModule.pointerString
+envi.archs.amd64.Amd64Module.pointerString
+envi.archs.arm.ArmModule.pointerString
+envi.archs.i386.i386Module.pointerString" class="py-name" href="#" onclick="return doclink('link-57', 'pointerString', 'link-13');">pointerString</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-comment"># NOTE: we assume the memobj is a trace</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="envi.expression.MemoryExpressionLocals.mem" class="py-name" href="#" onclick="return doclink('link-58', 'mem', 'link-14');">mem</a></tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-name">p</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="envi.memory.IMemory.readMemoryFormat" class="py-name" href="#" onclick="return doclink('link-59', 'readMemoryFormat', 'link-36');">readMemoryFormat</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-string">'P'</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-name">isptr</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name"><a title="envi.memory.IMemory.isValidPointer" class="py-name" href="#" onclick="return doclink('link-60', 'isValidPointer', 'link-37');">isValidPointer</a></tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-name">pstr</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="envi.ArchitectureModule.pointerString
+envi.archs.amd64.Amd64Module.pointerString
+envi.archs.arm.ArmModule.pointerString
+envi.archs.i386.i386Module.pointerString" class="py-name" href="#" onclick="return doclink('link-61', 'pointerString', 'link-13');">pointerString</a></tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">vareg</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">preg</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt id="link-62" class="py-name" targets="Module envi.archs.amd64.regs=envi.archs.amd64.regs-module.html,Module envi.archs.arm.regs=envi.archs.arm.regs-module.html,Variable envi.archs.i386.opcode86.regs=envi.archs.i386.opcode86-module.html#regs,Module envi.archs.i386.regs=envi.archs.i386.regs-module.html,Module envi.archs.z80.regs=envi.archs.z80.regs-module.html,Variable vtrace.platforms.linux.USER_i386.regs=vtrace.platforms.linux.USER_i386-class.html#regs"><a title="envi.archs.amd64.regs
+envi.archs.arm.regs
+envi.archs.i386.opcode86.regs
+envi.archs.i386.regs
+envi.archs.z80.regs
+vtrace.platforms.linux.USER_i386.regs" class="py-name" href="#" onclick="return doclink('link-62', 'regs', 'link-62');">regs</a></tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name" targets="Method envi.registers.RegisterContext.getRegisters()=envi.registers.RegisterContext-class.html#getRegisters"><a title="envi.registers.RegisterContext.getRegisters" class="py-name" href="#" onclick="return doclink('link-63', 'getRegisters', 'link-63');">getRegisters</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">val</tt> <tt class="py-keyword">in</tt> <tt id="link-64" class="py-name"><a title="envi.archs.amd64.regs
+envi.archs.arm.regs
+envi.archs.i386.opcode86.regs
+envi.archs.i386.regs
+envi.archs.z80.regs
+vtrace.platforms.linux.USER_i386.regs" class="py-name" href="#" onclick="return doclink('link-64', 'regs', 'link-62');">regs</a></tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">val</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">                <tt class="py-keyword">continue</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">val</tt> <tt class="py-op">==</tt> <tt class="py-name">va</tt><tt class="py-op">:</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">                <tt class="py-name">vareg</tt> <tt class="py-op">=</tt> <tt class="py-string">"(%s)"</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">val</tt> <tt class="py-op">==</tt> <tt class="py-name">p</tt><tt class="py-op">:</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">                <tt class="py-name">preg</tt> <tt class="py-op">=</tt> <tt class="py-string">"(%s)"</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-name">bt</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name" targets="Method vtrace.Trace.getStackTrace()=vtrace.Trace-class.html#getStackTrace,Method vtrace.archs.ppc.PpcMixin.getStackTrace()=vtrace.archs.ppc.PpcMixin-class.html#getStackTrace,Method vtrace.envitools.TraceEmulator.getStackTrace()=vtrace.envitools.TraceEmulator-class.html#getStackTrace,Method vtrace.platforms.base.TracerBase.getStackTrace()=vtrace.platforms.base.TracerBase-class.html#getStackTrace,Method vtrace.snapshot.TraceSnapshot.getStackTrace()=vtrace.snapshot.TraceSnapshot-class.html#getStackTrace"><a title="vtrace.Trace.getStackTrace
+vtrace.archs.ppc.PpcMixin.getStackTrace
+vtrace.envitools.TraceEmulator.getStackTrace
+vtrace.platforms.base.TracerBase.getStackTrace
+vtrace.snapshot.TraceSnapshot.getStackTrace" class="py-name" href="#" onclick="return doclink('link-65', 'getStackTrace', 'link-65');">getStackTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">bt</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-66" class="py-name" targets="Variable envi.archs.i386.disasm.i=envi.archs.i386.disasm-module.html#i,Variable envi.archs.i386.emu.i=envi.archs.i386.emu-module.html#i,Variable envi.archs.i386.i=envi.archs.i386-module.html#i,Variable envi.bits.i=envi.bits-module.html#i"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-66', 'i', 'link-66');">i</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">bt</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">                <tt class="py-name">spc</tt><tt class="py-op">,</tt> <tt class="py-name">sfc</tt> <tt class="py-op">=</tt> <tt class="py-name">bt</tt><tt class="py-op">[</tt><tt id="link-67" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-67', 'i', 'link-66');">i</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">sfc</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">                    <tt class="py-keyword">break</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">spc</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">                    <tt class="py-keyword">break</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">va</tt> <tt class="py-op">==</tt> <tt class="py-name">spc</tt><tt class="py-op">:</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">                    <tt class="py-name">vareg</tt> <tt class="py-op">=</tt> <tt class="py-string">"(savepc)"</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">va</tt> <tt class="py-op">==</tt> <tt class="py-name">sfc</tt><tt class="py-op">:</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">                    <tt class="py-name">vareg</tt> <tt class="py-op">=</tt> <tt class="py-string">"(frame%d)"</tt> <tt class="py-op">%</tt> <tt id="link-68" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-68', 'i', 'link-66');">i</a></tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">p</tt> <tt class="py-op">==</tt> <tt class="py-name">spc</tt><tt class="py-op">:</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">                    <tt class="py-name">preg</tt> <tt class="py-op">=</tt> <tt class="py-string">"(savepc)"</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">p</tt> <tt class="py-op">==</tt> <tt class="py-name">sfc</tt><tt class="py-op">:</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">                    <tt class="py-name">preg</tt> <tt class="py-op">=</tt> <tt class="py-string">"(frame%d)"</tt> <tt class="py-op">%</tt> <tt id="link-69" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-69', 'i', 'link-66');">i</a></tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-name">vareg</tt> <tt class="py-op">=</tt> <tt class="py-name">vareg</tt><tt class="py-op">.</tt><tt class="py-name">ljust</tt><tt class="py-op">(</tt><tt class="py-number">8</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-name">preg</tt> <tt class="py-op">=</tt> <tt class="py-name">preg</tt><tt class="py-op">.</tt><tt class="py-name">ljust</tt><tt class="py-op">(</tt><tt class="py-number">8</tt><tt class="py-op">)</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-comment">#sym = trace.getSymByAddr(va)</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">        <tt class="py-comment">#if sym != None:</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">            <tt class="py-comment">#pstr = repr(sym)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addVaText
+vwidget.memview.MemoryView.addVaText" class="py-name" href="#" onclick="return doclink('link-70', 'addVaText', 'link-18');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-name">vastr</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">=</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-71', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">" %s: "</tt> <tt class="py-op">%</tt> <tt class="py-name">vareg</tt><tt class="py-op">)</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isptr</tt><tt class="py-op">:</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addVaText
+vwidget.memview.MemoryView.addVaText" class="py-name" href="#" onclick="return doclink('link-72', 'addVaText', 'link-18');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-name">pstr</tt><tt class="py-op">,</tt> <tt class="py-name">p</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-73', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-name">pstr</tt><tt class="py-op">)</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-74" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-74', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-name">preg</tt><tt class="py-op">)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">isptr</tt><tt class="py-op">:</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">                <tt class="py-name">addr</tt><tt class="py-op">,</tt><tt class="py-name">size</tt><tt class="py-op">,</tt><tt class="py-name">perm</tt><tt class="py-op">,</tt><tt class="py-name">fname</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name" targets="Method envi.memory.IMemory.getMemoryMap()=envi.memory.IMemory-class.html#getMemoryMap,Method envi.memory.MemoryObject.getMemoryMap()=envi.memory.MemoryObject-class.html#getMemoryMap,Method vtrace.snapshot.TraceSnapshot.getMemoryMap()=vtrace.snapshot.TraceSnapshot-class.html#getMemoryMap"><a title="envi.memory.IMemory.getMemoryMap
+envi.memory.MemoryObject.getMemoryMap
+vtrace.snapshot.TraceSnapshot.getMemoryMap" class="py-name" href="#" onclick="return doclink('link-75', 'getMemoryMap', 'link-75');">getMemoryMap</a></tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">                <tt class="py-name">pname</tt> <tt class="py-op">=</tt> <tt class="py-name">e_mem</tt><tt class="py-op">.</tt><tt id="link-76" class="py-name" targets="Function envi.memory.reprPerms()=envi.memory-module.html#reprPerms"><a title="envi.memory.reprPerms" class="py-name" href="#" onclick="return doclink('link-76', 'reprPerms', 'link-76');">reprPerms</a></tt><tt class="py-op">(</tt><tt class="py-name">perm</tt><tt class="py-op">)</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-77" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-77', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">" "</tt><tt class="py-op">)</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-78" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addNameText()=envi.memcanvas.MemoryCanvas-class.html#addNameText"><a title="envi.memcanvas.MemoryCanvas.addNameText" class="py-name" href="#" onclick="return doclink('link-78', 'addNameText', 'link-78');">addNameText</a></tt><tt class="py-op">(</tt><tt class="py-name">pname</tt><tt class="py-op">)</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-79', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">" "</tt><tt class="py-op">)</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">                <tt class="py-name">bytes</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="envi.memory.IMemory.readMemory
+envi.memory.MemoryObject.readMemory
+envi.util.CopyOnWrite.readMemory
+vtrace.Trace.readMemory" class="py-name" href="#" onclick="return doclink('link-80', 'readMemory', 'link-21');">readMemory</a></tt><tt class="py-op">(</tt><tt class="py-name">p</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name" targets="Method vdb.gui.extensions.windows.VdbHeapRenderer.isAscii()=vdb.gui.extensions.windows.VdbHeapRenderer-class.html#isAscii,Method vdb.renderers.DerefRenderer.isAscii()=vdb.renderers.DerefRenderer-class.html#isAscii"><a title="vdb.gui.extensions.windows.VdbHeapRenderer.isAscii
+vdb.renderers.DerefRenderer.isAscii" class="py-name" href="#" onclick="return doclink('link-81', 'isAscii', 'link-81');">isAscii</a></tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">                    <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-82" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-82', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"'%s'"</tt> <tt class="py-op">%</tt> <tt class="py-name">bytes</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">"\x00"</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">                <tt class="py-keyword">elif</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name" targets="Method vdb.renderers.DerefRenderer.isBasicUnicode()=vdb.renderers.DerefRenderer-class.html#isBasicUnicode"><a title="vdb.renderers.DerefRenderer.isBasicUnicode" class="py-name" href="#" onclick="return doclink('link-83', 'isBasicUnicode', 'link-83');">isBasicUnicode</a></tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">                    <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">bytes</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">"\x00\x00"</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">"\x00"</tt><tt class="py-op">,</tt><tt class="py-string">""</tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">                    <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-84" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-84', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"u'%s'"</tt> <tt class="py-op">%</tt> <tt class="py-name">s</tt><tt class="py-op">)</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">                <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">                    <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-85', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">.</tt><tt class="py-name">encode</tt><tt class="py-op">(</tt><tt class="py-string">'hex'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt id="link-86" class="py-name" targets="Variable vtrace.platforms.win32.DBG_EVENT_UNION.Exception=vtrace.platforms.win32.DBG_EVENT_UNION-class.html#Exception"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-86', 'Exception', 'link-86');">Exception</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-87" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-87', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"ERROR: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">                <tt class="py-keyword">for</tt> <tt class="py-name">fd</tt><tt class="py-op">,</tt><tt class="py-name">ftype</tt><tt class="py-op">,</tt><tt class="py-name">fname</tt> <tt class="py-keyword">in</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-88" class="py-name" targets="Method vtrace.Trace.getFds()=vtrace.Trace-class.html#getFds"><a title="vtrace.Trace.getFds" class="py-name" href="#" onclick="return doclink('link-88', 'getFds', 'link-88');">getFds</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt class="py-name">fd</tt> <tt class="py-op">==</tt> <tt class="py-name">p</tt><tt class="py-op">:</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">                        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-89" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-89', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">'HANDLE/FD?: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">fname</tt><tt class="py-op">)</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt id="link-90" class="py-name"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-90', 'Exception', 'link-86');">Exception</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">                <tt class="py-keyword">pass</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-91" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-91', 'addText', 'link-20');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"\n"</tt><tt class="py-op">)</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">arch</tt><tt class="py-op">.</tt><tt id="link-92" class="py-name"><a title="envi.ArchitectureModule.getPointerSize
+envi.archs.amd64.Amd64Module.getPointerSize
+envi.archs.arm.ArmModule.getPointerSize
+envi.archs.i386.i386Module.getPointerSize
+envi.memory.IMemory.getPointerSize
+vtrace.envitools.TraceEmulator.getPointerSize" class="py-name" href="#" onclick="return doclink('link-92', 'getPointerSize', 'link-12');">getPointerSize</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"> </tt>
+<a name="DerefRenderer.isAscii"></a><div id="DerefRenderer.isAscii-def"><a name="L159"></a><tt class="py-lineno">159</tt> <a class="py-toggle" href="#" id="DerefRenderer.isAscii-toggle" onclick="return toggle('DerefRenderer.isAscii');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.renderers.DerefRenderer-class.html#isAscii">isAscii</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DerefRenderer.isAscii-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="DerefRenderer.isAscii-expanded"><a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">        <tt class="py-name">bytes</tt> <tt class="py-op">=</tt> <tt class="py-name">bytes</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">"\x00"</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">)</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">4</tt><tt class="py-op">:</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-93" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-93', 'i', 'link-66');">i</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">            <tt class="py-name">o</tt> <tt class="py-op">=</tt> <tt class="py-name">ord</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">[</tt><tt id="link-94" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-94', 'i', 'link-66');">i</a></tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">o</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">0x20</tt> <tt class="py-keyword">or</tt> <tt class="py-name">o</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0x7e</tt><tt class="py-op">:</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"> </tt>
+<a name="DerefRenderer.isBasicUnicode"></a><div id="DerefRenderer.isBasicUnicode-def"><a name="L169"></a><tt class="py-lineno">169</tt> <a class="py-toggle" href="#" id="DerefRenderer.isBasicUnicode-toggle" onclick="return toggle('DerefRenderer.isBasicUnicode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.renderers.DerefRenderer-class.html#isBasicUnicode">isBasicUnicode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="DerefRenderer.isBasicUnicode-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="DerefRenderer.isBasicUnicode-expanded"><a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-name">bytes</tt> <tt class="py-op">=</tt> <tt class="py-name">bytes</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">"\x00\x00"</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">)</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">8</tt><tt class="py-op">:</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-name">nonull</tt> <tt class="py-op">=</tt> <tt class="py-name">bytes</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">"\x00"</tt><tt class="py-op">,</tt> <tt class="py-string">""</tt><tt class="py-op">)</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">)</tt> <tt class="py-op">/</tt> <tt class="py-number">2</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">nonull</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-95" class="py-name"><a title="vdb.gui.extensions.windows.VdbHeapRenderer.isAscii
+vdb.renderers.DerefRenderer.isAscii" class="py-name" href="#" onclick="return doclink('link-95', 'isAscii', 'link-81');">isAscii</a></tt><tt class="py-op">(</tt><tt class="py-name">nonull</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:29 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

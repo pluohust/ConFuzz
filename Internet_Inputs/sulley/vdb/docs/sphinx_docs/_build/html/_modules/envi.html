@@ -1,0 +1,724 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The Envi framework allows architecutre abstraction through</span>
+<span class="sd">the use of the ArchitectureModule, Opcode, Operand, and</span>
+<span class="sd">Emulator objects.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="c"># Instruciton flags (The first 8 bits are reserved for arch independant use)</span>
+<span class="n">IF_NOFALL</span> <span class="o">=</span> <span class="mh">0x01</span> <span class="c"># Set if this instruction does *not* fall through</span>
+<span class="n">IF_PRIV</span>   <span class="o">=</span> <span class="mh">0x02</span> <span class="c"># Set if this is a &quot;privileged mode&quot; instruction</span>
+<span class="n">IF_CALL</span>   <span class="o">=</span> <span class="mh">0x04</span> <span class="c"># Set if this instruction branches to a procedure</span>
+<span class="n">IF_BRANCH</span> <span class="o">=</span> <span class="mh">0x08</span> <span class="c"># Set if this instruction branches</span>
+<span class="n">IF_RET</span>    <span class="o">=</span> <span class="mh">0x10</span> <span class="c"># Set if this instruction terminates a procedure</span>
+
+<span class="c"># Branch flags (flags returned by the getBranches() method on an opcode)</span>
+<span class="n">BR_PROC</span>  <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">0</span> <span class="c"># The branch target is a procedure (call &lt;foo&gt;)</span>
+<span class="n">BR_COND</span>  <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">1</span> <span class="c"># The branch target is conditional (jz &lt;foo&gt;)</span>
+<span class="n">BR_DEREF</span> <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">2</span> <span class="c"># the branch target is *dereferenced* into PC (call [0x41414141])</span>
+<span class="n">BR_TABLE</span> <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">3</span> <span class="c"># The branch target is the base of a pointer array of jmp/call slots</span>
+<span class="n">BR_FALL</span>  <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">4</span> <span class="c"># The branch is a &quot;fall through&quot; to the next instruction</span>
+
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.registers</span> <span class="kn">as</span> <span class="nn">e_reg</span>
+<span class="kn">import</span> <span class="nn">envi.memcanvas</span> <span class="kn">as</span> <span class="nn">e_canvas</span>
+
+<span class="k">class</span> <span class="nc">ArchitectureModule</span><span class="p">:</span>
+<div class="viewcode-block" id="ArchitectureModule"><a class="viewcode-back" href="../envi.html#envi.ArchitectureModule">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An architecture module implementes methods to deal</span>
+<span class="sd">    with the creation of envi objects for the specified</span>
+<span class="sd">    architecture.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archname</span><span class="p">,</span> <span class="n">maxinst</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arch_name</span> <span class="o">=</span> <span class="n">archname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arch_maxinst</span> <span class="o">=</span> <span class="n">maxinst</span>
+
+    <span class="k">def</span> <span class="nf">archGetBreakInstr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ArchitectureModule.archGetBreakInstr"><a class="viewcode-back" href="../envi.html#envi.ArchitectureModule.archGetBreakInstr">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a python string of the byte sequence which corresponds to</span>
+<span class="sd">        a breakpoint (if present) for this architecture.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">(</span><span class="s">&quot;archGetBreakInstr&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">archGetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArchitectureModule.archGetRegCtx"><a class="viewcode-back" href="../envi.html#envi.ArchitectureModule.archGetRegCtx">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an initialized register context object for the architecture.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">(</span><span class="s">&quot;archGetRegCtx&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">makeOpcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArchitectureModule.makeOpcode"><a class="viewcode-back" href="../envi.html#envi.ArchitectureModule.makeOpcode">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new opcode from the specified bytes (beginning</span>
+<span class="sd">        at the specified offset)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">(</span><span class="s">&quot;makeOpcode&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getEmulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArchitectureModule.getEmulator"><a class="viewcode-back" href="../envi.html#envi.ArchitectureModule.getEmulator">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a default instance of an emulator for the given arch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">(</span><span class="s">&quot;getEmulator&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getPointerSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArchitectureModule.getPointerSize"><a class="viewcode-back" href="../envi.html#envi.ArchitectureModule.getPointerSize">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the size of a pointer in memory on this architecture.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">(</span><span class="s">&quot;getPointerSize&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pointerString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArchitectureModule.pointerString"><a class="viewcode-back" href="../envi.html#envi.ArchitectureModule.pointerString">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string representation for a pointer on this arch</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">(</span><span class="s">&quot;pointerString&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">stealArchMethods</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">archname</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="stealArchMethods"><a class="viewcode-back" href="../envi.html#envi.stealArchMethods">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Used by objects which are expected to inherit from an</span>
+<span class="sd">    architecture module but don&#39;t know which one until runtime!</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">arch</span> <span class="o">=</span> <span class="n">getArchModule</span><span class="p">(</span><span class="n">archname</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">arch</span><span class="p">):</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">arch</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">EnviException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span></div>
+<div class="viewcode-block" id="EnviException"><a class="viewcode-back" href="../envi.html#envi.EnviException">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">InvalidInstruction</span><span class="p">(</span><span class="n">EnviException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="InvalidInstruction"><a class="viewcode-back" href="../envi.html#envi.InvalidInstruction">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised by opcode parsers when the specified</span>
+<span class="sd">    bytes do not represent a valid opcode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="nb">bytes</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+        <span class="n">EnviException</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">SegmentationViolation</span><span class="p">(</span><span class="n">EnviException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="SegmentationViolation"><a class="viewcode-back" href="../envi.html#envi.SegmentationViolation">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised by an Emulator extension when you</span>
+<span class="sd">    bad-touch memory. (Likely from memobj).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">msg</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Bad Memory Access: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">hex</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="n">EnviException</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">va</span> <span class="o">=</span> <span class="n">va</span>
+
+<span class="k">class</span> <span class="nc">ArchNotImplemented</span><span class="p">(</span><span class="n">EnviException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArchNotImplemented"><a class="viewcode-back" href="../envi.html#envi.ArchNotImplemented">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised by various Envi components when the architecture</span>
+<span class="sd">    does not implement that envi component.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">EmuException</span><span class="p">(</span><span class="n">EnviException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="EmuException"><a class="viewcode-back" href="../envi.html#envi.EmuException">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A parent for all emulation exceptions so catching</span>
+<span class="sd">    them can be easy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">EnviException</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">va</span> <span class="o">=</span> <span class="n">emu</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> at </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">va</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">UnsupportedInstruction</span><span class="p">(</span><span class="n">EmuException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="UnsupportedInstruction"><a class="viewcode-back" href="../envi.html#envi.UnsupportedInstruction">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised by emulators when the given instruction</span>
+<span class="sd">    is not implemented by the emulator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="n">EmuException</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op</span> <span class="o">=</span> <span class="n">op</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Unsupported Instruction: 0x</span><span class="si">%.8x</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">va</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">op</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">DivideByZero</span><span class="p">(</span><span class="n">EmuException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="DivideByZero"><a class="viewcode-back" href="../envi.html#envi.DivideByZero">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised by an Emulator when a divide/mod has</span>
+<span class="sd">    a 0 divisor...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">BreakpointHit</span><span class="p">(</span><span class="n">EmuException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="BreakpointHit"><a class="viewcode-back" href="../envi.html#envi.BreakpointHit">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised by an emulator when you execute a breakpoint instruction</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">PDEUndefinedFlag</span><span class="p">(</span><span class="n">EmuException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="PDEUndefinedFlag"><a class="viewcode-back" href="../envi.html#envi.PDEUndefinedFlag">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This exception is raised when a conditional operation is dependant on</span>
+<span class="sd">    a flag state that is unknown.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">PDEException</span><span class="p">(</span><span class="n">EmuException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="PDEException"><a class="viewcode-back" href="../envi.html#envi.PDEException">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This exception is used in partially defined emulation to signal where</span>
+<span class="sd">    execution flow becomes un-known due to undefined values.  This is considered</span>
+<span class="sd">    un-recoverable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">UnknownCallingConvention</span><span class="p">(</span><span class="n">EmuException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="UnknownCallingConvention"><a class="viewcode-back" href="../envi.html#envi.UnknownCallingConvention">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the getCallArgs() or setReturnValue() methods</span>
+<span class="sd">    are given an unknown calling convention type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">MapOverlapException</span><span class="p">(</span><span class="n">EnviException</span><span class="p">):</span></div>
+<div class="viewcode-block" id="MapOverlapException"><a class="viewcode-back" href="../envi.html#envi.MapOverlapException">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when adding a memory map to a MemoryObject which overlaps</span>
+<span class="sd">    with another already existing map.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">map1</span><span class="p">,</span> <span class="n">map2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map1</span> <span class="o">=</span> <span class="n">map1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map2</span> <span class="o">=</span> <span class="n">map2</span>
+        <span class="n">margs</span> <span class="o">=</span> <span class="p">(</span><span class="n">map1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">map1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">map2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">map2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">EnviException</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Map At 0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">) overlaps map at 0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="n">margs</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Operand</span><span class="p">:</span></div>
+<div class="viewcode-block" id="Operand"><a class="viewcode-back" href="../envi.html#envi.Operand">[docs]</a>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Thses are the expected methods needed by any implemented operand object</span>
+<span class="sd">    attached to an envi Opcode.  This does *not* have a constructor of it&#39;s</span>
+<span class="sd">    pwn on purpose to cut down on memory use and constructor CPU cost.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">getOperValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">emu</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Operand.getOperValue"><a class="viewcode-back" href="../envi.html#envi.Operand.getOperValue">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current value for the operand.  If needed, use</span>
+<span class="sd">        the given emulator/workspace/trace to resolve things like</span>
+<span class="sd">        memory and registers.</span>
+
+<span class="sd">        NOTE: This API may be passed a None emu and should return what it can</span>
+<span class="sd">              (or None if it can&#39;t be resolved)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">print</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> needs to implement getOperValue!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">setOperValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Operand.setOperValue"><a class="viewcode-back" href="../envi.html#envi.Operand.setOperValue">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the current value for the operand.  If needed, use</span>
+<span class="sd">        the given emulator/workspace/trace to assign things like</span>
+<span class="sd">        memory and registers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> needs to implement setOperValue! (0x</span><span class="si">%.8x</span><span class="s">: </span><span class="si">%s</span><span class="s">) &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">va</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">op</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">isDeref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Operand.isDeref"><a class="viewcode-back" href="../envi.html#envi.Operand.isDeref">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the given operand will dereference memory, this method must return True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">isImmed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Operand.isImmed"><a class="viewcode-back" href="../envi.html#envi.Operand.isImmed">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        If the given operand represents an immediate value, this must return True.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">isReg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Operand.isReg"><a class="viewcode-back" href="../envi.html#envi.Operand.isReg">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        If the given operand represents a register value, this must return True.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">getOperAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">emu</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Operand.getOperAddr"><a class="viewcode-back" href="../envi.html#envi.Operand.getOperAddr">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the operand is a &quot;dereference&quot; operand, this method should use the</span>
+<span class="sd">        specified op/emu to resolve the address of the dereference.</span>
+
+<span class="sd">        NOTE: This API may be passed a None emu and should return what it can</span>
+<span class="sd">              (or None if it can&#39;t be resolved)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> needs to implement getOperAddr!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    
+    <span class="k">def</span> <span class="nf">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Operand.repr"><a class="viewcode-back" href="../envi.html#envi.Operand.repr">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used by the Opcode class to get a humon readable string for this operand.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s">&quot;unknown&quot;</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcanv</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Operand.render"><a class="viewcode-back" href="../envi.html#envi.Operand.render">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used by the opcode class when rendering to a memory canvas.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mcanv</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repr</span><span class="p">(</span><span class="n">op</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">op</span> <span class="o">==</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oper</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="c">#FIXME each one will need this...</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+<span class="k">class</span> <span class="nc">DerefOper</span><span class="p">(</span><span class="n">Operand</span><span class="p">):</span></div>
+<div class="viewcode-block" id="DerefOper"><a class="viewcode-back" href="../envi.html#envi.DerefOper">[docs]</a>
+    <span class="k">def</span> <span class="nf">isDeref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DerefOper.isDeref"><a class="viewcode-back" href="../envi.html#envi.DerefOper.isDeref">[docs]</a>        <span class="k">return</span> <span class="bp">True</span>
+
+<span class="k">class</span> <span class="nc">ImmedOper</span><span class="p">(</span><span class="n">Operand</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="ImmedOper"><a class="viewcode-back" href="../envi.html#envi.ImmedOper">[docs]</a>
+    <span class="k">def</span> <span class="nf">isImmed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ImmedOper.isImmed"><a class="viewcode-back" href="../envi.html#envi.ImmedOper.isImmed">[docs]</a>        <span class="k">return</span> <span class="bp">True</span>
+
+<span class="k">class</span> <span class="nc">RegisterOper</span><span class="p">(</span><span class="n">Operand</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="RegisterOper"><a class="viewcode-back" href="../envi.html#envi.RegisterOper">[docs]</a>
+    <span class="k">def</span> <span class="nf">isReg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RegisterOper.isReg"><a class="viewcode-back" href="../envi.html#envi.RegisterOper.isReg">[docs]</a>        <span class="k">return</span> <span class="bp">True</span>
+
+<span class="k">class</span> <span class="nc">Opcode</span><span class="p">:</span></div></div>
+<div class="viewcode-block" id="Opcode"><a class="viewcode-back" href="../envi.html#envi.Opcode">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A universal representation for an opcode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prefix_names</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># flag-&gt;humon tuples</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">opcode</span><span class="p">,</span> <span class="n">mnem</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">operands</span><span class="p">,</span> <span class="n">iflags</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        constructor for the basic Envi Opcode object.  Arguments as follows:</span>
+
+<span class="sd">        opcode   - An architecture specific numerical value for the opcode</span>
+<span class="sd">        mnem     - A humon readable mnemonic for the opcode</span>
+<span class="sd">        prefixes - a bitmask of architecture specific instruction prefixes</span>
+<span class="sd">        size     - The size of the opcode in bytes</span>
+<span class="sd">        operands - A list of Operand objects for this opcode</span>
+<span class="sd">        iflags   - A list of Envi (architecture independant) instruction flags (see IF_FOO)</span>
+<span class="sd">        va       - The virtual address the instruction lives at (used for PC relative immediates etc...)</span>
+
+<span class="sd">        NOTE: If you want to create an architecture spcific opcode, I&#39;d *highly* recommend you</span>
+<span class="sd">              just copy/paste in the following simple initial code rather than calling the parent</span>
+<span class="sd">              constructor.  The extra</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opcode</span> <span class="o">=</span> <span class="n">opcode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mnem</span> <span class="o">=</span> <span class="n">mnem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefixes</span> <span class="o">=</span> <span class="n">prefixes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">opers</span> <span class="o">=</span> <span class="n">operands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">repr</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iflags</span> <span class="o">=</span> <span class="n">iflags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">va</span> <span class="o">=</span> <span class="n">va</span>
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">op</span> <span class="o">==</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">Opcode</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">opcode</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">opcode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mnem</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">mnem</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">iflags</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opers</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mnem</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Over-ride this if you want to make arch specific repr.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mnem</span> <span class="o">+</span> <span class="s">&quot; &quot;</span> <span class="o">+</span> <span class="s">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">opers</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+
+    <span class="c"># NOTE: From here down is mostly things that architecture specific opcode</span>
+    <span class="c">#       extensions should override.</span>
+    <span class="k">def</span> <span class="nf">getBranches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Opcode.getBranches"><a class="viewcode-back" href="../envi.html#envi.Opcode.getBranches">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of tuples.  Each tuple contains the target VA of the</span>
+<span class="sd">        branch, and a possible set of flags showing what type of branch it is.</span>
+
+<span class="sd">        See the BR_FOO types for all the supported envi branch flags....</span>
+<span class="sd">        Example: for bva,bflags in op.getBranches():</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcanv</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Opcode.render"><a class="viewcode-back" href="../envi.html#envi.Opcode.render">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render this opcode to the memory canvas passed in.  This is used for both</span>
+<span class="sd">        simple printing AND more complex representations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mcanv</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">getPrefixName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Opcode.getPrefixName"><a class="viewcode-back" href="../envi.html#envi.Opcode.getPrefixName">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the name of the prefixes associated with the specified</span>
+<span class="sd">        architecture specific prefix bitmask.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">byte</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">byte</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getOperValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">emu</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Opcode.getOperValue"><a class="viewcode-back" href="../envi.html#envi.Opcode.getOperValue">[docs]</a>        <span class="n">oper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">oper</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="o">=</span><span class="n">emu</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getOperands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Opcode.getOperands"><a class="viewcode-back" href="../envi.html#envi.Opcode.getOperands">[docs]</a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Emulator</span><span class="p">(</span><span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="p">,</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">MemoryObject</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="Emulator"><a class="viewcode-back" href="../envi.html#envi.Emulator">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Emulator class is mostly &quot;Abstract&quot; in the java</span>
+<span class="sd">    Interface sense.  The emulator should be able to</span>
+<span class="sd">    be extended for the architecutures which are included</span>
+<span class="sd">    in the envi framework.  You *must* mix in</span>
+<span class="sd">    an instance of your architecture abstraction module.</span>
+
+<span class="sd">    (NOTE: Most users will just use an arch mod and call getEmulator())</span>
+
+<span class="sd">    The intention is for &quot;light weight&quot; emulation to be</span>
+<span class="sd">    implemented mostly for user-space emulation of </span>
+<span class="sd">    protected mode execution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archmod</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="n">e_mem</span><span class="o">.</span><span class="n">MemoryObject</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archmod</span><span class="o">=</span><span class="n">archmod</span><span class="p">)</span>
+        <span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_emu_segments</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mh">0xffffffff</span><span class="p">),</span> <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_emu_call_convs</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c"># Automagically setup an instruction mnemonic handler dict</span>
+        <span class="c"># by finding all methods starting with i_ and assume they</span>
+        <span class="c"># implement an instruction by mnemonic</span>
+        <span class="c"># FIXME THIS *MUST* GET FASTER FOR UTIL FUNCS!</span>
+        <span class="c"># POSSIBLY DECLARE IN ADVANCE?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">op_methods</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;i_&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">op_methods</span><span class="p">[</span><span class="n">name</span><span class="p">[</span><span class="mi">2</span><span class="p">:]]</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getArchModule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Emulator.getArchModule"><a class="viewcode-back" href="../envi.html#envi.Emulator.getArchModule">[docs]</a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Emulators *must* implement getArchModule()!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getEmuSnap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.getEmuSnap"><a class="viewcode-back" href="../envi.html#envi.Emulator.getEmuSnap">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the data needed to &quot;snapshot&quot; this emulator.  For most</span>
+<span class="sd">        archs, this method will be enough (it takes the memory object,</span>
+<span class="sd">        and register values with it)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">regs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterSnap</span><span class="p">()</span>
+        <span class="n">mem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemorySnap</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">regs</span><span class="p">,</span><span class="n">mem</span>
+
+    <span class="k">def</span> <span class="nf">setEmuSnap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snap</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.setEmuSnap"><a class="viewcode-back" href="../envi.html#envi.Emulator.setEmuSnap">[docs]</a>        <span class="n">regs</span><span class="p">,</span><span class="n">mem</span> <span class="o">=</span> <span class="n">snap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegisterSnap</span><span class="p">(</span><span class="n">regs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMemorySnap</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">executeOpcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opobj</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.executeOpcode"><a class="viewcode-back" href="../envi.html#envi.Emulator.executeOpcode">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is the core method for the </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stepcount</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.run"><a class="viewcode-back" href="../envi.html#envi.Emulator.run">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run the emulator until &quot;something&quot; happens.</span>
+<span class="sd">        (breakpoint, segv, syscall, etc...)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">stepcount</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">stepcount</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stepi</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stepi</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">stepi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.stepi"><a class="viewcode-back" href="../envi.html#envi.Emulator.stepi">[docs]</a>        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseOpcode</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">executeOpcode</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getSegmentInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.getSegmentInfo"><a class="viewcode-back" href="../envi.html#envi.Emulator.getSegmentInfo">[docs]</a>        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSegmentIndex</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_emu_segments</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">getSegmentIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.getSegmentIndex"><a class="viewcode-back" href="../envi.html#envi.Emulator.getSegmentIndex">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The *default* segmentation is none (most arch&#39;s will over-ride).</span>
+<span class="sd">        This method may be implemented to return a segment index based on either</span>
+<span class="sd">        emulator state or properties of the particular instruction in question.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">setSegmentInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.setSegmentInfo"><a class="viewcode-back" href="../envi.html#envi.Emulator.setSegmentInfo">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set a base and size for a given segment index.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_emu_segments</span><span class="p">)</span> <span class="o">-</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_emu_segments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span> <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_emu_segments</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getOperValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.getOperValue"><a class="viewcode-back" href="../envi.html#envi.Emulator.getOperValue">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the value for the operand at index idx for</span>
+<span class="sd">        the given opcode reading memory and register states if necissary.</span>
+
+<span class="sd">        In partially-defined emulation, this may return None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">oper</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">oper</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getOperAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.getOperAddr"><a class="viewcode-back" href="../envi.html#envi.Emulator.getOperAddr">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the address that an operand which deref&#39;s memory</span>
+<span class="sd">        would read from on getOperValue().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">oper</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">oper</span><span class="o">.</span><span class="n">getOperAddr</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setOperValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.setOperValue"><a class="viewcode-back" href="../envi.html#envi.Emulator.setOperValue">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the value of the target operand at index idx from</span>
+<span class="sd">        opcode op.</span>
+<span class="sd">        (obviously OM_IMMEDIATE *cannot* be set)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">oper</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">oper</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getCallArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">cc</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.getCallArgs"><a class="viewcode-back" href="../envi.html#envi.Emulator.getCallArgs">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Emulator implementors can implement this method to allow</span>
+<span class="sd">        analysis modules a platform/architecture independant way</span>
+<span class="sd">        to get stack/reg/whatever args.</span>
+
+<span class="sd">        Usage: getCallArgs(3, &quot;stdcall&quot;) -&gt; (0, 32, 0xf00)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_emu_call_convs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnknownCallingConvention</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">getCallArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setReturnValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">argc</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.setReturnValue"><a class="viewcode-back" href="../envi.html#envi.Emulator.setReturnValue">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Emulator implementors can implement this method to allow</span>
+<span class="sd">        analysis modules a platform/architecture independant way</span>
+<span class="sd">        to set a function return value. (this should also take</span>
+<span class="sd">        care of any argument cleanup or other return time tasks</span>
+<span class="sd">        for the calling convention)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_emu_call_convs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cc</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnknownCallingConvention</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">setReturnValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">argc</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">addCallingConvention</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.addCallingConvention"><a class="viewcode-back" href="../envi.html#envi.Emulator.addCallingConvention">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_emu_call_convs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+
+    <span class="k">def</span> <span class="nf">hasCallingConvention</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.hasCallingConvention"><a class="viewcode-back" href="../envi.html#envi.Emulator.hasCallingConvention">[docs]</a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_emu_call_convs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">getCallingConvention</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.getCallingConvention"><a class="viewcode-back" href="../envi.html#envi.Emulator.getCallingConvention">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_emu_call_conv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getCallingConventions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Emulator.getCallingConventions"><a class="viewcode-back" href="../envi.html#envi.Emulator.getCallingConventions">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_emu_call_convs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">CallingConvention</span><span class="p">:</span></div></div>
+<div class="viewcode-block" id="CallingConvention"><a class="viewcode-back" href="../envi.html#envi.CallingConvention">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implement calling conventions for your arch.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">setReturnValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">ccinfo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="CallingConvention.setReturnValue"><a class="viewcode-back" href="../envi.html#envi.CallingConvention.setReturnValue">[docs]</a>        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">getCallArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CallingConvention.getCallArgs"><a class="viewcode-back" href="../envi.html#envi.CallingConvention.getCallArgs">[docs]</a>        <span class="k">pass</span>
+
+    <span class="c"># If you want your arch to use symbolik emulation...</span>
+    <span class="k">def</span> <span class="nf">getSymbolikArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">argv</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CallingConvention.getSymbolikArgs"><a class="viewcode-back" href="../envi.html#envi.CallingConvention.getSymbolikArgs">[docs]</a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;getSymbolikArgs() not in </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setSymbolikReturn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">sym</span><span class="p">,</span> <span class="n">argv</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CallingConvention.setSymbolikReturn"><a class="viewcode-back" href="../envi.html#envi.CallingConvention.setSymbolikReturn">[docs]</a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;setSymbolikReturn() not in </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+
+<span class="c"># NOTE: This mapping is needed because of inconsistancies</span>
+<span class="c"># in how different compilers and versions of python embed</span>
+<span class="c"># the machine setting.</span>
+<span class="n">arch_xlate_32</span> <span class="o">=</span> <span class="p">{</span></div></div>
+    <span class="s">&#39;i386&#39;</span><span class="p">:</span><span class="s">&#39;i386&#39;</span><span class="p">,</span>
+    <span class="s">&#39;i486&#39;</span><span class="p">:</span><span class="s">&#39;i386&#39;</span><span class="p">,</span>
+    <span class="s">&#39;i586&#39;</span><span class="p">:</span><span class="s">&#39;i386&#39;</span><span class="p">,</span>
+    <span class="s">&#39;i686&#39;</span><span class="p">:</span><span class="s">&#39;i386&#39;</span><span class="p">,</span>
+    <span class="s">&#39;x86&#39;</span><span class="p">:</span><span class="s">&#39;i386&#39;</span><span class="p">,</span>
+    <span class="s">&#39;i86pc&#39;</span><span class="p">:</span><span class="s">&#39;i386&#39;</span><span class="p">,</span> <span class="c"># Solaris</span>
+    <span class="s">&#39;&#39;</span><span class="p">:</span><span class="s">&#39;i386&#39;</span><span class="p">,</span> <span class="c"># Stupid windows...</span>
+    <span class="s">&#39;AMD64&#39;</span><span class="p">:</span><span class="s">&#39;i386&#39;</span><span class="p">,</span> <span class="c"># ActiveState python can say AMD64 in 32 bit install?</span>
+<span class="p">}</span>
+
+<span class="n">arch_xlate_64</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;x86_64&#39;</span><span class="p">:</span><span class="s">&#39;amd64&#39;</span><span class="p">,</span>
+    <span class="s">&#39;AMD64&#39;</span><span class="p">:</span><span class="s">&#39;amd64&#39;</span><span class="p">,</span>
+    <span class="s">&#39;amd64&#39;</span><span class="p">:</span><span class="s">&#39;amd64&#39;</span><span class="p">,</span>
+    <span class="s">&#39;i386&#39;</span><span class="p">:</span><span class="s">&#39;amd64&#39;</span><span class="p">,</span> <span class="c"># MAC ports builds are 64bit and say i386</span>
+    <span class="s">&#39;&#39;</span><span class="p">:</span><span class="s">&#39;amd64&#39;</span><span class="p">,</span> <span class="c"># And again....</span>
+<span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">getCurrentArch</span><span class="p">():</span>
+<div class="viewcode-block" id="getCurrentArch"><a class="viewcode-back" href="../envi.html#envi.getCurrentArch">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an envi normalized name for the current arch.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="s">&quot;P&quot;</span><span class="p">)</span>
+    <span class="n">mach</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">machine</span><span class="p">()</span>   <span class="c"># &#39;i386&#39;,&#39;ppc&#39;, etc...</span>
+
+    <span class="k">if</span> <span class="n">width</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">arch_xlate_32</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mach</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">width</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">arch_xlate_64</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mach</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">(</span><span class="n">mach</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ret</span>
+
+<span class="k">def</span> <span class="nf">getArchModule</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></div>
+<div class="viewcode-block" id="getArchModule"><a class="viewcode-back" href="../envi.html#envi.getArchModule">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    return an Envi architecture module instance for the following</span>
+<span class="sd">    architecture name.</span>
+<span class="sd">    </span>
+<span class="sd">    Current architectures include:</span>
+
+<span class="sd">    i386 - Intel i386</span>
+<span class="sd">    amd64 - The new 64bit AMD spec.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">getCurrentArch</span><span class="p">()</span>
+
+    <span class="c"># Some builds have x86 (py2.6) and some have other stuff...</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;i386&quot;</span><span class="p">,</span><span class="s">&quot;i486&quot;</span><span class="p">,</span><span class="s">&quot;i586&quot;</span><span class="p">,</span><span class="s">&quot;i686&quot;</span><span class="p">,</span><span class="s">&quot;x86&quot;</span><span class="p">]:</span>
+        <span class="kn">import</span> <span class="nn">envi.archs.i386</span> <span class="kn">as</span> <span class="nn">e_i386</span>
+        <span class="k">return</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Module</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&quot;amd64&quot;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">envi.archs.amd64</span> <span class="kn">as</span> <span class="nn">e_amd64</span>
+        <span class="k">return</span> <span class="n">e_amd64</span><span class="o">.</span><span class="n">Amd64Module</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;arm&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">envi.archs.arm</span> <span class="kn">as</span> <span class="nn">e_arm</span>
+        <span class="k">return</span> <span class="n">e_arm</span><span class="o">.</span><span class="n">ArmModule</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ArchNotImplemented</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

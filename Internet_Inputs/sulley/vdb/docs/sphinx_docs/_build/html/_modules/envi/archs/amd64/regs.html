@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.archs.amd64.regs &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="envi.archs.amd64" href="../amd64.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../amd64.html" accesskey="U">envi.archs.amd64</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.archs.amd64.regs</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">envi.registers</span> <span class="kn">as</span> <span class="nn">e_reg</span>
+<span class="kn">import</span> <span class="nn">envi.archs.i386</span> <span class="kn">as</span> <span class="nn">e_i386</span>
+
+<span class="c"># NOTE: all REX_R registers must *directly* follow their 3 bit variants</span>
+<span class="c">#       in the table below</span>
+<span class="n">amd64regs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&quot;rax&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;rcx&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;rdx&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;rbx&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;rsp&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;rbp&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;rsi&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;rdi&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span>
+    <span class="c"># The amd64 extended GP regs</span>
+    <span class="p">(</span><span class="s">&quot;r8&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;r9&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;r10&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;r11&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;r12&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;r13&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;r14&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;r15&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span>
+
+    <span class="p">(</span><span class="s">&quot;mm0&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;mm1&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm2&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm3&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm4&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm5&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm6&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm7&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span>
+
+    <span class="c"># SIMD registers</span>
+    <span class="p">(</span><span class="s">&quot;xmm0&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm1&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm2&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm3&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm4&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm5&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm6&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm7&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),</span>
+    <span class="c"># The amd64 extended SIMD regs...</span>
+    <span class="p">(</span><span class="s">&quot;xmm8&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm9&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm10&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm11&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm12&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm13&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm14&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm15&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),</span>
+
+    <span class="c"># Debug registers</span>
+    <span class="p">(</span><span class="s">&quot;debug0&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug1&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug2&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug3&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug4&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug5&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug6&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug7&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span>
+    <span class="c"># Extended Debug registers (REX.R)</span>
+    <span class="p">(</span><span class="s">&quot;debug8&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug9&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug10&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug11&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug12&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug13&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug14&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;debug15&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span>
+
+    <span class="c"># Control registers</span>
+    <span class="p">(</span><span class="s">&quot;ctrl0&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl1&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl2&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl3&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl4&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl5&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl6&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl7&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span>
+    <span class="c"># Extended Control registers (REX.R)</span>
+    <span class="p">(</span><span class="s">&quot;ctrl8&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl9&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl10&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl11&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl12&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl13&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl14&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;ctrl15&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span>
+
+    <span class="c"># Test registers</span>
+    <span class="p">(</span><span class="s">&quot;test0&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test1&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test2&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test3&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test4&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test5&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test6&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test7&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="c"># Segment registers</span>
+    <span class="p">(</span><span class="s">&quot;es&quot;</span><span class="p">,</span> <span class="mi">16</span><span class="p">),(</span><span class="s">&quot;cs&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="s">&quot;ss&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="s">&quot;ds&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="s">&quot;fs&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="s">&quot;gs&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),</span>
+    <span class="c"># FPU Registers</span>
+    <span class="p">(</span><span class="s">&quot;st0&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st1&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st2&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st3&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st4&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st5&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st6&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st7&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="c"># Leftovers ;)</span>
+    <span class="p">(</span><span class="s">&quot;eflags&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;rip&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="c"># Build up a set of accessable constants</span>
+<span class="n">l</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
+<span class="n">e_reg</span><span class="o">.</span><span class="n">addLocalEnums</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">amd64regs</span><span class="p">)</span>
+
+<span class="n">amd64meta</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386meta</span> <span class="o">+</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&quot;eax&quot;</span><span class="p">,</span> <span class="n">REG_RAX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;ecx&quot;</span><span class="p">,</span> <span class="n">REG_RCX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;edx&quot;</span><span class="p">,</span> <span class="n">REG_RDX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;ebx&quot;</span><span class="p">,</span> <span class="n">REG_RBX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;esp&quot;</span><span class="p">,</span> <span class="n">REG_RSP</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;ebp&quot;</span><span class="p">,</span> <span class="n">REG_RBP</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;esi&quot;</span><span class="p">,</span> <span class="n">REG_RSI</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;edi&quot;</span><span class="p">,</span> <span class="n">REG_RDI</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+
+    <span class="p">(</span><span class="s">&quot;ax&quot;</span><span class="p">,</span> <span class="n">REG_RAX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;cx&quot;</span><span class="p">,</span> <span class="n">REG_RCX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;dx&quot;</span><span class="p">,</span> <span class="n">REG_RDX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bx&quot;</span><span class="p">,</span> <span class="n">REG_RBX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;sp&quot;</span><span class="p">,</span> <span class="n">REG_RSP</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bp&quot;</span><span class="p">,</span> <span class="n">REG_RBP</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;si&quot;</span><span class="p">,</span> <span class="n">REG_RSI</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;di&quot;</span><span class="p">,</span> <span class="n">REG_RDI</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+
+    <span class="p">(</span><span class="s">&quot;al&quot;</span><span class="p">,</span> <span class="n">REG_RAX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;cl&quot;</span><span class="p">,</span> <span class="n">REG_RCX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;dl&quot;</span><span class="p">,</span> <span class="n">REG_RDX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bl&quot;</span><span class="p">,</span> <span class="n">REG_RBX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+
+    <span class="p">(</span><span class="s">&quot;ah&quot;</span><span class="p">,</span> <span class="n">REG_RAX</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;ch&quot;</span><span class="p">,</span> <span class="n">REG_RCX</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;dh&quot;</span><span class="p">,</span> <span class="n">REG_RDX</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bh&quot;</span><span class="p">,</span> <span class="n">REG_RBX</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+
+    <span class="c"># NOTE: with a REX prefix, all ah/ch regs get</span>
+    <span class="c"># mapped back to being sil/dil etc...</span>
+    <span class="p">(</span><span class="s">&quot;spl&quot;</span><span class="p">,</span> <span class="n">REG_RSP</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bpl&quot;</span><span class="p">,</span> <span class="n">REG_RBP</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;sil&quot;</span><span class="p">,</span> <span class="n">REG_RSI</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;dil&quot;</span><span class="p">,</span> <span class="n">REG_RDI</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+
+    <span class="c"># The new GP regs are accessible in all modes.</span>
+    <span class="p">(</span><span class="s">&quot;r8d&quot;</span><span class="p">,</span>  <span class="n">REG_R8</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r9d&quot;</span><span class="p">,</span>  <span class="n">REG_R9</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r10d&quot;</span><span class="p">,</span> <span class="n">REG_R10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r11d&quot;</span><span class="p">,</span> <span class="n">REG_R11</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r12d&quot;</span><span class="p">,</span> <span class="n">REG_R12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r13d&quot;</span><span class="p">,</span> <span class="n">REG_R13</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r14d&quot;</span><span class="p">,</span> <span class="n">REG_R14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r15d&quot;</span><span class="p">,</span> <span class="n">REG_R15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+
+    <span class="p">(</span><span class="s">&quot;r8w&quot;</span><span class="p">,</span>  <span class="n">REG_R8</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r9w&quot;</span><span class="p">,</span>  <span class="n">REG_R9</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r10w&quot;</span><span class="p">,</span> <span class="n">REG_R10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r11w&quot;</span><span class="p">,</span> <span class="n">REG_R11</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r12w&quot;</span><span class="p">,</span> <span class="n">REG_R12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r13w&quot;</span><span class="p">,</span> <span class="n">REG_R13</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r14w&quot;</span><span class="p">,</span> <span class="n">REG_R14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r15w&quot;</span><span class="p">,</span> <span class="n">REG_R15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+
+    <span class="p">(</span><span class="s">&quot;r8l&quot;</span><span class="p">,</span>  <span class="n">REG_R8</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r9l&quot;</span><span class="p">,</span>  <span class="n">REG_R9</span><span class="p">,</span>  <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r10l&quot;</span><span class="p">,</span> <span class="n">REG_R10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r11l&quot;</span><span class="p">,</span> <span class="n">REG_R11</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r12l&quot;</span><span class="p">,</span> <span class="n">REG_R12</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r13l&quot;</span><span class="p">,</span> <span class="n">REG_R13</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r14l&quot;</span><span class="p">,</span> <span class="n">REG_R14</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;r15l&quot;</span><span class="p">,</span> <span class="n">REG_R15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+
+    <span class="c"># Flags</span>
+    <span class="p">(</span><span class="s">&quot;TF&quot;</span><span class="p">,</span> <span class="n">REG_EFLAGS</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="c"># Add the meta&#39;s indexes</span>
+<span class="n">e_reg</span><span class="o">.</span><span class="n">addLocalMetas</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">amd64meta</span><span class="p">)</span>
+
+<span class="n">RMETA_LOW32</span> <span class="o">=</span> <span class="mh">0x00200000</span>
+
+<div class="viewcode-block" id="Amd64RegisterContext"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.regs.Amd64RegisterContext">[docs]</a><span class="k">class</span> <span class="nc">Amd64RegisterContext</span><span class="p">(</span><span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadRegDef</span><span class="p">(</span><span class="n">amd64regs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadRegMetas</span><span class="p">(</span><span class="n">amd64meta</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegisterIndexes</span><span class="p">(</span><span class="n">REG_RIP</span><span class="p">,</span> <span class="n">REG_RSP</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Amd64RegisterContext.setRegister"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.regs.Amd64RegisterContext.setRegister">[docs]</a>    <span class="k">def</span> <span class="nf">setRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c"># NOTE: A special override is needed here because setting &quot;eax&quot; automagicall</span>
+        <span class="c"># zero extends into RAX...</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">index</span> <span class="o">&amp;</span> <span class="mh">0xffff0000</span><span class="p">)</span> <span class="o">==</span> <span class="n">RMETA_LOW32</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">&amp;</span> <span class="mh">0xffff</span>
+        <span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../amd64.html" >envi.archs.amd64</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

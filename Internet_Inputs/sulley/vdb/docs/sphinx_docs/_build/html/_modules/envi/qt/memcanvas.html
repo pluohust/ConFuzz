@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.qt.memcanvas &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="envi.qt" href="../qt.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../qt.html" accesskey="U">envi.qt</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.qt.memcanvas</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">cgi</span>
+
+<span class="kn">import</span> <span class="nn">vqt.main</span> <span class="kn">as</span> <span class="nn">vq_main</span>
+<span class="kn">import</span> <span class="nn">vqt.colors</span> <span class="kn">as</span> <span class="nn">vq_colors</span>
+<span class="kn">import</span> <span class="nn">envi.qt.html</span> <span class="kn">as</span> <span class="nn">e_q_html</span>
+<span class="kn">import</span> <span class="nn">envi.memcanvas</span> <span class="kn">as</span> <span class="nn">e_memcanvas</span>
+
+<span class="n">qt_horizontal</span>   <span class="o">=</span> <span class="mi">1</span>
+<span class="n">qt_vertical</span>     <span class="o">=</span> <span class="mi">2</span>
+
+<span class="kn">from</span> <span class="nn">PyQt4</span>    <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWebKit</span>
+<span class="kn">from</span> <span class="nn">vqt.main</span> <span class="kn">import</span> <span class="n">idlethread</span><span class="p">,</span> <span class="n">idlethreadsync</span>
+
+<span class="c">#class memhotkey:</span>
+    <span class="c">#def __init__(self, </span>
+
+<span class="n">KEY_BACKSPACE</span> <span class="o">=</span> <span class="mh">0x1000003</span>
+
+<div class="viewcode-block" id="VQMemoryCanvas"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memcanvas.VQMemoryCanvas">[docs]</a><span class="k">class</span> <span class="nc">VQMemoryCanvas</span><span class="p">(</span><span class="n">QtWebKit</span><span class="o">.</span><span class="n">QWebView</span><span class="p">,</span> <span class="n">e_memcanvas</span><span class="o">.</span><span class="n">MemoryCanvas</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">QtWebKit</span><span class="o">.</span><span class="n">QWebView</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">e_memcanvas</span><span class="o">.</span><span class="n">MemoryCanvas</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="n">syms</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setContent</span><span class="p">(</span><span class="n">e_q_html</span><span class="o">.</span><span class="n">template</span><span class="p">,</span> <span class="s">&#39;application/xhtml+xml&#39;</span><span class="p">)</span>
+        <span class="c">#self.setHtml(e_q_html.template)</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rend_middle</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_curva</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendtagid</span> <span class="o">=</span> <span class="s">&#39;#memcanvas&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_hotkeys</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span><span class="o">.</span><span class="n">addToJavaScriptWindowObject</span><span class="p">(</span><span class="s">&#39;vnav&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VQMemoryCanvas.keyPressEvent"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memcanvas.VQMemoryCanvas.keyPressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">keyPressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span><span class="p">()</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="c">#print &#39;KEY&#39;,hex(key),repr(txt)</span>
+
+        <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_hotkeys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">handler</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_hotkeys</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">handler</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">QtWebKit</span><span class="o">.</span><span class="n">QWebView</span><span class="o">.</span><span class="n">keyPressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMemoryCanvas.vqAddHotKey"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memcanvas.VQMemoryCanvas.vqAddHotKey">[docs]</a>    <span class="k">def</span> <span class="nf">vqAddHotKey</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_hotkeys</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span>
+</div>
+<div class="viewcode-block" id="VQMemoryCanvas.renderMemory"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memcanvas.VQMemoryCanvas.renderMemory">[docs]</a>    <span class="k">def</span> <span class="nf">renderMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rend_middle</span><span class="p">:</span>
+            <span class="n">vmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mem</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+            <span class="n">origva</span> <span class="o">=</span> <span class="n">va</span>
+            <span class="n">va</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">va</span> <span class="o">-</span> <span class="n">size</span><span class="p">,</span> <span class="n">vmap</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">size</span> <span class="o">+=</span> <span class="n">size</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">e_memcanvas</span><span class="o">.</span><span class="n">MemoryCanvas</span><span class="o">.</span><span class="n">renderMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="o">=</span><span class="n">rend</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rend_middle</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scrollToVa</span><span class="p">(</span><span class="n">origva</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+    <span class="nd">@idlethread</span>
+    <span class="k">def</span> <span class="nf">_scrollToVa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="n">vq_main</span><span class="o">.</span><span class="n">eatevents</span><span class="p">()</span> <span class="c"># Let all render events go first</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span><span class="o">.</span><span class="n">scrollToAnchor</span><span class="p">(</span><span class="s">&#39;viv:0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">va</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_beginRenderMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_endRenderMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_appendInside</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_scrolled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scrollToEnd</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_beginRenderVa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_raw</span><span class="p">(</span><span class="s">&#39;&lt;a name=&quot;viv:0x</span><span class="si">%.8x</span><span class="s">&quot; id=&quot;a_</span><span class="si">%.8x</span><span class="s">&quot;&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">va</span><span class="p">,</span><span class="n">va</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_endRenderVa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_raw</span><span class="p">(</span><span class="s">&#39;&lt;/a&gt;&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_beginUpdateVas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valist</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">findFirstElement</span><span class="p">(</span><span class="s">&#39;a#a_</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">valist</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">prependOutside</span><span class="p">(</span><span class="s">&#39;&lt;update id=&quot;updatetmp&quot;&gt;&lt;/update&gt;&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">va</span><span class="p">,</span><span class="n">size</span> <span class="ow">in</span> <span class="n">valist</span><span class="p">:</span>
+            <span class="n">elem</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">findFirstElement</span><span class="p">(</span><span class="s">&#39;a#a_</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">va</span><span class="p">)</span>
+            <span class="n">elem</span><span class="o">.</span><span class="n">removeFromDocument</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_endUpdateVas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span><span class="o">.</span><span class="n">findFirstElement</span><span class="p">(</span><span class="s">&#39;update#updatetmp&#39;</span><span class="p">)</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">appendOutside</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span><span class="p">)</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">removeFromDocument</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_beginRenderPrepend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_ppjump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_endRenderPrepend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">findFirstElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendtagid</span><span class="p">)</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">prependInside</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scrollToVa</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_ppjump</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_beginRenderAppend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_endRenderAppend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">findFirstElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendtagid</span><span class="p">)</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">appendInside</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="VQMemoryCanvas.getNameTag"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memcanvas.VQMemoryCanvas.getNameTag">[docs]</a>    <span class="k">def</span> <span class="nf">getNameTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a &quot;tag&quot; for this memory canvas.  In the case of the</span>
+<span class="sd">        qt tags, they are a tuple of html text (&lt;opentag&gt;, &lt;closetag&gt;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">typename</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">typename</span> <span class="o">=</span> <span class="s">&#39;name&#39;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;&lt;</span><span class="si">%s</span><span class="s"> class=&quot;name_</span><span class="si">%s</span><span class="s">&quot; onclick=&quot;nameclick(this)&quot;&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">typename</span><span class="p">,</span><span class="n">name</span><span class="p">),</span> <span class="s">&#39;&lt;/</span><span class="si">%s</span><span class="s">&gt;&#39;</span> <span class="o">%</span> <span class="n">typename</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMemoryCanvas.getVaTag"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memcanvas.VQMemoryCanvas.getVaTag">[docs]</a>    <span class="k">def</span> <span class="nf">getVaTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="c"># The &quot;class&quot; will be the same that we get back from goto event</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;&lt;va class=&quot;va_0x</span><span class="si">%.8x</span><span class="s">&quot; ondblclick=&quot;vagoto(this)&quot; oncontextmenu=&quot;vaclick(this)&quot; onclick=&quot;vaclick(this)&quot;&gt;&#39;</span> <span class="o">%</span> <span class="n">va</span><span class="p">,</span> <span class="s">&#39;&lt;/va&gt;&#39;</span><span class="p">)</span>
+</div>
+    <span class="nd">@QtCore.pyqtSlot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>  
+    <span class="k">def</span> <span class="nf">_jsGotoExpr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
+        <span class="c"># The routine used by the javascript code to trigger nav events</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_navcallback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canv_navcallback</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+
+    <span class="nd">@QtCore.pyqtSlot</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_jsSetCurVa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vastr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_curva</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">vastr</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c"># NOTE: doing append / scroll seperately allows render to catch up</span>
+    <span class="nd">@idlethread</span>
+    <span class="k">def</span> <span class="nf">_appendInside</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">findFirstElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendtagid</span><span class="p">)</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">appendInside</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="nd">@idlethread</span>
+    <span class="k">def</span> <span class="nf">_scrollToEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vq_main</span><span class="o">.</span><span class="n">eatevents</span><span class="p">()</span> <span class="c"># Let all render events go first</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span>
+        <span class="n">frame</span><span class="o">.</span><span class="n">setScrollBarValue</span><span class="p">(</span><span class="n">qt_vertical</span><span class="p">,</span> <span class="mh">0x0fffffff</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="c"># If we are in a call to renderMemory, cache til the end.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canv_cache</span> <span class="o">+=</span> <span class="n">text</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_appendInside</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_scrolled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scrollToEnd</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VQMemoryCanvas.addText"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memcanvas.VQMemoryCanvas.addText">[docs]</a>    <span class="k">def</span> <span class="nf">addText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">cgi</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;&lt;br/&gt;&#39;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;&amp;nbsp;&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tag</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">otag</span><span class="p">,</span> <span class="n">ctag</span> <span class="o">=</span> <span class="n">tag</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">otag</span> <span class="o">+</span> <span class="n">text</span> <span class="o">+</span> <span class="n">ctag</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_raw</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+</div>
+    <span class="nd">@idlethreadsync</span>
+<div class="viewcode-block" id="VQMemoryCanvas.clearCanvas"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memcanvas.VQMemoryCanvas.clearCanvas">[docs]</a>    <span class="k">def</span> <span class="nf">clearCanvas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">page</span><span class="p">()</span><span class="o">.</span><span class="n">mainFrame</span><span class="p">()</span>
+        <span class="n">elem</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">findFirstElement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendtagid</span><span class="p">)</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">setInnerXml</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../qt.html" >envi.qt</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

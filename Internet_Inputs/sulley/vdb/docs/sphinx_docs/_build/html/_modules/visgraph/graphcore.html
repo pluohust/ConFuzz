@@ -1,0 +1,564 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>visgraph.graphcore &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for visgraph.graphcore</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Graphcore contains all the base graph manipulation objects.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">exc</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">visgraph.pathcore</span> <span class="kn">as</span> <span class="nn">vg_pathcore</span>
+
+<div class="viewcode-block" id="Graph"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph">[docs]</a><span class="k">class</span> <span class="nc">Graph</span><span class="p">:</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The base Graph object implements a simple nodes and edges graph.</span>
+
+<span class="sd">    Nodes -</span>
+<span class="sd">        Nodes consist of a dicionary of properties about that node and</span>
+<span class="sd">        a unique id which identifies the node in the current graph.  From</span>
+<span class="sd">        API perspective a node is a tuple of (nodeid, nodeprops).</span>
+
+<span class="sd">    Edges -</span>
+<span class="sd">        Edges are directional sets of a from node-id and to node-id and</span>
+<span class="sd">        a piece of arbitrary edge information.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wipeGraph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nidgen</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eidgen</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Graph.setMeta"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.setMeta">[docs]</a>    <span class="k">def</span> <span class="nf">setMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mprop</span><span class="p">,</span> <span class="n">mval</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">mprop</span><span class="p">]</span> <span class="o">=</span> <span class="n">mval</span>
+</div>
+<div class="viewcode-block" id="Graph.getMeta"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getMeta">[docs]</a>    <span class="k">def</span> <span class="nf">getMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mprop</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mprop</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Graph.wipeGraph"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.wipeGraph">[docs]</a>    <span class="k">def</span> <span class="nf">wipeGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Re-initialize the graph structures and start clean again.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_from</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_to</span> <span class="o">=</span> <span class="p">{}</span>
+</div>
+<div class="viewcode-block" id="Graph.getEdges"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getEdges">[docs]</a>    <span class="k">def</span> <span class="nf">getEdges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the list of edges in the graph.  Edges are defined</span>
+<span class="sd">        as (eid, fromid, toid, einfo) tuples.</span>
+
+<span class="sd">        Example: for eid, fromid, toid, einfo in g.getEdges():</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</div>
+<div class="viewcode-block" id="Graph.getEdge"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getEdge">[docs]</a>    <span class="k">def</span> <span class="nf">getEdge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the (eid, fromid, toid, einfo) tuple for the specified</span>
+<span class="sd">        edge.</span>
+
+<span class="sd">        Example: e = g.getEdge(eid)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">eid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Graph.getEdgeInfo"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getEdgeInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getEdgeInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eid</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get a property about an edge specified by from/to id.</span>
+
+<span class="sd">        Example: n = g.getEdgeInfo(eid &#39;name&#39;, &#39;Default Name&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">EdgeNonExistant</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+        <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="k">return</span> <span class="n">einfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Graph.setEdgeInfo"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.setEdgeInfo">[docs]</a>    <span class="k">def</span> <span class="nf">setEdgeInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eid</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set a key/value pair about a given edge by</span>
+<span class="sd">        it&#39;s from/to id.</span>
+
+<span class="sd">        Example: g.setEdgeInfo(eid, &#39;awesomeness&#39;, 99)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">EdgeNonExistant</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+        <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="n">einfo</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="Graph.setNodeInfo"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.setNodeInfo">[docs]</a>    <span class="k">def</span> <span class="nf">setNodeInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Store a piece of information (by key:value) about a given node.</span>
+
+<span class="sd">        Example g.setNodeInfo(nid, &#39;Description&#39;, &#39;My Node Is Awesome!&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NodeNonExistant</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="Graph.getNodeInfo"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getNodeInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getNodeInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Retrieve a piece of information about a given node by key.</span>
+
+<span class="sd">        Example: descr = g.getNodeInfo(nid, &#39;Description&#39;, default=&#39;OH HAI&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NodeNonExistant</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Graph.getNodeProps"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getNodeProps">[docs]</a>    <span class="k">def</span> <span class="nf">getNodeProps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the node info dictionary for the specified node.</span>
+
+<span class="sd">        Example: d = g.getNodeProps(nid)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Graph.addNode"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.addNode">[docs]</a>    <span class="k">def</span> <span class="nf">addNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ninfo</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a Node object to the graph.  Returns the nodeid.</span>
+
+<span class="sd">        Example: nid = g.addNode()</span>
+<span class="sd">                 g.addNode(&#39;woot&#39;, {&#39;height&#39;:20, &#39;width&#39;:20})</span>
+
+<span class="sd">        NOTE: If nodeid is unspecified, it is considered an &#39;anonymous&#39;</span>
+<span class="sd">              node and will have an ID automagically assigned.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">nodeid</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">nodeid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nidgen</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DuplicateNode</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ninfo</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ninfo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">ninfo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;nodeid&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodeid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">nodeid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ninfo</span>
+        <span class="k">return</span> <span class="n">nodeid</span>
+</div>
+<div class="viewcode-block" id="Graph.delNode"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.delNode">[docs]</a>    <span class="k">def</span> <span class="nf">delNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span><span class="n">nfrom</span><span class="p">,</span><span class="n">nto</span><span class="p">,</span><span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delEdge</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span><span class="n">nfrom</span><span class="p">,</span><span class="n">nto</span><span class="p">,</span><span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefsTo</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delEdge</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Graph.getNode"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getNode">[docs]</a>    <span class="k">def</span> <span class="nf">getNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the dictionary of properties for the specified node id.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Graph.getNodes"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getNodes">[docs]</a>    <span class="k">def</span> <span class="nf">getNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of (nodeid, nodeinfo) tuples.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Graph.hasNode"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.hasNode">[docs]</a>    <span class="k">def</span> <span class="nf">hasNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Check if a given node is present within the graph.</span>
+
+<span class="sd">        Example: if g.hasNode(&#39;yermom&#39;): print &#39;woot&#39;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Graph.addEdge"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.addEdge">[docs]</a>    <span class="k">def</span> <span class="nf">addEdge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">eid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">einfo</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add an edge to the graph.  Edges are directional.</span>
+
+<span class="sd">        Example: g.addEdge(node_1, node_2, einfo={&#39;name&#39;:&#39;Woot Edge&#39;})</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">einfo</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">einfo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">einfo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eid</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">eid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eidgen</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="p">(</span><span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">eid</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+        <span class="n">xlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_from</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fromid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xlist</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">xlist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_from</span><span class="p">[</span><span class="n">fromid</span><span class="p">]</span> <span class="o">=</span> <span class="n">xlist</span>
+        <span class="n">ylist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_to</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">toid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ylist</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ylist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_to</span><span class="p">[</span><span class="n">toid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ylist</span>
+        <span class="n">xlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">ylist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">eid</span>
+</div>
+<div class="viewcode-block" id="Graph.delEdge"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.delEdge">[docs]</a>    <span class="k">def</span> <span class="nf">delEdge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Delete an edge from the graph (by eid).</span>
+
+<span class="sd">        Example: g.delEdge(eid)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">eid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">EdgeNonExistant</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+
+        <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="o">=</span> <span class="n">e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_to</span><span class="p">[</span><span class="n">toid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_to</span><span class="p">[</span><span class="n">toid</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">eid</span> <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_from</span><span class="p">[</span><span class="n">fromid</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_from</span><span class="p">[</span><span class="n">fromid</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">eid</span> <span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Graph.getRefsFrom"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getRefsFrom">[docs]</a>    <span class="k">def</span> <span class="nf">getRefsFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of edges which originate with us.</span>
+
+<span class="sd">        Example: for eid, fromid, toid, einfo in g.getRefsFrom(id)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_from</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="Graph.getRefsTo"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getRefsTo">[docs]</a>    <span class="k">def</span> <span class="nf">getRefsTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of edges which terminate at us.</span>
+
+<span class="sd">        Example: for eid, fromid, toid, einfo in g.getRefsFrom(id)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_by_to</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nodeid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="Graph.getClusterGraphs"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.getClusterGraphs">[docs]</a>    <span class="k">def</span> <span class="nf">getClusterGraphs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of the subgraph clusters (as graphs) contained</span>
+<span class="sd">        within this graph.  A subgraph &quot;cluster&quot; is defined as a</span>
+<span class="sd">        group of interconnected nodes.  This can be used to split</span>
+<span class="sd">        out grouped subgraphs from within a larger graph.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodes</span><span class="p">()</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">done</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="c"># Generate the cluster subgraph</span>
+            <span class="n">todo</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">),</span> <span class="p">]</span>
+            <span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">todo</span><span class="p">):</span>
+                <span class="n">gnid</span><span class="p">,</span> <span class="n">gninfo</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+                <span class="n">done</span><span class="p">[</span><span class="n">gnid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="n">gnid</span><span class="p">):</span>
+                    <span class="n">g</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">nodeid</span><span class="o">=</span><span class="n">gnid</span><span class="p">,</span> <span class="n">ninfo</span><span class="o">=</span><span class="n">gninfo</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">eid</span><span class="p">,</span><span class="n">n1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">gnid</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="n">n2</span><span class="p">):</span>
+                        <span class="n">n2info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+                        <span class="n">g</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">nodeid</span><span class="o">=</span><span class="n">n2</span><span class="p">,</span> <span class="n">ninfo</span><span class="o">=</span><span class="n">n2info</span><span class="p">)</span>
+                        <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n2</span><span class="p">,</span> <span class="n">n2info</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">getEdge</span><span class="p">(</span><span class="n">eid</span><span class="p">):</span>
+                        <span class="n">g</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">eid</span><span class="o">=</span><span class="n">eid</span><span class="p">,</span> <span class="n">einfo</span><span class="o">=</span><span class="n">einfo</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">eid</span><span class="p">,</span><span class="n">n1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefsTo</span><span class="p">(</span><span class="n">gnid</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">getNode</span><span class="p">(</span><span class="n">n1</span><span class="p">):</span>
+                        <span class="n">n1info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+                        <span class="n">g</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">nodeid</span><span class="o">=</span><span class="n">n1</span><span class="p">,</span> <span class="n">ninfo</span><span class="o">=</span><span class="n">n1info</span><span class="p">)</span>
+                        <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1info</span><span class="p">))</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="o">.</span><span class="n">getEdge</span><span class="p">(</span><span class="n">eid</span><span class="p">):</span>
+                        <span class="n">g</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">eid</span><span class="o">=</span><span class="n">eid</span><span class="p">,</span> <span class="n">einfo</span><span class="o">=</span><span class="n">einfo</span><span class="p">)</span>
+
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+                
+</div>
+<div class="viewcode-block" id="Graph.pathSearchOne"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.pathSearchOne">[docs]</a>    <span class="k">def</span> <span class="nf">pathSearchOne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathSearch</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">p</span>
+</div>
+<div class="viewcode-block" id="Graph.pathSearch"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.pathSearch">[docs]</a>    <span class="k">def</span> <span class="nf">pathSearch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">edgecb</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">tocb</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Search for the shortest path from one node to another</span>
+<span class="sd">        with the option to filter based on edges using</span>
+<span class="sd">        edgecb.  edgecb should be a function:</span>
+
+<span class="sd">        def myedgecb(graph, eid, fromid, toid, depth)</span>
+
+<span class="sd">        which returns True if it&#39;s OK to traverse this node</span>
+<span class="sd">        in the search.</span>
+
+<span class="sd">        Additionally, toid may be None and the caller may specify</span>
+<span class="sd">        tocb with a function such as:</span>
+
+<span class="sd">        def mytocb(graph, nid)</span>
+
+<span class="sd">        which must return True on finding the target node</span>
+
+<span class="sd">        Returns a list of edge ids...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">toid</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">tocb</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;You must use either toid or tocb!&#39;</span><span class="p">)</span>
+
+        <span class="n">root</span> <span class="o">=</span> <span class="n">vg_pathcore</span><span class="o">.</span><span class="n">newPathNode</span><span class="p">(</span><span class="n">nid</span><span class="o">=</span><span class="n">fromid</span><span class="p">,</span> <span class="n">eid</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+        <span class="n">todo</span> <span class="o">=</span> <span class="p">[(</span><span class="n">root</span><span class="p">,</span> <span class="mi">0</span><span class="p">),]</span>
+
+        <span class="c"># FIXME make this a deque so it can be FIFO</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">todo</span><span class="p">):</span>
+
+            <span class="n">pnode</span><span class="p">,</span><span class="n">depth</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="c"># popleft()</span>
+            <span class="n">ppnode</span><span class="p">,</span> <span class="n">pkids</span><span class="p">,</span> <span class="n">pprops</span> <span class="o">=</span> <span class="n">pnode</span>
+
+            <span class="n">nid</span> <span class="o">=</span> <span class="n">pprops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;nid&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+
+                <span class="n">eid</span><span class="p">,</span> <span class="n">srcid</span><span class="p">,</span> <span class="n">dstid</span><span class="p">,</span> <span class="n">einfo</span> <span class="o">=</span> <span class="n">edge</span>
+
+                <span class="k">if</span> <span class="n">vg_pathcore</span><span class="o">.</span><span class="n">isPathLoop</span><span class="p">(</span><span class="n">pnode</span><span class="p">,</span> <span class="s">&#39;nid&#39;</span><span class="p">,</span> <span class="n">dstid</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="c"># Check if the callback is present and likes us...</span>
+                <span class="k">if</span> <span class="n">edgecb</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">edgecb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">depth</span><span class="p">):</span>
+                        <span class="k">continue</span>
+
+                <span class="c"># Are we the match?</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">if</span> <span class="n">dstid</span> <span class="o">==</span> <span class="n">toid</span><span class="p">:</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="bp">True</span>
+
+                <span class="k">if</span> <span class="n">tocb</span> <span class="ow">and</span> <span class="n">tocb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dstid</span><span class="p">):</span>
+                    <span class="n">match</span> <span class="o">=</span> <span class="bp">True</span>
+
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+
+                    <span class="n">m</span> <span class="o">=</span> <span class="n">vg_pathcore</span><span class="o">.</span><span class="n">newPathNode</span><span class="p">(</span><span class="n">pnode</span><span class="p">,</span> <span class="n">nid</span><span class="o">=</span><span class="n">dstid</span><span class="p">,</span> <span class="n">eid</span><span class="o">=</span><span class="n">eid</span><span class="p">)</span>
+                    <span class="n">path</span> <span class="o">=</span> <span class="n">vg_pathcore</span><span class="o">.</span><span class="n">getPathToNode</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+                    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">ppnode</span><span class="p">,</span> <span class="n">pkids</span><span class="p">,</span> <span class="n">pprops</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+                        <span class="n">eid</span> <span class="o">=</span> <span class="n">pprops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;eid&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">eid</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+
+                    <span class="k">yield</span> <span class="n">ret</span>
+
+                <span class="c"># Add the next set of choices to evaluate.</span>
+                <span class="n">branch</span> <span class="o">=</span> <span class="n">vg_pathcore</span><span class="o">.</span><span class="n">newPathNode</span><span class="p">(</span><span class="n">pnode</span><span class="p">,</span> <span class="n">nid</span><span class="o">=</span><span class="n">dstid</span><span class="p">,</span> <span class="n">eid</span><span class="o">=</span><span class="n">eid</span><span class="p">)</span>
+                <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">branch</span><span class="p">,</span> <span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c">#return []</span>
+</div>
+<div class="viewcode-block" id="Graph.pathSearchFrom"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.Graph.pathSearchFrom">[docs]</a>    <span class="k">def</span> <span class="nf">pathSearchFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">nodecb</span><span class="p">,</span> <span class="n">edgecb</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Search from the specified node (breadth first) until you</span>
+<span class="sd">        find a node where nodecb(graph, nid) == True.  See</span>
+<span class="sd">        pathSearchFromTo for docs on edgecb...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+</div></div>
+<div class="viewcode-block" id="HierarchicalGraph"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.HierarchicalGraph">[docs]</a><span class="k">class</span> <span class="nc">HierarchicalGraph</span><span class="p">(</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    An extension to the graph base which implements the idea of hierarchy</span>
+<span class="sd">    keeping a weight relationship based on the added edges.</span>
+<span class="sd">    Edges are directional from X to y.</span>
+
+<span class="sd">    You must add nodes with the property &quot;rootnode&quot; to know where the</span>
+<span class="sd">    hierarchy begins!</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Graph</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HierarchicalGraph.getRootNodes"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.HierarchicalGraph.getRootNodes">[docs]</a>    <span class="k">def</span> <span class="nf">getRootNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get all the node id&#39;s in this graph which are weight 0 (meaning</span>
+<span class="sd">        they have no parents)...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">nprops</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">nprops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;rootnode&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="HierarchicalGraph.getNodeWeights"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.HierarchicalGraph.getNodeWeights">[docs]</a>    <span class="k">def</span> <span class="nf">getNodeWeights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Calculate the node weights for the given nodes in the hierarchical</span>
+<span class="sd">        graph based on the added &quot;rootnode&quot; nodes.  This will return a dict</span>
+<span class="sd">        of { nodeid: weight, } key-pairs.</span>
+
+<span class="sd">        # NOTE: This will also set the &#39;weight&#39; property on the nodes</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">todo</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="p">[])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRootNodes</span><span class="p">()</span> <span class="p">]</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">todo</span><span class="p">):</span>
+
+            <span class="n">nid</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+            <span class="n">cweight</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">nid</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cweight</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+            <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nid</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">toid</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">toid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+                    <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">toid</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">weight</span> <span class="ow">in</span> <span class="n">weights</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setNodeInfo</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="s">&#39;weight&#39;</span><span class="p">,</span> <span class="n">weight</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">weights</span>
+</div>
+<div class="viewcode-block" id="HierarchicalGraph.getPathCount"><a class="viewcode-back" href="../../visgraph.html#visgraph.graphcore.HierarchicalGraph.getPathCount">[docs]</a>    <span class="k">def</span> <span class="nf">getPathCount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the number of non-looped paths through this function.</span>
+
+<span class="sd">        NOTE: one small issue, &quot;spiral&quot; functions where the leaf node</span>
+<span class="sd">              has a lower weight than a block which must reach it by a</span>
+<span class="sd">              looped path will be a few total paths short...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">leafnodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># We must put all nodes into weight order</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeWeights</span><span class="p">()</span>
+
+        <span class="c"># Initialize all nodes to 0</span>
+        <span class="c"># (and populate leafnodes list...)</span>
+        <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodes</span><span class="p">():</span>
+
+            <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nid</span><span class="p">),</span> <span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">)</span> <span class="p">)</span>
+            <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;pathcount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c"># No refs from means leaf</span>
+            <span class="n">xrfcnt</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">xrfcnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">leafnodes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span><span class="p">))</span>
+
+            <span class="c"># Seed root nodes with a path</span>
+            <span class="k">if</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;rootnode&#39;</span><span class="p">):</span>
+                <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;pathcount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+        <span class="c"># Lets make the list of nodes *ordered* by weight</span>
+        <span class="n">nodes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="c"># Now tally ho!</span>
+        <span class="k">for</span> <span class="n">weight</span><span class="p">,</span> <span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+
+            <span class="c"># Here&#39;s the magic... In *hierarchy order* each node</span>
+            <span class="c"># gets the sum of the paths of his parents.</span>
+            <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+                <span class="n">props</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">toid</span><span class="p">)</span>
+                <span class="c"># A reference to somebody at our weight (probably self)</span>
+                <span class="c"># is considered a loop...</span>
+                <span class="k">if</span> <span class="n">weights</span><span class="p">[</span><span class="n">toid</span><span class="p">]</span> <span class="o">==</span> <span class="n">weight</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">props</span><span class="p">[</span><span class="s">&#39;pathcount&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;pathcount&#39;</span><span class="p">]</span>
+
+        <span class="n">totcount</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span> <span class="ow">in</span> <span class="n">leafnodes</span><span class="p">:</span>
+            <span class="n">totcount</span> <span class="o">+=</span> <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;pathcount&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">totcount</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

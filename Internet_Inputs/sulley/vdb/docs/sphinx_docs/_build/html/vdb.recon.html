@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>recon Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="recon-package">
+<h1>recon Package<a class="headerlink" href="#recon-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">recon</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vdb.recon"></span><p>The recon subsystem for monitoring well known library
+calls and identifying dangerous calling mechanisms.</p>
+<p>NOTE: This subsystem pretty much assumes some intel-like
+conventions...</p>
+<dl class="docutils">
+<dt>Recon Format Chars:</dt>
+<dd>A - A NULL terminated ascii string
+W - A NULL terminated utf-16le string
+P - A platform width pointer
+I - An integer (32 bits for now...)</dd>
+</dl>
+<dl class="class">
+<dt id="vdb.recon.ReconBreak">
+<em class="property">class </em><tt class="descclassname">vdb.recon.</tt><tt class="descname">ReconBreak</tt><big>(</big><em>symname</em>, <em>reconfmt</em><big>)</big><a class="reference internal" href="_modules/vdb/recon.html#ReconBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.ReconBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<dl class="method">
+<dt id="vdb.recon.ReconBreak.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb/recon.html#ReconBreak.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.ReconBreak.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.recon.ReconBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/recon.html#ReconBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.ReconBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.addReconBreak">
+<tt class="descclassname">vdb.recon.</tt><tt class="descname">addReconBreak</tt><big>(</big><em>trace</em>, <em>symname</em>, <em>reconfmt</em><big>)</big><a class="reference internal" href="_modules/vdb/recon.html#addReconBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.addReconBreak" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.clearReconHits">
+<tt class="descclassname">vdb.recon.</tt><tt class="descname">clearReconHits</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/recon.html#clearReconHits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.clearReconHits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the current list of recon hits.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.getReconHits">
+<tt class="descclassname">vdb.recon.</tt><tt class="descname">getReconHits</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/recon.html#getReconHits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.getReconHits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of recon &#8220;hits&#8221; entries.  Each hit entry is a tuple
+of (threadid, savedeip, symname, argtup, argreprtup).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.reprargs">
+<tt class="descclassname">vdb.recon.</tt><tt class="descname">reprargs</tt><big>(</big><em>trace</em>, <em>fmt</em>, <em>args</em><big>)</big><a class="reference internal" href="_modules/vdb/recon.html#reprargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.reprargs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vdb.recon.dopestack">
+<span id="dopestack-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">dopestack</span></tt> Module<a class="headerlink" href="#module-vdb.recon.dopestack" title="Permalink to this headline">¶</a></h2>
+<p>A quick set of tools for doing stack doping.</p>
+<dl class="class">
+<dt id="vdb.recon.dopestack.ThreadDopeNotifier">
+<em class="property">class </em><tt class="descclassname">vdb.recon.dopestack.</tt><tt class="descname">ThreadDopeNotifier</tt><a class="reference internal" href="_modules/vdb/recon/dopestack.html#ThreadDopeNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.dopestack.ThreadDopeNotifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.notifiers.Notifier" title="vtrace.notifiers.Notifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.notifiers.Notifier</span></tt></a></p>
+<dl class="method">
+<dt id="vdb.recon.dopestack.ThreadDopeNotifier.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/dopestack.html#ThreadDopeNotifier.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.dopestack.ThreadDopeNotifier.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.dopestack.disableEventDoping">
+<tt class="descclassname">vdb.recon.dopestack.</tt><tt class="descname">disableEventDoping</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/dopestack.html#disableEventDoping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.dopestack.disableEventDoping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.dopestack.dopeAllThreadStacks">
+<tt class="descclassname">vdb.recon.dopestack.</tt><tt class="descname">dopeAllThreadStacks</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/dopestack.html#dopeAllThreadStacks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.dopestack.dopeAllThreadStacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply stack doping to all thread stacks.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.dopestack.dopeThreadStack">
+<tt class="descclassname">vdb.recon.dopestack.</tt><tt class="descname">dopeThreadStack</tt><big>(</big><em>trace</em>, <em>threadid</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/dopestack.html#dopeThreadStack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.dopestack.dopeThreadStack" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.dopestack.enableEventDoping">
+<tt class="descclassname">vdb.recon.dopestack.</tt><tt class="descname">enableEventDoping</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/dopestack.html#enableEventDoping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.dopestack.enableEventDoping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vdb.recon.sniper">
+<span id="sniper-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">sniper</span></tt> Module<a class="headerlink" href="#module-vdb.recon.sniper" title="Permalink to this headline">¶</a></h2>
+<p>Specialized breakpoints which identify dangerous calling
+mechanisms and tag them.</p>
+<dl class="class">
+<dt id="vdb.recon.sniper.SniperArgValueBreak">
+<em class="property">class </em><tt class="descclassname">vdb.recon.sniper.</tt><tt class="descname">SniperArgValueBreak</tt><big>(</big><em>symname</em>, <em>argidx</em>, <em>argval</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/sniper.html#SniperArgValueBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.sniper.SniperArgValueBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>A breakpoint for monitoring an API for being called with a particular
+value.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.recon.sniper.SniperDynArgBreak">
+<em class="property">class </em><tt class="descclassname">vdb.recon.sniper.</tt><tt class="descname">SniperDynArgBreak</tt><big>(</big><em>symname</em>, <em>argidx</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/sniper.html#SniperDynArgBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.sniper.SniperDynArgBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>A breakpoint for use in determining if an API was called
+with a dynamic pointer.</p>
+<dl class="method">
+<dt id="vdb.recon.sniper.SniperDynArgBreak.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb/recon/sniper.html#SniperDynArgBreak.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.sniper.SniperDynArgBreak.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.recon.sniper.SniperDynArgBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/sniper.html#SniperDynArgBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.sniper.SniperDynArgBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.sniper.getStackArg">
+<tt class="descclassname">vdb.recon.sniper.</tt><tt class="descname">getStackArg</tt><big>(</big><em>trace</em>, <em>argidx</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/sniper.html#getStackArg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.sniper.getStackArg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assuming we are at the instruction after
+a call, grab the stack argument at the specified
+index (skipping the saved instruction pointer).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.recon.sniper.snipeDynArg">
+<tt class="descclassname">vdb.recon.sniper.</tt><tt class="descname">snipeDynArg</tt><big>(</big><em>trace</em>, <em>symname</em>, <em>argidx</em><big>)</big><a class="reference internal" href="_modules/vdb/recon/sniper.html#snipeDynArg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.recon.sniper.snipeDynArg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a SnyperDynArgBreak and snap it in.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">recon Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">recon</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-vdb.recon.dopestack"><tt class="docutils literal"><span class="pre">dopestack</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vdb.recon.sniper"><tt class="docutils literal"><span class="pre">sniper</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vdb.recon.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

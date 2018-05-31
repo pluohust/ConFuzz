@@ -1,0 +1,140 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vdb.recon.dopestack &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vdb.recon" href="../recon.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../recon.html" accesskey="U">vdb.recon</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vdb.recon.dopestack</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A quick set of tools for doing stack doping.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">vtrace</span>
+
+<div class="viewcode-block" id="dopeThreadStack"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.dopestack.dopeThreadStack">[docs]</a><span class="k">def</span> <span class="nf">dopeThreadStack</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+    <span class="n">curthread</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getCurrentThread</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">selectThread</span><span class="p">(</span><span class="n">threadid</span><span class="p">)</span>
+        <span class="n">sp</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStackCounter</span><span class="p">()</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Thread </span><span class="si">%d</span><span class="s"> has invalid stack pointer 0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">threadid</span><span class="p">,</span> <span class="n">sp</span><span class="p">))</span>
+
+        <span class="n">mapva</span><span class="p">,</span> <span class="n">mapsize</span><span class="p">,</span> <span class="n">mperms</span><span class="p">,</span> <span class="n">mfname</span> <span class="o">=</span> <span class="nb">map</span>
+
+        <span class="n">dopesize</span> <span class="o">=</span> <span class="n">sp</span> <span class="o">-</span> <span class="n">mapva</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="n">mapva</span><span class="p">,</span> <span class="s">&#39;V&#39;</span> <span class="o">*</span> <span class="n">dopesize</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;dopeThreadStack Failed On </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">threadid</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">selectThread</span><span class="p">(</span><span class="n">curthread</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="dopeAllThreadStacks"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.dopestack.dopeAllThreadStacks">[docs]</a><span class="k">def</span> <span class="nf">dopeAllThreadStacks</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Apply stack doping to all thread stacks.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">threadid</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">dopeThreadStack</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">threadid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ThreadDopeNotifier"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.dopestack.ThreadDopeNotifier">[docs]</a><span class="k">class</span> <span class="nc">ThreadDopeNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ThreadDopeNotifier.notify"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.dopestack.ThreadDopeNotifier.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">dopeAllThreadStacks</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+</div></div>
+<span class="n">dopenotif</span> <span class="o">=</span> <span class="n">ThreadDopeNotifier</span><span class="p">()</span>
+
+<div class="viewcode-block" id="enableEventDoping"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.dopestack.enableEventDoping">[docs]</a><span class="k">def</span> <span class="nf">enableEventDoping</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CONTINUE</span><span class="p">,</span> <span class="n">dopenotif</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="disableEventDoping"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.dopestack.disableEventDoping">[docs]</a><span class="k">def</span> <span class="nf">disableEventDoping</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">deregisterNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CONTINUE</span><span class="p">,</span> <span class="n">dopenotif</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../recon.html" >vdb.recon</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

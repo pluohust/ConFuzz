@@ -1,0 +1,985 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>envi.registers.RegisterContext</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="envi-module.html">Package&nbsp;envi</a> ::
+        <a href="envi.registers-module.html">Module&nbsp;registers</a> ::
+        Class&nbsp;RegisterContext
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="envi.registers.RegisterContext-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class RegisterContext</h1><p class="nomargin-top"><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext">source&nbsp;code</a></span></p>
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="envi.Emulator-class.html">Emulator</a></li><li>, <a href="envi.archs.arm.regs.ArmRegisterContext-class.html">archs.arm.regs.ArmRegisterContext</a></li><li>, <a href="envi.archs.i386.regs.i386RegisterContext-class.html">archs.i386.regs.i386RegisterContext</a></li><li>, <a href="envi.archs.amd64.regs.Amd64RegisterContext-class.html">archs.amd64.regs.Amd64RegisterContext</a></li><li>, <a href="envi.archs.z80.regs.z80RegisterContext-class.html">archs.z80.regs.z80RegisterContext</a></li><li>, <a href="vtrace.Trace-class.html">vtrace.Trace</a></li><li>, <a href="vtrace.platforms.gdbstub.GdbStubMixin_old-class.html">vtrace.platforms.gdbstub.GdbStubMixin_old</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">regdef</span>=<span class="summary-sig-default"><code class="variable-group">(</code><code class="variable-group">)</code></span>,
+        <span class="summary-sig-arg">metas</span>=<span class="summary-sig-default"><code class="variable-group">(</code><code class="variable-group">)</code></span>,
+        <span class="summary-sig-arg">pcindex</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">spindex</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Hand in a register definition which consists of a list of 
+      (&lt;name&gt;, &lt;width&gt;) tuples.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_rctx_Export"></a><span class="summary-sig-name">_rctx_Export</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sobj</span>)</span><br />
+      Given an object with attributes with the same names as registers in 
+      our context, set the ones he has to match our values.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext._rctx_Export">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#_rctx_Import" class="summary-sig-name" onclick="show_private();">_rctx_Import</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sobj</span>)</span><br />
+      Given an object with attributes with the same names as registers in 
+      our context, populate our values from it.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext._rctx_Import">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_xlateToMetaReg"></a><span class="summary-sig-name">_xlateToMetaReg</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Translate a register value to the meta register value (used when 
+      getting a meta register)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext._xlateToMetaReg">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_xlateToNativeReg"></a><span class="summary-sig-name">_xlateToNativeReg</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Translate a register value to the native register value (used when 
+      setting a meta register)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext._xlateToNativeReg">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#addMetaRegister" class="summary-sig-name">addMetaRegister</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">idx</span>,
+        <span class="summary-sig-arg">offset</span>,
+        <span class="summary-sig-arg">width</span>)</span><br />
+      Meta registers are registers which are really just directly 
+      addressable parts of already existing registers (eax -&gt; al).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.addMetaRegister">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#getMetaRegInfo" class="summary-sig-name">getMetaRegInfo</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span><br />
+      Return the appropriate realreg, shift, mask info
+for the specified metareg idx (or None if it's not
+meta).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getMetaRegInfo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getProgramCounter"></a><span class="summary-sig-name">getProgramCounter</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the value of the program counter for this register context.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getProgramCounter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getRegDef"></a><span class="summary-sig-name">getRegDef</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegDef">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getRegister"></a><span class="summary-sig-name">getRegister</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span><br />
+      Return the current value of the specified register index.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegister">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getRegisterByName"></a><span class="summary-sig-name">getRegisterByName</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterByName">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#getRegisterIndex" class="summary-sig-name">getRegisterIndex</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Get a register index by name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterIndex">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#getRegisterInfo" class="summary-sig-name">getRegisterInfo</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">meta</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Return an object which can be stored off, and restored to 
+      re-initialize a register context.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterInfo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getRegisterName"></a><span class="summary-sig-name">getRegisterName</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterName">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#getRegisterNameIndexes" class="summary-sig-name">getRegisterNameIndexes</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of all the &quot;real&quot; (non meta) registers and 
+      their indexes.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterNameIndexes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getRegisterNames"></a><span class="summary-sig-name">getRegisterNames</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterNames">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getRegisterSnap"></a><span class="summary-sig-name">getRegisterSnap</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Use this to bulk save off the register state.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterSnap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getRegisterWidth"></a><span class="summary-sig-name">getRegisterWidth</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span><br />
+      Return the width of the register which lives at the specified index 
+      (width is always in bits).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterWidth">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getRegisters"></a><span class="summary-sig-name">getRegisters</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get all the *real* registers from this context as a dictionary of 
+      name value pairs.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisters">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getStackCounter"></a><span class="summary-sig-name">getStackCounter</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getStackCounter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isDirty"></a><span class="summary-sig-name">isDirty</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns true if registers in this context have been modififed since 
+      their import.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.isDirty">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isMetaRegister"></a><span class="summary-sig-name">isMetaRegister</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.isMetaRegister">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#loadRegDef" class="summary-sig-name">loadRegDef</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">regdef</span>,
+        <span class="summary-sig-arg">defval</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Load a register definition.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.loadRegDef">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#loadRegMetas" class="summary-sig-name">loadRegMetas</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">metas</span>)</span><br />
+      Load a set of defined &quot;meta&quot; registers for this 
+      architecture.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.loadRegMetas">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="reprRegister"></a><span class="summary-sig-name">reprRegister</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idx</span>)</span><br />
+      This may be used to allow a register context to provide extended repr
+      (flags breakouts, etc) info about a register.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.reprRegister">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setIsDirty"></a><span class="summary-sig-name">setIsDirty</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bool</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setIsDirty">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setProgramCounter"></a><span class="summary-sig-name">setProgramCounter</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set the value of the program counter for this register contex.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setProgramCounter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setRegister"></a><span class="summary-sig-name">setRegister</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">index</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set a register value by index.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setRegister">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setRegisterByName"></a><span class="summary-sig-name">setRegisterByName</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setRegisterByName">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setRegisterIndexes"></a><span class="summary-sig-name">setRegisterIndexes</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pcindex</span>,
+        <span class="summary-sig-arg">spindex</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setRegisterIndexes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setRegisterInfo"></a><span class="summary-sig-name">setRegisterInfo</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">info</span>)</span><br />
+      Import the exported data from</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setRegisterInfo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.registers.RegisterContext-class.html#setRegisterSnap" class="summary-sig-name">setRegisterSnap</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">snap</span>)</span><br />
+      Use this to bulk restore the register state.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setRegisterSnap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setRegisters"></a><span class="summary-sig-name">setRegisters</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">regdict</span>)</span><br />
+      For any name value pairs in the specified dictionary, set the current
+      register values in this context.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setRegisters">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setStackCounter"></a><span class="summary-sig-name">setStackCounter</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setStackCounter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="_rctx_Import"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_rctx_Import</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sobj</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext._rctx_Import">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Given an object with attributes with the same names as registers in 
+  our context, populate our values from it.</p>
+  <p>NOTE: This also clears the dirty flag</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="addMetaRegister"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addMetaRegister</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">idx</span>,
+        <span class="sig-arg">offset</span>,
+        <span class="sig-arg">width</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.addMetaRegister">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Meta registers are registers which are really just directly 
+  addressable parts of already existing registers (eax -&gt; al).</p>
+  <p>To add a meta register, you give the name, the idx of the *real* 
+  register, the width of the meta reg, and it's left shifted (in bits) 
+  offset into the real register value.  The RegisterContext will take care 
+  of accesses after that.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMetaRegInfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMetaRegInfo</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">index</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getMetaRegInfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Return the appropriate realreg, shift, mask info
+for the specified metareg idx (or None if it's not
+meta).
+
+Example:
+    real_reg, lshift, mask = r.getMetaRegInfo(x)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getRegisterIndex"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRegisterIndex</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterIndex">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get a register index by name. (faster to use the index multiple 
+  times)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getRegisterInfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRegisterInfo</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">meta</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterInfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return an object which can be stored off, and restored to 
+  re-initialize a register context.  (much like snapshot but it takes the 
+  definitions with it)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getRegisterNameIndexes"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRegisterNameIndexes</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.getRegisterNameIndexes">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a list of all the &quot;real&quot; (non meta) registers and 
+  their indexes.</p>
+  <p>Example: for regname, regidx in x.getRegisterNameIndexes():</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="loadRegDef"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">loadRegDef</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">regdef</span>,
+        <span class="sig-arg">defval</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.loadRegDef">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Load a register definition.  A register definition consists of a list 
+  of tuples with the following format: (regname, regwidth)</p>
+  <p>NOTE: All widths in envi RegisterContexts are in bits.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="loadRegMetas"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">loadRegMetas</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">metas</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.loadRegMetas">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Load a set of defined &quot;meta&quot; registers for this 
+  architecture.  Meta registers are defined as registers who exist as a 
+  subset of the bits in some other &quot;real&quot; register. The argument 
+  metas is a list of tuples with the following format: (regname, 
+  reg_shift_offset, reg_width) The given example is for the AX register in 
+  the i386 subsystem regname: &quot;ax&quot; reg_shift_offset: 0 reg_width:
+  16</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setRegisterSnap"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setRegisterSnap</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">snap</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi.registers-pysrc.html#RegisterContext.setRegisterSnap">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Use this to bulk restore the register state.
+
+NOTE: This may only be used under the assumption that the
+      RegisterContext has been initialized the same way
+      (like context switches in tracers, or emulaction snaps)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:12 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

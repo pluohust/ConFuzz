@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.codeflow &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="envi" href="../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.codeflow</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A module to contain code flow analysis for envi opcode objects...</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+
+<div class="viewcode-block" id="CodeFlowContext"><a class="viewcode-back" href="../../envi.html#envi.codeflow.CodeFlowContext">[docs]</a><span class="k">class</span> <span class="nc">CodeFlowContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A CodeFlowContext is used for code-flow (not linear) based disassembly</span>
+<span class="sd">    for an envi MemoryObject (which is responsible for knowing the implementation</span>
+<span class="sd">    of parseOpcode().  The CodeFlowContext will optionally notify several callback</span>
+<span class="sd">    handlers for different events which occur during disassembly:</span>
+
+<span class="sd">    self._cb_opcode(va, op, branches) - called for every newly parsed opcode</span>
+<span class="sd">        NOTE: _cb_opcode must return the desired branches for continued flow</span>
+
+<span class="sd">    self._cb_function(fva, metadict) - called once for every function</span>
+
+<span class="sd">    self._cb_branchtable(tabva, destva) - called for switch tables</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mem</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_funcs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span> <span class="o">=</span> <span class="n">mem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_opdone</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_cb_opcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">branches</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Extend CodeFlowContext and implement this method to recieve</span>
+<span class="sd">        a callback for every newly discovered opcode.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">branches</span>
+
+    <span class="k">def</span> <span class="nf">_cb_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fva</span><span class="p">,</span> <span class="n">fmeta</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Extend CodeFlowContext and implement this method to recieve</span>
+<span class="sd">        a callback for every newly discovered function.  Additionally,</span>
+<span class="sd">        metadata about the function may be stored in the fmeta dict.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_cb_branchtable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tabva</span><span class="p">,</span> <span class="n">destva</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="CodeFlowContext.getCallsFrom"><a class="viewcode-back" href="../../envi.html#envi.codeflow.CodeFlowContext.getCallsFrom">[docs]</a>    <span class="k">def</span> <span class="nf">getCallsFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fva</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_funcs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fva</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CodeFlowContext.addFunctionDef"><a class="viewcode-back" href="../../envi.html#envi.codeflow.CodeFlowContext.addFunctionDef">[docs]</a>    <span class="k">def</span> <span class="nf">addFunctionDef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fva</span><span class="p">,</span> <span class="n">calls_from</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a priori knowledge of a function to the code flow</span>
+<span class="sd">        stuff...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_funcs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fva</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_funcs</span><span class="p">[</span><span class="n">fva</span><span class="p">]</span> <span class="o">=</span> <span class="n">calls_from</span>
+</div>
+<div class="viewcode-block" id="CodeFlowContext.addCodeFlow"><a class="viewcode-back" href="../../envi.html#envi.codeflow.CodeFlowContext.addCodeFlow">[docs]</a>    <span class="k">def</span> <span class="nf">addCodeFlow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">exptable</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Do code flow disassembly from the specified address.  Returnes a list</span>
+<span class="sd">        of the procedural branch targets discovered during code flow...</span>
+
+<span class="sd">        Set persist=True to store &#39;opdone&#39; and never disassemble the same thing twice</span>
+<span class="sd">        Set exptable=True to expand branch tables in this phase</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">opdone</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_opdone</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">persist</span><span class="p">:</span>
+            <span class="n">opdone</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">calls_from</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">optodo</span> <span class="o">=</span> <span class="p">[</span><span class="n">va</span><span class="p">,</span> <span class="p">]</span>
+
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">optodo</span><span class="p">):</span>
+
+            <span class="n">va</span> <span class="o">=</span> <span class="n">optodo</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">opdone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">va</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">opdone</span><span class="p">[</span><span class="n">va</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span><span class="o">.</span><span class="n">parseOpcode</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;parseOpcodeError at 0x</span><span class="si">%.8x</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">va</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+                <span class="c"># FIXME code block breakage...</span>
+                <span class="k">continue</span>
+
+            <span class="n">branches</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">getBranches</span><span class="p">()</span>
+            <span class="c"># The opcode callback may filter branches...</span>
+            <span class="n">branches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cb_opcode</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">branches</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">branches</span><span class="p">):</span>
+
+                <span class="n">bva</span><span class="p">,</span> <span class="n">bflags</span> <span class="o">=</span> <span class="n">branches</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+                <span class="c"># Don&#39;t worry about unresolved branches now...</span>
+                <span class="k">if</span> <span class="n">bva</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c"># Handle a table branch by adding more branches...</span>
+                <span class="k">if</span> <span class="n">bflags</span> <span class="o">&amp;</span> <span class="n">envi</span><span class="o">.</span><span class="n">BR_TABLE</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">exptable</span><span class="p">:</span>
+                        <span class="n">ptrbase</span> <span class="o">=</span> <span class="n">bva</span>
+                        <span class="n">bdest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">ptrbase</span><span class="p">,</span> <span class="s">&#39;&lt;P&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">tabdone</span> <span class="o">=</span> <span class="p">{}</span>
+                        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span><span class="o">.</span><span class="n">isValidPointer</span><span class="p">(</span><span class="n">bdest</span><span class="p">):</span>
+
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_cb_branchtable</span><span class="p">(</span><span class="n">ptrbase</span><span class="p">,</span> <span class="n">bdest</span><span class="p">)</span>
+
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">tabdone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bdest</span><span class="p">):</span>
+                                <span class="n">tabdone</span><span class="p">[</span><span class="n">bdest</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                                <span class="n">branches</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">bdest</span><span class="p">,</span> <span class="n">envi</span><span class="o">.</span><span class="n">BR_COND</span><span class="p">))</span>
+
+                            <span class="n">ptrbase</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span><span class="o">.</span><span class="n">psize</span>
+                            <span class="n">bdest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">ptrbase</span><span class="p">,</span> <span class="s">&#39;&lt;P&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                    <span class="k">continue</span>
+
+                <span class="c"># FIXME handle conditionals here for block boundary detection!</span>
+
+                <span class="k">if</span> <span class="n">bflags</span> <span class="o">&amp;</span> <span class="n">envi</span><span class="o">.</span><span class="n">BR_DEREF</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span><span class="o">.</span><span class="n">probeMemory</span><span class="p">(</span><span class="n">bva</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">MM_READ</span><span class="p">):</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">bva</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">bva</span><span class="p">,</span> <span class="s">&#39;&lt;P&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem</span><span class="o">.</span><span class="n">probeMemory</span><span class="p">(</span><span class="n">bva</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">MM_EXEC</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">bflags</span> <span class="o">&amp;</span> <span class="n">envi</span><span class="o">.</span><span class="n">BR_PROC</span><span class="p">:</span>
+
+                    <span class="c"># Record that the current code flow has a call from it</span>
+                    <span class="c"># to the branch target...</span>
+
+                    <span class="c"># FIXME intel hack, call 0, pop reg for geteip...</span>
+                    <span class="k">if</span> <span class="n">bva</span> <span class="o">!=</span> <span class="n">va</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">op</span><span class="p">):</span>
+                        <span class="n">calls_from</span><span class="p">[</span><span class="n">bva</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                        <span class="c"># We only go up to procedural branches, not across</span>
+                        <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">opdone</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bva</span><span class="p">):</span>
+                    <span class="n">optodo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bva</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">calls_from</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_handleFunc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">pth</span><span class="p">):</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># Check if this is already a known function.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_funcs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">va</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_funcs</span><span class="p">[</span><span class="n">va</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c"># Check if we have disassembled a loop</span>
+        <span class="k">if</span> <span class="n">va</span> <span class="ow">in</span> <span class="n">pth</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">pth</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+
+        <span class="n">calls_from</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addCodeFlow</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">callto</span> <span class="ow">in</span> <span class="n">calls_from</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handleFunc</span><span class="p">(</span><span class="n">callto</span><span class="p">,</span> <span class="n">pth</span><span class="o">=</span><span class="n">pth</span><span class="p">)</span>
+
+        <span class="n">pth</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="c"># Finally, notify the callback of a new function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cb_function</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;CallsFrom&#39;</span><span class="p">:</span><span class="n">calls_from</span><span class="p">})</span>
+
+<div class="viewcode-block" id="CodeFlowContext.addEntryPoint"><a class="viewcode-back" href="../../envi.html#envi.codeflow.CodeFlowContext.addEntryPoint">[docs]</a>    <span class="k">def</span> <span class="nf">addEntryPoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Analyze the given procedure entry point and flow downward</span>
+<span class="sd">        to find all subsequent code blocks and procedure edges.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_entries</span><span class="p">[</span><span class="n">va</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handleFunc</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="p">[])</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

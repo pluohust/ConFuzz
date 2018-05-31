@@ -1,0 +1,738 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Elf &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for Elf</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Kenshoto&#39;s Elf parser</span>
+
+<span class="sd">This package will let you use programatic ninja-fu</span>
+<span class="sd">when trying to parse Elf binaries.  The API is based</span>
+<span class="sd">around several objects representing constructs in the</span>
+<span class="sd">Elf binary format.  The Elf object itself contains</span>
+<span class="sd">parsed metadata and lists of things like section headers</span>
+<span class="sd">and relocation entries.  Additionally, most of the</span>
+<span class="sd">objects implement repr() in some form or another which</span>
+<span class="sd">allows you a bunch of readelf-like functionality.</span>
+
+<span class="sd">*Eventually* this API will allow you to modify Elf binaries</span>
+<span class="sd">and spit them back out in working order (not complete, you</span>
+<span class="sd">may notice some of the initial code).</span>
+
+<span class="sd">Send bug reports to Invisigoth or Metr0.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">zlib</span>
+
+<span class="kn">from</span> <span class="nn">stat</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">Elf.elf_lookup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+<span class="kn">import</span> <span class="nn">vstruct.defs.elf</span> <span class="kn">as</span> <span class="nn">vs_elf</span>
+
+<span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="ElfReloc"><a class="viewcode-back" href="../Elf.html#Elf.ElfReloc">[docs]</a><span class="k">class</span> <span class="nc">ElfReloc</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Elf relocation entries consist mostly of &quot;fixup&quot; address which</span>
+<span class="sd">    are taken care of by the loader at runtime.  Things like</span>
+<span class="sd">    GOT entries, PLT jmp codes etc all have an Elf relocation</span>
+<span class="sd">    entry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">=</span> <span class="n">r_types</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s"> &lt;</span><span class="si">%s</span><span class="s">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_offset</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">getName</span><span class="p">(),</span><span class="bp">self</span><span class="o">.</span><span class="n">getTypeName</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ElfReloc.setName"><a class="viewcode-back" href="../Elf.html#Elf.ElfReloc.setName">[docs]</a>    <span class="k">def</span> <span class="nf">setName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</div>
+<div class="viewcode-block" id="ElfReloc.getName"><a class="viewcode-back" href="../Elf.html#Elf.ElfReloc.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</div>
+<div class="viewcode-block" id="ElfReloc.getType"><a class="viewcode-back" href="../Elf.html#Elf.ElfReloc.getType">[docs]</a>    <span class="k">def</span> <span class="nf">getType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_info</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+</div>
+<div class="viewcode-block" id="ElfReloc.getTypeName"><a class="viewcode-back" href="../Elf.html#Elf.ElfReloc.getTypeName">[docs]</a>    <span class="k">def</span> <span class="nf">getTypeName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getType</span><span class="p">(),</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="Elf32Reloc"><a class="viewcode-back" href="../Elf.html#Elf.Elf32Reloc">[docs]</a><span class="k">class</span> <span class="nc">Elf32Reloc</span><span class="p">(</span><span class="n">ElfReloc</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Reloc</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Reloc</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfReloc</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Elf32Reloc.getSymTabIndex"><a class="viewcode-back" href="../Elf.html#Elf.Elf32Reloc.getSymTabIndex">[docs]</a>    <span class="k">def</span> <span class="nf">getSymTabIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_info</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span>
+</div></div>
+<div class="viewcode-block" id="Elf32Reloca"><a class="viewcode-back" href="../Elf.html#Elf.Elf32Reloca">[docs]</a><span class="k">class</span> <span class="nc">Elf32Reloca</span><span class="p">(</span><span class="n">ElfReloc</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Reloca</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Reloca</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfReloc</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Elf32Reloca.getSymTabIndex"><a class="viewcode-back" href="../Elf.html#Elf.Elf32Reloca.getSymTabIndex">[docs]</a>    <span class="k">def</span> <span class="nf">getSymTabIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_info</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span>
+</div></div>
+<div class="viewcode-block" id="Elf64Reloc"><a class="viewcode-back" href="../Elf.html#Elf.Elf64Reloc">[docs]</a><span class="k">class</span> <span class="nc">Elf64Reloc</span><span class="p">(</span><span class="n">ElfReloc</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Reloc</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Reloc</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfReloc</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Elf64Reloc.getSymTabIndex"><a class="viewcode-back" href="../Elf.html#Elf.Elf64Reloc.getSymTabIndex">[docs]</a>    <span class="k">def</span> <span class="nf">getSymTabIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_info</span> <span class="o">&gt;&gt;</span> <span class="mi">32</span>
+</div></div>
+<div class="viewcode-block" id="Elf64Reloca"><a class="viewcode-back" href="../Elf.html#Elf.Elf64Reloca">[docs]</a><span class="k">class</span> <span class="nc">Elf64Reloca</span><span class="p">(</span><span class="n">ElfReloc</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Reloca</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Reloca</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfReloc</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r_types</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Elf64Reloca.getSymTabIndex"><a class="viewcode-back" href="../Elf.html#Elf.Elf64Reloca.getSymTabIndex">[docs]</a>    <span class="k">def</span> <span class="nf">getSymTabIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_info</span> <span class="o">&gt;&gt;</span> <span class="mi">32</span>
+</div></div>
+<div class="viewcode-block" id="ElfDynamic"><a class="viewcode-back" href="../Elf.html#Elf.ElfDynamic">[docs]</a><span class="k">class</span> <span class="nc">ElfDynamic</span><span class="p">:</span>
+    <span class="n">has_string</span> <span class="o">=</span> <span class="p">[</span><span class="n">DT_NEEDED</span><span class="p">,</span><span class="n">DT_SONAME</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An object to represent an Elf dynamic entry.</span>
+<span class="sd">    (linker/loader directives)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">getTypeName</span><span class="p">())</span>
+
+<div class="viewcode-block" id="ElfDynamic.getName"><a class="viewcode-back" href="../Elf.html#Elf.ElfDynamic.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</div>
+<div class="viewcode-block" id="ElfDynamic.setName"><a class="viewcode-back" href="../Elf.html#Elf.ElfDynamic.setName">[docs]</a>    <span class="k">def</span> <span class="nf">setName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</div>
+<div class="viewcode-block" id="ElfDynamic.getTypeName"><a class="viewcode-back" href="../Elf.html#Elf.ElfDynamic.getTypeName">[docs]</a>    <span class="k">def</span> <span class="nf">getTypeName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dt_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_tag</span><span class="p">,</span><span class="s">&quot;Unknown: </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d_tag</span><span class="p">))</span>
+</div></div>
+<div class="viewcode-block" id="Elf32Dynamic"><a class="viewcode-back" href="../Elf.html#Elf.Elf32Dynamic">[docs]</a><span class="k">class</span> <span class="nc">Elf32Dynamic</span><span class="p">(</span><span class="n">ElfDynamic</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Dynamic</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Dynamic</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfDynamic</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf64Dynamic"><a class="viewcode-back" href="../Elf.html#Elf.Elf64Dynamic">[docs]</a><span class="k">class</span> <span class="nc">Elf64Dynamic</span><span class="p">(</span><span class="n">ElfDynamic</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Dynamic</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Dynamic</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfDynamic</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ElfSymbol"><a class="viewcode-back" href="../Elf.html#Elf.ElfSymbol">[docs]</a><span class="k">class</span> <span class="nc">ElfSymbol</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+<div class="viewcode-block" id="ElfSymbol.getInfoType"><a class="viewcode-back" href="../Elf.html#Elf.ElfSymbol.getInfoType">[docs]</a>    <span class="k">def</span> <span class="nf">getInfoType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_info</span> <span class="o">&amp;</span> <span class="mh">0xf</span>
+</div>
+<div class="viewcode-block" id="ElfSymbol.getInfoBind"><a class="viewcode-back" href="../Elf.html#Elf.ElfSymbol.getInfoBind">[docs]</a>    <span class="k">def</span> <span class="nf">getInfoBind</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_info</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span>
+</div>
+    <span class="k">def</span> <span class="nf">__cmp__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_value</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">st_value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+<div class="viewcode-block" id="ElfSymbol.setName"><a class="viewcode-back" href="../Elf.html#Elf.ElfSymbol.setName">[docs]</a>    <span class="k">def</span> <span class="nf">setName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</div>
+<div class="viewcode-block" id="ElfSymbol.getName"><a class="viewcode-back" href="../Elf.html#Elf.ElfSymbol.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</div>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> </span><span class="si">%d</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf32Symbol"><a class="viewcode-back" href="../Elf.html#Elf.Elf32Symbol">[docs]</a><span class="k">class</span> <span class="nc">Elf32Symbol</span><span class="p">(</span><span class="n">ElfSymbol</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Symbol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Symbol</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfSymbol</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf64Symbol"><a class="viewcode-back" href="../Elf.html#Elf.Elf64Symbol">[docs]</a><span class="k">class</span> <span class="nc">Elf64Symbol</span><span class="p">(</span><span class="n">ElfSymbol</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Symbol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Symbol</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfSymbol</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ElfPheader"><a class="viewcode-back" href="../Elf.html#Elf.ElfPheader">[docs]</a><span class="k">class</span> <span class="nc">ElfPheader</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="ElfPheader.getTypeName"><a class="viewcode-back" href="../Elf.html#Elf.ElfPheader.getTypeName">[docs]</a>    <span class="k">def</span> <span class="nf">getTypeName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ph_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_type</span><span class="p">,</span> <span class="s">&quot;Unknown&quot;</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;[</span><span class="si">%35s</span><span class="s">] VMA: 0x</span><span class="si">%.8x</span><span class="s">  offset: </span><span class="si">%8d</span><span class="s">  memsize: </span><span class="si">%8d</span><span class="s">  align: </span><span class="si">%8d</span><span class="s">  (filesz: </span><span class="si">%8d</span><span class="s">)  flags: </span><span class="si">%x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getTypeName</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p_vaddr</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p_offset</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p_memsz</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p_align</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p_filesz</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">p_flags</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf32Pheader"><a class="viewcode-back" href="../Elf.html#Elf.Elf32Pheader">[docs]</a><span class="k">class</span> <span class="nc">Elf32Pheader</span><span class="p">(</span><span class="n">ElfPheader</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Pheader</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Pheader</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfPheader</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf64Pheader"><a class="viewcode-back" href="../Elf.html#Elf.Elf64Pheader">[docs]</a><span class="k">class</span> <span class="nc">Elf64Pheader</span><span class="p">(</span><span class="n">ElfPheader</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Pheader</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Pheader</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfPheader</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ElfSection"><a class="viewcode-back" href="../Elf.html#Elf.ElfSection">[docs]</a><span class="k">class</span> <span class="nc">ElfSection</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+<div class="viewcode-block" id="ElfSection.setName"><a class="viewcode-back" href="../Elf.html#Elf.ElfSection.setName">[docs]</a>    <span class="k">def</span> <span class="nf">setName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+</div>
+<div class="viewcode-block" id="ElfSection.getName"><a class="viewcode-back" href="../Elf.html#Elf.ElfSection.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+</div>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;Elf Section: [</span><span class="si">%20s</span><span class="s">] VMA: 0x</span><span class="si">%.8x</span><span class="s">  offset: </span><span class="si">%8d</span><span class="s">  ent/size: </span><span class="si">%8d</span><span class="s">/</span><span class="si">%8d</span><span class="s">  align: </span><span class="si">%8d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sh_addr</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sh_offset</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sh_entsize</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sh_size</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sh_addralign</span><span class="p">)</span>
+    </div>
+<div class="viewcode-block" id="Elf32Section"><a class="viewcode-back" href="../Elf.html#Elf.Elf32Section">[docs]</a><span class="k">class</span> <span class="nc">Elf32Section</span><span class="p">(</span><span class="n">ElfSection</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Section</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32Section</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfSection</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf64Section"><a class="viewcode-back" href="../Elf.html#Elf.Elf64Section">[docs]</a><span class="k">class</span> <span class="nc">Elf64Section</span><span class="p">(</span><span class="n">ElfSection</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Section</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64Section</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ElfSection</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf"><a class="viewcode-back" href="../Elf.html#Elf.Elf">[docs]</a><span class="k">class</span> <span class="nc">Elf</span><span class="p">(</span><span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32</span><span class="p">,</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">inmem</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+        <span class="c"># Grab a 32bit header to use to check for other</span>
+        <span class="c"># machine types...</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32</span><span class="p">()</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">e_machine</span> <span class="ow">in</span> <span class="n">e_machine_32</span><span class="p">:</span>
+            <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf32</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">=</span> <span class="mi">32</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psize</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">e_machine</span> <span class="ow">in</span> <span class="n">e_machine_64</span><span class="p">:</span>
+            <span class="n">vs_elf</span><span class="o">.</span><span class="n">Elf64</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">=</span> <span class="mi">64</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psize</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Unrecognized e_machine: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="o">.</span><span class="n">e_machine</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="n">fd</span>
+
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_machine</span> <span class="o">==</span> <span class="n">EM_386</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">=</span> <span class="n">r_types_386</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_machine</span> <span class="o">==</span> <span class="n">EM_X86_64</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">=</span> <span class="n">r_types_amd64</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pheaders</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">secnames</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span>  <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relocs</span>   <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbols_by_name</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbols_by_addr</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dynamics</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_symbols</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parsePheaders</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parseSections</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parseSymbols</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parseDynamic</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parseRelocs</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Elf.getRelocTypeName"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getRelocTypeName">[docs]</a>    <span class="k">def</span> <span class="nf">getRelocTypeName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtype</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Because relocation type names are decided based on the</span>
+<span class="sd">        arch, only the Elf knows for sure...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rtype</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">_parsePheaders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Load up any program headers we find</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_phoff</span><span class="p">:</span>
+            <span class="n">pbase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_phoff</span>
+            <span class="n">plen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_phentsize</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_phnum</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                    <span class="n">pgm</span> <span class="o">=</span> <span class="n">Elf32Pheader</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">64</span><span class="p">:</span>
+                    <span class="n">pgm</span> <span class="o">=</span> <span class="n">Elf64Pheader</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Platform not supported: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">))</span>
+
+                <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="n">pbase</span><span class="p">,</span> <span class="n">plen</span><span class="p">)</span>
+                <span class="n">pgm</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">pheaders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pgm</span><span class="p">)</span>
+                <span class="n">pbase</span> <span class="o">+=</span> <span class="n">plen</span>
+
+    <span class="k">def</span> <span class="nf">_parseSections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Load up all the section headers</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_shoff</span><span class="p">:</span>
+            <span class="c"># Load up the sections</span>
+            <span class="n">sbase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_shoff</span>
+            <span class="c"># FIXME this assumes static sized section headers</span>
+            <span class="n">slen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_shentsize</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shnum</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                    <span class="n">sec</span> <span class="o">=</span> <span class="n">Elf32Section</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">64</span><span class="p">:</span>
+                    <span class="n">sec</span> <span class="o">=</span> <span class="n">Elf64Section</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Platform not supported: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">))</span>
+                <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="n">sbase</span><span class="p">,</span> <span class="n">slen</span><span class="p">)</span>
+                <span class="n">sec</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
+                <span class="n">sbase</span> <span class="o">+=</span> <span class="n">slen</span>
+
+            <span class="c"># Populate the section names</span>
+            <span class="n">strsec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shstrndx</span><span class="p">]</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="n">strsec</span><span class="o">.</span><span class="n">sh_offset</span><span class="p">,</span><span class="n">strsec</span><span class="o">.</span><span class="n">sh_size</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">names</span><span class="p">[</span><span class="n">sec</span><span class="o">.</span><span class="n">sh_name</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">sec</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">secnames</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">sec</span>
+
+    <span class="k">def</span> <span class="nf">_parseSymbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse out the symbols that this elf binary has for us.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_type</span> <span class="o">==</span> <span class="n">SHT_SYMTAB</span><span class="p">:</span>
+                <span class="n">symtab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">sh_offset</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_size</span><span class="p">)</span>
+                <span class="k">while</span> <span class="n">symtab</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                        <span class="n">newsym</span> <span class="o">=</span> <span class="n">Elf32Symbol</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">64</span><span class="p">:</span>
+                        <span class="n">newsym</span> <span class="o">=</span> <span class="n">Elf64Symbol</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Platform not supported: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">))</span>
+
+                    <span class="n">newsym</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="n">symtab</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">newsym</span><span class="o">.</span><span class="n">st_name</span><span class="p">:</span>
+                        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStrtabString</span><span class="p">(</span><span class="n">newsym</span><span class="o">.</span><span class="n">st_name</span><span class="p">,</span> <span class="s">&quot;.strtab&quot;</span><span class="p">)</span>
+                        <span class="n">newsym</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">addSymbol</span><span class="p">(</span><span class="n">newsym</span><span class="p">)</span>
+                    <span class="n">symtab</span> <span class="o">=</span> <span class="n">symtab</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">newsym</span><span class="p">):]</span>
+
+    <span class="k">def</span> <span class="nf">_parseDynamic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">symtab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSectionBytes</span><span class="p">(</span><span class="s">&#39;.dynsym&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">symtab</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">while</span> <span class="n">symtab</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                <span class="n">newsym</span> <span class="o">=</span> <span class="n">Elf32Symbol</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">64</span><span class="p">:</span>
+                <span class="n">newsym</span> <span class="o">=</span> <span class="n">Elf64Symbol</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Platform not supported: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">))</span>
+            <span class="n">newsym</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="n">symtab</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">newsym</span><span class="o">.</span><span class="n">st_name</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStrtabString</span><span class="p">(</span><span class="n">newsym</span><span class="o">.</span><span class="n">st_name</span><span class="p">,</span> <span class="s">&quot;.dynstr&quot;</span><span class="p">)</span>
+                <span class="n">newsym</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newsym</span><span class="p">)</span>
+            <span class="n">symtab</span> <span class="o">=</span> <span class="n">symtab</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">newsym</span><span class="p">):]</span>
+
+        <span class="n">dynbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSectionBytes</span><span class="p">(</span><span class="s">&#39;.dynamic&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">dynbytes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                <span class="n">dyn</span> <span class="o">=</span> <span class="n">Elf32Dynamic</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">64</span><span class="p">:</span>
+                <span class="n">dyn</span> <span class="o">=</span> <span class="n">Elf64Dynamic</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Platform not supported: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">))</span>
+            <span class="n">dyn</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="n">dynbytes</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dyn</span><span class="o">.</span><span class="n">d_tag</span> <span class="ow">in</span> <span class="n">Elf32Dynamic</span><span class="o">.</span><span class="n">has_string</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStrtabString</span><span class="p">(</span><span class="n">dyn</span><span class="o">.</span><span class="n">d_value</span><span class="p">,</span> <span class="s">&quot;.dynstr&quot;</span><span class="p">)</span>
+                <span class="n">dyn</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dynamics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dyn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dyn</span><span class="o">.</span><span class="n">d_tag</span> <span class="o">==</span> <span class="n">DT_NULL</span><span class="p">:</span> <span class="c"># Represents the end</span>
+                <span class="k">break</span>
+            <span class="n">dynbytes</span> <span class="o">=</span> <span class="n">dynbytes</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">dyn</span><span class="p">):]</span>
+
+    <span class="k">def</span> <span class="nf">_parseRelocs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse all the relocation entries out of any sections with</span>
+<span class="sd">        sh_type == SHT_REL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_type</span> <span class="o">==</span> <span class="n">SHT_REL</span><span class="p">:</span>
+                <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">sh_offset</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_size</span><span class="p">)</span>
+                <span class="k">while</span> <span class="nb">bytes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                        <span class="n">reloc</span> <span class="o">=</span> <span class="n">Elf32Reloc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">64</span><span class="p">:</span>
+                        <span class="n">reloc</span> <span class="o">=</span> <span class="n">Elf64Reloc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Platform not supported: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">))</span>
+                    <span class="n">reloc</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">reloc</span><span class="o">.</span><span class="n">getSymTabIndex</span><span class="p">()</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_symbols</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                        <span class="n">reloc</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">relocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reloc</span><span class="p">)</span>
+                    <span class="nb">bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">reloc</span><span class="p">):]</span>
+
+            <span class="k">elif</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_type</span> <span class="o">==</span> <span class="n">SHT_RELA</span><span class="p">:</span>
+                <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">sh_offset</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_size</span><span class="p">)</span>
+                <span class="k">while</span> <span class="nb">bytes</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">32</span><span class="p">:</span>
+                        <span class="n">reloc</span> <span class="o">=</span> <span class="n">Elf32Reloca</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">==</span> <span class="mi">64</span><span class="p">:</span>
+                        <span class="n">reloc</span> <span class="o">=</span> <span class="n">Elf64Reloca</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_types</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Platform not supported: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span><span class="p">))</span>
+                    <span class="n">reloc</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">reloc</span><span class="o">.</span><span class="n">getSymTabIndex</span><span class="p">()</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_symbols</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                        <span class="n">reloc</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">relocs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reloc</span><span class="p">)</span>
+                    <span class="nb">bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">reloc</span><span class="p">):]</span>
+
+<div class="viewcode-block" id="Elf.getBaseAddress"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getBaseAddress">[docs]</a>    <span class="k">def</span> <span class="nf">getBaseAddress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For prelinked and main-exe elf binaries, return the</span>
+<span class="sd">        value for the loaded base address...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSharedObject</span><span class="p">()</span>
+        <span class="n">plnk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">isPreLinked</span><span class="p">()</span>
+
+        <span class="c"># If it&#39;s a shared object and *not* prelinked,</span>
+        <span class="c"># we need to select a base address for it</span>
+        <span class="c"># FIXME find non-coliding addr in workspace</span>
+        <span class="k">if</span> <span class="n">shrd</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">plnk</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mh">0x02000000</span>
+
+        <span class="c"># Find the best base address from the list of</span>
+        <span class="c"># section addresses...</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">pgm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPheaders</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="n">pgm</span><span class="o">.</span><span class="n">p_vaddr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="n">pgm</span><span class="o">.</span><span class="n">p_vaddr</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">pgm</span><span class="o">.</span><span class="n">p_vaddr</span> <span class="o">&lt;</span> <span class="n">base</span><span class="p">:</span>
+                <span class="n">base</span> <span class="o">=</span> <span class="n">pgm</span><span class="o">.</span><span class="n">p_vaddr</span>
+
+        <span class="n">base</span> <span class="o">&amp;=</span> <span class="mh">0xfffff000</span>
+
+        <span class="k">return</span> <span class="n">base</span>
+</div>
+<div class="viewcode-block" id="Elf.readAtRva"><a class="viewcode-back" href="../Elf.html#Elf.Elf.readAtRva">[docs]</a>    <span class="k">def</span> <span class="nf">readAtRva</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rva</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Calculate the file offset for the given RVA and</span>
+<span class="sd">        read from it...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rvaToOffset</span><span class="p">(</span><span class="n">rva</span><span class="p">),</span> <span class="n">size</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.rvaToOffset"><a class="viewcode-back" href="../Elf.html#Elf.Elf.rvaToOffset">[docs]</a>    <span class="k">def</span> <span class="nf">rvaToOffset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rva</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Convert an RVA for this ELF binary to a file offset.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">baseaddr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c">#if self.isPreLinked() or not self.isSharedObject():</span>
+        <span class="c">#if not self.isSharedObject():</span>
+            <span class="c">#print &#39;SUBTRACTING CALCULATED BASE&#39;</span>
+            <span class="c">#baseaddr = self.getBaseAddress()</span>
+
+        <span class="k">for</span> <span class="n">pgm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pheaders</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pgm</span><span class="o">.</span><span class="n">p_type</span> <span class="o">!=</span> <span class="n">PT_LOAD</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">phrva</span> <span class="o">=</span> <span class="n">pgm</span><span class="o">.</span><span class="n">p_vaddr</span> <span class="o">-</span> <span class="n">baseaddr</span>
+            <span class="k">if</span> <span class="n">rva</span> <span class="o">&lt;</span> <span class="n">phrva</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">rva</span> <span class="o">&gt;=</span> <span class="n">phrva</span><span class="o">+</span><span class="n">pgm</span><span class="o">.</span><span class="n">p_memsz</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">print</span> <span class="s">&#39;pgm&#39;</span><span class="p">,</span><span class="nb">hex</span><span class="p">(</span><span class="n">pgm</span><span class="o">.</span><span class="n">p_vaddr</span><span class="p">),</span><span class="nb">hex</span><span class="p">(</span><span class="n">phrva</span><span class="p">),</span><span class="nb">hex</span><span class="p">(</span><span class="n">rva</span><span class="p">)</span>
+            <span class="c"># We are inside this pgrm header!</span>
+            <span class="n">rvaoff</span> <span class="o">=</span> <span class="n">rva</span> <span class="o">-</span> <span class="n">phrva</span>
+            <span class="k">return</span> <span class="n">pgm</span><span class="o">.</span><span class="n">p_offset</span> <span class="o">+</span> <span class="n">rvaoff</span>
+
+        <span class="k">raise</span> <span class="s">&#39;omg&#39;</span><span class="p">,</span><span class="nb">hex</span><span class="p">(</span><span class="n">rva</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Elf.readAtOffset"><a class="viewcode-back" href="../Elf.html#Elf.Elf.readAtOffset">[docs]</a>    <span class="k">def</span> <span class="nf">readAtOffset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">off</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Read from the given file offset.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">off</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.getSection"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getSection">[docs]</a>    <span class="k">def</span> <span class="nf">getSection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secname</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">secnames</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">secname</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.getSections"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getSections">[docs]</a>    <span class="k">def</span> <span class="nf">getSections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the array of sections for this Elf</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.getSectionBytes"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getSectionBytes">[docs]</a>    <span class="k">def</span> <span class="nf">getSectionBytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secname</span><span class="p">):</span>
+        <span class="n">sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSection</span><span class="p">(</span><span class="n">secname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sec</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">sh_offset</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_size</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.getStrtabString"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getStrtabString">[docs]</a>    <span class="k">def</span> <span class="nf">getStrtabString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s">&quot;.strtab&quot;</span><span class="p">):</span>
+        <span class="n">sec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSection</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readAtOffset</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">sh_offset</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_size</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">index</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="Elf.getDynamics"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getDynamics">[docs]</a>    <span class="k">def</span> <span class="nf">getDynamics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of the dynamics.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dynamics</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.getDynSyms"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getDynSyms">[docs]</a>    <span class="k">def</span> <span class="nf">getDynSyms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of dynamic symbol objects.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_symbols</span>
+</div>
+<div class="viewcode-block" id="Elf.getRelocs"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getRelocs">[docs]</a>    <span class="k">def</span> <span class="nf">getRelocs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the list of relocations.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relocs</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.isPreLinked"><a class="viewcode-back" href="../Elf.html#Elf.Elf.isPreLinked">[docs]</a>    <span class="k">def</span> <span class="nf">isPreLinked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns True if the Elf binary is prelinked.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">dyn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics</span><span class="p">:</span>
+            <span class="c">#print repr(dyn)</span>
+            <span class="k">if</span> <span class="n">dyn</span><span class="o">.</span><span class="n">d_tag</span> <span class="o">==</span> <span class="n">DT_GNU_PRELINKED</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">True</span>
+            <span class="c"># FIXME check for exe vs .so</span>
+            <span class="k">if</span> <span class="n">dyn</span><span class="o">.</span><span class="n">d_tag</span> <span class="o">==</span> <span class="n">DT_GNU_CONFLICTSZ</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="Elf.isSharedObject"><a class="viewcode-back" href="../Elf.html#Elf.Elf.isSharedObject">[docs]</a>    <span class="k">def</span> <span class="nf">isSharedObject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns true if the given Elf binary is a dynamically shared</span>
+<span class="sd">        object.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_type</span> <span class="o">==</span> <span class="n">ET_DYN</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;  Returns a string summary of this ELF.  If (verbose) the summary will include Symbols, Relocs, Dynamics and Dynamic Symbol tables&quot;&quot;&quot;</span>
+        <span class="n">mystr</span> <span class="o">=</span> <span class="s">&#39;Elf Binary:&#39;</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">= Intimate Details:&quot;</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Magic:</span><span class="se">\t\t\t\t</span><span class="s">&quot;</span>       <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_ident</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Type:</span><span class="se">\t\t\t\t\t</span><span class="s">&quot;</span>        <span class="o">+</span> <span class="n">e_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_type</span><span class="p">)</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Machine Arch:</span><span class="se">\t\t\t\t</span><span class="s">&quot;</span>  <span class="o">+</span> <span class="n">e_machine_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_machine</span><span class="p">)</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Version:</span><span class="se">\t\t\t\t</span><span class="si">%d</span><span class="s">&quot;</span>     <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_version</span><span class="p">)</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Entry:</span><span class="se">\t\t\t\t</span><span class="s">0x</span><span class="si">%.8x</span><span class="s">&quot;</span>      <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_entry</span><span class="p">)</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Program Headers(offset):</span><span class="se">\t\t</span><span class="si">%d</span><span class="s"> (0x</span><span class="si">%x</span><span class="s">) bytes&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_phoff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_phoff</span><span class="p">)</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Section Headers(offset):</span><span class="se">\t\t</span><span class="si">%d</span><span class="s"> (0x</span><span class="si">%x</span><span class="s">) bytes&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shoff</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">e_shoff</span><span class="p">)</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Flags:</span><span class="se">\t\t\t\t</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_flags</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; &quot;</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Elf Header Size:</span><span class="se">\t\t\t</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_ehsize</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_ehsize</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; bytes)&quot;</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Program Header Size:</span><span class="se">\t\t\t</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_phentsize</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_phentsize</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; bytes)&quot;</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Program Header Count:</span><span class="se">\t\t\t</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_phnum</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_phnum</span><span class="p">)</span><span class="o">+</span> <span class="s">&quot;)&quot;</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Section Header Size:</span><span class="se">\t\t\t</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shentsize</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shentsize</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; bytes)&quot;</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Section Header Count:</span><span class="se">\t\t\t</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shnum</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shnum</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;)&quot;</span>
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">==Section Header String Index</span><span class="se">\t\t</span><span class="s">&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shstrndx</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; (&quot;</span> <span class="o">+</span> <span class="nb">hex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">e_shstrndx</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; bytes)&quot;</span>
+
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">= Sections:&quot;</span>
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+            <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="nb">repr</span><span class="p">(</span><span class="n">sec</span><span class="p">)</span>
+
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">= Program Headers:&quot;</span>
+        <span class="k">for</span> <span class="n">ph</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pheaders</span><span class="p">:</span>
+            <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="nb">repr</span><span class="p">(</span><span class="n">ph</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mystr</span>
+
+<div class="viewcode-block" id="Elf.verbrepr"><a class="viewcode-back" href="../Elf.html#Elf.Elf.verbrepr">[docs]</a>    <span class="k">def</span> <span class="nf">verbrepr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mystr</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">= Symbols table:&quot;</span>
+        <span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="p">:</span>
+            <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">= Relocation table:&quot;</span>
+        <span class="k">for</span> <span class="n">reloc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">relocs</span><span class="p">:</span>
+            <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="nb">repr</span><span class="p">(</span><span class="n">reloc</span><span class="p">)</span>
+
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">= Dynamics table:&quot;</span>
+        <span class="k">for</span> <span class="n">dyn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics</span><span class="p">:</span>
+            <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="nb">repr</span><span class="p">(</span><span class="n">dyn</span><span class="p">)</span>
+
+        <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">= Dynamic Symbols table:&quot;</span>
+        <span class="k">for</span> <span class="n">dyn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamic_symbols</span><span class="p">:</span>
+            <span class="n">mystr</span><span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">+</span><span class="nb">repr</span><span class="p">(</span><span class="n">dyn</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mystr</span>
+ </div>
+<div class="viewcode-block" id="Elf.lookupSymbolName"><a class="viewcode-back" href="../Elf.html#Elf.Elf.lookupSymbolName">[docs]</a>    <span class="k">def</span> <span class="nf">lookupSymbolName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Lookup symbol entries in this elf binary by name.  The result is</span>
+<span class="sd">        a long representing the address for the given symbol. Or None if</span>
+<span class="sd">        it&#39;s not found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols_by_name</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.lookupSymbolAddr"><a class="viewcode-back" href="../Elf.html#Elf.Elf.lookupSymbolAddr">[docs]</a>    <span class="k">def</span> <span class="nf">lookupSymbolAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        lookup symbols from this elf binary by address.</span>
+<span class="sd">        This returns the name for the given symbol or None for not found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols_by_addr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.getPheaders"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getPheaders">[docs]</a>    <span class="k">def</span> <span class="nf">getPheaders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the program headers for this elf</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pheaders</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Elf.addSymbol"><a class="viewcode-back" href="../Elf.html#Elf.Elf.addSymbol">[docs]</a>    <span class="k">def</span> <span class="nf">addSymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symbol</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbols_by_name</span><span class="p">[</span><span class="n">symbol</span><span class="o">.</span><span class="n">getName</span><span class="p">()]</span> <span class="o">=</span> <span class="n">symbol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbols_by_addr</span><span class="p">[</span><span class="n">symbol</span><span class="o">.</span><span class="n">st_value</span><span class="p">]</span> <span class="o">=</span> <span class="n">symbol</span>
+</div>
+<div class="viewcode-block" id="Elf.getSymbols"><a class="viewcode-back" href="../Elf.html#Elf.Elf.getSymbols">[docs]</a>    <span class="k">def</span> <span class="nf">getSymbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symbols</span>
+</div></div>
+<div class="viewcode-block" id="getRelocType"><a class="viewcode-back" href="../Elf.html#Elf.getRelocType">[docs]</a><span class="k">def</span> <span class="nf">getRelocType</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">val</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+</div>
+<div class="viewcode-block" id="getRelocSymTabIndex"><a class="viewcode-back" href="../Elf.html#Elf.getRelocSymTabIndex">[docs]</a><span class="k">def</span> <span class="nf">getRelocSymTabIndex</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">val</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

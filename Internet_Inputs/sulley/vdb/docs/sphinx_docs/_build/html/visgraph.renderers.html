@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>renderers Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="renderers-package">
+<h1>renderers Package<a class="headerlink" href="#renderers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">renderers</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-visgraph.renderers"></span><p>Home of the code which knows how to actually <em>draw</em> a graph which
+has been layed out.</p>
+<dl class="class">
+<dt id="visgraph.renderers.GraphRenderer">
+<em class="property">class </em><tt class="descclassname">visgraph.renderers.</tt><tt class="descname">GraphRenderer</tt><big>(</big><em>graph</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers.html#GraphRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.GraphRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only a &#8220;renderer&#8221; knows how big each node will end up based on metadata
+in the graph which is specific to the renderer.</p>
+<p>All renderers should be able to set the (x,y) &#8220;size&#8221; tuple</p>
+<dl class="method">
+<dt id="visgraph.renderers.GraphRenderer.beginRender">
+<tt class="descname">beginRender</tt><big>(</big><em>width</em>, <em>height</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers.html#GraphRenderer.beginRender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.GraphRenderer.beginRender" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.GraphRenderer.endRender">
+<tt class="descname">endRender</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/visgraph/renderers.html#GraphRenderer.endRender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.GraphRenderer.endRender" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.GraphRenderer.renderEdge">
+<tt class="descname">renderEdge</tt><big>(</big><em>eid</em>, <em>einfo</em>, <em>points</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers.html#GraphRenderer.renderEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.GraphRenderer.renderEdge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render an edge in the graph by drawing lines between all the listed
+points (as (x,y) tuples...)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.GraphRenderer.renderNode">
+<tt class="descname">renderNode</tt><big>(</big><em>nid</em>, <em>ninfo</em>, <em>xpos</em>, <em>ypos</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers.html#GraphRenderer.renderNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.GraphRenderer.renderNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render the given node at the specified position.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.GraphRenderer.setNodeSizes">
+<tt class="descname">setNodeSizes</tt><big>(</big><em>graph</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers.html#GraphRenderer.setNodeSizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.GraphRenderer.setNodeSizes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the sizes for each node based on graph metadata (or defaults)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="gtkrend-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">gtkrend</span></tt> Module<a class="headerlink" href="#gtkrend-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-visgraph.renderers.qgraphtree">
+<span id="qgraphtree-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">qgraphtree</span></tt> Module<a class="headerlink" href="#module-visgraph.renderers.qgraphtree" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn">
+<em class="property">class </em><tt class="descclassname">visgraph.renderers.qgraphtree.</tt><tt class="descname">NodeColumn</tt><big>(</big><em>vg</em>, <em>nodes</em>, <em>scene</em>, <em>left=None</em>, <em>right=None</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QGraphicsItem</span></tt></p>
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.boundingRect">
+<tt class="descname">boundingRect</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.boundingRect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.boundingRect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.drawLinesFrom">
+<tt class="descname">drawLinesFrom</tt><big>(</big><em>colnode</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.drawLinesFrom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.drawLinesFrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw lines from our nodes to the specified one
+(used when we are on the left...)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.drawLinesTo">
+<tt class="descname">drawLinesTo</tt><big>(</big><em>colnode</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.drawLinesTo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.drawLinesTo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw lines to our nodes from the specified one
+(used when we are on the right...)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.expandNode">
+<tt class="descname">expandNode</tt><big>(</big><em>colnode</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.expandNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.expandNode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.getLeftBoundary">
+<tt class="descname">getLeftBoundary</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.getLeftBoundary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.getLeftBoundary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.getRightBoundary">
+<tt class="descname">getRightBoundary</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.getRightBoundary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.getRightBoundary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.getYMid">
+<tt class="descname">getYMid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.getYMid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.getYMid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.paint">
+<tt class="descname">paint</tt><big>(</big><em>x</em>, <em>y</em>, <em>z</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.paint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.paint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.removeColumn">
+<tt class="descname">removeColumn</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.removeColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.removeColumn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.NodeColumn.takeOverView">
+<tt class="descname">takeOverView</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#NodeColumn.takeOverView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.NodeColumn.takeOverView" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="visgraph.renderers.qgraphtree.QGraphNode">
+<em class="property">class </em><tt class="descclassname">visgraph.renderers.qgraphtree.</tt><tt class="descname">QGraphNode</tt><big>(</big><em>column</em>, <em>nid</em>, <em>nprops</em>, <em>scene=None</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#QGraphNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.QGraphNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QGraphicsSimpleTextItem</span></tt></p>
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.QGraphNode.contextMenuEvent">
+<tt class="descname">contextMenuEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#QGraphNode.contextMenuEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.QGraphNode.contextMenuEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.QGraphNode.mousePressEvent">
+<tt class="descname">mousePressEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#QGraphNode.mousePressEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.QGraphNode.mousePressEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="visgraph.renderers.qgraphtree.QGraphTreeView">
+<em class="property">class </em><tt class="descclassname">visgraph.renderers.qgraphtree.</tt><tt class="descname">QGraphTreeView</tt><big>(</big><em>vg</em>, <em>nodes</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#QGraphTreeView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.QGraphTreeView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QGraphicsView</span></tt></p>
+<dl class="method">
+<dt id="visgraph.renderers.qgraphtree.QGraphTreeView.loadNewGraph">
+<tt class="descname">loadNewGraph</tt><big>(</big><em>vg</em>, <em>nodes</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/qgraphtree.html#QGraphTreeView.loadNewGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.qgraphtree.QGraphTreeView.loadNewGraph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-visgraph.renderers.svgrend">
+<span id="svgrend-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">svgrend</span></tt> Module<a class="headerlink" href="#module-visgraph.renderers.svgrend" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="visgraph.renderers.svgrend.SvgGraphRenderer">
+<em class="property">class </em><tt class="descclassname">visgraph.renderers.svgrend.</tt><tt class="descname">SvgGraphRenderer</tt><big>(</big><em>graph</em>, <em>svgfile</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/svgrend.html#SvgGraphRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.svgrend.SvgGraphRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#visgraph.renderers.GraphRenderer" title="visgraph.renderers.GraphRenderer"><tt class="xref py py-class docutils literal"><span class="pre">visgraph.renderers.GraphRenderer</span></tt></a></p>
+<dl class="method">
+<dt id="visgraph.renderers.svgrend.SvgGraphRenderer.beginRender">
+<tt class="descname">beginRender</tt><big>(</big><em>xsize</em>, <em>ysize</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/svgrend.html#SvgGraphRenderer.beginRender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.svgrend.SvgGraphRenderer.beginRender" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.svgrend.SvgGraphRenderer.endRender">
+<tt class="descname">endRender</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/svgrend.html#SvgGraphRenderer.endRender"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.svgrend.SvgGraphRenderer.endRender" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.svgrend.SvgGraphRenderer.renderEdge">
+<tt class="descname">renderEdge</tt><big>(</big><em>eid</em>, <em>einfo</em>, <em>points</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/svgrend.html#SvgGraphRenderer.renderEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.svgrend.SvgGraphRenderer.renderEdge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.svgrend.SvgGraphRenderer.renderNode">
+<tt class="descname">renderNode</tt><big>(</big><em>nid</em>, <em>ninfo</em>, <em>xpos</em>, <em>ypos</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/svgrend.html#SvgGraphRenderer.renderNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.svgrend.SvgGraphRenderer.renderNode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="visgraph.renderers.svgrend.SvgGraphRenderer.setNodeSizes">
+<tt class="descname">setNodeSizes</tt><big>(</big><em>graph</em><big>)</big><a class="reference internal" href="_modules/visgraph/renderers/svgrend.html#SvgGraphRenderer.setNodeSizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visgraph.renderers.svgrend.SvgGraphRenderer.setNodeSizes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">renderers Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">renderers</span></tt> Package</a></li>
+<li><a class="reference internal" href="#gtkrend-module"><tt class="docutils literal"><span class="pre">gtkrend</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-visgraph.renderers.qgraphtree"><tt class="docutils literal"><span class="pre">qgraphtree</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-visgraph.renderers.svgrend"><tt class="docutils literal"><span class="pre">svgrend</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/visgraph.renderers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

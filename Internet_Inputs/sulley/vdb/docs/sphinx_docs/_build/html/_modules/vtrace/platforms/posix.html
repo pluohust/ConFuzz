@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.platforms.posix &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vtrace" href="../../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.platforms.posix</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Posix Signaling Module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+
+
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">vtrace.util</span> <span class="kn">as</span> <span class="nn">v_util</span>
+<span class="kn">import</span> <span class="nn">vtrace.platforms.base</span> <span class="kn">as</span> <span class="nn">v_base</span>
+
+<span class="kn">import</span> <span class="nn">Elf</span>
+<span class="kn">from</span> <span class="nn">ctypes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">ctypes.util</span> <span class="kn">as</span> <span class="nn">cutil</span>
+
+<span class="kn">import</span> <span class="nn">envi.resolver</span> <span class="kn">as</span> <span class="nn">e_resolv</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.cli</span> <span class="kn">as</span> <span class="nn">e_cli</span>
+
+
+<span class="n">libc</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="PosixMixin"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PosixMixin">[docs]</a><span class="k">class</span> <span class="nc">PosixMixin</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A mixin for systems which use POSIX signals and</span>
+<span class="sd">    things like wait()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup for the fact that we support signal driven</span>
+<span class="sd">        debugging on posix platforms</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepping</span> <span class="o">=</span> <span class="bp">False</span> <span class="c"># Set this on stepi to diff the TRAP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execing</span>  <span class="o">=</span> <span class="bp">False</span> <span class="c"># Set this on exec to diff the TRAP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pthreads</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># Some platforms make a pthread list</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireTracerThread</span><span class="p">()</span>
+
+<div class="viewcode-block" id="PosixMixin.platformKill"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PosixMixin.platformKill">[docs]</a>    <span class="k">def</span> <span class="nf">platformKill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendSignal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGKILL</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PosixMixin.sendSignal"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PosixMixin.sendSignal">[docs]</a>    <span class="k">def</span> <span class="nf">sendSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signo</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">signo</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PosixMixin.platformSendBreak"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PosixMixin.platformSendBreak">[docs]</a>    <span class="k">def</span> <span class="nf">platformSendBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendSignal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTRAP</span><span class="p">)</span> <span class="c"># FIXME maybe change to SIGSTOP</span>
+</div>
+<div class="viewcode-block" id="PosixMixin.platformWait"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PosixMixin.platformWait">[docs]</a>    <span class="k">def</span> <span class="nf">platformWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pid</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">waitpid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">status</span>
+</div>
+<div class="viewcode-block" id="PosixMixin.handleAttach"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PosixMixin.handleAttach">[docs]</a>    <span class="k">def</span> <span class="nf">handleAttach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_findLibraryMaps</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x7f</span><span class="s">ELF&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simpleCreateThreads</span><span class="p">()</span>
+        <span class="c"># We&#39;ll emulate windows here and send an additional</span>
+        <span class="c"># break after our library load events to make things easy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runAgain</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="c"># Clear this, if they want BREAK to run, it will</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_BREAK</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="PosixMixin.platformProcessEvent"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PosixMixin.platformProcessEvent">[docs]</a>    <span class="k">def</span> <span class="nf">platformProcessEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">WIFEXITED</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
+            <span class="n">tid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tid</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPid</span><span class="p">():</span>
+                <span class="c"># Set the selected thread ID to the pid cause</span>
+                <span class="c"># the old one&#39;s invalid</span>
+                <span class="k">if</span> <span class="n">tid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pthreads</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">pthreads</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPid</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fireExitThread</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">WEXITSTATUS</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fireExit</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">WEXITSTATUS</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">WIFSIGNALED</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ExitCode&quot;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">WTERMSIG</span><span class="p">(</span><span class="n">status</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_EXIT</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">WIFSTOPPED</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">WSTOPSIG</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handlePosixSignal</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;OMG WTF JUST HAPPENED??!?11/!?1?&gt;!&quot;</span>
+</div>
+<div class="viewcode-block" id="PosixMixin.handlePosixSignal"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PosixMixin.handlePosixSignal">[docs]</a>    <span class="k">def</span> <span class="nf">handlePosixSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a basic posix signal for this trace.  This was seperated from</span>
+<span class="sd">        platformProcessEvent so extenders could skim events and still use this logic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sig</span> <span class="o">==</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGTRAP</span><span class="p">:</span>
+
+            <span class="c"># Traps on posix systems are a little complicated</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepping</span><span class="p">:</span>
+                <span class="c">#FIXME try out was single step thing for intel</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stepping</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fireStep</span><span class="p">()</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkWatchpoints</span><span class="p">():</span>
+                <span class="k">return</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkBreakpoints</span><span class="p">():</span>
+                <span class="c"># It was either a known BP or a sendBreak()</span>
+                <span class="k">return</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">execing</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">execing</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handleAttach</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fireSignal</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">sig</span> <span class="o">==</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGSTOP</span><span class="p">:</span>
+            <span class="c">#FIXME only on attaching..</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleAttach</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fireSignal</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="ElfMixin"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.ElfMixin">[docs]</a><span class="k">class</span> <span class="nc">ElfMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A platform mixin to parse Elf binaries</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;Format&#39;</span><span class="p">,</span><span class="s">&#39;elf&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ElfMixin.platformParseBinary"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.ElfMixin.platformParseBinary">[docs]</a>    <span class="k">def</span> <span class="nf">platformParseBinary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">baseaddr</span><span class="p">,</span> <span class="n">normname</span><span class="p">):</span>
+        <span class="n">typemap</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">Elf</span><span class="o">.</span><span class="n">STT_FUNC</span><span class="p">:</span><span class="n">e_resolv</span><span class="o">.</span><span class="n">FunctionSymbol</span><span class="p">,</span>
+            <span class="n">Elf</span><span class="o">.</span><span class="n">STT_SECTION</span><span class="p">:</span><span class="n">e_resolv</span><span class="o">.</span><span class="n">SectionSymbol</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="n">fd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformOpenFile</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">elf</span> <span class="o">=</span> <span class="n">Elf</span><span class="o">.</span><span class="n">Elf</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+        <span class="n">addbase</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">elf</span><span class="o">.</span><span class="n">isPreLinked</span><span class="p">()</span> <span class="ow">and</span> <span class="n">elf</span><span class="o">.</span><span class="n">isSharedObject</span><span class="p">():</span>
+            <span class="n">addbase</span> <span class="o">=</span> <span class="n">baseaddr</span>
+
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">elf</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">SectionSymbol</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_addr</span><span class="o">+</span><span class="n">addbase</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">sh_size</span><span class="p">,</span> <span class="n">normname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addSymbol</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">elf</span><span class="o">.</span><span class="n">symbols</span><span class="p">:</span>
+            <span class="n">symclass</span> <span class="o">=</span> <span class="n">typemap</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">sym</span><span class="o">.</span><span class="n">st_info</span> <span class="o">&amp;</span> <span class="mh">0xf</span><span class="p">),</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">Symbol</span><span class="p">)</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="n">symclass</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">sym</span><span class="o">.</span><span class="n">st_value</span><span class="o">+</span><span class="n">addbase</span><span class="p">,</span> <span class="n">sym</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span> <span class="n">normname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addSymbol</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="n">elf</span><span class="o">.</span><span class="n">dynamic_symbols</span><span class="p">:</span>
+            <span class="n">symclass</span> <span class="o">=</span> <span class="n">typemap</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">sym</span><span class="o">.</span><span class="n">st_info</span> <span class="o">&amp;</span> <span class="mh">0xf</span><span class="p">),</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">Symbol</span><span class="p">)</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="n">symclass</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">sym</span><span class="o">.</span><span class="n">st_value</span><span class="o">+</span><span class="n">addbase</span><span class="p">,</span> <span class="n">sym</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span> <span class="n">normname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addSymbol</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+
+<span class="c"># As much as I would *love* if all the ptrace defines were the same all the time,</span>
+<span class="c"># there seem to be small platform differences...</span>
+<span class="c"># These are the ones upon which most agree</span></div></div>
+<span class="n">PT_TRACE_ME</span>     <span class="o">=</span> <span class="mi">0</span>   <span class="c"># child declares it&#39;s being traced */</span>
+<span class="n">PT_READ_I</span>       <span class="o">=</span> <span class="mi">1</span>   <span class="c"># read word in child&#39;s I space */</span>
+<span class="n">PT_READ_D</span>       <span class="o">=</span> <span class="mi">2</span>   <span class="c"># read word in child&#39;s D space */</span>
+<span class="n">PT_READ_U</span>       <span class="o">=</span> <span class="mi">3</span>   <span class="c"># read word in child&#39;s user structure */</span>
+<span class="n">PT_WRITE_I</span>      <span class="o">=</span> <span class="mi">4</span>   <span class="c"># write word in child&#39;s I space */</span>
+<span class="n">PT_WRITE_D</span>      <span class="o">=</span> <span class="mi">5</span>   <span class="c"># write word in child&#39;s D space */</span>
+<span class="n">PT_WRITE_U</span>      <span class="o">=</span> <span class="mi">6</span>   <span class="c"># write word in child&#39;s user structure */</span>
+<span class="n">PT_CONTINUE</span>     <span class="o">=</span> <span class="mi">7</span>   <span class="c"># continue the child */</span>
+<span class="n">PT_KILL</span>         <span class="o">=</span> <span class="mi">8</span>   <span class="c"># kill the child process */</span>
+<span class="n">PT_STEP</span>         <span class="o">=</span> <span class="mi">9</span>   <span class="c"># single step the child */</span>
+
+<div class="viewcode-block" id="ptrace"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.ptrace">[docs]</a><span class="k">def</span> <span class="nf">ptrace</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The contents of this call are basically cleanly</span>
+<span class="sd">    passed to the libc implementation of ptrace.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">libc</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">libc</span><span class="p">:</span>
+        <span class="n">cloc</span> <span class="o">=</span> <span class="n">cutil</span><span class="o">.</span><span class="n">find_library</span><span class="p">(</span><span class="s">&quot;c&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cloc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR: can&#39;t find C library on posix system!&quot;</span><span class="p">)</span>
+        <span class="n">libc</span> <span class="o">=</span> <span class="n">CDLL</span><span class="p">(</span><span class="n">cloc</span><span class="p">)</span>
+        <span class="n">libc</span><span class="o">.</span><span class="n">ptrace</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">c_size_t</span>
+        <span class="n">libc</span><span class="o">.</span><span class="n">ptrace</span><span class="o">.</span><span class="n">argtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_int</span><span class="p">,</span> <span class="n">c_uint32</span><span class="p">,</span> <span class="n">c_size_t</span><span class="p">,</span> <span class="n">c_size_t</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">libc</span><span class="o">.</span><span class="n">ptrace</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">c_size_t</span><span class="p">(</span><span class="n">addr</span><span class="p">),</span> <span class="n">c_size_t</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="PtraceMixin"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PtraceMixin">[docs]</a><span class="k">class</span> <span class="nc">PtraceMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A platform mixin for using the ptrace functions</span>
+<span class="sd">    to attach/detach/continue/stepi etc. Many *nix systems</span>
+<span class="sd">    will probably use this...</span>
+
+<span class="sd">    NOTE: if you get a PT_FOO undefined, it *probably* means that</span>
+<span class="sd">    the PT_FOO macro isn&#39;t defined for that platform (which means</span>
+<span class="sd">    it need to be done another way like PT_GETREGS on darwin doesn&#39;t</span>
+<span class="sd">    exist... but the darwin mixin over-rides platformGetRegs)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup supported modes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conthack</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s">&quot;darwin&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">conthack</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireTracerThread</span><span class="p">()</span>
+
+    <span class="nd">@v_base.threadwrap</span>
+<div class="viewcode-block" id="PtraceMixin.platformExec"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PtraceMixin.platformExec">[docs]</a>    <span class="k">def</span> <span class="nf">platformExec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdline</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execing</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">cmdlist</span> <span class="o">=</span> <span class="n">e_cli</span><span class="o">.</span><span class="n">splitargs</span><span class="p">(</span><span class="n">cmdline</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">cmdlist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ptrace</span><span class="p">(</span><span class="n">PT_TRACE_ME</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">execv</span><span class="p">(</span><span class="n">cmdlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cmdlist</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pid</span>
+</div>
+    <span class="nd">@v_base.threadwrap</span>
+<div class="viewcode-block" id="PtraceMixin.platformWriteMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.posix.PtraceMixin.platformWriteMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformWriteMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">wordsize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;P&quot;</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">remainder</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span> <span class="o">%</span> <span class="n">wordsize</span>
+
+        <span class="k">if</span> <span class="n">remainder</span><span class="p">:</span>
+            <span class="n">pad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">address</span><span class="o">+</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span><span class="o">-</span><span class="n">remainder</span><span class="p">),</span> <span class="n">wordsize</span><span class="p">)</span>
+            <span class="nb">bytes</span> <span class="o">+=</span> <span class="n">pad</span><span class="p">[</span><span class="n">remainder</span><span class="p">:]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span><span class="o">/</span><span class="n">wordsize</span><span class="p">):</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">wordsize</span><span class="o">*</span><span class="n">i</span>
+            <span class="n">dword</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;L&quot;</span><span class="p">,</span><span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="n">wordsize</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ptrace</span><span class="p">(</span><span class="n">PT_WRITE_D</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="nb">long</span><span class="p">(</span><span class="n">address</span><span class="o">+</span><span class="n">offset</span><span class="p">),</span> <span class="nb">long</span><span class="p">(</span><span class="n">dword</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR ptrace PT_WRITE_D failed!&quot;</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

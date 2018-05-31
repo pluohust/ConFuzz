@@ -1,0 +1,1550 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Vtrace Debugger Framework</span>
+
+<span class="sd">Vtrace is a *mostly* native python debugging framework which</span>
+<span class="sd">can be used to quickly write programatic debuggers and research</span>
+<span class="sd">tools.</span>
+
+<span class="sd">I&#39;m not known for writting great docs...  but the code should</span>
+<span class="sd">be pretty straight forward...</span>
+
+<span class="sd">This has been in use for many years privately, but is nowhere</span>
+<span class="sd">*near* free of bugs...  idiosyncracies abound.</span>
+
+<span class="sd">==== Werd =====================================================</span>
+
+<span class="sd">Blah blah blah... many more docs to come.</span>
+
+<span class="sd">Brought to you by kenshoto.  e-mail invisigoth.</span>
+
+<span class="sd">Greetz:</span>
+<span class="sd">    h1kari - eeeeeooorrrmmm  CHKCHKCHKCHKCHKCHKCHK</span>
+<span class="sd">    Ghetto - wizoo... to the tizoot.</span>
+<span class="sd">    atlas - *whew* finally...  no more teasing...</span>
+<span class="sd">    beatle/dnm - come out and play yo!</span>
+<span class="sd">    The Kenshoto Gophers.</span>
+<span class="sd">    Blackhats Everywhere.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">code</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">getopt</span>
+<span class="kn">import</span> <span class="nn">signal</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.registers</span> <span class="kn">as</span> <span class="nn">e_reg</span>
+<span class="kn">import</span> <span class="nn">envi.expression</span> <span class="kn">as</span> <span class="nn">e_expr</span>
+<span class="kn">import</span> <span class="nn">envi.resolver</span> <span class="kn">as</span> <span class="nn">e_resolv</span>
+
+<span class="kn">import</span> <span class="nn">cobra</span>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+
+<span class="n">remote</span> <span class="o">=</span> <span class="bp">None</span>       <span class="c"># If set, we&#39;re a vtrace client (set to serverhost)</span>
+<span class="n">cobra_daemon</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mh">0x5656</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="c"># Order must match format junk</span>
+<span class="c"># NOTIFY_ALL is kinda special, if you registerNotifier</span>
+<span class="c"># with it, you get ALL notifications.</span>
+<span class="n">NOTIFY_ALL</span> <span class="o">=</span> <span class="mi">0</span>          <span class="c"># Get all notifications</span>
+<span class="n">NOTIFY_SIGNAL</span> <span class="o">=</span> <span class="mi">1</span>       <span class="c"># Callback on signal/exception</span>
+<span class="n">NOTIFY_BREAK</span> <span class="o">=</span> <span class="mi">2</span>        <span class="c"># Callback on breakpoint / sigtrap</span>
+<span class="n">NOTIFY_STEP</span> <span class="o">=</span> <span class="mi">3</span>         <span class="c"># Callback on singlestep complete</span>
+<span class="n">NOTIFY_SYSCALL</span> <span class="o">=</span> <span class="mi">4</span>      <span class="c"># Callback on syscall (linux only for now)</span>
+<span class="n">NOTIFY_CONTINUE</span> <span class="o">=</span> <span class="mi">5</span>     <span class="c"># Callback on continue (not done for step)</span>
+<span class="n">NOTIFY_EXIT</span> <span class="o">=</span> <span class="mi">6</span>         <span class="c"># Callback on process exit</span>
+<span class="n">NOTIFY_ATTACH</span> <span class="o">=</span> <span class="mi">7</span>       <span class="c"># Callback on successful attach</span>
+<span class="n">NOTIFY_DETACH</span> <span class="o">=</span> <span class="mi">8</span>       <span class="c"># Callback on impending process detach       </span>
+<span class="c"># The following notifiers are *only* available on some platforms</span>
+<span class="c"># (and may be kinda faked out ala library load events on posix)</span>
+<span class="n">NOTIFY_LOAD_LIBRARY</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">NOTIFY_UNLOAD_LIBRARY</span> <span class="o">=</span> <span class="mi">10</span> 
+<span class="n">NOTIFY_CREATE_THREAD</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">NOTIFY_EXIT_THREAD</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">NOTIFY_DEBUG_PRINT</span> <span class="o">=</span> <span class="mi">13</span> <span class="c"># Some platforms support this (win32).</span>
+<span class="n">NOTIFY_MAX</span> <span class="o">=</span> <span class="mi">20</span>
+
+<span class="c"># File Descriptor / Handle Types</span>
+<span class="n">FD_UNKNOWN</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># Unknown or we don&#39;t have a type for it</span>
+<span class="n">FD_FILE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">FD_SOCKET</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">FD_PIPE</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">FD_LOCK</span> <span class="o">=</span> <span class="mi">4</span>   <span class="c"># Win32 Mutant/Lock/Semaphore</span>
+<span class="n">FD_EVENT</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c"># Win32 Event/KeyedEvent</span>
+<span class="n">FD_THREAD</span> <span class="o">=</span> <span class="mi">6</span> <span class="c"># Win32 Thread</span>
+<span class="n">FD_REGKEY</span> <span class="o">=</span> <span class="mi">7</span> <span class="c"># Win32 Registry Key</span>
+
+<span class="c"># Vtrace Symbol Types</span>
+<span class="n">SYM_MISC</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">SYM_GLOBAL</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># Global (mostly vars)</span>
+<span class="n">SYM_LOCAL</span> <span class="o">=</span> <span class="mi">1</span> <span class="c"># Locals</span>
+<span class="n">SYM_FUNCTION</span> <span class="o">=</span> <span class="mi">2</span> <span class="c"># Functions</span>
+<span class="n">SYM_SECTION</span> <span class="o">=</span> <span class="mi">3</span> <span class="c"># Binary section</span>
+<span class="n">SYM_META</span> <span class="o">=</span> <span class="mi">4</span> <span class="c"># Info that we enumerate</span>
+
+<span class="c"># Vtrace Symbol Offsets</span>
+<span class="n">VSYM_NAME</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">VSYM_ADDR</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">VSYM_SIZE</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">VSYM_TYPE</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">VSYM_FILE</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="kn">from</span> <span class="nn">vtrace.rmi</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtrace.notifiers</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtrace.breakpoints</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vtrace.watchpoints</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">vtrace.util</span> <span class="kn">as</span> <span class="nn">v_util</span>
+
+<div class="viewcode-block" id="PlatformException"><a class="viewcode-back" href="../vtrace.html#vtrace.PlatformException">[docs]</a><span class="k">class</span> <span class="nc">PlatformException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A universal way to represent a failure in the</span>
+<span class="sd">    platform layer for this tracer.  platformFoo methods</span>
+<span class="sd">    should raise this rather than allowing their platform</span>
+<span class="sd">    specific exception types (which don&#39;t likely pickle, or</span>
+<span class="sd">    are not cross platform)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="AccessViolation"><a class="viewcode-back" href="../vtrace.html#vtrace.AccessViolation">[docs]</a><span class="k">class</span> <span class="nc">AccessViolation</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An exception which is raised on bad-touch to memory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">perm</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">va</span> <span class="o">=</span> <span class="n">va</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perm</span> <span class="o">=</span> <span class="n">perm</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;AccessViolation at 0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">perm</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Trace"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace">[docs]</a><span class="k">class</span> <span class="nc">Trace</span><span class="p">(</span><span class="n">e_mem</span><span class="o">.</span><span class="n">IMemory</span><span class="p">,</span> <span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="p">,</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">SymbolResolver</span><span class="p">,</span> <span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The main tracer object.  A trace instance is dynamically generated using</span>
+<span class="sd">    this and *many* potential mixin classes.  However, API users should *not*</span>
+<span class="sd">    worry about the methods that come from the mixins...  Everything that is</span>
+<span class="sd">    *meant* to be used from the API is contained and documented here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archname</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c"># For the crazy thread-call-proxy-thing</span>
+        <span class="c"># (must come first for __getattribute__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requires_thread</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proxymeth</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># FIXME hack for now...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_released</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="c"># The universal place for all modes</span>
+        <span class="c"># that might be platform dependant...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modedocs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notifiers</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c"># For all transient data (if notifiers want</span>
+        <span class="c"># to track stuff per-trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initMode</span><span class="p">(</span><span class="s">&quot;RunForever&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&quot;Run until RunForever = False&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initMode</span><span class="p">(</span><span class="s">&quot;NonBlocking&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&quot;A call to wait() fires a thread to wait *for* you&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initMode</span><span class="p">(</span><span class="s">&quot;ThreadProxy&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="s">&quot;Proxy necissary requests through a single thread (can deadlock...)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initMode</span><span class="p">(</span><span class="s">&quot;SingleStep&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&quot;All calls to run() actually just step.  This allows RunForever + SingleStep to step forever ;)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initMode</span><span class="p">(</span><span class="s">&quot;FastStep&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">,</span> <span class="s">&quot;All stepi() will NOT generate a step event&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">regcache</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regcachedirty</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sus_threads</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c"># A dictionary of suspended threads</span>
+
+        <span class="c"># Set if we&#39;re a server and this trace is proxied</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Set us up with an envi arch module</span>
+        <span class="c"># FIXME eventually we should just inherit one...</span>
+        <span class="k">if</span> <span class="n">archname</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">archname</span> <span class="o">=</span> <span class="n">envi</span><span class="o">.</span><span class="n">getCurrentArch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">,</span> <span class="n">archname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arch</span> <span class="o">=</span> <span class="n">envi</span><span class="o">.</span><span class="n">getArchModule</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">archname</span><span class="p">)</span>
+
+        <span class="n">e_resolv</span><span class="o">.</span><span class="n">SymbolResolver</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">())</span>
+        <span class="n">e_mem</span><span class="o">.</span><span class="n">IMemory</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archmod</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="p">)</span>
+        <span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Add event numbers to here for auto-continue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auto_continue</span> <span class="o">=</span> <span class="p">[</span><span class="n">NOTIFY_LOAD_LIBRARY</span><span class="p">,</span> <span class="n">NOTIFY_CREATE_THREAD</span><span class="p">,</span> <span class="n">NOTIFY_UNLOAD_LIBRARY</span><span class="p">,</span> <span class="n">NOTIFY_EXIT_THREAD</span><span class="p">,</span> <span class="n">NOTIFY_DEBUG_PRINT</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Trace.execute"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdline</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start a new process and debug it</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR - Tracer must first be detached before you can execute()&quot;</span><span class="p">)</span>
+
+        <span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformExec</span><span class="p">(</span><span class="n">cmdline</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_justAttached</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ExecCommand&#39;</span><span class="p">,</span> <span class="n">cmdline</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.getCurrentSignal"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getCurrentSignal">[docs]</a>    <span class="k">def</span> <span class="nf">getCurrentSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Retrieve the current signal/exception posted to the process.</span>
+<span class="sd">        If there are no pending signals/exceptions the API will return</span>
+<span class="sd">        None.  For POSIX systems, this will be a traditional POSIX signal.</span>
+<span class="sd">        For Windows systems it will be a current exception code (if any).</span>
+
+<span class="sd">        Example: sig = trace.getCurrentSignal()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetSignal</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.setCurrentSignal"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.setCurrentSignal">[docs]</a>    <span class="k">def</span> <span class="nf">setCurrentSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the currently pending signal for delivery to the target process on</span>
+<span class="sd">        continue.  This is intended for use by programs wishing the mask or change</span>
+<span class="sd">        the delivery of exceptions on a NOTIFY_SIGNAL event.</span>
+
+<span class="sd">        Example:  trace.setCurrentSignal(None)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformSetSignal</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.addIgnoreSignal"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.addIgnoreSignal">[docs]</a>    <span class="k">def</span> <span class="nf">addIgnoreSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        By adding an IgnoreSignal you tell the tracer object to</span>
+<span class="sd">        supress the notification of a particular type of signal.</span>
+<span class="sd">        In POSIX, these are regular signals, in Win32, these</span>
+<span class="sd">        are exception codes.  This is mostly useful in RunForever</span>
+<span class="sd">        mode because you still need the process to begin running again.</span>
+<span class="sd">        (these may be viewed/modified by the metadata key &quot;IgnoredSignals&quot;)</span>
+<span class="sd">        FIXME: make address do something.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;IgnoredSignals&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.delIgnoreSignal"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.delIgnoreSignal">[docs]</a>    <span class="k">def</span> <span class="nf">delIgnoreSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See addIgnoreSignal for a description of signal ignoring.</span>
+<span class="sd">        This removes an ignored signal and re-enables it&#39;s delivery.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;IgnoredSignals&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.attach"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.attach">[docs]</a>    <span class="k">def</span> <span class="nf">attach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attach to a new process ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+    
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">platformAttach</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_justAttached</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PlatformException</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Trace.stepi"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.stepi">[docs]</a>    <span class="k">def</span> <span class="nf">stepi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Single step the target process ONE instruction (and do</span>
+<span class="sd">        NOT activate breakpoints for the one step). Also, we </span>
+<span class="sd">        don&#39;t deliver pending signals for the single step...</span>
+<span class="sd">        Use the mode FastStep to allow/supress notifier callbacks on step</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+
+        <span class="c"># Since we don&#39;t go through the normal run/wait</span>
+        <span class="c"># code, we have a little house-keeping to do...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_syncRegs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformStepi</span><span class="p">()</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformWait</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformProcessEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.run"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">until</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allow the traced target to continue execution.  (Depending on the mode</span>
+<span class="sd">        &quot;Blocking&quot; this will either block until an event, or return immediately)</span>
+<span class="sd">        Additionally, the argument until may be used to cause execution to continue</span>
+<span class="sd">        until the specified address is reached (internally uses and removes a breakpoint).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&quot;SingleStep&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">steploop</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">until</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;RunForever&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">StopAndRemoveBreak</span><span class="p">(</span><span class="n">until</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_doRun</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.runAgain"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.runAgain">[docs]</a>    <span class="k">def</span> <span class="nf">runAgain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The runAgain() method may be used from inside a notifier</span>
+<span class="sd">        (Notifier, Breakpoint, Watchpoint, etc...) to inform the trace</span>
+<span class="sd">        that once event processing is complete, it should continue</span>
+<span class="sd">        running the trace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runagain</span> <span class="o">=</span> <span class="n">val</span>
+</div>
+<div class="viewcode-block" id="Trace.kill"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.kill">[docs]</a>    <span class="k">def</span> <span class="nf">kill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Kill the target process for this trace (will result in process</span>
+<span class="sd">        exit and fire appropriate notifiers)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotExited</span><span class="p">()</span>
+        <span class="c"># kill may require that we continue</span>
+        <span class="c"># the process before it gets processed,</span>
+        <span class="c"># so we&#39;ll try to run the process until it</span>
+        <span class="c"># exits due to the kill</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;RunForever&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span> <span class="c"># Forever actually means util exit</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">platformKill</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">platformKill</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.detach"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.detach">[docs]</a>    <span class="k">def</span> <span class="nf">detach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detach from the currently attached process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">NOTIFY_DETACH</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_syncRegs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformDetach</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attached</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapcache</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Trace.release"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Release resources for this tracer.  This API should be called</span>
+<span class="sd">        once you are done with the trace.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_released</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_released</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cleanupResources</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">platformRelease</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.getPid"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getPid">[docs]</a>    <span class="k">def</span> <span class="nf">getPid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the pid for this Trace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span>
+</div>
+<div class="viewcode-block" id="Trace.getNormalizedLibNames"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getNormalizedLibNames">[docs]</a>    <span class="k">def</span> <span class="nf">getNormalizedLibNames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Symbols are stored internally based off of</span>
+<span class="sd">        &quot;normalized&quot; library names.  This method returns</span>
+<span class="sd">        the list of normalized names for the loaded libraries.</span>
+
+<span class="sd">        (probably only useful for writting symbol browsers...)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.getSymsForFile"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getSymsForFile">[docs]</a>    <span class="k">def</span> <span class="nf">getSymsForFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the entire symbol list for the specified</span>
+<span class="sd">        normalized library name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loadBinaryNorm</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+        <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSymByName</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sym</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Invalid Library Name: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">libname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sym</span><span class="o">.</span><span class="n">getSymList</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.getSymByAddr"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getSymByAddr">[docs]</a>    <span class="k">def</span> <span class="nf">getSymByAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an envi Symbol object for an address.</span>
+<span class="sd">        Use exact=False to get the nearest previous match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># NOTE: Override this from envi.SymbolResolver to do on-demand</span>
+        <span class="c"># file parsing.</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">SymbolResolver</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">r</span>
+
+        <span class="c"># See if we need to parse the file.</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="n">va</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perms</span><span class="p">,</span><span class="n">fname</span> <span class="o">=</span> <span class="nb">map</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loadBinary</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="c"># Take a second shot after parsing</span>
+        <span class="k">return</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">SymbolResolver</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getSymByName"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getSymByName">[docs]</a>    <span class="k">def</span> <span class="nf">getSymByName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return an envi.Symbol object for the given name (or None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loadBinaryNorm</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">SymbolResolver</span><span class="o">.</span><span class="n">getSymByName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.searchSymbols"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.searchSymbols">[docs]</a>    <span class="k">def</span> <span class="nf">searchSymbols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">regex</span><span class="p">,</span> <span class="n">libname</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Search for symbols which match the given regular expression.  Specify libname</span>
+<span class="sd">        as the &quot;normalized&quot; library name to only search the specified lib.</span>
+
+<span class="sd">        Example:  for sym in trace.searchSymbols(&#39;.*CreateFile.*&#39;, &#39;kernel32&#39;):</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">reobj</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">libname</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">libs</span> <span class="o">=</span> <span class="p">[</span><span class="n">libname</span><span class="p">,</span> <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">libs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNormalizedLibNames</span><span class="p">()</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">lname</span> <span class="ow">in</span> <span class="n">libs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sym</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSymsForFile</span><span class="p">(</span><span class="n">lname</span><span class="p">):</span>
+                <span class="n">symstr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">reobj</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">symstr</span><span class="p">):</span>
+                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+</div>
+<div class="viewcode-block" id="Trace.getRegisterContext"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getRegisterContext">[docs]</a>    <span class="k">def</span> <span class="nf">getRegisterContext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the envi.registers.RegisterContext object for the</span>
+<span class="sd">        specified thread.  Use this API to iterate over threads</span>
+<span class="sd">        register values without setting the global tracer thread context.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">threadid</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">threadid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cacheRegs</span><span class="p">(</span><span class="n">threadid</span><span class="p">)</span>
+
+<span class="c">#######################################################################</span>
+<span class="c">#</span>
+<span class="c"># We mirror the RegisterContext API using our own thread index based</span>
+<span class="c"># cache.  These APIs must stay in sync with envi.registers.RegisterContext</span>
+<span class="c"># NOTE: for now we only need to over-ride get/setRegister because all the</span>
+<span class="c"># higher level APIs call them.</span>
+<span class="c">#</span>
+</div>
+<div class="viewcode-block" id="Trace.getRegister"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getRegister">[docs]</a>    <span class="k">def</span> <span class="nf">getRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterContext</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ctx</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.setRegister"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.setRegister">[docs]</a>    <span class="k">def</span> <span class="nf">setRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterContext</span><span class="p">()</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<span class="c">#######################################################################</span>
+</div>
+<div class="viewcode-block" id="Trace.allocateMemory"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.allocateMemory">[docs]</a>    <span class="k">def</span> <span class="nf">allocateMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="n">e_mem</span><span class="o">.</span><span class="n">MM_RWX</span><span class="p">,</span> <span class="n">suggestaddr</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allocate a chunk of memory inside the target process&#39; address</span>
+<span class="sd">        space.  Memory wil be mapped rwx unless otherwise specified with</span>
+<span class="sd">        perms=envi.memory.MM_FOO values. Optionally you may *suggest* an address</span>
+<span class="sd">        to the allocator, but there is no guarentee.  Returns the mapped</span>
+<span class="sd">        memory address.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapcache</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># We may have a new memory map</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformAllocateMemory</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="n">perms</span><span class="p">,</span> <span class="n">suggestaddr</span><span class="o">=</span><span class="n">suggestaddr</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.protectMemory"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.protectMemory">[docs]</a>    <span class="k">def</span> <span class="nf">protectMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the page protections on the specified region of memory.</span>
+<span class="sd">        See envi.memory for perms values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapcache</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># We may have new memory protections</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformProtectMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.readMemory"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.readMemory">[docs]</a>    <span class="k">def</span> <span class="nf">readMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read memory from address.  Areas that are NOT valid memory will be read</span>
+<span class="sd">        back as \x00s (this probably goes in a mixin soon)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformReadMemory</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="n">address</span><span class="p">),</span> <span class="nb">long</span><span class="p">(</span><span class="n">size</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Trace.writeMemory"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.writeMemory">[docs]</a>    <span class="k">def</span> <span class="nf">writeMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write the given bytes to the address in the current trace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformWriteMemory</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="n">address</span><span class="p">),</span> <span class="nb">bytes</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.searchMemory"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.searchMemory">[docs]</a>    <span class="k">def</span> <span class="nf">searchMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needle</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search all of process memory for a sequence of bytes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">IMemory</span><span class="o">.</span><span class="n">searchMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needle</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;search&#39;</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setVariable</span><span class="p">(</span><span class="s">&#39;search&#39;</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="Trace.searchMemoryRange"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.searchMemoryRange">[docs]</a>    <span class="k">def</span> <span class="nf">searchMemoryRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needle</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search a memory range for the specified sequence of bytes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">IMemory</span><span class="o">.</span><span class="n">searchMemoryRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">needle</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;search&#39;</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setVariable</span><span class="p">(</span><span class="s">&#39;search&#39;</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="Trace.setMeta"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.setMeta">[docs]</a>    <span class="k">def</span> <span class="nf">setMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set some metadata.  Metadata is a clean way for</span>
+<span class="sd">        arbitrary trace consumers (and notifiers) to present</span>
+<span class="sd">        and track additional information in trace objects.</span>
+
+<span class="sd">        Any modules which use this *should* initialize them</span>
+<span class="sd">        on attach (so when they get re-used they&#39;re clean)</span>
+
+<span class="sd">        Some examples of metadata used:</span>
+<span class="sd">        ShouldBreak - We&#39;re expecting a non-signal related break</span>
+<span class="sd">        ExitCode - The int() exit code  (if exited)</span>
+<span class="sd">        PendingSignal - The current signal</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="Trace.getMeta"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getMeta">[docs]</a>    <span class="k">def</span> <span class="nf">getMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get some metadata.  Metadata is a clean way for</span>
+<span class="sd">        arbitrary trace consumers (and notifiers) to present</span>
+<span class="sd">        and track additional information in trace objects.</span>
+
+<span class="sd">        If you specify a default and the key doesn&#39;t exist, not</span>
+<span class="sd">        not only will the default be returned, but the key will</span>
+<span class="sd">        be set to the default specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">default</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">default</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.hasMeta"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.hasMeta">[docs]</a>    <span class="k">def</span> <span class="nf">hasMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check to see if a metadata key exists... Mostly un-necissary</span>
+<span class="sd">        as getMeta() with a default will set the key to the default</span>
+<span class="sd">        if non-existant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getMode"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getMode">[docs]</a>    <span class="k">def</span> <span class="nf">getMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the value for a mode setting allowing</span>
+<span class="sd">        for a clean default...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.setMode"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.setMode">[docs]</a>    <span class="k">def</span> <span class="nf">setMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a mode setting...  This is ONLY valid</span>
+<span class="sd">        if that mode has been iniitialized with</span>
+<span class="sd">        initMode(name, value).  Otherwise, it&#39;s an</span>
+<span class="sd">        unsupported mode for this platform ;)  cute huh?</span>
+<span class="sd">        This way, platform sections can cleanly setmodes</span>
+<span class="sd">        and such.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Mode </span><span class="si">%s</span><span class="s"> not supported on this platform&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.injectso"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.injectso">[docs]</a>    <span class="k">def</span> <span class="nf">injectso</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inject a shared object into the target of the trace.  So, on windows</span>
+<span class="sd">        this is easy with InjectDll and on *nix... it&#39;s.. fugly...</span>
+
+<span class="sd">        NOTE: This method will likely cause the trace to run.  Do not call from</span>
+<span class="sd">              within a notifier!</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformInjectSo</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.ps"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.ps">[docs]</a>    <span class="k">def</span> <span class="nf">ps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of proccesses which are currently running on the</span>
+<span class="sd">        system.</span>
+<span class="sd">        (pid, name)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformPs</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.addBreakByExpr"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.addBreakByExpr">[docs]</a>    <span class="k">def</span> <span class="nf">addBreakByExpr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symname</span><span class="p">,</span> <span class="n">fastbreak</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a breakpoint by resolving an expression.  This will create</span>
+<span class="sd">        the Breakpoint object for you and add it to the trace.  It</span>
+<span class="sd">        returns the newly created breakpoint id.</span>
+<span class="sd">        </span>
+<span class="sd">        Optionally, set fastbreak=True to have the breakpoint behave in</span>
+<span class="sd">        &quot;fast break&quot; mode which automatically continues execution and does</span>
+<span class="sd">        not fire notifiers for the breakpoint.</span>
+
+<span class="sd">        Example: trace.addBreakByExpr(&#39;kernel32.CreateFileA + ecx&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">Breakpoint</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">symname</span><span class="p">)</span>
+        <span class="n">bp</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="n">fastbreak</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.addBreakByAddr"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.addBreakByAddr">[docs]</a>    <span class="k">def</span> <span class="nf">addBreakByAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">fastbreak</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a breakpoint by address.  This will create the Breakpoint</span>
+<span class="sd">        object for you and add it to the trace.  It returns the newly</span>
+<span class="sd">        created breakpoint id.</span>
+
+<span class="sd">        Optionally, set fastbreak=True to have the breakpoint behave in</span>
+<span class="sd">        &quot;fast break&quot; mode which automatically continues execution and does</span>
+<span class="sd">        not fire notifiers for the breakpoint.</span>
+
+<span class="sd">        Example: trace.addBreakByAddr(0x7c770308)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">Breakpoint</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="n">bp</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="n">fastbreak</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.addBreakpoint"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.addBreakpoint">[docs]</a>    <span class="k">def</span> <span class="nf">addBreakpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">breakpoint</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a breakpoint/watchpoint to the trace.  The &quot;breakpoint&quot; argument</span>
+<span class="sd">        is a vtrace Breakpoint/Watchpoint object or something that extends it.</span>
+
+<span class="sd">        To add a basic breakpoint use trace.addBreakpoint(vtrace.Breakpoint(address))</span>
+<span class="sd">        NOTE: expression breakpoints do *not* get evaluated in fastbreak mode</span>
+
+<span class="sd">        This will return the internal ID given to the new breakpoint</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">breakpoint</span><span class="o">.</span><span class="n">inittrace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">breakpoint</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nextBpId</span><span class="p">()</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="n">breakpoint</span><span class="o">.</span><span class="n">resolveAddress</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="n">addr</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bpbyid</span><span class="p">[</span><span class="n">breakpoint</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">breakpoint</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">breakpoint</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">breakpoint</span><span class="o">.</span><span class="n">id</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">has_key</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR: Duplicate break for address 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">addr</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpbyid</span><span class="p">[</span><span class="n">breakpoint</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">breakpoint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span> <span class="o">=</span> <span class="n">breakpoint</span>
+
+        <span class="c"># fastbreaks are always active... (except when they&#39;re not...)</span>
+        <span class="k">if</span> <span class="n">breakpoint</span><span class="o">.</span><span class="n">fastbreak</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activateBreak</span><span class="p">(</span><span class="n">breakpoint</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">breakpoint</span><span class="o">.</span><span class="n">id</span>
+            </div>
+<div class="viewcode-block" id="Trace.removeBreakpoint"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.removeBreakpoint">[docs]</a>    <span class="k">def</span> <span class="nf">removeBreakpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the breakpoint with the specified ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpbyid</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">bp</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+            <span class="c"># If the bp is also curbp, set curbp to None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span> <span class="o">==</span> <span class="n">bp</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># Remove cached breakpoint code</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">bpcodeobj</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getCurrentBreakpoint"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getCurrentBreakpoint">[docs]</a>    <span class="k">def</span> <span class="nf">getCurrentBreakpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the current breakpoint otherwise None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span>
+</div>
+<div class="viewcode-block" id="Trace.getBreakpoint"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getBreakpoint">[docs]</a>    <span class="k">def</span> <span class="nf">getBreakpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a reference to the breakpoint with the requested ID.</span>
+
+<span class="sd">        NOTE: NEVER set locals or use things like setBreakpointCode()</span>
+<span class="sd">        method on return&#39;d breakpoint objects as they may be remote</span>
+<span class="sd">        and would then be *coppies* of the bp objects. (use the trace&#39;s</span>
+<span class="sd">        setBreakpointCode() instead).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpbyid</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getBreakpointByAddr"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getBreakpointByAddr">[docs]</a>    <span class="k">def</span> <span class="nf">getBreakpointByAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the breakpoint object (or None) for a given virtual address.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getBreakpoints"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getBreakpoints">[docs]</a>    <span class="k">def</span> <span class="nf">getBreakpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the current breakpoints.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpbyid</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.getBreakpointEnabled"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getBreakpointEnabled">[docs]</a>    <span class="k">def</span> <span class="nf">getBreakpointEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An accessor method for returning if a breakpoint is</span>
+<span class="sd">        currently enabled.</span>
+<span class="sd">        NOTE: code which wants to be remote-safe should use this</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getBreakpoint</span><span class="p">(</span><span class="n">bpid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Breakpoint </span><span class="si">%d</span><span class="s"> Not Found&quot;</span> <span class="o">%</span> <span class="n">bpid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bp</span><span class="o">.</span><span class="n">isEnabled</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.setBreakpointEnabled"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.setBreakpointEnabled">[docs]</a>    <span class="k">def</span> <span class="nf">setBreakpointEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpid</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An accessor method for setting a breakpoint enabled/disabled.</span>
+
+<span class="sd">        NOTE: code which wants to be remote-safe should use this</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getBreakpoint</span><span class="p">(</span><span class="n">bpid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Breakpoint </span><span class="si">%d</span><span class="s"> Not Found&quot;</span> <span class="o">%</span> <span class="n">bpid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">enabled</span><span class="p">:</span> <span class="c"># To catch the &quot;disable&quot; of fastbreaks...</span>
+            <span class="n">bp</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bp</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.setBreakpointCode"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.setBreakpointCode">[docs]</a>    <span class="k">def</span> <span class="nf">setBreakpointCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpid</span><span class="p">,</span> <span class="n">pystr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Because breakpoints are potentially on the remote debugger</span>
+<span class="sd">        and code is not pickleable in python, special access methods</span>
+<span class="sd">        which takes strings of python code are necissary for the</span>
+<span class="sd">        vdb interface to quick script breakpoint code.  Use this method</span>
+<span class="sd">        to set the python code for this breakpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getBreakpoint</span><span class="p">(</span><span class="n">bpid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Breakpoint </span><span class="si">%d</span><span class="s"> Not Found&quot;</span> <span class="o">%</span> <span class="n">bpid</span><span class="p">)</span>
+        <span class="n">bp</span><span class="o">.</span><span class="n">setBreakpointCode</span><span class="p">(</span><span class="n">pystr</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getBreakpointCode"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getBreakpointCode">[docs]</a>    <span class="k">def</span> <span class="nf">getBreakpointCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the python string of user specified code that will run</span>
+<span class="sd">        when this breakpoint is hit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getBreakpoint</span><span class="p">(</span><span class="n">bpid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">bp</span><span class="o">.</span><span class="n">getBreakpointCode</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Trace.call"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">convention</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup the &quot;stack&quot; and call the target address with the following</span>
+<span class="sd">        arguments.  If the argument is a string or a buffer, copy that into</span>
+<span class="sd">        memory and hand in the argument.</span>
+
+<span class="sd">        The current state of ALL registers are returned as a dictionary at the</span>
+<span class="sd">        end of the call...</span>
+
+<span class="sd">        Additionally, a &quot;convention&quot; string may be specified that the underlying</span>
+<span class="sd">        platform may be able to interpret...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformCall</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">convention</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.registerNotifier"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.registerNotifier">[docs]</a>    <span class="k">def</span> <span class="nf">registerNotifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">notifier</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register a notifier who will be called for various</span>
+<span class="sd">        events.  See NOTIFY_* constants for handler hooks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notifiers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">event</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nlist</span><span class="p">:</span>
+            <span class="n">nlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">notifier</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nlist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">nlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">notifier</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">notifiers</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="n">nlist</span>
+</div>
+<div class="viewcode-block" id="Trace.deregisterNotifier"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.deregisterNotifier">[docs]</a>    <span class="k">def</span> <span class="nf">deregisterNotifier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">notifier</span><span class="p">):</span>
+        <span class="n">nlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">notifiers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="n">notifier</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
+            <span class="n">nlist</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">notifier</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getNotifiers"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getNotifiers">[docs]</a>    <span class="k">def</span> <span class="nf">getNotifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notifiers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="p">[])</span>
+</div>
+<div class="viewcode-block" id="Trace.requireNotExited"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.requireNotExited">[docs]</a>    <span class="k">def</span> <span class="nf">requireNotExited</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exited</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR - Request invalid for trace which exited&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.requireNotRunning"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.requireNotRunning">[docs]</a>    <span class="k">def</span> <span class="nf">requireNotRunning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Just a quick method to throw an error if the</span>
+<span class="sd">        tracer is already running...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR - Request invalid for running trace&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.requireAttached"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.requireAttached">[docs]</a>    <span class="k">def</span> <span class="nf">requireAttached</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A utility method for other methods to use in order</span>
+<span class="sd">        to require being attached</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR - Must be attached to a process&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getFds"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getFds">[docs]</a>    <span class="k">def</span> <span class="nf">getFds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of (fd,type,bestname) pairs.  This is MOSTLY useful</span>
+<span class="sd">        for HUMON consumtion...  or giving HUMONs consumption...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fds</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetFds</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fds</span>
+</div>
+<div class="viewcode-block" id="Trace.getMemoryMaps"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getMemoryMaps">[docs]</a>    <span class="k">def</span> <span class="nf">getMemoryMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the currently mapped memory for the target</span>
+<span class="sd">        process.  This is acomplished by calling the platform&#39;s</span>
+<span class="sd">        platformGetMaps() mixin method.  This will also cache the</span>
+<span class="sd">        results until CONTINUE.  The format is (addr,len,perms,file).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapcache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapcache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetMaps</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapcache</span>
+</div>
+<div class="viewcode-block" id="Trace.getMemoryFault"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getMemoryFault">[docs]</a>    <span class="k">def</span> <span class="nf">getMemoryFault</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        If the most receent event is a memory access error, this API will</span>
+<span class="sd">        return a tuple of (&lt;addr&gt;,&lt;perm&gt;) on supported platforms.  Otherwise,</span>
+<span class="sd">        a (None, None) will result.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">        import envi.memory as e_mem</span>
+<span class="sd">        vaddr,vperm = trace.getMemoryFault()</span>
+<span class="sd">        if vaddr != None:</span>
+<span class="sd">            print &#39;Memory Fault At: 0x%.8x (perm: %d)&#39; % (vaddr, vperm)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetMemFault</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.isAttached"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.isAttached">[docs]</a>    <span class="k">def</span> <span class="nf">isAttached</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return boolean true/false for weather or not this trace is</span>
+<span class="sd">        currently attached to a process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span>
+</div>
+<div class="viewcode-block" id="Trace.isRunning"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.isRunning">[docs]</a>    <span class="k">def</span> <span class="nf">isRunning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return true or false if this trace&#39;s target process is &quot;running&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span>
+</div>
+<div class="viewcode-block" id="Trace.isRemote"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.isRemote">[docs]</a>    <span class="k">def</span> <span class="nf">isRemote</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns True if the trace is a CobraProxy object to a trace on another system</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="Trace.enableAutoContinue"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.enableAutoContinue">[docs]</a>    <span class="k">def</span> <span class="nf">enableAutoContinue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put the tracer object in to AutoContinue mode</span>
+<span class="sd">        for the specified event.  To make all events</span>
+<span class="sd">        continue running see RunForever mode in setMode().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_continue</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auto_continue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.disableAutoContinue"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.disableAutoContinue">[docs]</a>    <span class="k">def</span> <span class="nf">disableAutoContinue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Disable Auto Continue for the specified</span>
+<span class="sd">        event.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_continue</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">auto_continue</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getAutoContinueList"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getAutoContinueList">[docs]</a>    <span class="k">def</span> <span class="nf">getAutoContinueList</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve the list of vtrace notification events</span>
+<span class="sd">        that will be auto-continued.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">auto_continue</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.parseExpression"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.parseExpression">[docs]</a>    <span class="k">def</span> <span class="nf">parseExpression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a python expression with many useful helpers mapped</span>
+<span class="sd">        into the execution namespace.</span>
+
+<span class="sd">        Example: trace.parseExpression(&quot;ispoi(ecx+ntdll.RtlAllocateHeap)&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">locs</span> <span class="o">=</span> <span class="n">VtraceExpressionLocals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">e_expr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">expression</span><span class="p">,</span> <span class="n">locs</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="Trace.sendBreak"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.sendBreak">[docs]</a>    <span class="k">def</span> <span class="nf">sendBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send an asynchronous break signal to the target process.</span>
+<span class="sd">        This is only valid if the target is actually running...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;RunForever&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ShouldBreak&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformSendBreak</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="c"># If we&#39;re non-blocking, we gotta wait...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&quot;NonBlocking&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">):</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getStackTrace"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getStackTrace">[docs]</a>    <span class="k">def</span> <span class="nf">getStackTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of (instruction pointer, stack frame) tuples.</span>
+<span class="sd">        If stack tracing results in an error, the error entry will</span>
+<span class="sd">        be (-1,-1).  Otherwise most platforms end up with 0,0 as</span>
+<span class="sd">        the top stack frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># FIXME thread id argument!</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">archGetStackTrace</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.getThreads"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getThreads">[docs]</a>    <span class="k">def</span> <span class="nf">getThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a dictionary of &lt;threadid&gt;:&lt;tinfo&gt; pairs where</span>
+<span class="sd">        tinfo is platform dependant, but is tyically either</span>
+<span class="sd">        the top of the stack for that thread, or the TEB on</span>
+<span class="sd">        win32</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadcache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">threadcache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetThreads</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">threadcache</span>
+</div>
+<div class="viewcode-block" id="Trace.getCurrentThread"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getCurrentThread">[docs]</a>    <span class="k">def</span> <span class="nf">getCurrentThread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the thread id of the currently selected thread.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.selectThread"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.selectThread">[docs]</a>    <span class="k">def</span> <span class="nf">selectThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the &quot;current thread&quot; context to the given thread id.</span>
+<span class="sd">        (For example stack traces and register values will depend</span>
+<span class="sd">        on the current thread context).  By default the thread</span>
+<span class="sd">        responsible for an &quot;interesting event&quot; is selected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">threadid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getThreads</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR: Invalid threadid chosen: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">threadid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformSelectThread</span><span class="p">(</span><span class="n">threadid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">,</span> <span class="n">threadid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.isThreadSuspended"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.isThreadSuspended">[docs]</a>    <span class="k">def</span> <span class="nf">isThreadSuspended</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used to determine if a thread is suspended.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sus_threads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">threadid</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.suspendThread"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.suspendThread">[docs]</a>    <span class="k">def</span> <span class="nf">suspendThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Suspend a thread by ID.  This will mean that on continuing</span>
+<span class="sd">        the trace, the suspended thread will not be scheduled.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sus_threads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">threadid</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;The specified thread is already suspended&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">threadid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;There is no thread </span><span class="si">%d</span><span class="s">!&quot;</span> <span class="o">%</span> <span class="n">threadid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformSuspendThread</span><span class="p">(</span><span class="n">threadid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sus_threads</span><span class="p">[</span><span class="n">threadid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="Trace.resumeThread"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.resumeThread">[docs]</a>    <span class="k">def</span> <span class="nf">resumeThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resume a suspended thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sus_threads</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">threadid</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;The specified thread is not suspended&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformResumeThread</span><span class="p">(</span><span class="n">threadid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sus_threads</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">threadid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.injectThread"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.injectThread">[docs]</a>    <span class="k">def</span> <span class="nf">injectThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new thread inside the target process.  This thread</span>
+<span class="sd">        will begin execution on the next process run().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="c">#self.platformInjectThread(pc)</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="Trace.joinThread"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.joinThread">[docs]</a>    <span class="k">def</span> <span class="nf">joinThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Run the trace in a loop until the specified thread exits.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&#39;RunForever&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_join_thread</span> <span class="o">=</span> <span class="n">threadid</span>
+        <span class="c"># Temporarily make run/wait blocking</span>
+        <span class="n">nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&#39;NonBlocking&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&#39;NonBlocking&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&#39;NonBlocking&#39;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getStructNames"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getStructNames">[docs]</a>    <span class="k">def</span> <span class="nf">getStructNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This method returns either the structure names, or</span>
+<span class="sd">        the structure namespaces that the target tracer is aware</span>
+<span class="sd">        of.  If &quot;namespace&quot; is specified, it is structures within</span>
+<span class="sd">        that namespace, otherwise it is &quot;known namespaces&quot;</span>
+
+<span class="sd">        Example: namespaces = trace.getStructNames()</span>
+<span class="sd">                 ntdll_structs = trace.getStructNames(namespace=&#39;ntdll&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">namespace</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsbuilder</span><span class="o">.</span><span class="n">getVStructNames</span><span class="p">(</span><span class="n">namespace</span><span class="o">=</span><span class="n">namespace</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsbuilder</span><span class="o">.</span><span class="n">getVStructNamespaceNames</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Trace.getStruct"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getStruct">[docs]</a>    <span class="k">def</span> <span class="nf">getStruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sname</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a vstruct structure populated with memory from</span>
+<span class="sd">        the specified address.  Returns a standard vstruct object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Check if we need to parse symbols for a library</span>
+        <span class="n">libbase</span> <span class="o">=</span> <span class="n">sname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loadBinaryNorm</span><span class="p">(</span><span class="n">libbase</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsbuilder</span><span class="o">.</span><span class="n">hasVStructNamespace</span><span class="p">(</span><span class="n">libbase</span><span class="p">):</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsbuilder</span><span class="o">.</span><span class="n">buildVStruct</span><span class="p">(</span><span class="n">sname</span><span class="p">)</span>
+
+        <span class="c"># FIXME this is depreicated and should die...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vs</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">getStructure</span><span class="p">(</span><span class="n">sname</span><span class="p">)</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">vs</span><span class="p">))</span>
+        <span class="n">vs</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vs</span>
+</div>
+<div class="viewcode-block" id="Trace.setVariable"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.setVariable">[docs]</a>    <span class="k">def</span> <span class="nf">setVariable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a named variable in the trace which may be used in</span>
+<span class="sd">        subsequent VtraceExpressions.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">        trace.setVariable(&quot;whereiam&quot;, trace.getProgramCounter())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">localvars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="Trace.getVariable"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getVariable">[docs]</a>    <span class="k">def</span> <span class="nf">getVariable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the value of a previously set variable name.</span>
+<span class="sd">        (or None on not found)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">localvars</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.getVariables"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.getVariables">[docs]</a>    <span class="k">def</span> <span class="nf">getVariables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the dictionary of named variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">localvars</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.hex"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.hex">[docs]</a>    <span class="k">def</span> <span class="nf">hex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Much like the python hex routine, except this will automatically</span>
+<span class="sd">        pad the value&#39;s string length out to pointer width.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">hex</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Trace.buildNewTrace"><a class="viewcode-back" href="../vtrace.html#vtrace.Trace.buildNewTrace">[docs]</a>    <span class="k">def</span> <span class="nf">buildNewTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Build a new/clean trace &quot;like&quot; this one.  For platforms where a</span>
+<span class="sd">        special trace was handed in, this allows initialization of a new one.</span>
+<span class="sd">        For most implementations, this is very simple....</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            if need_another_trace:</span>
+<span class="sd">                newt = trace.buildNewTrace()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="TraceGroup"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup">[docs]</a><span class="k">class</span> <span class="nc">TraceGroup</span><span class="p">(</span><span class="n">Notifier</span><span class="p">,</span> <span class="n">v_util</span><span class="o">.</span><span class="n">TraceManager</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encapsulate several traces, run them, and continue to </span>
+<span class="sd">    handle their event notifications.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Notifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">v_util</span><span class="o">.</span><span class="n">TraceManager</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traces</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">go</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># A little ghetto switch for those who read the source</span>
+
+        <span class="c"># We are a notify all notifier by default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;NonBlocking&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TraceGroup.setMeta"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.setMeta">[docs]</a>    <span class="k">def</span> <span class="nf">setMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A trace group&#39;s setMeta function will set &quot;persistant&quot; metadata</span>
+<span class="sd">        which will be added again to any trace on attach.  Additionally,</span>
+<span class="sd">        setting metadata on a tracegroup will cause all current traces</span>
+<span class="sd">        to get the update as well....</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">v_util</span><span class="o">.</span><span class="n">TraceManager</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.setMode"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.setMode">[docs]</a>    <span class="k">def</span> <span class="nf">setMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">v_util</span><span class="o">.</span><span class="n">TraceManager</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getTraces</span><span class="p">():</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.detachAll"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.detachAll">[docs]</a>    <span class="k">def</span> <span class="nf">detachAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detach from ALL the currently targetd processes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+                    <span class="n">trace</span><span class="o">.</span><span class="n">sendBreak</span><span class="p">()</span>
+                <span class="n">trace</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.run"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Our run method  is a little different than a traditional</span>
+<span class="sd">        trace. It will *never* block.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR - can&#39;t run() with no traces!&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">exited</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">pid</span><span class="p">)</span>
+                <span class="n">trace</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">trace</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+                <span class="n">trace</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.execTrace"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.execTrace">[docs]</a>    <span class="k">def</span> <span class="nf">execTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdline</span><span class="p">):</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">getTrace</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initTrace</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmdline</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="n">trace</span><span class="o">.</span><span class="n">getPid</span><span class="p">()]</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="k">return</span> <span class="n">trace</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.addTrace"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.addTrace">[docs]</a>    <span class="k">def</span> <span class="nf">addTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new tracer to this group the &quot;proc&quot; argument</span>
+<span class="sd">        may be either an long() for a pid (which we will attach</span>
+<span class="sd">        to) or an already attached (and broken) tracer object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">IntType</span> <span class="ow">or</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">LongType</span><span class="p">):</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="n">getTrace</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initTrace</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="n">proc</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">trace</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delTrace</span><span class="p">(</span><span class="n">proc</span><span class="p">)</span>
+                <span class="k">raise</span>
+
+        <span class="k">else</span><span class="p">:</span> <span class="c"># Hopefully a tracer object... if not.. you&#39;re dumb.</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="n">proc</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initTrace</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="n">trace</span><span class="o">.</span><span class="n">getPid</span><span class="p">()]</span> <span class="o">=</span> <span class="n">trace</span>
+
+        <span class="k">return</span> <span class="n">trace</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.getTrace"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.getTrace">[docs]</a>    <span class="k">def</span> <span class="nf">getTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Similar to vtrace.getTrace(), but also init&#39;s</span>
+<span class="sd">        the trace for being managed by a TraceGroup.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            tg = TraceGroup()</span>
+<span class="sd">            t = tg.getTrace()</span>
+<span class="sd">            t....</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">getTrace</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addTrace</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">t</span>
+</div>
+    <span class="k">def</span> <span class="nf">_initTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         - INTERNAL -</span>
+<span class="sd">        Setup a tracer object to be ready for being in this</span>
+<span class="sd">        trace group (setup modes and notifiers).  Only addTrace()</span>
+<span class="sd">        and execTrace() probably need to be aware of this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">manageTrace</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TraceGroup.delTrace"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.delTrace">[docs]</a>    <span class="k">def</span> <span class="nf">delTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a trace from the current TraceGroup</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unManageTrace</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.getTraces"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.getTraces">[docs]</a>    <span class="k">def</span> <span class="nf">getTraces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the current traces</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.getTraceByPid"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.getTraceByPid">[docs]</a>    <span class="k">def</span> <span class="nf">getTraceByPid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the the trace for process PID if we&#39;re</span>
+<span class="sd">        already attached.  Return None if not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">traces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceGroup.notify"><a class="viewcode-back" href="../vtrace.html#vtrace.TraceGroup.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="c"># Remove this trace, and free it</span>
+        <span class="c"># on the server if present</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="n">NOTIFY_EXIT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delTrace</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">getPid</span><span class="p">())</span>
+</div></div>
+<div class="viewcode-block" id="VtraceExpressionLocals"><a class="viewcode-back" href="../vtrace.html#vtrace.VtraceExpressionLocals">[docs]</a><span class="k">class</span> <span class="nc">VtraceExpressionLocals</span><span class="p">(</span><span class="n">e_expr</span><span class="o">.</span><span class="n">MemoryExpressionLocals</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class which serves as the namespace dictionary during the</span>
+<span class="sd">    evaluation of an expression on a tracer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">e_expr</span><span class="o">.</span><span class="n">MemoryExpressionLocals</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">symobj</span><span class="o">=</span><span class="n">trace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+                <span class="s">&#39;trace&#39;</span><span class="p">:</span><span class="n">trace</span><span class="p">,</span>
+                <span class="s">&#39;vtrace&#39;</span><span class="p">:</span><span class="n">vtrace</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="s">&#39;frame&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="p">,</span>
+            <span class="s">&#39;teb&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">teb</span><span class="p">,</span>
+            <span class="s">&#39;bp&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">bp</span><span class="p">,</span>
+            <span class="s">&#39;meta&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="p">,</span>
+            <span class="s">&#39;go&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">,</span>
+        <span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c"># Check registers</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+
+            <span class="n">regs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getRegisters</span><span class="p">()</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">r</span>
+
+        <span class="c"># Check local variables</span>
+        <span class="n">locs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getVariables</span><span class="p">()</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">locs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">r</span>
+        <span class="k">return</span> <span class="n">e_expr</span><span class="o">.</span><span class="n">MemoryExpressionLocals</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VtraceExpressionLocals.go"><a class="viewcode-back" href="../vtrace.html#vtrace.VtraceExpressionLocals.go">[docs]</a>    <span class="k">def</span> <span class="nf">go</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A shortcut for trace.runAgain() which may be used in</span>
+<span class="sd">        breakpoint code (or similar even processors) to begin</span>
+<span class="sd">        execution again after event processing...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">runAgain</span><span class="p">();</span>
+</div>
+<div class="viewcode-block" id="VtraceExpressionLocals.frame"><a class="viewcode-back" href="../vtrace.html#vtrace.VtraceExpressionLocals.frame">[docs]</a>    <span class="k">def</span> <span class="nf">frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the address of the saved base pointer for</span>
+<span class="sd">        the specified frame.</span>
+
+<span class="sd">        Usage: frame(&lt;index&gt;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stack</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getStackTrace</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">stack</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="VtraceExpressionLocals.teb"><a class="viewcode-back" href="../vtrace.html#vtrace.VtraceExpressionLocals.teb">[docs]</a>    <span class="k">def</span> <span class="nf">teb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadnum</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The expression teb(threadid) will return whatever the</span>
+<span class="sd">        platform stores as the int for threadid.  In the case</span>
+<span class="sd">        of windows, this is the TEB, others may be the thread</span>
+<span class="sd">        stack base or whatever.  If threadid is left out, it</span>
+<span class="sd">        uses the threadid of the current thread context.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">threadnum</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># Get the thread ID of the current Thread Context</span>
+            <span class="n">threadnum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">)</span>
+
+        <span class="n">teb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">threadnum</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">teb</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR - Unknown Thread Id </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">threadnum</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">teb</span>
+</div>
+<div class="viewcode-block" id="VtraceExpressionLocals.bp"><a class="viewcode-back" href="../vtrace.html#vtrace.VtraceExpressionLocals.bp">[docs]</a>    <span class="k">def</span> <span class="nf">bp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bpid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The expression bp(0) returns the resolved address of the given</span>
+<span class="sd">        breakpoint</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getBreakpoint</span><span class="p">(</span><span class="n">bpid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Unknown Breakpoint ID: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">bpid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bp</span><span class="o">.</span><span class="n">resolveAddress</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VtraceExpressionLocals.meta"><a class="viewcode-back" href="../vtrace.html#vtrace.VtraceExpressionLocals.meta">[docs]</a>    <span class="k">def</span> <span class="nf">meta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An expression friendly (terse) way to get trace metadata</span>
+<span class="sd">        (equiv to trace.getMeta(name))</span>
+
+<span class="sd">        Example: meta(&quot;foo&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="getTrace"><a class="viewcode-back" href="../vtrace.html#vtrace.getTrace">[docs]</a><span class="k">def</span> <span class="nf">getTrace</span><span class="p">(</span><span class="n">plat</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a tracer object appropriate for this platform.</span>
+<span class="sd">    This is the function you will use to get a tracer object</span>
+<span class="sd">    with the appropriate ancestry for your host.</span>
+<span class="sd">    ex. mytrace = vtrace.getTrace()</span>
+
+
+<span class="sd">    NOTE: Use the release() method on the tracer once debugging</span>
+<span class="sd">          is complete.  This releases the tracer thread and allows</span>
+<span class="sd">          garbage collection to function correctly.</span>
+
+<span class="sd">    Some specialized tracers may be constructed by specifying the &quot;plat&quot;</span>
+<span class="sd">    name from one of the following list.  Additionally, each &quot;specialized&quot;</span>
+<span class="sd">    tracer may require additional kwargs (which are listed).</span>
+
+<span class="sd">    android - Debug android apps through adb (adb must be in your path)</span>
+<span class="sd">        avd=&lt;name&gt; (None will let adb decide)</span>
+
+<span class="sd">    vmware32  - Debug a 32bit VMWare target.</span>
+<span class="sd">        host=&lt;host&gt; - Where is the gdb server listening? (default 127.0.0.1)</span>
+<span class="sd">        port=&lt;port&gt; - What port (default: 8832)</span>
+<span class="sd">        os=&lt;osname&gt; - On of &quot;Windows&quot;, &quot;Linux&quot; (that&#39;s all we support now...)</span>
+
+<span class="sd">    vmware64  - Debug a 64bit VMWare target.</span>
+<span class="sd">        host=&lt;host&gt; - Where is the gdb server listening? (default 127.0.0.1)</span>
+<span class="sd">        port=&lt;port&gt; - What port (default: 8864)</span>
+<span class="sd">        os=&lt;osname&gt; - On of &quot;Windows&quot;, &quot;Linux&quot; (that&#39;s all we support now...)</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        t = vtrace.getTrace() # A tracer for *this* os</span>
+
+<span class="sd">        t = vtrace.getTrace(plat=&#39;android&#39;) # The default ADB device</span>
+
+<span class="sd">        t = vtrace.getTrace(plat=&#39;vmware32&#39;, host=&#39;localhost&#39;, port=31337)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># FIXME make &quot;remote&quot; traces use plat=&quot;remote&quot;!</span>
+    <span class="k">if</span> <span class="n">plat</span> <span class="o">==</span> <span class="s">&#39;android&#39;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">vtrace.platforms.android</span> <span class="kn">as</span> <span class="nn">v_android</span>
+        <span class="k">return</span> <span class="n">v_android</span><span class="o">.</span><span class="n">getTrace</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">remote</span><span class="p">:</span> <span class="c">#We have a remote server!</span>
+        <span class="k">return</span> <span class="n">getRemoteTrace</span><span class="p">()</span>
+
+    <span class="c"># From here down, we&#39;re trying to build a trace for *this* platform!</span>
+
+    <span class="n">os_name</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="c"># Like &quot;Linux&quot;, &quot;Darwin&quot;,&quot;Windows&quot;</span>
+    <span class="n">arch</span> <span class="o">=</span> <span class="n">envi</span><span class="o">.</span><span class="n">getCurrentArch</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">os_name</span> <span class="o">==</span> <span class="s">&quot;Linux&quot;</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">vtrace.platforms.linux</span> <span class="kn">as</span> <span class="nn">v_linux</span>
+        <span class="k">if</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&quot;amd64&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_linux</span><span class="o">.</span><span class="n">LinuxAmd64Trace</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&quot;i386&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_linux</span><span class="o">.</span><span class="n">Linuxi386Trace</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Sorry, no linux support for </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">arch</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">os_name</span> <span class="o">==</span> <span class="s">&quot;FreeBSD&quot;</span><span class="p">:</span>
+
+        <span class="kn">import</span> <span class="nn">vtrace.platforms.freebsd</span> <span class="kn">as</span> <span class="nn">v_freebsd</span>
+
+        <span class="k">if</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&quot;i386&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_freebsd</span><span class="o">.</span><span class="n">FreeBSDi386Trace</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&quot;amd64&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_freebsd</span><span class="o">.</span><span class="n">FreeBSDAmd64Trace</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Sorry, no FreeBSD support for </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">arch</span><span class="p">)</span>
+
+        <span class="c">#import vtrace.platforms.posix as v_posix</span>
+        <span class="c">#import vtrace.platforms.freebsd as v_freebsd</span>
+        <span class="c">#ilist.append(v_posix.PosixMixin)</span>
+        <span class="c">#ilist.append(v_posix.ElfMixin)</span>
+        <span class="c">#if arch == &quot;i386&quot;:</span>
+            <span class="c">#import vtrace.archs.intel as v_intel</span>
+            <span class="c">#ilist.append(v_intel.i386Mixin)</span>
+            <span class="c">#ilist.append(v_freebsd.FreeBSDMixin)</span>
+            <span class="c">#ilist.append(v_freebsd.FreeBSDIntelRegisters)</span>
+        <span class="c">#else:</span>
+            <span class="c">#raise Exception(&quot;Sorry, no FreeBSD support for %s&quot; % arch)</span>
+
+    <span class="k">elif</span> <span class="n">os_name</span> <span class="o">==</span> <span class="s">&quot;sunos5&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Solaris needs porting!&quot;</span><span class="p">)</span>
+        <span class="c">#import vtrace.platforms.posix as v_posix</span>
+        <span class="c">#import vtrace.platforms.solaris as v_solaris</span>
+        <span class="c">#ilist.append(v_posix.PosixMixin)</span>
+        <span class="c">#if arch == &quot;i386&quot;:</span>
+            <span class="c">#import vtrace.archs.intel as v_intel</span>
+            <span class="c">#ilist.append(v_intel.i386Mixin)</span>
+            <span class="c">#ilist.append(v_solaris.SolarisMixin)</span>
+            <span class="c">#ilist.append(v_solaris.Solarisi386Mixin)</span>
+
+    <span class="k">elif</span> <span class="n">os_name</span> <span class="o">==</span> <span class="s">&quot;Darwin&quot;</span><span class="p">:</span>
+
+        <span class="c">#if 9 not in os.getgroups():</span>
+            <span class="c">#print &#39;You MUST be in the procmod group....&#39;</span>
+            <span class="c">#print &#39;Use: sudo dscl . append /Groups/procmod GroupMembership invisigoth&#39;</span>
+            <span class="c">#print &#39;(put your username in there unless you want to put me in too... ;)&#39;</span>
+            <span class="c">#raise Exception(&#39;procmod group membership required&#39;)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;For NOW you *must* be root.  There are some crazy MACH perms...&#39;</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;You must be root for now (on OSX)....&#39;</span><span class="p">)</span>
+
+        <span class="k">print</span> <span class="s">&#39;Also... the darwin port is not even REMOTELY working yet.  Solid progress though...&#39;</span>
+
+        <span class="c">#&#39;sudo dscl . append /Groups/procmod GroupMembership invisigoth&#39;</span>
+        <span class="c">#&#39;sudo dscl . read /Groups/procmod GroupMembership&#39;</span>
+        <span class="kn">import</span> <span class="nn">vtrace.platforms.darwin</span> <span class="kn">as</span> <span class="nn">v_darwin</span>
+        <span class="k">if</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&#39;i386&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_darwin</span><span class="o">.</span><span class="n">Darwini386Trace</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&#39;amd64&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_darwin</span><span class="o">.</span><span class="n">DarwinAmd64Trace</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Darwin not supported on </span><span class="si">%s</span><span class="s"> (only i386...)&#39;</span> <span class="o">%</span> <span class="n">arch</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">os_name</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;Microsoft&#39;</span><span class="p">,</span> <span class="s">&#39;Windows&#39;</span><span class="p">]:</span>
+
+        <span class="kn">import</span> <span class="nn">vtrace.platforms.win32</span> <span class="kn">as</span> <span class="nn">v_win32</span>
+
+        <span class="k">if</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&quot;i386&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_win32</span><span class="o">.</span><span class="n">Windowsi386Trace</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&quot;amd64&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v_win32</span><span class="o">.</span><span class="n">WindowsAmd64Trace</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Windows with arch </span><span class="si">%s</span><span class="s"> is not supported!&quot;</span> <span class="o">%</span> <span class="n">arch</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR - OS </span><span class="si">%s</span><span class="s"> not supported yet&quot;</span> <span class="o">%</span> <span class="n">os_name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="interact"><a class="viewcode-back" href="../vtrace.html#vtrace.interact">[docs]</a><span class="k">def</span> <span class="nf">interact</span><span class="p">(</span><span class="n">pid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">server</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Just a cute and dirty way to get a tracer attached to a pid</span>
+<span class="sd">    and get a python interpreter instance out of it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">global</span> <span class="n">remote</span>
+    <span class="n">remote</span> <span class="o">=</span> <span class="n">server</span>
+
+    <span class="k">if</span> <span class="n">trace</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">getTrace</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pid</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+
+    <span class="n">mylocals</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">mylocals</span><span class="p">[</span><span class="s">&quot;trace&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span>
+
+    <span class="n">code</span><span class="o">.</span><span class="n">interact</span><span class="p">(</span><span class="n">local</span><span class="o">=</span><span class="n">mylocals</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

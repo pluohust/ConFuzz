@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vqt.application &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vqt.application</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">PyQt4</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">import</span> <span class="nn">vqt.cli</span> <span class="kn">as</span> <span class="nn">vq_cli</span>
+<span class="kn">import</span> <span class="nn">vqt.main</span> <span class="kn">as</span> <span class="nn">vq_main</span>
+<span class="kn">import</span> <span class="nn">vqt.menubuilder</span> <span class="kn">as</span> <span class="nn">vq_menu</span>
+
+<div class="viewcode-block" id="VQDockWidget"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQDockWidget">[docs]</a><span class="k">class</span> <span class="nc">VQDockWidget</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDockWidget</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QDockWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_visible</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visibilityChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">vqSetVisible</span> <span class="p">)</span>
+        <span class="c">#self.connect(self,  QtCore.SIGNAL(&#39;visibilityChanged(bool)&#39;), self.vqSetVisible)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAllowedAreas</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AllDockWidgetAreas</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VQDockWidget.vqIsVisible"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQDockWidget.vqIsVisible">[docs]</a>    <span class="k">def</span> <span class="nf">vqIsVisible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vq_visible</span>
+</div>
+<div class="viewcode-block" id="VQDockWidget.vqSetVisible"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQDockWidget.vqSetVisible">[docs]</a>    <span class="k">def</span> <span class="nf">vqSetVisible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_visible</span> <span class="o">=</span> <span class="n">visible</span>
+</div>
+<div class="viewcode-block" id="VQDockWidget.vqSaveState"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQDockWidget.vqSaveState">[docs]</a>    <span class="k">def</span> <span class="nf">vqSaveState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">wid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wid</span><span class="p">,</span> <span class="n">VQSavableWidget</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">wid</span><span class="o">.</span><span class="n">vqSaveState</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VQDockWidget.setWidget"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQDockWidget.setWidget">[docs]</a>    <span class="k">def</span> <span class="nf">setWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="c"># If he sets his window title, we want to...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">windowTitle</span><span class="p">())</span>
+        <span class="n">widget</span><span class="o">.</span><span class="n">setWindowTitle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QDockWidget</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQDockWidget.vqRestoreState"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQDockWidget.vqRestoreState">[docs]</a>    <span class="k">def</span> <span class="nf">vqRestoreState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="VQDockWidget.closeEvent"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQDockWidget.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentWidget</span><span class="p">()</span><span class="o">.</span><span class="n">vqRemoveDockWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QDockWidget</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="VQMainCmdWindow"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow">[docs]</a><span class="k">class</span> <span class="nc">VQMainCmdWindow</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A base class for application window&#39;s to inherit from.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">appname</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QMainWindow</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_appname</span> <span class="o">=</span> <span class="n">appname</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_settings</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSettings</span><span class="p">(</span><span class="s">&#39;invisigoth&#39;</span><span class="p">,</span> <span class="n">application</span><span class="o">=</span><span class="n">appname</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_histfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s">&#39;~&#39;</span><span class="p">),</span> <span class="s">&#39;.</span><span class="si">%s</span><span class="s">_history&#39;</span> <span class="o">%</span> <span class="n">appname</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dock_widgets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dock_classes</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqInitDockWidgetClasses</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_mbar</span> <span class="o">=</span> <span class="n">vq_menu</span><span class="o">.</span><span class="n">VQMenuBar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMenuBar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vq_mbar</span><span class="p">)</span>
+
+        <span class="c"># AnimatedDocks, AllowNestedDocks, AllowTabbedDocks, ForceTabbedDocks, VerticalTabs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDockOptions</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">AnimatedDocks</span> <span class="o">|</span> <span class="bp">self</span><span class="o">.</span><span class="n">AllowTabbedDocks</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_cli</span> <span class="o">=</span> <span class="n">vq_cli</span><span class="o">.</span><span class="n">VQCli</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_cli</span><span class="o">.</span><span class="n">loadHistory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vq_histfile</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_cli</span><span class="o">.</span><span class="n">sigCliQuit</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">close</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vq_cli</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqRestoreGuiSettings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vq_settings</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VQMainCmdWindow.vqAddMenuField"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqAddMenuField">[docs]</a>    <span class="k">def</span> <span class="nf">vqAddMenuField</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_mbar</span><span class="o">.</span><span class="n">addField</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqAddDynMenu"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqAddDynMenu">[docs]</a>    <span class="k">def</span> <span class="nf">vqAddDynMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_mbar</span><span class="o">.</span><span class="n">addDynMenu</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqInitDockWidgetClasses"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqInitDockWidgetClasses">[docs]</a>    <span class="k">def</span> <span class="nf">vqInitDockWidgetClasses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># apps can over-ride</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqAddDockWidgetClass"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqAddDockWidgetClass">[docs]</a>    <span class="k">def</span> <span class="nf">vqAddDockWidgetClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cls</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">()):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dock_classes</span><span class="p">[</span><span class="n">cls</span><span class="o">.</span><span class="n">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="n">args</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqBuildDockWidget"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqBuildDockWidget">[docs]</a>    <span class="k">def</span> <span class="nf">vqBuildDockWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clsname</span><span class="p">,</span> <span class="n">floating</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">area</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TopDockWidgetArea</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dock_classes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">clsname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;vqBuildDockWidget Failed For: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">clsname</span>
+            <span class="k">return</span>
+        <span class="n">cls</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">cls</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vqDockWidget</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">floating</span><span class="o">=</span><span class="n">floating</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqRestoreGuiSettings"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqRestoreGuiSettings">[docs]</a>    <span class="k">def</span> <span class="nf">vqRestoreGuiSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+
+        <span class="n">dwcls</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;DockClasses&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dwcls</span><span class="o">.</span><span class="n">isNull</span><span class="p">():</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">clsname</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dwcls</span><span class="o">.</span><span class="n">toStringList</span><span class="p">()):</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vqBuildDockWidget</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">clsname</span><span class="p">),</span> <span class="n">floating</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">d</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">d</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&#39;VQDockWidget</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+
+        <span class="c"># Once dock widgets are loaded, we can restoreState</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;DockState&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">state</span><span class="o">.</span><span class="n">isNull</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restoreState</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">toByteArray</span><span class="p">())</span>
+
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s">&#39;DockGeometry&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">geom</span><span class="o">.</span><span class="n">isNull</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restoreGeometry</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">toByteArray</span><span class="p">())</span>
+
+        <span class="c"># Just get all the resize activities done...</span>
+        <span class="n">vq_main</span><span class="o">.</span><span class="n">eatevents</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dock_widgets</span><span class="p">:</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqSaveGuiSettings"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqSaveGuiSettings">[docs]</a>    <span class="k">def</span> <span class="nf">vqSaveGuiSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">):</span>
+
+        <span class="n">dock_classes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c"># Enumerate the current dock windows and set</span>
+        <span class="c"># their names by their list order...</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">w</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dock_widgets</span><span class="p">):</span>
+
+            <span class="n">dock_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;VQDockWidget</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;DockClasses&#39;</span><span class="p">,</span> <span class="n">dock_classes</span><span class="p">)</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;DockGeometry&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">saveGeometry</span><span class="p">())</span>
+        <span class="n">settings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s">&#39;DockState&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">saveState</span><span class="p">())</span>
+
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.closeEvent"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqSaveGuiSettings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vq_settings</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vq_cli</span><span class="o">.</span><span class="n">saveHistory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vq_histfile</span><span class="p">)</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QMainWindow</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqRemoveDockWidget"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqRemoveDockWidget">[docs]</a>    <span class="k">def</span> <span class="nf">vqRemoveDockWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dock_widgets</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqClearDockWidgets"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqClearDockWidgets">[docs]</a>    <span class="k">def</span> <span class="nf">vqClearDockWidgets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">wid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dock_widgets</span><span class="p">:</span>
+            <span class="n">wid</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VQMainCmdWindow.vqDockWidget"><a class="viewcode-back" href="../../vqt.html#vqt.application.VQMainCmdWindow.vqDockWidget">[docs]</a>    <span class="k">def</span> <span class="nf">vqDockWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget</span><span class="p">,</span> <span class="n">area</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TopDockWidgetArea</span><span class="p">,</span> <span class="n">floating</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">VQDockWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">widget</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">setFloating</span><span class="p">(</span><span class="n">floating</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">area</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dock_widgets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restoreDockWidget</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">d</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

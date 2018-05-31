@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.rmi &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vtrace" href="../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.rmi</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Cobra integration for remote debugging</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">md5</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">cobra</span>
+
+<span class="n">callback_daemon</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="getTracerFactory"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.getTracerFactory">[docs]</a><span class="k">def</span> <span class="nf">getTracerFactory</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a TracerFactory proxy object from the remote server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraProxy</span><span class="p">(</span><span class="s">&quot;cobra://</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">/TracerFactory&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">remote</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="TraceProxyFactory"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.TraceProxyFactory">[docs]</a><span class="k">class</span> <span class="nc">TraceProxyFactory</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A &quot;factory&quot; object for creating tracers and</span>
+<span class="sd">    wrapping them up in a proxy instance to the</span>
+<span class="sd">    *local* server.  This object is shared out</span>
+<span class="sd">    via the pyro server for vtrace clients.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TraceProxyFactory.getTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.TraceProxyFactory.getTrace">[docs]</a>    <span class="k">def</span> <span class="nf">getTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+        <span class="n">host</span><span class="p">,</span><span class="n">port</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">getLocalInfo</span><span class="p">()</span>
+        <span class="n">unique</span> <span class="o">=</span> <span class="n">md5</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">cobra_daemon</span><span class="o">.</span><span class="n">shareObject</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">unique</span><span class="p">)</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraProxy</span><span class="p">(</span><span class="s">&quot;cobra://</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span><span class="n">port</span><span class="p">,</span><span class="n">unique</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">unique</span>
+</div>
+<div class="viewcode-block" id="TraceProxyFactory.releaseTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.TraceProxyFactory.releaseTrace">[docs]</a>    <span class="k">def</span> <span class="nf">releaseTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proxy</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When a remote system is done with a trace</span>
+<span class="sd">        and wants the server to clean him up, hand</span>
+<span class="sd">        the proxy object to this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">cobra_daemon</span><span class="o">.</span><span class="n">unshareObject</span><span class="p">(</span><span class="n">proxy</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;__cobra_name&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="RemoteTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.RemoteTrace">[docs]</a><span class="k">class</span> <span class="nc">RemoteTrace</span><span class="p">(</span><span class="n">cobra</span><span class="o">.</span><span class="n">CobraProxy</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">cobra</span><span class="o">.</span><span class="n">CobraProxy</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">&#39;_remote_released&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="RemoteTrace.isRemote"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.RemoteTrace.isRemote">[docs]</a>    <span class="k">def</span> <span class="nf">isRemote</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="RemoteTrace.buildNewTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.RemoteTrace.buildNewTrace">[docs]</a>    <span class="k">def</span> <span class="nf">buildNewTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">getRemoteTrace</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="RemoteTrace.release"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.RemoteTrace.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">&#39;_remote_released&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">getTracerFactory</span><span class="p">()</span><span class="o">.</span><span class="n">releaseTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">&#39;_remote_released&#39;</span><span class="p">]:</span>
+            <span class="k">print</span> <span class="s">&#39;RemoteTrace del w/o release()!&#39;</span>
+</div>
+<div class="viewcode-block" id="getCallbackProxy"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.getCallbackProxy">[docs]</a><span class="k">def</span> <span class="nf">getCallbackProxy</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">notifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a proxy object to reference *notifier* from the</span>
+<span class="sd">    perspective of *trace*.  The trace is specified so</span>
+<span class="sd">    we may check on our side of the connected socket to</span>
+<span class="sd">    give him the best possible ip address...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">callback_daemon</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">getCallbackPort</span><span class="p">()</span>
+    <span class="n">host</span><span class="p">,</span> <span class="n">nothing</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">_cobra_getsock</span><span class="p">()</span><span class="o">.</span><span class="n">getSockName</span><span class="p">()</span>
+    <span class="n">unique</span> <span class="o">=</span> <span class="n">callback_daemon</span><span class="o">.</span><span class="n">getSharedName</span><span class="p">(</span><span class="n">notifier</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">unique</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">unique</span> <span class="o">=</span> <span class="n">md5</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+        <span class="n">callback_daemon</span><span class="o">.</span><span class="n">shareObject</span><span class="p">(</span><span class="n">notifier</span><span class="p">,</span> <span class="n">unique</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraProxy</span><span class="p">(</span><span class="s">&quot;cobra://</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">unique</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="getCallbackPort"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.getCallbackPort">[docs]</a><span class="k">def</span> <span class="nf">getCallbackPort</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If necissary, start a callback daemon.  Return the</span>
+<span class="sd">    ephemeral port it was bound on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">callback_daemon</span>
+    <span class="k">if</span> <span class="n">callback_daemon</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">callback_daemon</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraDaemon</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">callback_daemon</span><span class="o">.</span><span class="n">fireThread</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">callback_daemon</span><span class="o">.</span><span class="n">port</span>
+</div>
+<div class="viewcode-block" id="startCobraDaemon"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.startCobraDaemon">[docs]</a><span class="k">def</span> <span class="nf">startCobraDaemon</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">cobra_daemon</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">cobra_daemon</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraDaemon</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">vtrace</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">cobra_daemon</span><span class="o">.</span><span class="n">fireThread</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="getRemoteTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.getRemoteTrace">[docs]</a><span class="k">def</span> <span class="nf">getRemoteTrace</span><span class="p">():</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">getTracerFactory</span><span class="p">()</span>
+    <span class="n">unique</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">RemoteTrace</span><span class="p">(</span><span class="s">&quot;cobra://</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">remote</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">unique</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="releaseRemoteTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.releaseRemoteTrace">[docs]</a><span class="k">def</span> <span class="nf">releaseRemoteTrace</span><span class="p">(</span><span class="n">proxy</span><span class="p">):</span>
+    <span class="n">getTracerFactory</span><span class="p">()</span><span class="o">.</span><span class="n">releaseTrace</span><span class="p">(</span><span class="n">proxy</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="startVtraceServer"><a class="viewcode-back" href="../../vtrace.html#vtrace.rmi.startVtraceServer">[docs]</a><span class="k">def</span> <span class="nf">startVtraceServer</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fire up the pyro server and share out our</span>
+<span class="sd">    &quot;trace factory&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">startCobraDaemon</span><span class="p">()</span>
+    <span class="n">factory</span> <span class="o">=</span> <span class="n">TraceProxyFactory</span><span class="p">()</span>
+    <span class="n">vtrace</span><span class="o">.</span><span class="n">cobra_daemon</span><span class="o">.</span><span class="n">shareObject</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s">&quot;TracerFactory&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">cobra_daemon</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>visgraph.drawing.bezier</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="visgraph-module.html">Package&nbsp;visgraph</a> ::
+        <a href="visgraph.drawing-module.html">Package&nbsp;drawing</a> ::
+        Module&nbsp;bezier
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="visgraph.drawing.bezier-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="visgraph.drawing.bezier-module.html">Module visgraph.drawing.bezier</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"> </tt>
+<a name="splitline"></a><div id="splitline-def"><a name="L2"></a><tt class="py-lineno"> 2</tt> <a class="py-toggle" href="#" id="splitline-toggle" onclick="return toggle('splitline');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.drawing.bezier-module.html#splitline">splitline</a><tt class="py-op">(</tt><tt class="py-param">pt1</tt><tt class="py-op">,</tt> <tt class="py-param">pt2</tt><tt class="py-op">,</tt> <tt class="py-param">percent</tt><tt class="py-op">=</tt><tt class="py-number">0.5</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="splitline-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="splitline-expanded"><a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-docstring">    Return a point which splits the given line at the</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-docstring">    given percentage...</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-docstring">    Example: splitline( (0,0), (20, 30), 0.1)</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line">    <tt class="py-name">pt1_x</tt><tt class="py-op">,</tt> <tt class="py-name">pt1_y</tt> <tt class="py-op">=</tt> <tt class="py-name">pt1</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">    <tt class="py-name">pt2_x</tt><tt class="py-op">,</tt> <tt class="py-name">pt2_y</tt> <tt class="py-op">=</tt> <tt class="py-name">pt2</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">    <tt class="py-name">deltax</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">pt2_x</tt> <tt class="py-op">-</tt> <tt class="py-name">pt1_x</tt><tt class="py-op">)</tt> <tt class="py-op">*</tt> <tt class="py-name">percent</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">    <tt class="py-name">deltay</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">pt2_y</tt> <tt class="py-op">-</tt> <tt class="py-name">pt1_y</tt><tt class="py-op">)</tt> <tt class="py-op">*</tt> <tt class="py-name">percent</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">pt1_x</tt> <tt class="py-op">+</tt> <tt class="py-name">deltax</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">pt1_y</tt> <tt class="py-op">+</tt> <tt class="py-name">deltay</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"> </tt>
+<a name="calculate_bezier"></a><div id="calculate_bezier-def"><a name="L18"></a><tt class="py-lineno">18</tt> <a class="py-toggle" href="#" id="calculate_bezier-toggle" onclick="return toggle('calculate_bezier');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.drawing.bezier-module.html#calculate_bezier">calculate_bezier</a><tt class="py-op">(</tt><tt class="py-param">points</tt><tt class="py-op">,</tt> <tt class="py-param">steps</tt> <tt class="py-op">=</tt> <tt class="py-number">30</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="calculate_bezier-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="calculate_bezier-expanded"><a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-docstring">    Arbitrary depth and arbitrary precision bezier implementation.  Takes</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-docstring">    a list of (x,y) point tuples and returnes the points to draw for the</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-docstring">    bezier curve.</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">    <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">    <tt class="py-name">points</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-op">(</tt><tt class="py-name">float</tt><tt class="py-op">(</tt><tt id="link-0" class="py-name" targets="Variable envi.archs.arm.armdisasm.x=envi.archs.arm.armdisasm-module.html#x,Variable envi.archs.arm.disasm.x=envi.archs.arm.disasm-module.html#x,Variable envi.archs.arm.emu.x=envi.archs.arm.emu-module.html#x,Variable envi.archs.arm.regs.x=envi.archs.arm.regs-module.html#x,Variable envi.archs.arm.thumbdisasm.x=envi.archs.arm.thumbdisasm-module.html#x,Variable envi.archs.arm.x=envi.archs.arm-module.html#x,Variable envi.archs.i386.disasm.x=envi.archs.i386.disasm-module.html#x,Variable envi.archs.i386.emu.x=envi.archs.i386.emu-module.html#x,Variable envi.archs.i386.x=envi.archs.i386-module.html#x,Variable vtrace.platforms.win32.x=vtrace.platforms.win32-module.html#x"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-0', 'x', 'link-0');">x</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-name">float</tt><tt class="py-op">(</tt><tt class="py-name">y</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt id="link-1" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-1', 'x', 'link-0');">x</a></tt><tt class="py-op">,</tt><tt class="py-name">y</tt> <tt class="py-keyword">in</tt> <tt class="py-name">points</tt> <tt class="py-op">]</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt id="link-2" class="py-name" targets="Variable envi.archs.i386.disasm.i=envi.archs.i386.disasm-module.html#i,Variable envi.archs.i386.emu.i=envi.archs.i386.emu-module.html#i,Variable envi.archs.i386.i=envi.archs.i386-module.html#i,Variable envi.bits.i=envi.bits-module.html#i"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-2', 'i', 'link-2');">i</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">steps</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-name">pcent</tt> <tt class="py-op">=</tt> <tt id="link-3" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-3', 'i', 'link-2');">i</a></tt> <tt class="py-op">/</tt> <tt class="py-name">float</tt><tt class="py-op">(</tt><tt class="py-name">steps</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">layers</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-name">points</tt><tt class="py-op">,</tt> <tt class="py-op">]</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-keyword">while</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">layers</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">            <tt class="py-name">l_points</tt> <tt class="py-op">=</tt> <tt class="py-name">layers</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">            <tt class="py-name">newpoints</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt id="link-4" class="py-name" targets="Function visgraph.drawing.bezier.splitline()=visgraph.drawing.bezier-module.html#splitline"><a title="visgraph.drawing.bezier.splitline" class="py-name" href="#" onclick="return doclink('link-4', 'splitline', 'link-4');">splitline</a></tt><tt class="py-op">(</tt> <tt class="py-name">l_points</tt><tt class="py-op">[</tt><tt id="link-5" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-5', 'i', 'link-2');">i</a></tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">l_points</tt><tt class="py-op">[</tt><tt id="link-6" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-6', 'i', 'link-2');">i</a></tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">pcent</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt id="link-7" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-7', 'i', 'link-2');">i</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">l_points</tt><tt class="py-op">)</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-name">layers</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method vqt.tree.VQTreeItem.append()=vqt.tree.VQTreeItem-class.html#append,Method vqt.tree.VQTreeModel.append()=vqt.tree.VQTreeModel-class.html#append"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-8', 'append', 'link-8');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">newpoints</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">ret</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-9', 'append', 'link-8');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">layers</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">ret</tt> </tt>
+</div><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">'__main__'</tt><tt class="py-op">:</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">    <tt class="py-keyword">print</tt> <tt id="link-10" class="py-name" targets="Function visgraph.drawing.bezier.calculate_bezier()=visgraph.drawing.bezier-module.html#calculate_bezier"><a title="visgraph.drawing.bezier.calculate_bezier" class="py-name" href="#" onclick="return doclink('link-10', 'calculate_bezier', 'link-10');">calculate_bezier</a></tt><tt class="py-op">(</tt> <tt class="py-op">[</tt> <tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-number">3</tt><tt class="py-op">,</tt> <tt class="py-number">20</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-number">20</tt><tt class="py-op">,</tt> <tt class="py-number">23</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-number">20</tt><tt class="py-op">,</tt> <tt class="py-number">20</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> <tt class="py-op">)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">    <tt class="py-keyword">print</tt> <tt id="link-11" class="py-name"><a title="visgraph.drawing.bezier.calculate_bezier" class="py-name" href="#" onclick="return doclink('link-11', 'calculate_bezier', 'link-10');">calculate_bezier</a></tt><tt class="py-op">(</tt> <tt class="py-op">[</tt> <tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-number">10</tt><tt class="py-op">,</tt><tt class="py-number">10</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-number">10</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:20 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

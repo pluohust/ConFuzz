@@ -1,0 +1,736 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.cli &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="envi" href="../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.cli</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Unified CLI code for things like vivisect and vdb.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">code</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.config</span> <span class="kn">as</span> <span class="nn">e_config</span>
+<span class="kn">import</span> <span class="nn">envi.resolver</span> <span class="kn">as</span> <span class="nn">e_resolv</span>
+<span class="kn">import</span> <span class="nn">envi.memcanvas</span> <span class="kn">as</span> <span class="nn">e_canvas</span>
+<span class="kn">import</span> <span class="nn">envi.expression</span> <span class="kn">as</span> <span class="nn">e_expr</span>
+
+<span class="kn">from</span> <span class="nn">cmd</span> <span class="kn">import</span> <span class="n">Cmd</span>
+<span class="kn">from</span> <span class="nn">getopt</span> <span class="kn">import</span> <span class="n">getopt</span>
+
+<span class="kn">import</span> <span class="nn">re</span>                                                                                                          
+
+<div class="viewcode-block" id="splitargs"><a class="viewcode-back" href="../../envi.html#envi.cli.splitargs">[docs]</a><span class="k">def</span> <span class="nf">splitargs</span><span class="p">(</span><span class="n">cmdline</span><span class="p">):</span>
+    <span class="n">cmdline</span> <span class="o">=</span> <span class="n">cmdline</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\\\</span><span class="s">&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">patt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\&quot;</span><span class="s">.+?</span><span class="se">\&quot;</span><span class="s">|\S+&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">cmdline</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">patt</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span>
+</div>
+<div class="viewcode-block" id="columnstr"><a class="viewcode-back" href="../../envi.html#envi.cli.columnstr">[docs]</a><span class="k">def</span> <span class="nf">columnstr</span><span class="p">(</span><span class="n">slist</span><span class="p">):</span>
+    <span class="n">msize</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">slist</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">msize</span><span class="p">:</span>
+            <span class="n">msize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">msize</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">slist</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="CliExtMeth"><a class="viewcode-back" href="../../envi.html#envi.cli.CliExtMeth">[docs]</a><span class="k">class</span> <span class="nc">CliExtMeth</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is used to work around the difference</span>
+<span class="sd">    between functions and bound methods for extended</span>
+<span class="sd">    command modules</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cli</span> <span class="o">=</span> <span class="n">cli</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__doc__</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">__doc__</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cli</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+</div>
+<span class="n">cfgdefs</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+
+<span class="s">[Aliases]</span>
+
+<span class="s">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnviCli"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli">[docs]</a><span class="k">class</span> <span class="nc">EnviCli</span><span class="p">(</span><span class="n">Cmd</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memobj</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">symobj</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extcmds</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">Cmd</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="c"># If they didn&#39;t give us a resolver, make one.</span>
+        <span class="k">if</span> <span class="n">symobj</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">symobj</span> <span class="o">=</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">SymbolResolver</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">config</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">config</span> <span class="o">=</span> <span class="n">e_config</span><span class="o">.</span><span class="n">EnviConfig</span><span class="p">(</span><span class="n">defaults</span><span class="o">=</span><span class="n">cfgdefs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span> <span class="o">=</span> <span class="n">memobj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symobj</span> <span class="o">=</span> <span class="n">symobj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">e_canvas</span><span class="o">.</span><span class="n">MemoryCanvas</span><span class="p">(</span><span class="n">memobj</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="n">symobj</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EnviCli.setCanvas"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.setCanvas">[docs]</a>    <span class="k">def</span> <span class="nf">setCanvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canvas</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a new canvas for the CLI and add all the current renderers</span>
+<span class="sd">        to the new one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">getRendererNames</span><span class="p">():</span>
+            <span class="n">canvas</span><span class="o">.</span><span class="n">addRenderer</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">getRenderer</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">canvas</span>
+</div>
+<div class="viewcode-block" id="EnviCli.write"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="c"># For stdout/stderr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.get_names"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.get_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">Cmd</span><span class="o">.</span><span class="n">get_names</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extcmds</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="EnviCli.getExpressionLocals"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.getExpressionLocals">[docs]</a>    <span class="k">def</span> <span class="nf">getExpressionLocals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Over-ride this to have things like the eval command</span>
+<span class="sd">        and the python command use more locals than the sybolic</span>
+<span class="sd">        defaults.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">e_expr</span><span class="o">.</span><span class="n">MemoryExpressionLocals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="p">,</span> <span class="n">symobj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">symobj</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.registerCmdExtension"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.registerCmdExtension">[docs]</a>    <span class="k">def</span> <span class="nf">registerCmdExtension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extcmds</span><span class="p">[</span><span class="s">&quot;do_</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">func</span><span class="o">.</span><span class="n">__name__</span><span class="p">]</span> <span class="o">=</span> <span class="n">CliExtMeth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.vprint"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.vprint">[docs]</a>    <span class="k">def</span> <span class="nf">vprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">addnl</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Print output to the CLI&#39;s output handler.  This allows routines to</span>
+<span class="sd">        print to the terminal or the GUI depending on which mode we&#39;re in.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            vprint(&#39;hi mom!&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">addnl</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extcmds</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">func</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span>
+
+<div class="viewcode-block" id="EnviCli.doAlias"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.doAlias">[docs]</a>    <span class="k">def</span> <span class="nf">doAlias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s">&quot;Aliases&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">opt</span><span class="p">):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">opt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Aliases&quot;</span><span class="p">,</span> <span class="n">opt</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">line</span>
+</div>
+<div class="viewcode-block" id="EnviCli.cmdloop"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.cmdloop">[docs]</a>    <span class="k">def</span> <span class="nf">cmdloop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intro</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">intro</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">intro</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="o">.</span><span class="n">isSet</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">Cmd</span><span class="o">.</span><span class="n">cmdloop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intro</span><span class="o">=</span><span class="n">intro</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="EnviCli.onecmd"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.onecmd">[docs]</a>    <span class="k">def</span> <span class="nf">onecmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;&amp;&amp;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">doAlias</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">Cmd</span><span class="o">.</span><span class="n">onecmd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">ERROR: (</span><span class="si">%s</span><span class="s">) </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span><span class="n">msg</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="o">.</span><span class="n">isSet</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_EOF"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_EOF">[docs]</a>    <span class="k">def</span> <span class="nf">do_EOF</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Use quit&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_quit"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_quit">[docs]</a>    <span class="k">def</span> <span class="nf">do_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Quit</span>
+
+<span class="sd">        Usage: quit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_config"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_config">[docs]</a>    <span class="k">def</span> <span class="nf">do_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show or edit a config option from the command line</span>
+
+<span class="sd">        Usage: config [-S section] [option=value]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">secname</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;S:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-S&quot;</span><span class="p">:</span>
+                    <span class="n">secname</span> <span class="o">=</span> <span class="n">optarg</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">e</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;config&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;config&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">secname</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">secs</span> <span class="o">=</span> <span class="p">[</span><span class="n">secname</span><span class="p">,]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">secs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">secname</span> <span class="ow">in</span> <span class="n">secs</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%s</span><span class="s">]&quot;</span> <span class="o">%</span> <span class="n">secname</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">oname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">secname</span><span class="p">):</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">secname</span><span class="p">,</span> <span class="n">oname</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">=</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">oname</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">secname</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">secname</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+            <span class="n">key</span><span class="p">,</span><span class="n">val</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;=&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">secname</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%s</span><span class="s">] </span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">secname</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_alias"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_alias">[docs]</a>    <span class="k">def</span> <span class="nf">do_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an alias to the command line interpreter&#39;s aliases dictionary</span>
+
+<span class="sd">        Usage: alias &lt;alias_word&gt; rest of the alias command</span>
+<span class="sd">        To delete an alias:</span>
+<span class="sd">        Usage: alias &lt;alias_word&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">remove_option</span><span class="p">(</span><span class="s">&quot;Aliases&quot;</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Aliases&quot;</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Current Aliases:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+
+        <span class="n">opts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s">&quot;Aliases&quot;</span><span class="p">)</span>
+        <span class="n">opts</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;Aliases&quot;</span><span class="p">,</span> <span class="n">opt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> -&gt; </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">opt</span><span class="p">,</span><span class="n">val</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_python"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_python">[docs]</a>    <span class="k">def</span> <span class="nf">do_python</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start an interactive python interpreter. The namespace of the</span>
+<span class="sd">        interpreter is updated with expression nicities.  You may also</span>
+<span class="sd">        specify a line of python code as an argument to be exec&#39;d without</span>
+<span class="sd">        beginning an interactive python interpreter on the controlling</span>
+<span class="sd">        terminal.</span>
+
+<span class="sd">        Usage: python [pycode]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getExpressionLocals</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">cobj</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="s">&#39;cli_input&#39;</span><span class="p">,</span> <span class="s">&#39;exec&#39;</span><span class="p">)</span>
+            <span class="k">exec</span><span class="p">(</span><span class="n">cobj</span><span class="p">,</span> <span class="nb">locals</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">code</span><span class="o">.</span><span class="n">interact</span><span class="p">(</span><span class="n">local</span><span class="o">=</span><span class="nb">locals</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.parseExpression"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.parseExpression">[docs]</a>    <span class="k">def</span> <span class="nf">parseExpression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getExpressionLocals</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">e_expr</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">l</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_binstr"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_binstr">[docs]</a>    <span class="k">def</span> <span class="nf">do_binstr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Display a binary representation of the given value expression</span>
+<span class="sd">        (padded to optional width in bits)</span>
+<span class="sd">        </span>
+<span class="sd">        Usage: binstr &lt;val_expr&gt; [&lt;bitwidth_expr&gt;]</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;binstr&#39;</span><span class="p">)</span>
+        <span class="n">bitwidth</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">bitwidth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">binstr</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">binrepr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">bitwidth</span><span class="o">=</span><span class="n">bitwidth</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">) </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">binstr</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_eval"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_eval">[docs]</a>    <span class="k">def</span> <span class="nf">do_eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate an expression on the CLI to show it&#39;s value.</span>
+
+<span class="sd">        Usage: eval (ecx+edx)/2</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;eval&quot;</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> = &quot;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">isValidPointer</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">value</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">symobj</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> + </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">),</span><span class="n">value</span><span class="o">-</span><span class="nb">long</span><span class="p">(</span><span class="n">sym</span><span class="p">)),</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_script"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_script">[docs]</a>    <span class="k">def</span> <span class="nf">do_script</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Execute a python file.</span>
+
+<span class="sd">        The script file is arbitrary python code which is run with the</span>
+<span class="sd">        full compliment of expression extensions mapped in as locals.</span>
+
+<span class="sd">        NOTE: additional command line arguments may be passed in and will</span>
+<span class="sd">              appear as the list &quot;argv&quot; in the script namespace!  (They will</span>
+<span class="sd">              all be strings)</span>
+
+<span class="sd">        Usage: script &lt;scriptfile&gt; [&lt;argv[0]&gt;, ...]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;script&quot;</span><span class="p">)</span>
+
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="nb">locals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getExpressionLocals</span><span class="p">()</span>
+        <span class="nb">locals</span><span class="p">[</span><span class="s">&#39;argv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">argv</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">cobj</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;exec&quot;</span><span class="p">)</span>
+        <span class="k">exec</span><span class="p">(</span><span class="n">cobj</span><span class="p">,</span> <span class="nb">locals</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_maps"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_maps">[docs]</a>    <span class="k">def</span> <span class="nf">do_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Display either a list of all the memory maps or the memory map</span>
+<span class="sd">        details for the given address expression.</span>
+
+<span class="sd">        Usage: maps [addr_expression]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">):</span>
+            <span class="n">expr</span> <span class="o">=</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span>
+            <span class="n">va</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+            <span class="nb">map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Memory Map Not Found For: 0x</span><span class="si">%.8x</span><span class="s">&quot;</span><span class="o">%</span><span class="n">va</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">addr</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perm</span><span class="p">,</span><span class="n">fname</span> <span class="o">=</span> <span class="nb">map</span>
+                <span class="n">pname</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">reprPerms</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;Memory Map For: &quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">va</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">addr</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="si">%d</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="n">pname</span><span class="p">,</span><span class="n">fname</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">totsize</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;[ address ] [ size ] [ perms ] [ File ]&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">addr</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perm</span><span class="p">,</span><span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">getMemoryMaps</span><span class="p">():</span>
+                <span class="n">pname</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">reprPerms</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span>
+                <span class="n">totsize</span> <span class="o">+=</span> <span class="n">size</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">addr</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+                <span class="n">sizestr</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;</span><span class="si">%d</span><span class="s">K&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">size</span><span class="o">/</span><span class="mi">1024</span><span class="p">,))</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\t</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sizestr</span><span class="p">,</span><span class="n">pname</span><span class="p">,</span><span class="n">fname</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Total Virtual Memory: </span><span class="si">%.2f</span><span class="s"> MB&quot;</span> <span class="o">%</span> <span class="p">((</span><span class="nb">float</span><span class="p">(</span><span class="n">totsize</span><span class="p">)</span><span class="o">/</span><span class="mi">1024</span><span class="p">)</span><span class="o">/</span><span class="mi">1024</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_search"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_search">[docs]</a>    <span class="k">def</span> <span class="nf">do_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search memory for patterns.</span>
+
+<span class="sd">        Usage: search [options] &lt;pattern&gt;</span>
+<span class="sd">        -e Encode the pattern with a codec (ie utf-16le, hex, etc)</span>
+<span class="sd">        -E The specified pattern is an expression (search for numeric values)</span>
+<span class="sd">        -r The specified pattern is a regular expression</span>
+<span class="sd">        -R &lt;baseexpr:sizeexpr&gt; Search a specific range only.</span>
+<span class="sd">        -X The specified pattern is in hex (ie.  414141424242 is AAABBB)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;search&quot;</span><span class="p">)</span>
+
+        <span class="nb">range</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">dohex</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">doexpr</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">regex</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">encode</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;e:ER:rX&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;search&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-E&#39;</span><span class="p">:</span>
+                <span class="n">doexpr</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-e&#39;</span><span class="p">:</span>
+                <span class="n">encode</span> <span class="o">=</span> <span class="n">optarg</span>
+            <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-R&#39;</span><span class="p">:</span>
+                <span class="nb">range</span> <span class="o">=</span> <span class="n">optarg</span>
+            <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-r&#39;</span><span class="p">:</span>
+                <span class="n">regex</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&#39;-X&#39;</span><span class="p">:</span>
+                <span class="n">dohex</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">pattern</span> <span class="o">=</span> <span class="s">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">doexpr</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">struct</span> <span class="c">#FIXME see below</span>
+            <span class="n">sval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="n">sval</span><span class="p">)</span> <span class="c"># FIXME 64bit (and alt arch)</span>
+        <span class="k">if</span> <span class="n">dohex</span><span class="p">:</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">encode</span><span class="p">:</span> <span class="n">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">range</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">addrexpr</span><span class="p">,</span> <span class="n">sizeexpr</span> <span class="o">=</span> <span class="nb">range</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;search&quot;</span><span class="p">)</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">addrexpr</span><span class="p">)</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">sizeexpr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;Searching from &quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot; for </span><span class="si">%d</span><span class="s"> bytes</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">size</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">searchMemoryRange</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Searching all memory...&quot;</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">searchMemory</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">regex</span><span class="o">=</span><span class="n">regex</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Pattern Not Found: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pattern</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">))</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Matches for: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pattern</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;: &quot;</span><span class="p">)</span>
+
+            <span class="n">mbase</span><span class="p">,</span><span class="n">msize</span><span class="p">,</span><span class="n">mperm</span><span class="p">,</span><span class="n">mfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">pname</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">reprPerms</span><span class="p">(</span><span class="n">mperm</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="n">pname</span><span class="p">)</span>
+
+            <span class="n">sname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reprPointer</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="n">sname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.reprPointer"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.reprPointer">[docs]</a>    <span class="k">def</span> <span class="nf">reprPointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do your best to create a humon readable name for the</span>
+<span class="sd">        value of this pointer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">va</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;NULL&quot;</span>
+
+        <span class="n">mbase</span><span class="p">,</span><span class="n">msize</span><span class="p">,</span><span class="n">mperm</span><span class="p">,</span><span class="n">mfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">mfile</span>
+        <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">symobj</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> + </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">),</span><span class="n">va</span><span class="o">-</span><span class="nb">long</span><span class="p">(</span><span class="n">sym</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_memdump"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_memdump">[docs]</a>    <span class="k">def</span> <span class="nf">do_memdump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dump memory out to a file.</span>
+
+<span class="sd">        Usage: memdump &lt;addr_expression&gt; &lt;size_expression&gt; &lt;filename&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;memdump&quot;</span><span class="p">)</span>
+
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;memdump&quot;</span><span class="p">)</span>
+
+        <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">mem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="nb">file</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s">&quot;wb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mem</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Wrote </span><span class="si">%d</span><span class="s"> bytes!&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">mem</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_memcmp"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_memcmp">[docs]</a>    <span class="k">def</span> <span class="nf">do_memcmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compare memory at the given locations.  Outputs a set of</span>
+<span class="sd">        differences showing bytes at their given offsets....</span>
+
+<span class="sd">        Usage: memcmp &lt;addr_expr1&gt; &lt;addr_expr2&gt; &lt;size_expr&gt;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;memcmp&#39;</span><span class="p">)</span>
+
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;memcmp&#39;</span><span class="p">)</span>
+
+        <span class="n">addr1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">addr2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">size</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">bytes1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">addr1</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="n">bytes2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">addr2</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">memdiff</span><span class="p">(</span><span class="n">bytes1</span><span class="p">,</span> <span class="n">bytes2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;No Differences!&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">offset</span><span class="p">,</span> <span class="n">offsize</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+            <span class="n">diff1</span> <span class="o">=</span> <span class="n">addr1</span><span class="o">+</span><span class="n">offset</span>
+            <span class="n">diff2</span> <span class="o">=</span> <span class="n">addr2</span><span class="o">+</span><span class="n">offset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39;==== </span><span class="si">%d</span><span class="s"> byte difference at offset </span><span class="si">%d</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">offsize</span><span class="p">,</span><span class="n">offset</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">diff1</span><span class="p">,</span> <span class="n">diff1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="n">bytes1</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="n">offsize</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">diff2</span><span class="p">,</span> <span class="n">diff2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="n">bytes2</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="n">offsize</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviCli.do_mem"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviCli.do_mem">[docs]</a>    <span class="k">def</span> <span class="nf">do_mem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show some memory (with optional formatting and size)</span>
+
+<span class="sd">        Usage: mem [-F &lt;format&gt;] &lt;addr expression&gt; [size]</span>
+
+<span class="sd">        NOTE: use -F ? for a list of the formats</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fmtname</span> <span class="o">=</span> <span class="s">&quot;bytes&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;mem&quot;</span><span class="p">)</span>
+
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;F:&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;mem&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-F&quot;</span><span class="p">:</span>
+                <span class="n">fmtname</span> <span class="o">=</span> <span class="n">optarg</span>
+                <span class="n">fnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">getRendererNames</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">fmtname</span> <span class="o">==</span> <span class="s">&quot;?&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Registered renderers:&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+                <span class="k">if</span> <span class="n">fmtname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;Unknown renderer: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">fmtname</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;mem&quot;</span><span class="p">)</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="mi">256</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">setRenderer</span><span class="p">(</span><span class="n">fmtname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">renderMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="EnviMutableCli"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviMutableCli">[docs]</a><span class="k">class</span> <span class="nc">EnviMutableCli</span><span class="p">(</span><span class="n">EnviCli</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cli extensions which require a mutable memory object</span>
+<span class="sd">    (emulator/trace) rather than a static one (viv workspace)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EnviMutableCli.do_memcpy"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviMutableCli.do_memcpy">[docs]</a>    <span class="k">def</span> <span class="nf">do_memcpy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Copy memory from one location to another...</span>
+
+<span class="sd">        Usage: memcpy &lt;dest_expr&gt; &lt;src_expr&gt; &lt;size_expr&gt;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;memcpy&#39;</span><span class="p">)</span>
+
+
+        <span class="n">dst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">siz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">mem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">siz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">mem</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviMutableCli.do_memprotect"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviMutableCli.do_memprotect">[docs]</a>    <span class="k">def</span> <span class="nf">do_memprotect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Change the memory permissions of a given page/map.</span>
+
+<span class="sd">        Usage: memprotect [options] &lt;addr_expr&gt; &lt;perms&gt;</span>
+<span class="sd">        -S &lt;size&gt; Specify the size of the region to change (default == whole memory map)</span>
+<span class="sd">        &lt;perms&gt; = &quot;rwx&quot; string &quot;rw&quot;, &quot;rx&quot; &quot;rwx&quot; etc...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;memprotect&quot;</span><span class="p">)</span>
+
+        <span class="n">size</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">opts</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;S:&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;memprotect&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-S&quot;</span><span class="p">:</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">optarg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;memprotect&quot;</span><span class="p">)</span>
+
+
+        <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">parsePerms</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="nb">map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Unknown memory map for 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">addr</span><span class="p">)</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">map</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">protectMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perm</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="EnviMutableCli.do_writemem"><a class="viewcode-back" href="../../envi.html#envi.cli.EnviMutableCli.do_writemem">[docs]</a>    <span class="k">def</span> <span class="nf">do_writemem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Over-write some memory in the target address space.</span>
+<span class="sd">        Usage: writemem [options] &lt;addr expression&gt; &lt;string&gt;</span>
+<span class="sd">        -X    The specified string is in hex (ie 414141 = AAA)</span>
+<span class="sd">        -U    The specified string needs to be unicode in mem (AAA -&gt; 410041004100)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dohex</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">douni</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">argv</span> <span class="o">=</span> <span class="n">splitargs</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">opts</span><span class="p">,</span><span class="n">args</span> <span class="o">=</span> <span class="n">getopt</span><span class="p">(</span><span class="n">argv</span><span class="p">,</span> <span class="s">&quot;XU&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;writemem&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&quot;writemem&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">opt</span><span class="p">,</span><span class="n">optarg</span> <span class="ow">in</span> <span class="n">opts</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-X&quot;</span><span class="p">:</span>
+                <span class="n">dohex</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">elif</span> <span class="n">opt</span> <span class="o">==</span> <span class="s">&quot;-U&quot;</span><span class="p">:</span>
+                <span class="n">douni</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">exprstr</span><span class="p">,</span> <span class="n">memstr</span> <span class="o">=</span> <span class="n">args</span>
+        <span class="k">if</span> <span class="n">dohex</span><span class="p">:</span> <span class="n">memstr</span> <span class="o">=</span> <span class="n">memstr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">douni</span><span class="p">:</span> <span class="n">memstr</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">memstr</span><span class="p">))</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span>
+
+        <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">exprstr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memobj</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">memstr</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

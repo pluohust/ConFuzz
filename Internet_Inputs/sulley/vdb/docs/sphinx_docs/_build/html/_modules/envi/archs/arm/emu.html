@@ -1,0 +1,785 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.archs.arm.emu &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="envi.archs.arm" href="../arm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../arm.html" accesskey="U">envi.archs.arm</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.archs.arm.emu</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The initial arm module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">from</span> <span class="nn">envi.archs.arm</span> <span class="kn">import</span> <span class="n">ArmModule</span>
+<span class="kn">from</span> <span class="nn">envi.archs.arm.regs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">envi.archs.arm.thumbdisasm</span> <span class="kn">import</span> <span class="o">*</span>    <span class="c">#this gets both arm and thumb</span>
+
+
+
+<span class="c"># CPU state (memory, regs inc SPSRs and banked registers)</span>
+<span class="c"># CPU mode  (User, FIQ, IRQ, supervisor, Abort, Undefined, System)</span>
+<span class="c"># </span>
+<span class="c"># instruction code</span>
+<span class="c"># exception handler code</span>
+<span class="c"># FIXME: SPSR handling is not certain.  </span>
+
+<span class="c"># calling conventions</span>
+<span class="k">class</span> <span class="nc">ArmArchitectureProcedureCall</span><span class="p">(</span><span class="n">envi</span><span class="o">.</span><span class="n">CallingConvention</span><span class="p">):</span>
+<div class="viewcode-block" id="ArmArchitectureProcedureCall"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmArchitectureProcedureCall">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implement calling conventions for your arch.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">setReturnValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">ccinfo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ArmArchitectureProcedureCall.setReturnValue"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmArchitectureProcedureCall.setReturnValue">[docs]</a>        <span class="n">esp</span> <span class="o">=</span> <span class="n">emu</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_ESP</span><span class="p">)</span>
+        <span class="n">eip</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="n">emu</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">esp</span><span class="p">,</span> <span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">esp</span> <span class="o">+=</span> <span class="mi">4</span> <span class="c"># For the saved eip</span>
+        <span class="n">esp</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">argc</span><span class="p">)</span> <span class="c"># Cleanup saved args</span>
+
+        <span class="n">emu</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">REG_ESP</span><span class="p">,</span> <span class="n">esp</span><span class="p">)</span>
+        <span class="n">emu</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">REG_EAX</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">emu</span><span class="o">.</span><span class="n">setProgramCounter</span><span class="p">(</span><span class="n">eip</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">getCallArgs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmArchitectureProcedureCall.getCallArgs"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmArchitectureProcedureCall.getCallArgs">[docs]</a>        <span class="k">return</span> <span class="n">emu</span><span class="o">.</span><span class="n">getRegisters</span><span class="p">(</span><span class="mh">0xf</span><span class="p">)</span>  <span class="c"># r0-r3 are used to hand in parameters.  additional parms are stored and pointed to by r0</span>
+
+<span class="n">aapcs</span> <span class="o">=</span> <span class="n">ArmArchitectureProcedureCall</span><span class="p">()</span></div></div>
+
+<span class="k">class</span> <span class="nc">CoProcEmulator</span><span class="p">:</span>       <span class="c"># useful for prototyping, but should be subclassed</span>
+<div class="viewcode-block" id="CoProcEmulator"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.CoProcEmulator">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">stc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parms</span><span class="p">):</span>
+<div class="viewcode-block" id="CoProcEmulator.stc"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.CoProcEmulator.stc">[docs]</a>        <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;CoProcEmu: stc(</span><span class="si">%s</span><span class="s">)&quot;</span><span class="o">%</span><span class="nb">repr</span><span class="p">(</span><span class="n">parms</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">ldc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parms</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CoProcEmulator.ldc"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.CoProcEmulator.ldc">[docs]</a>        <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;CoProcEmu: ldc(</span><span class="si">%s</span><span class="s">)&quot;</span><span class="o">%</span><span class="nb">repr</span><span class="p">(</span><span class="n">parms</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">cdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parms</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CoProcEmulator.cdp"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.CoProcEmulator.cdp">[docs]</a>        <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;CoProcEmu: cdp(</span><span class="si">%s</span><span class="s">)&quot;</span><span class="o">%</span><span class="nb">repr</span><span class="p">(</span><span class="n">parms</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">mcr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parms</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CoProcEmulator.mcr"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.CoProcEmulator.mcr">[docs]</a>        <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;CoProcEmu: mcr(</span><span class="si">%s</span><span class="s">)&quot;</span><span class="o">%</span><span class="nb">repr</span><span class="p">(</span><span class="n">parms</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">mcrr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parms</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CoProcEmulator.mcrr"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.CoProcEmulator.mcrr">[docs]</a>        <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;CoProcEmu: mcrr(</span><span class="si">%s</span><span class="s">)&quot;</span><span class="o">%</span><span class="nb">repr</span><span class="p">(</span><span class="n">parms</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">mrc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parms</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CoProcEmulator.mrc"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.CoProcEmulator.mrc">[docs]</a>        <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;CoProcEmu: mrc(</span><span class="si">%s</span><span class="s">)&quot;</span><span class="o">%</span><span class="nb">repr</span><span class="p">(</span><span class="n">parms</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">mrrc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parms</span><span class="p">):</span></div>
+<div class="viewcode-block" id="CoProcEmulator.mrrc"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.CoProcEmulator.mrrc">[docs]</a>        <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;CoProcEmu: mrrc(</span><span class="si">%s</span><span class="s">)&quot;</span><span class="o">%</span><span class="nb">repr</span><span class="p">(</span><span class="n">parms</span><span class="p">)</span>
+
+
+
+<span class="k">class</span> <span class="nc">ArmEmulator</span><span class="p">(</span><span class="n">ArmModule</span><span class="p">,</span> <span class="n">ArmRegisterContext</span><span class="p">,</span> <span class="n">envi</span><span class="o">.</span><span class="n">Emulator</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="ArmEmulator"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ArmModule</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coprocs</span> <span class="o">=</span> <span class="p">[</span><span class="n">CoProcEmulator</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">16</span><span class="p">)]</span>       <span class="c"># FIXME: this should be None&#39;s, and added in for each real coproc... but this will work for now.</span>
+
+        <span class="n">seglist</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mh">0xffffffff</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="p">]</span>
+        <span class="n">envi</span><span class="o">.</span><span class="n">Emulator</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segs</span><span class="o">=</span><span class="n">seglist</span><span class="p">)</span>
+
+        <span class="n">ArmRegisterContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">addCallingConvention</span><span class="p">(</span><span class="s">&quot;Arm Arch Procedure Call&quot;</span><span class="p">,</span> <span class="n">aapcs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">undefFlags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ArmEmulator.undefFlags"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.undefFlags">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used in PDE.</span>
+<span class="sd">        A flag setting operation has resulted in un-defined value.  Set</span>
+<span class="sd">        the flags to un-defined as well.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">REG_EFLAGS</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setFlag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">PM_usr</span><span class="p">):</span>   <span class="c"># FIXME: CPSR?</span></div>
+<div class="viewcode-block" id="ArmEmulator.setFlag"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.setFlag">[docs]</a>        <span class="n">flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSPSR</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span><span class="p">:</span>
+            <span class="n">flags</span> <span class="o">|=</span> <span class="n">which</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">flags</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">which</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSPSR</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getFlag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">which</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">PM_usr</span><span class="p">):</span>          <span class="c"># FIXME: CPSR?</span></div>
+<div class="viewcode-block" id="ArmEmulator.getFlag"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.getFlag">[docs]</a>        <span class="c">#if (flags_reg == None):</span>
+        <span class="c">#    flags_reg = proc_modes[self.getProcMode()][5]</span>
+        <span class="c">#flags = self.getRegister(flags_reg)</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSPSR</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">flags</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">envi</span><span class="o">.</span><span class="n">PDEUndefinedFlag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">which</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">readMemValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.readMemValue"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.readMemValue">[docs]</a>        <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">bytes</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="c">#FIXME change this (and all uses of it) to passing in format...</span>
+        <span class="c">#FIXME: Remove byte check and possibly half-word check.  (possibly all but word?)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Read Gave Wrong Length At 0x</span><span class="si">%.8x</span><span class="s"> (va: 0x</span><span class="si">%.8x</span><span class="s"> wanted </span><span class="si">%d</span><span class="s"> got </span><span class="si">%d</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">(),</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;H&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;Q&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">writeMemValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.writeMemValue"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.writeMemValue">[docs]</a>        <span class="c">#FIXME change this (and all uses of it) to passing in format...</span>
+        <span class="c">#FIXME: Remove byte check and possibly half-word check.  (possibly all but word?)</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">bytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="nb">bytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;H&quot;</span><span class="p">,</span><span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="nb">bytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="nb">bytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;Q&quot;</span><span class="p">,</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xffffffffffffffff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">readMemSignedValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.readMemSignedValue"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.readMemSignedValue">[docs]</a>        <span class="c">#FIXME: Remove byte check and possibly half-word check.  (possibly all but word?)</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">bytes</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;b&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;h&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;l&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">executeOpcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.executeOpcode"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.executeOpcode">[docs]</a>        <span class="c"># NOTE: If an opcode method returns</span>
+        <span class="c">#       other than None, that is the new eip</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">prefixes</span> <span class="o">&gt;=</span> <span class="mh">0xe</span> <span class="ow">or</span> <span class="n">op</span><span class="o">.</span><span class="n">prefixes</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_FLAGS</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="mi">28</span><span class="p">):</span>         <span class="c">#nearly every opcode is optional</span>
+            <span class="n">meth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">op_methods</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">mnem</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">meth</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">envi</span><span class="o">.</span><span class="n">UnsupportedInstruction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">meth</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+            <span class="k">print</span> <span class="o">&gt;&gt;</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span><span class="s">&quot;executed instruction, returned: </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="n">x</span>
+
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">pc</span><span class="o">+</span><span class="n">op</span><span class="o">.</span><span class="n">size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setProgramCounter</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">doPush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.doPush"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.doPush">[docs]</a>        <span class="n">esp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_ESP</span><span class="p">)</span>
+        <span class="n">esp</span> <span class="o">-=</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeMemValue</span><span class="p">(</span><span class="n">esp</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">REG_ESP</span><span class="p">,</span> <span class="n">esp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">doPop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.doPop"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.doPop">[docs]</a>        <span class="n">esp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_ESP</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemValue</span><span class="p">(</span><span class="n">esp</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">REG_ESP</span><span class="p">,</span> <span class="n">esp</span><span class="o">+</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="nf">getProcMode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.getProcMode"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.getProcMode">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">REG_CPSR</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x1f</span>     <span class="c"># obfuscated for speed.  could call getCPSR but it&#39;s not as fast</span>
+
+    <span class="k">def</span> <span class="nf">getCPSR</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.getCPSR"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.getCPSR">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">REG_CPSR</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">setCPSR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psr</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.setCPSR"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.setCPSR">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">REG_CPSR</span><span class="p">]</span> <span class="o">=</span> <span class="n">psr</span>
+
+    <span class="k">def</span> <span class="nf">getSPSR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.getSPSR"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.getSPSR">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[((</span><span class="n">mode</span><span class="o">&amp;</span><span class="mh">0xf</span><span class="p">)</span><span class="o">*</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="mi">16</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">setSPSR</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">psr</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.setSPSR"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.setSPSR">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[((</span><span class="n">mode</span><span class="o">&amp;</span><span class="mh">0xf</span><span class="p">)</span><span class="o">*</span><span class="mi">17</span><span class="p">)</span><span class="o">+</span><span class="mi">16</span><span class="p">]</span> <span class="o">=</span> <span class="n">psr</span>
+
+    <span class="k">def</span> <span class="nf">setProcMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.setProcMode"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.setProcMode">[docs]</a>        <span class="c"># write current psr to the saved psr register for current mode</span>
+        <span class="n">curSPSRidx</span> <span class="o">=</span> <span class="n">proc_modes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">getProcMode</span><span class="p">()][</span><span class="mi">5</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">curSPSRidx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">REG_CPSR</span><span class="p">]</span>
+
+        <span class="c"># do we restore saved spsr?</span>
+        <span class="n">cpsr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">REG_CPSR</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0xffffffe0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">REG_CPSR</span><span class="p">]</span> <span class="o">=</span> <span class="n">cpsr</span> <span class="o">|</span> <span class="n">mode</span>
+
+    <span class="k">def</span> <span class="nf">getRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.getRegister"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.getRegister">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the current value of the specified register index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProcMode</span><span class="p">()</span> <span class="o">&amp;</span> <span class="mh">0xf</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">&amp;=</span> <span class="mh">0xf</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span>
+        <span class="n">ridx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="p">(</span><span class="n">mode</span><span class="o">*</span><span class="mi">17</span><span class="p">)</span>                <span class="c"># account for different banks of registers</span>
+        <span class="n">ridx</span> <span class="o">=</span> <span class="n">reg_table</span><span class="p">[</span><span class="n">ridx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>         <span class="c"># magic pointers allowing overlapping banks of registers</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">ridx</span><span class="p">]</span>
+
+        <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+        <span class="n">width</span>  <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">width</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">ridx</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">offset</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mask</span>
+
+    <span class="k">def</span> <span class="nf">setRegister</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.setRegister"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.setRegister">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a register value by index.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProcMode</span><span class="p">()</span> <span class="o">&amp;</span> <span class="mh">0xf</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">&amp;=</span> <span class="mh">0xf</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_dirty</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">&amp;</span> <span class="mh">0xffff</span><span class="p">)</span>
+        <span class="n">ridx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">+</span> <span class="p">(</span><span class="n">mode</span><span class="o">*</span><span class="mi">17</span><span class="p">)</span>            <span class="c"># account for different banks of registers</span>
+        <span class="n">ridx</span> <span class="o">=</span> <span class="n">reg_table</span><span class="p">[</span><span class="n">ridx</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>         <span class="c"># magic pointers allowing overlapping banks of registers</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">ridx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_masks</span><span class="p">[</span><span class="n">ridx</span><span class="p">])</span>      <span class="c"># FIXME: hack.  should look up index in proc_modes dict?</span>
+            <span class="k">return</span>
+
+        <span class="c"># If we get here, it&#39;s a meta register index.</span>
+        <span class="c"># NOTE: offset/width are in bits...</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">&gt;&gt;</span> <span class="mi">24</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+        <span class="n">width</span>  <span class="o">=</span> <span class="p">(</span><span class="n">index</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+
+        <span class="c">#FIXME is it faster to generate or look thses up?</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">width</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">&lt;&lt;</span> <span class="n">offset</span>
+
+        <span class="c"># NOTE: basewidth is in *bits*</span>
+        <span class="n">basewidth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_widths</span><span class="p">[</span><span class="n">ridx</span><span class="p">]</span>
+        <span class="n">basemask</span>  <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">basewidth</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+
+        <span class="c"># cut a whole in basemask at the size/offset of mask</span>
+        <span class="n">finalmask</span> <span class="o">=</span> <span class="n">basemask</span> <span class="o">^</span> <span class="n">mask</span>
+
+        <span class="n">curval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">ridx</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rctx_vals</span><span class="p">[</span><span class="n">ridx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">curval</span> <span class="o">&amp;</span> <span class="n">finalmask</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">value</span> <span class="o">&lt;&lt;</span> <span class="n">offset</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">integerSubtraction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.integerSubtraction"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.integerSubtraction">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do the core of integer subtraction but only *return* the</span>
+<span class="sd">        resulting value rather than assigning it.</span>
+<span class="sd">        (allows cmp and sub to use the same code)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Src op gets sign extended to dst</span>
+        <span class="c">#FIXME account for same operand with zero result for PDE</span>
+        <span class="n">src1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">src2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">Sflag</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_PSR_S</span>
+
+        <span class="k">if</span> <span class="n">src1</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">src2</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undefFlags</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intSubBase</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">Sflag</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">intSubBase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">Sflag</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rd</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.intSubBase"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.intSubBase">[docs]</a>        <span class="c"># So we can either do a BUNCH of crazyness with xor and shifting to</span>
+        <span class="c"># get the necissary flags here, *or* we can just do both a signed and</span>
+        <span class="c"># unsigned sub and use the results.</span>
+
+
+        <span class="n">usrc</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">unsigned</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">udst</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">unsigned</span><span class="p">(</span><span class="n">src2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">ssrc</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">signed</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">sdst</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">signed</span><span class="p">(</span><span class="n">src2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">ures</span> <span class="o">=</span> <span class="n">udst</span> <span class="o">-</span> <span class="n">usrc</span>
+        <span class="n">sres</span> <span class="o">=</span> <span class="n">sdst</span> <span class="o">-</span> <span class="n">ssrc</span>
+
+        <span class="k">if</span> <span class="n">Sflag</span><span class="p">:</span>
+            <span class="n">curmode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProcMode</span><span class="p">()</span> 
+            <span class="k">if</span> <span class="n">rd</span> <span class="o">==</span> <span class="mi">15</span><span class="p">:</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">curmode</span> <span class="o">!=</span> <span class="n">PM_sys</span> <span class="ow">and</span> <span class="n">curmode</span> <span class="o">!=</span> <span class="n">PM_usr</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setCPSR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSPSR</span><span class="p">(</span><span class="n">curmode</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Messed up opcode...  adding to r15 from PM_usr or PM_sys&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_C</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_unsigned_carry</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_Z</span><span class="p">,</span> <span class="ow">not</span> <span class="n">ures</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_N</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_V</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed_overflow</span><span class="p">(</span><span class="n">sres</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+        <span class="c">#print &quot;s2size/s1size: %d %d&quot; % (s2size, s1size)</span>
+        <span class="c">#print &quot;unsigned: %d %d %d&quot; % (usrc, udst, ures)</span>
+        <span class="c">#print &quot;signed: %d %d %d&quot; % (ssrc, sdst, sres)</span>
+        
+        <span class="c">#if Sflag:</span>
+        <span class="c">#    self.setFlag(PSR_N, sres&gt;&gt;32)</span>
+        <span class="c">#    self.setFlag(PSR_Z, sres==0)</span>
+        <span class="c">#    self.setFlag(PSR_C, e_bits.is_unsigned_carry(ures, s2size))</span>
+        <span class="c">#    self.setFlag(PSR_V, e_bits.is_signed_overflow(sres, s2size))</span>
+
+        <span class="k">return</span> <span class="n">ures</span>
+
+
+    <span class="k">def</span> <span class="nf">logicalAnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.logicalAnd"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.logicalAnd">[docs]</a>        <span class="n">src1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">src2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c"># PDE</span>
+        <span class="k">if</span> <span class="n">src1</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">src2</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undefFlags</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">src1</span> <span class="o">&amp;</span> <span class="n">src2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_N</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_V</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_C</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_Z</span><span class="p">,</span> <span class="ow">not</span> <span class="n">res</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">i_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_and"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_and">[docs]</a>        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logicalAnd</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">i_stm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_stm"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_stm">[docs]</a>        <span class="n">srcreg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">regmask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_PC</span><span class="p">)</span>       <span class="c"># store for later check</span>
+
+        <span class="n">start_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">srcreg</span><span class="p">)</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="n">start_address</span>
+        <span class="k">for</span> <span class="n">reg</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">reg</span> <span class="ow">in</span> <span class="n">regmask</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">reg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_DAIB_B</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_DAIB_I</span><span class="p">:</span>
+                        <span class="n">addr</span> <span class="o">+=</span> <span class="mi">4</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">addr</span> <span class="o">-=</span> <span class="mi">4</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">writeMemValue</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">writeMemValue</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_DAIB_I</span><span class="p">:</span>
+                        <span class="n">addr</span> <span class="o">+=</span> <span class="mi">4</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">addr</span> <span class="o">-=</span> <span class="mi">4</span>
+                <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">oflags</span> <span class="o">&amp;</span> <span class="n">OF_W</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">srcreg</span><span class="p">,</span><span class="n">addr</span><span class="p">)</span>
+        <span class="c">#FIXME: add &quot;shared memory&quot; functionality?  prolly just in strex which will be handled in i_strex</span>
+        <span class="c"># is the following necessary?  </span>
+        <span class="n">newpc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_PC</span><span class="p">)</span>    <span class="c"># check whether pc has changed</span>
+        <span class="k">if</span> <span class="n">pc</span> <span class="o">!=</span> <span class="n">newpc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">newpc</span>
+
+    <span class="n">i_stmia</span> <span class="o">=</span> <span class="n">i_stm</span></div>
+
+
+    <span class="k">def</span> <span class="nf">i_ldm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+<div class="viewcode-block" id="ArmEmulator.i_ldm"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_ldm">[docs]</a>        <span class="n">srcreg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">regmask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_PC</span><span class="p">)</span>       <span class="c"># store for later check</span>
+
+        <span class="n">start_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">srcreg</span><span class="p">)</span>
+        <span class="n">addr</span> <span class="o">=</span> <span class="n">start_address</span>
+        <span class="k">for</span> <span class="n">reg</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">reg</span> <span class="ow">in</span> <span class="n">regmask</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_DAIB_B</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_DAIB_I</span><span class="p">:</span>
+                        <span class="n">addr</span> <span class="o">+=</span> <span class="mi">4</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">addr</span> <span class="o">-=</span> <span class="mi">4</span>
+                    <span class="n">regval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemValue</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">regval</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">regval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemValue</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">reg</span><span class="p">,</span> <span class="n">regval</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_DAIB_I</span><span class="p">:</span>
+                        <span class="n">addr</span> <span class="o">+=</span> <span class="mi">4</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">addr</span> <span class="o">-=</span> <span class="mi">4</span>
+                <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">oflags</span> <span class="o">&amp;</span> <span class="n">OF_W</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">srcreg</span><span class="p">,</span><span class="n">addr</span><span class="p">)</span>
+        <span class="c">#FIXME: add &quot;shared memory&quot; functionality?  prolly just in ldrex which will be handled in i_ldrex</span>
+        <span class="c"># is the following necessary?  </span>
+        <span class="n">newpc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_PC</span><span class="p">)</span>    <span class="c"># check whether pc has changed</span>
+        <span class="k">if</span> <span class="n">pc</span> <span class="o">!=</span> <span class="n">newpc</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">newpc</span>
+
+    <span class="n">i_ldmia</span> <span class="o">=</span> <span class="n">i_ldm</span></div>
+
+    <span class="k">def</span> <span class="nf">i_ldr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+<div class="viewcode-block" id="ArmEmulator.i_ldr"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_ldr">[docs]</a>        <span class="c"># hint: covers ldr, ldrb, ldrbt, ldrd, ldrh, ldrsh, ldrsb, ldrt   (any instr where the syntax is ldr{condition}stuff)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reg</span> <span class="o">==</span> <span class="n">REG_PC</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+
+
+
+
+    <span class="k">def</span> <span class="nf">i_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_add"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_add">[docs]</a>        <span class="n">src1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">src2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c">#FIXME PDE and flags</span>
+        <span class="k">if</span> <span class="n">src1</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">src2</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undefFlags</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">dsize</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tsize</span>
+        <span class="n">ssize</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tsize</span>
+        <span class="n">s2size</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tsize</span>
+
+        <span class="n">usrc1</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">unsigned</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">usrc2</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">unsigned</span><span class="p">(</span><span class="n">src2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">ssrc1</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">signed</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">ssrc2</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">signed</span><span class="p">(</span><span class="n">src2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">ures</span> <span class="o">=</span> <span class="n">usrc1</span> <span class="o">+</span> <span class="n">usrc2</span>
+        <span class="n">sres</span> <span class="o">=</span> <span class="n">ssrc1</span> <span class="o">+</span> <span class="n">ssrc2</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ures</span><span class="p">)</span>
+
+        <span class="n">curmode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProcMode</span><span class="p">()</span> 
+        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">IF_S</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reg</span> <span class="o">==</span> <span class="mi">15</span> <span class="ow">and</span> <span class="p">(</span><span class="n">curmode</span> <span class="o">!=</span> <span class="n">PM_sys</span> <span class="ow">and</span> <span class="n">curmode</span> <span class="o">!=</span> <span class="n">PM_usr</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setCPSR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSPSR</span><span class="p">(</span><span class="n">curmode</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Messed up opcode...  adding to r15 from PM_usr or PM_sys&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_C</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_unsigned_carry</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="n">dsize</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_Z</span><span class="p">,</span> <span class="ow">not</span> <span class="n">ures</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_N</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="n">dsize</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_V</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed_overflow</span><span class="p">(</span><span class="n">sres</span><span class="p">,</span> <span class="n">dsize</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">i_b</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_b"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_b">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_bl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_bl"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_bl">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">REG_LR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">REG_PC</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_tst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_tst"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_tst">[docs]</a>        <span class="n">src1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">src2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">dsize</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tsize</span>
+        <span class="n">ures</span> <span class="o">=</span> <span class="n">src1</span> <span class="o">&amp;</span> <span class="n">src2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_N</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="n">dsize</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_Z</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="n">ures</span><span class="o">==</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_C</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_unsigned_carry</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="n">dsize</span><span class="p">))</span>
+        <span class="c">#self.setFlag(PSR_V, e_bits.is_signed_overflow(sres, dsize))</span>
+        
+    <span class="k">def</span> <span class="nf">i_rsb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+        <span class="n">src1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">src2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c">#FIXME PDE and flags</span>
+        <span class="k">if</span> <span class="n">src1</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">src2</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undefFlags</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">dsize</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tsize</span>
+        <span class="n">ssize</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">tsize</span>
+        <span class="n">s2size</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">tsize</span>
+
+        <span class="n">usrc1</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">unsigned</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">usrc2</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">unsigned</span><span class="p">(</span><span class="n">src2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">ssrc1</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">signed</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">ssrc2</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">signed</span><span class="p">(</span><span class="n">src2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">ures</span> <span class="o">=</span> <span class="n">usrc2</span> <span class="o">-</span> <span class="n">usrc1</span>
+        <span class="n">sres</span> <span class="o">=</span> <span class="n">ssrc2</span> <span class="o">-</span> <span class="n">ssrc1</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ures</span><span class="p">)</span>
+
+        <span class="n">curmode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProcMode</span><span class="p">()</span> 
+        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">IF_S</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reg</span> <span class="o">==</span> <span class="mi">15</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">curmode</span> <span class="o">!=</span> <span class="n">PM_sys</span> <span class="ow">and</span> <span class="n">curmode</span> <span class="o">!=</span> <span class="n">PM_usr</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setCPSR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSPSR</span><span class="p">(</span><span class="n">curmode</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Messed up opcode...  adding to r15 from PM_usr or PM_sys&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_C</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_unsigned_carry</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="n">dsize</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_Z</span><span class="p">,</span> <span class="ow">not</span> <span class="n">ures</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_N</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="n">dsize</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_V</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed_overflow</span><span class="p">(</span><span class="n">sres</span><span class="p">,</span> <span class="n">dsize</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">i_rsb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+<div class="viewcode-block" id="ArmEmulator.i_rsb"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_rsb">[docs]</a>        <span class="c"># Src op gets sign extended to dst</span>
+        <span class="c">#FIXME account for same operand with zero result for PDE</span>
+        <span class="n">src1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">src2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">Sflag</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_PSR_S</span>
+
+        <span class="k">if</span> <span class="n">src1</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">src2</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undefFlags</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intSubBase</span><span class="p">(</span><span class="n">src2</span><span class="p">,</span> <span class="n">src1</span><span class="p">,</span> <span class="n">Sflag</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_sub</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_sub"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_sub">[docs]</a>        <span class="c"># Src op gets sign extended to dst</span>
+        <span class="c">#FIXME account for same operand with zero result for PDE</span>
+        <span class="n">src1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">src2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">Sflag</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_PSR_S</span>
+
+        <span class="k">if</span> <span class="n">src1</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">src2</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undefFlags</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">intSubBase</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="n">src2</span><span class="p">,</span> <span class="n">Sflag</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_eor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_eor"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_eor">[docs]</a>        <span class="n">src1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">src2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        
+        <span class="c">#FIXME PDE and flags</span>
+        <span class="k">if</span> <span class="n">src1</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">src2</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">undefFlags</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">usrc1</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">unsigned</span><span class="p">(</span><span class="n">src1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">usrc2</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">unsigned</span><span class="p">(</span><span class="n">src2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">ures</span> <span class="o">=</span> <span class="n">usrc1</span> <span class="o">^</span> <span class="n">usrc2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setOperValue</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ures</span><span class="p">)</span>
+
+        <span class="n">curmode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProcMode</span><span class="p">()</span> 
+        <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">iflags</span> <span class="o">&amp;</span> <span class="n">IF_S</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reg</span> <span class="o">==</span> <span class="mi">15</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">curmode</span> <span class="o">!=</span> <span class="n">PM_sys</span> <span class="ow">and</span> <span class="n">curmode</span> <span class="o">!=</span> <span class="n">PM_usr</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">setCPSR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSPSR</span><span class="p">(</span><span class="n">curmode</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Messed up opcode...  adding to r15 from PM_usr or PM_sys&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_C</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_unsigned_carry</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_Z</span><span class="p">,</span> <span class="ow">not</span> <span class="n">ures</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_N</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed</span><span class="p">(</span><span class="n">ures</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">PSR_V</span><span class="p">,</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">is_signed_overflow</span><span class="p">(</span><span class="n">sres</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+
+
+
+    <span class="c"># Coprocessor Instructions</span>
+    <span class="k">def</span> <span class="nf">i_stc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_stc"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_stc">[docs]</a>        <span class="n">cpnum</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coproc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCoProc</span><span class="p">(</span><span class="n">cpnum</span><span class="p">)</span>
+        <span class="n">coproc</span><span class="o">.</span><span class="n">stc</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_ldc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_ldc"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_ldc">[docs]</a>        <span class="n">cpnum</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coproc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCoProc</span><span class="p">(</span><span class="n">cpnum</span><span class="p">)</span>
+        <span class="n">coproc</span><span class="o">.</span><span class="n">ldc</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_cdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_cdp"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_cdp">[docs]</a>        <span class="n">cpnum</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coproc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCoProc</span><span class="p">(</span><span class="n">cpnum</span><span class="p">)</span>
+        <span class="n">coproc</span><span class="o">.</span><span class="n">cdp</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_mrc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_mrc"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_mrc">[docs]</a>        <span class="n">cpnum</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coproc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCoProc</span><span class="p">(</span><span class="n">cpnum</span><span class="p">)</span>
+        <span class="n">coproc</span><span class="o">.</span><span class="n">mrc</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_mrrc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_mrrc"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_mrrc">[docs]</a>        <span class="n">cpnum</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coproc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCoProc</span><span class="p">(</span><span class="n">cpnum</span><span class="p">)</span>
+        <span class="n">coproc</span><span class="o">.</span><span class="n">mrrc</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_mcr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_mcr"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_mcr">[docs]</a>        <span class="n">cpnum</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coproc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCoProc</span><span class="p">(</span><span class="n">cpnum</span><span class="p">)</span>
+        <span class="n">coproc</span><span class="o">.</span><span class="n">mrrc</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">i_mcrr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ArmEmulator.i_mcrr"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.emu.ArmEmulator.i_mcrr">[docs]</a>        <span class="n">cpnum</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">coproc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getCoProc</span><span class="p">(</span><span class="n">cpnum</span><span class="p">)</span>
+        <span class="n">coproc</span><span class="o">.</span><span class="n">mcrr</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">opers</span><span class="p">)</span>
+
+
+
+
+<span class="n">opcode_dist</span> <span class="o">=</span> \</div></div>
+<span class="p">[(</span><span class="s">&#39;and&#39;</span><span class="p">,</span> <span class="mi">4083</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;stm&#39;</span><span class="p">,</span> <span class="mi">1120</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;ldr&#39;</span><span class="p">,</span> <span class="mi">1064</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;add&#39;</span><span class="p">,</span> <span class="mi">917</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;stc&#39;</span><span class="p">,</span> <span class="mi">859</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;str&#39;</span><span class="p">,</span> <span class="mi">770</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;bl&#39;</span><span class="p">,</span> <span class="mi">725</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;ldm&#39;</span><span class="p">,</span> <span class="mi">641</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="mi">472</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;ldc&#39;</span><span class="p">,</span> <span class="mi">469</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;tst&#39;</span><span class="p">,</span> <span class="mi">419</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;rsb&#39;</span><span class="p">,</span> <span class="mi">196</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;eor&#39;</span><span class="p">,</span> <span class="mi">180</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;mul&#39;</span><span class="p">,</span> <span class="mi">159</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;swi&#39;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;sub&#39;</span><span class="p">,</span> <span class="mi">110</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;adc&#39;</span><span class="p">,</span> <span class="mi">96</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;cdp&#39;</span><span class="p">,</span> <span class="mi">74</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;orr&#39;</span><span class="p">,</span> <span class="mi">66</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;cmn&#39;</span><span class="p">,</span> <span class="mi">59</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;mcr&#39;</span><span class="p">,</span> <span class="mi">55</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;stc2&#39;</span><span class="p">,</span> <span class="mi">54</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;ldc2&#39;</span><span class="p">,</span> <span class="mi">52</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;mrc&#39;</span><span class="p">,</span> <span class="mi">49</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;mvn&#39;</span><span class="p">,</span> <span class="mi">47</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;rsc&#39;</span><span class="p">,</span> <span class="mi">46</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;teq&#39;</span><span class="p">,</span> <span class="mi">45</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;cmp&#39;</span><span class="p">,</span> <span class="mi">41</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;sbc&#39;</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;mov&#39;</span><span class="p">,</span> <span class="mi">35</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;bic&#39;</span><span class="p">,</span> <span class="mi">34</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;mcr2&#39;</span><span class="p">,</span> <span class="mi">29</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;mrc2&#39;</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;swp&#39;</span><span class="p">,</span> <span class="mi">28</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;mcrr&#39;</span><span class="p">,</span> <span class="mi">21</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;mrrc&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;usada8&#39;</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;qadd&#39;</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;mrrc2&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;add16&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;mla&#39;</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;mcrr2&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span><span class="c">#</span>
+ <span class="p">(</span><span class="s">&#39;uqsub16&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;uqadd16&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;sub16&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;umull&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;uq&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;smlsdx&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;uhsub16&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;uqsubaddx&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;qdsub&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;subaddx&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;uqadd8&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;ssat&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;uqaddsubx&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;smull&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;blx&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;smlal&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;shsub16&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;smlsd&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;pkhbt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;revsh&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;qadd16&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;uqsub8&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;ssub16&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;usad8&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;uadd16&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;smladx&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;swpb&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;smlaldx&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;usat&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;umlal&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;rev16&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;sadd16&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;sel&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;sub8&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;pkhtb&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;umaal&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;addsubx&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;add8&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;smlad&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;sxtb&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="p">(</span><span class="s">&#39;sadd8&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../arm.html" >envi.archs.arm</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

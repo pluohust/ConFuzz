@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.bytesig &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="envi" href="../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.bytesig</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A byte and mask based decision engine for creating byte</span>
+<span class="sd">sequences (and potential comparison masks) for general purpose</span>
+<span class="sd">signature matching.</span>
+
+<span class="sd">Currently used by vivisect function entry sig db and others.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">SignatureTree</span><span class="p">:</span>
+<div class="viewcode-block" id="SignatureTree"><a class="viewcode-back" href="../../envi.html#envi.bytesig.SignatureTree">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A byte based decision tree which uses all the RAMs but is</span>
+<span class="sd">    really fast....</span>
+
+<span class="sd">    Signatures consist of a byte sequence and an optional mask</span>
+<span class="sd">    sequence.  If present each mask byte is used to logical and</span>
+<span class="sd">    the byte being compared before comparison.  This allows the</span>
+<span class="sd">    creation of signatures which have parts of the sig generalized.</span>
+
+<span class="sd">    FIXME allow sigs to have a reliability rating</span>
+<span class="sd">    FIXME allow sig nodes to store depth and truncate the tree early (and then mask the rest)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basenode</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">256</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigs</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># track duplicates</span>
+
+    <span class="k">def</span> <span class="nf">_addChoice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">siginfo</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+
+        <span class="n">todo</span> <span class="o">=</span> <span class="p">[(</span><span class="n">node</span><span class="p">,</span> <span class="n">siginfo</span><span class="p">),]</span>
+
+        <span class="c"># Recursion is for the weak minded.</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">todo</span><span class="p">):</span>
+
+            <span class="n">node</span><span class="p">,</span> <span class="n">siginfo</span> <span class="o">=</span> <span class="n">todo</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">depth</span><span class="p">,</span> <span class="n">sigs</span><span class="p">,</span> <span class="n">choices</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="nb">bytes</span><span class="p">,</span> <span class="n">masks</span><span class="p">,</span> <span class="n">o</span> <span class="o">=</span> <span class="n">siginfo</span>
+            <span class="n">siglen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigs</span><span class="p">)</span>
+
+            <span class="n">sigs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">siginfo</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">siglen</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">pass</span> <span class="c"># we just don&#39;t want the &quot;else&quot; here, if we&#39;re the only</span>
+                <span class="c"># one on this node, just let it ride.</span>
+
+            <span class="k">elif</span> <span class="n">siglen</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c"># If it has one already, we *both* need to add another level</span>
+                <span class="c"># (because if it is the only one, it thought it was last choice)</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sigs</span><span class="p">:</span>
+                    <span class="n">chval</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">depth</span><span class="p">]</span> <span class="c"># get the choice byte from siginfo</span>
+                    <span class="n">nnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getNode</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">chval</span><span class="p">)</span>
+                    <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">nnode</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span> <span class="c"># This is already a choice node, keep on choosing...</span>
+                <span class="n">chval</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">[</span><span class="n">depth</span><span class="p">]</span>
+                <span class="n">nnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getNode</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">chval</span><span class="p">)</span>
+                <span class="n">todo</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">nnode</span><span class="p">,</span> <span class="n">siginfo</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_getNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">depth</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">choice</span><span class="p">):</span>
+        <span class="c"># Chose, (and or initialize) a sub node</span>
+        <span class="n">nnode</span> <span class="o">=</span> <span class="n">choices</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">nnode</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">nnode</span> <span class="o">=</span> <span class="p">(</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="mi">256</span><span class="p">)</span>
+            <span class="n">choices</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span> <span class="o">=</span> <span class="n">nnode</span>
+        <span class="k">return</span> <span class="n">nnode</span>
+
+    <span class="k">def</span> <span class="nf">addSignature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">masks</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SignatureTree.addSignature"><a class="viewcode-back" href="../../envi.html#envi.bytesig.SignatureTree.addSignature">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a signature to the search tree.  If masks goes unspecified, it will be</span>
+<span class="sd">        assumed to be all ones (\\xff * len(bytes)).</span>
+
+<span class="sd">        Additionally, you may specify &quot;val&quot; as the object to get back with</span>
+<span class="sd">        getSignature().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># FIXME perhaps make masks None on all ff&#39;s</span>
+        <span class="k">if</span> <span class="n">masks</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">masks</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\xff</span><span class="s">&quot;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="c"># Detect and skip duplicate additions...</span>
+        <span class="n">bytekey</span> <span class="o">=</span> <span class="nb">bytes</span> <span class="o">+</span> <span class="n">masks</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bytekey</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sigs</span><span class="p">[</span><span class="n">bytekey</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="n">byteord</span> <span class="o">=</span> <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">bytes</span><span class="p">]</span>
+        <span class="n">maskord</span> <span class="o">=</span> <span class="p">[</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">masks</span><span class="p">]</span>
+
+        <span class="n">siginfo</span> <span class="o">=</span> <span class="p">(</span><span class="n">byteord</span><span class="p">,</span> <span class="n">maskord</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addChoice</span><span class="p">(</span><span class="n">siginfo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basenode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">isSignature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="SignatureTree.isSignature"><a class="viewcode-back" href="../../envi.html#envi.bytesig.SignatureTree.isSignature">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSignature</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">getSignature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="SignatureTree.getSignature"><a class="viewcode-back" href="../../envi.html#envi.bytesig.SignatureTree.getSignature">[docs]</a>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basenode</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">depth</span><span class="p">,</span> <span class="n">sigs</span><span class="p">,</span> <span class="n">choices</span> <span class="o">=</span> <span class="n">node</span>
+            <span class="c"># Once we get down to one sig, there are no more branches,</span>
+            <span class="c"># just check the byte sequence.</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sigs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">sbytes</span><span class="p">,</span> <span class="n">smasks</span><span class="p">,</span> <span class="n">sobj</span> <span class="o">=</span> <span class="n">sigs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">depth</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sbytes</span><span class="p">)):</span>
+                    <span class="n">realoff</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">i</span>
+                    <span class="n">masked</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="nb">bytes</span><span class="p">[</span><span class="n">realoff</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">smasks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">masked</span> <span class="o">!=</span> <span class="n">sbytes</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                        <span class="k">return</span> <span class="bp">None</span>
+                <span class="k">return</span> <span class="n">sobj</span>
+
+            <span class="c"># There are still more choices, keep branching.</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># Lets go find a new one</span>
+            <span class="k">for</span> <span class="n">sig</span> <span class="ow">in</span> <span class="n">sigs</span><span class="p">:</span>
+                <span class="n">sbytes</span><span class="p">,</span> <span class="n">smasks</span><span class="p">,</span> <span class="n">sobj</span> <span class="o">=</span> <span class="n">sig</span>
+                <span class="n">masked</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="o">+</span><span class="n">depth</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">smasks</span><span class="p">[</span><span class="n">depth</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">sbytes</span><span class="p">[</span><span class="n">depth</span><span class="p">]</span> <span class="o">==</span> <span class="n">masked</span><span class="p">:</span> <span class="c"># We have a winner!</span>
+                    <span class="c"># FIXME find the *best* winner! (because of masking)</span>
+                    <span class="n">node</span> <span class="o">=</span> <span class="n">choices</span><span class="p">[</span><span class="n">masked</span><span class="p">]</span>
+                    <span class="k">break</span>
+
+            <span class="c"># We failed to make our next choice</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

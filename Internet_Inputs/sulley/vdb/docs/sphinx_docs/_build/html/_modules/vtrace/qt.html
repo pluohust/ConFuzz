@@ -1,0 +1,497 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.qt &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vtrace" href="../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.qt</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">PyQt4</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">import</span> <span class="nn">vtrace</span>
+
+<span class="kn">import</span> <span class="nn">envi.qt</span> <span class="kn">as</span> <span class="nn">envi_qt</span>
+
+<span class="kn">import</span> <span class="nn">vqt.tree</span> <span class="kn">as</span> <span class="nn">vq_tree</span>
+<span class="kn">import</span> <span class="nn">vqt.colors</span> <span class="kn">as</span> <span class="nn">vq_colors</span>
+
+<span class="kn">from</span> <span class="nn">envi.threads</span> <span class="kn">import</span> <span class="n">firethread</span>
+<span class="kn">from</span> <span class="nn">vqt.main</span> <span class="kn">import</span> <span class="n">idlethread</span><span class="p">,</span> <span class="n">idlethreadsync</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">QtGui objects which assist in GUIs which use vtrace parts.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="VQTraceNotifier"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceNotifier">[docs]</a><span class="k">class</span> <span class="nc">VQTraceNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A bit of shared mixin code for the handling of vtrace</span>
+<span class="sd">    notifier callbacks in various VQTreeViews...</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@idlethreadsync</span>
+    <span class="c"># FIXME this should be part of a shared API!</span>
+<div class="viewcode-block" id="VQTraceNotifier.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceNotifier.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="p">[</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CONTINUE</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_DETACH</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_EXIT</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># If the trace is just going to run again, skip the update.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">trace</span><span class="o">.</span><span class="n">shouldRunAgain</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">vqLoad</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="VQRegisterListModel"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQRegisterListModel">[docs]</a><span class="k">class</span> <span class="nc">VQRegisterListModel</span><span class="p">(</span><span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeModel</span><span class="p">):</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Name&#39;</span><span class="p">,</span> <span class="s">&#39;Hex&#39;</span><span class="p">,</span> <span class="s">&#39;Dec&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQRegistersListView"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQRegistersListView">[docs]</a><span class="k">class</span> <span class="nc">VQRegistersListView</span><span class="p">(</span><span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="p">,</span> <span class="n">VQTraceNotifier</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A pure &quot;list view&quot; object for registers</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">VQTraceNotifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+        <span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">VQRegisterListModel</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAlternatingRowColors</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regnames</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastregs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regvals</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqLoad</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VQRegistersListView.vqLoad"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQRegistersListView.vqLoad">[docs]</a>    <span class="k">def</span> <span class="nf">vqLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastregs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regvals</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">VQRegisterListModel</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="n">regs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getRegisters</span><span class="p">()</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regnames</span>
+        <span class="k">if</span> <span class="n">names</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+            <span class="n">names</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">rname</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">rval</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">rname</span><span class="p">)</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">rname</span><span class="p">,</span> <span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rval</span><span class="p">,</span> <span class="n">rval</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">regvals</span> <span class="o">=</span> <span class="n">regs</span>
+</div></div>
+<div class="viewcode-block" id="RegColorDelegate"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.RegColorDelegate">[docs]</a><span class="k">class</span> <span class="nc">RegColorDelegate</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QStyledItemDelegate</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QStyledItemDelegate</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reglist</span> <span class="o">=</span> <span class="n">parent</span>
+
+<div class="viewcode-block" id="RegColorDelegate.paint"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.RegColorDelegate.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Normal</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reglist</span><span class="o">.</span><span class="n">lastregs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">rowdata</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">node</span><span class="o">.</span><span class="n">rowdata</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="o">.</span><span class="n">Bold</span>
+        <span class="n">option</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">setWeight</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QStyledItemDelegate</span><span class="o">.</span><span class="n">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="VQRegistersView"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQRegistersView">[docs]</a><span class="k">class</span> <span class="nc">VQRegistersView</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A register view which includes the idea of &quot;sub views&quot; for particular</span>
+<span class="sd">    sets of registers per-architecture.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&#39;Registers&#39;</span><span class="p">)</span>
+
+        <span class="n">vbox</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">vbox</span><span class="o">.</span><span class="n">setMargin</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">vbox</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewnames</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QComboBox</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewnames</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="s">&#39;all&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regviews</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">arch</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">)</span>
+
+        <span class="c"># FIXME make this in envi or something once and for all...</span>
+
+        <span class="k">if</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&#39;i386&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regviews</span><span class="p">[</span><span class="s">&#39;general&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;eax&#39;</span><span class="p">,</span><span class="s">&#39;ebx&#39;</span><span class="p">,</span><span class="s">&#39;ecx&#39;</span><span class="p">,</span><span class="s">&#39;edx&#39;</span><span class="p">,</span><span class="s">&#39;esi&#39;</span><span class="p">,</span><span class="s">&#39;edi&#39;</span><span class="p">,</span><span class="s">&#39;ebp&#39;</span><span class="p">,</span><span class="s">&#39;esp&#39;</span><span class="p">,</span><span class="s">&#39;eip&#39;</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">arch</span> <span class="o">==</span> <span class="s">&#39;amd64&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regviews</span><span class="p">[</span><span class="s">&#39;general&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;rax&#39;</span><span class="p">,</span><span class="s">&#39;rbx&#39;</span><span class="p">,</span><span class="s">&#39;rcx&#39;</span><span class="p">,</span><span class="s">&#39;rdx&#39;</span><span class="p">,</span><span class="s">&#39;rsi&#39;</span><span class="p">,</span><span class="s">&#39;rdi&#39;</span><span class="p">,</span><span class="s">&#39;rbp&#39;</span><span class="p">,</span><span class="s">&#39;rsp&#39;</span><span class="p">,</span><span class="s">&#39;rip&#39;</span><span class="p">,</span>
+                                        <span class="s">&#39;r8&#39;</span><span class="p">,</span><span class="s">&#39;r9&#39;</span><span class="p">,</span><span class="s">&#39;r10&#39;</span><span class="p">,</span><span class="s">&#39;r11&#39;</span><span class="p">,</span><span class="s">&#39;r12&#39;</span><span class="p">,</span><span class="s">&#39;r13&#39;</span><span class="p">,</span><span class="s">&#39;r14&#39;</span><span class="p">,</span><span class="s">&#39;r15&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regviews</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">viewnames</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">SIGNAL</span><span class="p">(</span><span class="s">&#39;currentIndexChanged(QString)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewnames</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viewnames</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">regViewNameSelected</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reglist</span> <span class="o">=</span> <span class="n">VQRegistersListView</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="n">trace</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regdelegate</span> <span class="o">=</span> <span class="n">RegColorDelegate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reglist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reglist</span><span class="o">.</span><span class="n">setItemDelegate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regdelegate</span><span class="p">)</span>
+
+        <span class="n">vbox</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viewnames</span><span class="p">)</span>
+        <span class="n">vbox</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reglist</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">vbox</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VQRegistersView.regViewNameSelected"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQRegistersView.regViewNameSelected">[docs]</a>    <span class="k">def</span> <span class="nf">regViewNameSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reglist</span><span class="o">.</span><span class="n">regnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regviews</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reglist</span><span class="o">.</span><span class="n">vqLoad</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="VQProcessListModel"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQProcessListModel">[docs]</a><span class="k">class</span> <span class="nc">VQProcessListModel</span><span class="p">(</span><span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeModel</span><span class="p">):</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Pid&#39;</span><span class="p">,</span><span class="s">&#39;Name&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQProcessListView"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQProcessListView">[docs]</a><span class="k">class</span> <span class="nc">VQProcessListView</span><span class="p">(</span><span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trace</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">VQProcessListModel</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAlternatingRowColors</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">pid</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">ps</span><span class="p">():</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pid</span><span class="p">,</span><span class="n">name</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="VQProcessSelectDialog"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQProcessSelectDialog">[docs]</a><span class="k">class</span> <span class="nc">VQProcessSelectDialog</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QDialog</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&#39;Select a process...&#39;</span><span class="p">)</span>
+
+        <span class="n">vlyt</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">()</span>
+        <span class="n">hlyt</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plisttree</span> <span class="o">=</span> <span class="n">VQProcessListView</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="n">trace</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">hbox</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">ok</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s">&quot;Ok&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">hbox</span><span class="p">)</span>
+        <span class="n">cancel</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s">&quot;Cancel&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">hbox</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plisttree</span><span class="o">.</span><span class="n">doubleClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">dialog_activated</span> <span class="p">)</span>
+
+        <span class="n">ok</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dialog_ok</span><span class="p">)</span>
+        <span class="n">cancel</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dialog_cancel</span><span class="p">)</span>
+
+        <span class="n">hlyt</span><span class="o">.</span><span class="n">addStretch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">hlyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">cancel</span><span class="p">)</span>
+        <span class="n">hlyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">ok</span><span class="p">)</span>
+        <span class="n">hbox</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">hlyt</span><span class="p">)</span>
+
+        <span class="n">vlyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plisttree</span><span class="p">)</span>
+        <span class="n">vlyt</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">hbox</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">vlyt</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VQProcessSelectDialog.dialog_activated"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQProcessSelectDialog.dialog_activated">[docs]</a>    <span class="k">def</span> <span class="nf">dialog_activated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">node</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">rowdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VQProcessSelectDialog.dialog_ok"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQProcessSelectDialog.dialog_ok">[docs]</a>    <span class="k">def</span> <span class="nf">dialog_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plisttree</span><span class="o">.</span><span class="n">selectedIndexes</span><span class="p">():</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">node</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">rowdata</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VQProcessSelectDialog.dialog_cancel"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQProcessSelectDialog.dialog_cancel">[docs]</a>    <span class="k">def</span> <span class="nf">dialog_cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reject</span><span class="p">()</span>
+</div></div>
+<span class="nd">@idlethreadsync</span>
+<span class="k">def</span> <span class="nf">getProcessPid</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">VQProcessSelectDialog</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="n">trace</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">pid</span>
+
+<div class="viewcode-block" id="FileDescModel"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.FileDescModel">[docs]</a><span class="k">class</span> <span class="nc">FileDescModel</span><span class="p">(</span><span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeModel</span><span class="p">):</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Fd&#39;</span><span class="p">,</span><span class="s">&#39;Type&#39;</span><span class="p">,</span><span class="s">&#39;Name&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQFileDescView"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQFileDescView">[docs]</a><span class="k">class</span> <span class="nc">VQFileDescView</span><span class="p">(</span><span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="p">,</span> <span class="n">VQTraceNotifier</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">VQTraceNotifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+        <span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&#39;File Descriptors&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">FileDescModel</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqLoad</span><span class="p">()</span>
+
+<div class="viewcode-block" id="VQFileDescView.vqLoad"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQFileDescView.vqLoad">[docs]</a>    <span class="k">def</span> <span class="nf">vqLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">FileDescModel</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">fd</span><span class="p">,</span><span class="n">fdtype</span><span class="p">,</span><span class="n">bestname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getFds</span><span class="p">():</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">fd</span><span class="p">,</span> <span class="n">fdtype</span><span class="p">,</span> <span class="n">bestname</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="VQTraceToolBar"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceToolBar">[docs]</a><span class="k">class</span> <span class="nc">VQTraceToolBar</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QToolBar</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QToolBar</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setObjectName</span><span class="p">(</span><span class="s">&#39;VtraceToolbar&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">attach_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s">&#39;Attach&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attach_action</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s">&#39;Attach to a process&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attach_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actAttach</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">detach_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s">&#39;Detach&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detach_action</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s">&#39;Detach from current process&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">detach_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actDetach</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">continue_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s">&#39;Continue&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continue_action</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s">&#39;Continue current process&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continue_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actContinue</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">break_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s">&#39;Break&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">break_action</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s">&#39;Break current process&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">break_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actBreak</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepi_action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s">&#39;Stepi&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepi_action</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s">&#39;Single step the current process&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepi_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actStepi</span><span class="p">)</span>
+
+        <span class="n">trace</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">(),</span> <span class="n">trace</span><span class="o">.</span><span class="n">isRunning</span><span class="p">())</span>
+
+<div class="viewcode-block" id="VQTraceToolBar.actAttach"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceToolBar.actAttach">[docs]</a>    <span class="k">def</span> <span class="nf">actAttach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">getProcessPid</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pid</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">firethread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">attach</span><span class="p">)(</span><span class="n">pid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQTraceToolBar.actDetach"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceToolBar.actDetach">[docs]</a>    <span class="k">def</span> <span class="nf">actDetach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thing</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="n">firethread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">detach</span><span class="p">)()</span>
+</div>
+<div class="viewcode-block" id="VQTraceToolBar.actContinue"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceToolBar.actContinue">[docs]</a>    <span class="k">def</span> <span class="nf">actContinue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thing</span><span class="p">):</span>
+        <span class="n">firethread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">run</span><span class="p">)()</span>
+</div>
+<div class="viewcode-block" id="VQTraceToolBar.actBreak"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceToolBar.actBreak">[docs]</a>    <span class="k">def</span> <span class="nf">actBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thing</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;PendingBreak&#39;</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;PendingBreak&#39;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">firethread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">sendBreak</span><span class="p">)()</span>
+</div>
+<div class="viewcode-block" id="VQTraceToolBar.actStepi"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceToolBar.actStepi">[docs]</a>    <span class="k">def</span> <span class="nf">actStepi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thing</span><span class="p">):</span>
+        <span class="n">firethread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">stepi</span><span class="p">)()</span>
+</div>
+    <span class="nd">@idlethread</span>
+    <span class="k">def</span> <span class="nf">_updateActions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attached</span><span class="p">,</span> <span class="n">running</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">attached</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attach_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">detach_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continue_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">break_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stepi_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">running</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attach_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">detach_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continue_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">break_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stepi_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">attach_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">detach_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">continue_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">break_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stepi_action</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VQTraceToolBar.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQTraceToolBar.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_DETACH</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CONTINUE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_updateActions</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">(),</span> <span class="n">trace</span><span class="o">.</span><span class="n">shouldRunAgain</span><span class="p">())</span>
+</div></div>
+<div class="viewcode-block" id="VQMemoryMapView"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQMemoryMapView">[docs]</a><span class="k">class</span> <span class="nc">VQMemoryMapView</span><span class="p">(</span><span class="n">envi_qt</span><span class="o">.</span><span class="n">VQMemoryMapView</span><span class="p">,</span> <span class="n">VQTraceNotifier</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A memory map view which is sensitive to the status of a</span>
+<span class="sd">    trace object.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">VQTraceNotifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+        <span class="n">envi_qt</span><span class="o">.</span><span class="n">VQMemoryMapView</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VQMemoryMapView.vqLoad"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQMemoryMapView.vqLoad">[docs]</a>    <span class="k">def</span> <span class="nf">vqLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">envi_qt</span><span class="o">.</span><span class="n">VQMemoryMapView</span><span class="o">.</span><span class="n">vqLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="VQThreadListModel"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQThreadListModel">[docs]</a><span class="k">class</span> <span class="nc">VQThreadListModel</span><span class="p">(</span><span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeModel</span><span class="p">):</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;Thread Id&#39;</span><span class="p">,</span><span class="s">&#39;Thread Info&#39;</span><span class="p">,</span> <span class="s">&#39;State&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQThreadsView"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQThreadsView">[docs]</a><span class="k">class</span> <span class="nc">VQThreadsView</span><span class="p">(</span><span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="p">,</span> <span class="n">VQTraceNotifier</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">selectthread</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c"># selectthread is an optional endpoint to connect to</span>
+        <span class="n">VQTraceNotifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+        <span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&#39;Threads&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">VQThreadListModel</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAlternatingRowColors</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqLoad</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectthread</span> <span class="o">=</span> <span class="n">selectthread</span>
+
+<div class="viewcode-block" id="VQThreadsView.selectionChanged"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQThreadsView.selectionChanged">[docs]</a>    <span class="k">def</span> <span class="nf">selectionChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected</span><span class="p">,</span> <span class="n">deselected</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedIndexes</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">idx</span><span class="o">.</span><span class="n">internalPointer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">node</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">selectThread</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">rowdata</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">vq_tree</span><span class="o">.</span><span class="n">VQTreeView</span><span class="o">.</span><span class="n">selectionChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected</span><span class="p">,</span> <span class="n">deselected</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQThreadsView.vqLoad"><a class="viewcode-back" href="../../vtrace.html#vtrace.qt.VQThreadsView.vqLoad">[docs]</a>    <span class="k">def</span> <span class="nf">vqLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">VQThreadListModel</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">stid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">tinfo</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isThreadSuspended</span><span class="p">(</span><span class="n">tid</span><span class="p">):</span>
+                <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;suspended&#39;</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tid</span><span class="p">,</span> <span class="n">tinfo</span><span class="p">,</span> <span class="n">state</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

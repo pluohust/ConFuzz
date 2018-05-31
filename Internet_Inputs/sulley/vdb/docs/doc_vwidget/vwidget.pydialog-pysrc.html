@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vwidget.pydialog</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vwidget-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vwidget-module.html">Package&nbsp;vwidget</a> ::
+        Module&nbsp;pydialog
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vwidget.pydialog-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vwidget.pydialog-module.html">Module vwidget.pydialog</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">threading</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Thread</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">gtk</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package vwidget=vwidget-module.html"><a title="vwidget" class="py-name" href="#" onclick="return doclink('link-0', 'vwidget', 'link-0');">vwidget</a></tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="vwidget" class="py-name" href="#" onclick="return doclink('link-1', 'vwidget', 'link-0');">vwidget</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module vwidget.main=vwidget.main-module.html,Function vwidget.main.main()=vwidget.main-module.html#main"><a title="vwidget.main
+vwidget.main.main" class="py-name" href="#" onclick="return doclink('link-2', 'main', 'link-2');">main</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vw_main</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="vwidget" class="py-name" href="#" onclick="return doclink('link-3', 'vwidget', 'link-0');">vwidget</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module vwidget.windows=vwidget.windows-module.html"><a title="vwidget.windows" class="py-name" href="#" onclick="return doclink('link-4', 'windows', 'link-4');">windows</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vw_windows</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"> </tt>
+<a name="ScriptThread"></a><div id="ScriptThread-def"><a name="L11"></a><tt class="py-lineno">11</tt> <a class="py-toggle" href="#" id="ScriptThread-toggle" onclick="return toggle('ScriptThread');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vwidget.pydialog.ScriptThread-class.html">ScriptThread</a><tt class="py-op">(</tt><tt class="py-base-class">Thread</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ScriptThread-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ScriptThread-expanded"><a name="ScriptThread.__init__"></a><div id="ScriptThread.__init__-def"><a name="L12"></a><tt class="py-lineno">12</tt> <a class="py-toggle" href="#" id="ScriptThread.__init__-toggle" onclick="return toggle('ScriptThread.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.pydialog.ScriptThread-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">cobj</tt><tt class="py-op">,</tt> <tt class="py-param">locals</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ScriptThread.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ScriptThread.__init__-expanded"><a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">        <tt class="py-name">Thread</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Method vwidget.RefView.__init__()=vwidget.RefView-class.html#__init__,Method vwidget.SpaceView.__init__()=vwidget.SpaceView-class.html#__init__,Method vwidget.VWidget.__init__()=vwidget.VWidget-class.html#__init__,Method vwidget.cluster.ClusterServerView.__init__()=vwidget.cluster.ClusterServerView-class.html#__init__,Method vwidget.config.ConfigDialog.__init__()=vwidget.config.ConfigDialog-class.html#__init__,Method vwidget.layout.LayoutManager.__init__()=vwidget.layout.LayoutManager-class.html#__init__,Method vwidget.memview.MemoryView.__init__()=vwidget.memview.MemoryView-class.html#__init__,Method vwidget.memview.MemoryWindow.__init__()=vwidget.memview.MemoryWindow-class.html#__init__,Method vwidget.memview.VaTag.__init__()=vwidget.memview.VaTag-class.html#__init__,Method vwidget.menubuilder.FieldAdder.__init__()=vwidget.menubuilder.FieldAdder-class.html#__init__,Method vwidget.menubuilder.Menu.__init__()=vwidget.menubuilder.Menu-class.html#__init__,Method vwidget.menubuilder.MenuBar.__init__()=vwidget.menubuilder.MenuBar-class.html#__init__,Method vwidget.pydialog.PyDialog.__init__()=vwidget.pydialog.PyDialog-class.html#__init__,Method vwidget.pydialog.ScriptThread.__init__()=vwidget.pydialog.ScriptThread-class.html#__init__,Method vwidget.views.GladeView.__init__()=vwidget.views.GladeView-class.html#__init__,Method vwidget.views.VTextTag.__init__()=vwidget.views.VTextTag-class.html#__init__,Method vwidget.views.VTextView.__init__()=vwidget.views.VTextView-class.html#__init__,Method vwidget.views.VTreeView.__init__()=vwidget.views.VTreeView-class.html#__init__,Method vwidget.views.VView.__init__()=vwidget.views.VView-class.html#__init__,Method vwidget.vwvstruct.SelectNamespaceDialog.__init__()=vwidget.vwvstruct.SelectNamespaceDialog-class.html#__init__,Method vwidget.vwvstruct.SelectStructureDialog.__init__()=vwidget.vwvstruct.SelectStructureDialog-class.html#__init__,Method vwidget.vwvstruct.VStructBrowser.__init__()=vwidget.vwvstruct.VStructBrowser-class.html#__init__,Method vwidget.vwvstruct.VStructBuilderView.__init__()=vwidget.vwvstruct.VStructBuilderView-class.html#__init__,Method vwidget.vwvstruct.VStructNamespaceSelector.__init__()=vwidget.vwvstruct.VStructNamespaceSelector-class.html#__init__,Method vwidget.vwvstruct.VStructView.__init__()=vwidget.vwvstruct.VStructView-class.html#__init__,Method vwidget.vwvtrace.FileDescView.__init__()=vwidget.vwvtrace.FileDescView-class.html#__init__,Method vwidget.vwvtrace.MemoryMapView.__init__()=vwidget.vwvtrace.MemoryMapView-class.html#__init__,Method vwidget.vwvtrace.ProcessListView.__init__()=vwidget.vwvtrace.ProcessListView-class.html#__init__,Method vwidget.vwvtrace.SelectProcessDialog.__init__()=vwidget.vwvtrace.SelectProcessDialog-class.html#__init__,Method vwidget.vwvtrace.TraceToolBar.__init__()=vwidget.vwvtrace.TraceToolBar-class.html#__init__,Method vwidget.vwvtrace.VtraceView.__init__()=vwidget.vwvtrace.VtraceView-class.html#__init__,Method vwidget.windows.MainWindow.__init__()=vwidget.windows.MainWindow-class.html#__init__,Method vwidget.windows.VWindow.__init__()=vwidget.windows.VWindow-class.html#__init__"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-5', '__init__', 'link-5');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setDaemon</tt><tt class="py-op">(</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cobj</tt> <tt class="py-op">=</tt> <tt class="py-name">cobj</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locals</tt> <tt class="py-op">=</tt> <tt class="py-name">locals</tt> </tt>
+</div><a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"> </tt>
+<a name="ScriptThread.run"></a><div id="ScriptThread.run-def"><a name="L18"></a><tt class="py-lineno">18</tt> <a class="py-toggle" href="#" id="ScriptThread.run-toggle" onclick="return toggle('ScriptThread.run');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.pydialog.ScriptThread-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ScriptThread.run-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ScriptThread.run-expanded"><a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">            <tt class="py-keyword">exec</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cobj</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locals</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Script Error: "</tt><tt class="py-op">,</tt><tt class="py-name">e</tt> </tt>
+</div></div><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="PyDialog"></a><div id="PyDialog-def"><a name="L24"></a><tt class="py-lineno">24</tt> <a class="py-toggle" href="#" id="PyDialog-toggle" onclick="return toggle('PyDialog');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vwidget.pydialog.PyDialog-class.html">PyDialog</a><tt class="py-op">(</tt><tt class="py-base-class">vw_windows</tt><tt class="py-op">.</tt><tt class="py-base-class">VWindow</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PyDialog-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="PyDialog-expanded"><a name="PyDialog.__init__"></a><div id="PyDialog.__init__-def"><a name="L25"></a><tt class="py-lineno">25</tt> <a class="py-toggle" href="#" id="PyDialog.__init__-toggle" onclick="return toggle('PyDialog.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.pydialog.PyDialog-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">locals</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PyDialog.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="PyDialog.__init__-expanded"><a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-name">dname</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">dirname</tt><tt class="py-op">(</tt><tt id="link-6" class="py-name"><a title="vwidget" class="py-name" href="#" onclick="return doclink('link-6', 'vwidget', 'link-0');">vwidget</a></tt><tt class="py-op">.</tt><tt class="py-name">__file__</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-name">fname</tt> <tt class="py-op">=</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">dname</tt><tt class="py-op">,</tt> <tt class="py-string">"pydialog.glade"</tt><tt class="py-op">)</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">vw_windows</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Class vwidget.windows.VWindow=vwidget.windows.VWindow-class.html"><a title="vwidget.windows.VWindow" class="py-name" href="#" onclick="return doclink('link-7', 'VWindow', 'link-7');">VWindow</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-8', '__init__', 'link-5');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">locals</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">            <tt class="py-name">locals</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locals</tt> <tt class="py-op">=</tt> <tt class="py-name">locals</tt> </tt>
+</div><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt>
+<a name="PyDialog.PyDialogRun"></a><div id="PyDialog.PyDialogRun-def"><a name="L33"></a><tt class="py-lineno">33</tt> <a class="py-toggle" href="#" id="PyDialog.PyDialogRun-toggle" onclick="return toggle('PyDialog.PyDialogRun');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.pydialog.PyDialog-class.html#PyDialogRun">PyDialogRun</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">button</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PyDialog.PyDialogRun-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="PyDialog.PyDialogRun-expanded"><a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-name">buffer</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Method vwidget.windows.VWindow.getWidget()=vwidget.windows.VWindow-class.html#getWidget"><a title="vwidget.windows.VWindow.getWidget" class="py-name" href="#" onclick="return doclink('link-9', 'getWidget', 'link-9');">getWidget</a></tt><tt class="py-op">(</tt><tt class="py-string">"PyDialogText"</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">get_buffer</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">        <tt class="py-name">start</tt><tt class="py-op">,</tt> <tt class="py-name">end</tt> <tt class="py-op">=</tt> <tt class="py-name">buffer</tt><tt class="py-op">.</tt><tt class="py-name">get_bounds</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">script</tt> <tt class="py-op">=</tt> <tt class="py-name">buffer</tt><tt class="py-op">.</tt><tt class="py-name">get_text</tt><tt class="py-op">(</tt><tt class="py-name">start</tt><tt class="py-op">,</tt><tt class="py-name">end</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method vwidget.pydialog.PyDialog.runPython()=vwidget.pydialog.PyDialog-class.html#runPython"><a title="vwidget.pydialog.PyDialog.runPython" class="py-name" href="#" onclick="return doclink('link-10', 'runPython', 'link-10');">runPython</a></tt><tt class="py-op">(</tt><tt class="py-name">script</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="PyDialog.runPython"></a><div id="PyDialog.runPython-def"><a name="L39"></a><tt class="py-lineno">39</tt> <a class="py-toggle" href="#" id="PyDialog.runPython-toggle" onclick="return toggle('PyDialog.runPython');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.pydialog.PyDialog-class.html#runPython">runPython</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">pystring</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="PyDialog.runPython-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="PyDialog.runPython-expanded"><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"><tt class="py-docstring">        Extend and over-ride this for any special handling...</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-name">cobj</tt> <tt class="py-op">=</tt> <tt class="py-name">compile</tt><tt class="py-op">(</tt><tt class="py-name">pystring</tt><tt class="py-op">,</tt> <tt class="py-string">"pydialog_exec.py"</tt><tt class="py-op">,</tt> <tt class="py-string">"exec"</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-name">sthr</tt> <tt class="py-op">=</tt> <tt id="link-11" class="py-name" targets="Class vwidget.pydialog.ScriptThread=vwidget.pydialog.ScriptThread-class.html"><a title="vwidget.pydialog.ScriptThread" class="py-name" href="#" onclick="return doclink('link-11', 'ScriptThread', 'link-11');">ScriptThread</a></tt><tt class="py-op">(</tt><tt class="py-name">cobj</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locals</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">sthr</tt><tt class="py-op">.</tt><tt class="py-name">start</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-comment"># FIXME set button insensitive and have ScriptThread take</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-comment"># a reference to the dialog and change it back when run is complete</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vwidget-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:45:11 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

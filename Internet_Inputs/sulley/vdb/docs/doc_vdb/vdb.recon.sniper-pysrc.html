@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vdb.recon.sniper</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vdb-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vdb-module.html">Package&nbsp;vdb</a> ::
+        <a href="vdb.recon-module.html">Package&nbsp;recon</a> ::
+        Module&nbsp;sniper
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vdb.recon.sniper-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vdb.recon.sniper-module.html">Module vdb.recon.sniper</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">Specialized breakpoints which identify dangerous calling</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">mechanisms and tag them.</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">envi</tt><tt class="py-op">.</tt><tt class="py-name">memory</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_mem</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt class="py-name">breakpoints</tt> <tt class="py-keyword">as</tt> <tt class="py-name">vt_breakpoints</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"> </tt>
+<a name="getStackArg"></a><div id="getStackArg-def"><a name="L8"></a><tt class="py-lineno"> 8</tt> <a class="py-toggle" href="#" id="getStackArg-toggle" onclick="return toggle('getStackArg');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.sniper-module.html#getStackArg">getStackArg</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">,</tt> <tt class="py-param">argidx</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getStackArg-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="getStackArg-expanded"><a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-docstring">    Assuming we are at the instruction after</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-docstring">    a call, grab the stack argument at the specified</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-docstring">    index (skipping the saved instruction pointer).</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">    <tt class="py-name">stack</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getStackCounter</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">    <tt class="py-name">fmt</tt> <tt class="py-op">=</tt> <tt class="py-string">'&lt;P'</tt> <tt class="py-op">+</tt> <tt class="py-op">(</tt><tt class="py-string">'P'</tt> <tt class="py-op">*</tt> <tt class="py-op">(</tt><tt class="py-name">argidx</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">    <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">readMemoryFormat</tt><tt class="py-op">(</tt><tt class="py-name">stack</tt><tt class="py-op">,</tt> <tt class="py-name">fmt</tt><tt class="py-op">)</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"> </tt>
+<a name="SniperDynArgBreak"></a><div id="SniperDynArgBreak-def"><a name="L19"></a><tt class="py-lineno">19</tt> <a class="py-toggle" href="#" id="SniperDynArgBreak-toggle" onclick="return toggle('SniperDynArgBreak');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vdb.recon.sniper.SniperDynArgBreak-class.html">SniperDynArgBreak</a><tt class="py-op">(</tt><tt class="py-base-class">vt_breakpoints</tt><tt class="py-op">.</tt><tt class="py-base-class">Breakpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SniperDynArgBreak-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="SniperDynArgBreak-expanded"><a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-docstring">    A breakpoint for use in determining if an API was called</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-docstring">    with a dynamic pointer.</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"> </tt>
+<a name="SniperDynArgBreak.__init__"></a><div id="SniperDynArgBreak.__init__-def"><a name="L25"></a><tt class="py-lineno">25</tt> <a class="py-toggle" href="#" id="SniperDynArgBreak.__init__-toggle" onclick="return toggle('SniperDynArgBreak.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.sniper.SniperDynArgBreak-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">symname</tt><tt class="py-op">,</tt> <tt class="py-param">argidx</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SniperDynArgBreak.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SniperDynArgBreak.__init__-expanded"><a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-name">vt_breakpoints</tt><tt class="py-op">.</tt><tt class="py-name">Breakpoint</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Method vdb.ScriptThread.__init__()=vdb.ScriptThread-class.html#__init__,Method vdb.Vdb.__init__()=vdb.Vdb-class.html#__init__,Method vdb.VdbLookup.__init__()=vdb.VdbLookup-class.html#__init__,Method vdb.VdbTrace.__init__()=vdb.VdbTrace-class.html#__init__,Method vdb.extensions.gdbstub.GdbStubNotifier.__init__()=vdb.extensions.gdbstub.GdbStubNotifier-class.html#__init__,Method vdb.gui.VdbFileDescWindow.__init__()=vdb.gui.VdbFileDescWindow-class.html#__init__,Method vdb.gui.VdbGui.__init__()=vdb.gui.VdbGui-class.html#__init__,Method vdb.gui.VdbMainWindow.__init__()=vdb.gui.VdbMainWindow-class.html#__init__,Method vdb.gui.VdbMemoryMapWindow.__init__()=vdb.gui.VdbMemoryMapWindow-class.html#__init__,Method vdb.gui.VdbMemoryView.__init__()=vdb.gui.VdbMemoryView-class.html#__init__,Method vdb.gui.VdbMemoryWindow.__init__()=vdb.gui.VdbMemoryWindow-class.html#__init__,Method vdb.gui.VdbRegisterWindow.__init__()=vdb.gui.VdbRegisterWindow-class.html#__init__,Method vdb.gui.VdbViewWindow.__init__()=vdb.gui.VdbViewWindow-class.html#__init__,Method vdb.gui.VdbWindow.__init__()=vdb.gui.VdbWindow-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapRenderer.__init__()=vdb.gui.extensions.windows.VdbHeapRenderer-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapWindow.__init__()=vdb.gui.extensions.windows.VdbHeapWindow-class.html#__init__,Method vdb.gui.extensions.windows.Win32HeapWindow.__init__()=vdb.gui.extensions.windows.Win32HeapWindow-class.html#__init__,Method vdb.qt.windows.VdbMemoryWindow.__init__()=vdb.qt.windows.VdbMemoryWindow-class.html#__init__,Method vdb.qt.windows.VdbWindow.__init__()=vdb.qt.windows.VdbWindow-class.html#__init__,Method vdb.recon.ReconBreak.__init__()=vdb.recon.ReconBreak-class.html#__init__,Method vdb.recon.sniper.SniperArgValueBreak.__init__()=vdb.recon.sniper.SniperArgValueBreak-class.html#__init__,Method vdb.recon.sniper.SniperDynArgBreak.__init__()=vdb.recon.sniper.SniperDynArgBreak-class.html#__init__,Method vdb.renderers.DerefRenderer.__init__()=vdb.renderers.DerefRenderer-class.html#__init__,Method vdb.renderers.OpcodeRenderer.__init__()=vdb.renderers.OpcodeRenderer-class.html#__init__,Method vdb.renderers.SymbolRenderer.__init__()=vdb.renderers.SymbolRenderer-class.html#__init__,Method vdb.stalker.StalkerBlockBreak.__init__()=vdb.stalker.StalkerBlockBreak-class.html#__init__,Method vdb.stalker.StalkerBreak.__init__()=vdb.stalker.StalkerBreak-class.html#__init__,Method vdb.stalker.StalkerCodeFlow.__init__()=vdb.stalker.StalkerCodeFlow-class.html#__init__,Method vdb.stalker.StalkerDynBreak.__init__()=vdb.stalker.StalkerDynBreak-class.html#__init__"><a title="vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__" class="py-name" href="#" onclick="return doclink('link-0', '__init__', 'link-0');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">expression</tt><tt class="py-op">=</tt><tt class="py-name">symname</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fastbreak</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_argidx</tt> <tt class="py-op">=</tt> <tt class="py-name">argidx</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_symname</tt> <tt class="py-op">=</tt> <tt class="py-name">symname</tt> </tt>
+</div><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="SniperDynArgBreak.getName"></a><div id="SniperDynArgBreak.getName-def"><a name="L31"></a><tt class="py-lineno">31</tt> <a class="py-toggle" href="#" id="SniperDynArgBreak.getName-toggle" onclick="return toggle('SniperDynArgBreak.getName');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.sniper.SniperDynArgBreak-class.html#getName">getName</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SniperDynArgBreak.getName-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SniperDynArgBreak.getName-expanded"><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">'%s argidx: %d'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_symname</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_argidx</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"> </tt>
+<a name="SniperDynArgBreak.notify"></a><div id="SniperDynArgBreak.notify-def"><a name="L34"></a><tt class="py-lineno">34</tt> <a class="py-toggle" href="#" id="SniperDynArgBreak.notify-toggle" onclick="return toggle('SniperDynArgBreak.notify');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.sniper.SniperDynArgBreak-class.html#notify">notify</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SniperDynArgBreak.notify-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SniperDynArgBreak.notify-expanded"><a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">        <tt class="py-name">arg</tt> <tt class="py-op">=</tt> <tt id="link-1" class="py-name" targets="Function vdb.recon.sniper.getStackArg()=vdb.recon.sniper-module.html#getStackArg"><a title="vdb.recon.sniper.getStackArg" class="py-name" href="#" onclick="return doclink('link-1', 'getStackArg', 'link-1');">getStackArg</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_argidx</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fastbreak</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">probeMemory</tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">e_mem</tt><tt class="py-op">.</tt><tt class="py-name">MM_WRITE</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">'SNIPER: %s TOOK DYNAMIC ARG IDX %d (0x%.8x)'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_symname</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_argidx</tt><tt class="py-op">,</tt> <tt class="py-name">arg</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fastbreak</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+</div></div><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"> </tt>
+<a name="SniperArgValueBreak"></a><div id="SniperArgValueBreak-def"><a name="L41"></a><tt class="py-lineno">41</tt> <a class="py-toggle" href="#" id="SniperArgValueBreak-toggle" onclick="return toggle('SniperArgValueBreak');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vdb.recon.sniper.SniperArgValueBreak-class.html">SniperArgValueBreak</a><tt class="py-op">(</tt><tt class="py-base-class">vt_breakpoints</tt><tt class="py-op">.</tt><tt class="py-base-class">Breakpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SniperArgValueBreak-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="SniperArgValueBreak-expanded"><a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"><tt class="py-docstring">    A breakpoint for monitoring an API for being called with a particular</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"><tt class="py-docstring">    value.</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="SniperArgValueBreak.__init__"></a><div id="SniperArgValueBreak.__init__-def"><a name="L46"></a><tt class="py-lineno">46</tt> <a class="py-toggle" href="#" id="SniperArgValueBreak.__init__-toggle" onclick="return toggle('SniperArgValueBreak.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.sniper.SniperArgValueBreak-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">symname</tt><tt class="py-op">,</tt> <tt class="py-param">argidx</tt><tt class="py-op">,</tt> <tt class="py-param">argval</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SniperArgValueBreak.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SniperArgValueBreak.__init__-expanded"><a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div></div><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"> </tt>
+<a name="snipeDynArg"></a><div id="snipeDynArg-def"><a name="L49"></a><tt class="py-lineno">49</tt> <a class="py-toggle" href="#" id="snipeDynArg-toggle" onclick="return toggle('snipeDynArg');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.sniper-module.html#snipeDynArg">snipeDynArg</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">,</tt> <tt class="py-param">symname</tt><tt class="py-op">,</tt> <tt class="py-param">argidx</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="snipeDynArg-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="snipeDynArg-expanded"><a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"><tt class="py-docstring">    Construct a SnyperDynArgBreak and snap it in.</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">    <tt class="py-name">bp</tt> <tt class="py-op">=</tt> <tt id="link-2" class="py-name" targets="Class vdb.recon.sniper.SniperDynArgBreak=vdb.recon.sniper.SniperDynArgBreak-class.html"><a title="vdb.recon.sniper.SniperDynArgBreak" class="py-name" href="#" onclick="return doclink('link-2', 'SniperDynArgBreak', 'link-2');">SniperDynArgBreak</a></tt><tt class="py-op">(</tt><tt class="py-name">symname</tt><tt class="py-op">,</tt> <tt class="py-name">argidx</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">    <tt class="py-name">bpid</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">addBreakpoint</tt><tt class="py-op">(</tt><tt class="py-name">bp</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">bpid</tt> </tt>
+</div><a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vdb-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:44:14 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

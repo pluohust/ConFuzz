@@ -1,0 +1,236 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vdb.qt.windows &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vdb" href="../../vdb.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" accesskey="U">vdb</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vdb.qt.windows</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The heart of the new VDB QT gui!</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">from</span> <span class="nn">PyQt4</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">import</span> <span class="nn">vdb</span>
+<span class="kn">import</span> <span class="nn">vtrace</span>
+
+<span class="c">#import vqt.cli as vq_cli</span>
+<span class="kn">import</span> <span class="nn">vqt.main</span> <span class="kn">as</span> <span class="nn">vq_main</span>
+<span class="kn">import</span> <span class="nn">vqt.qpython</span> <span class="kn">as</span> <span class="nn">vq_python</span>
+<span class="kn">import</span> <span class="nn">vqt.application</span> <span class="kn">as</span> <span class="nn">vq_app</span>
+
+<span class="kn">import</span> <span class="nn">vtrace.qt</span> <span class="kn">as</span> <span class="nn">vtrace_qt</span>
+
+<span class="kn">import</span> <span class="nn">envi.qt</span> <span class="kn">as</span> <span class="nn">envi_qt</span>
+<span class="kn">import</span> <span class="nn">envi.qt.memory</span> <span class="kn">as</span> <span class="nn">e_mem_qt</span>
+
+
+<div class="viewcode-block" id="VdbMemoryWindow"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbMemoryWindow">[docs]</a><span class="k">class</span> <span class="nc">VdbMemoryWindow</span><span class="p">(</span><span class="n">e_mem_qt</span><span class="o">.</span><span class="n">VQMemoryWindow</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">VdbTrace</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+        <span class="n">e_mem_qt</span><span class="o">.</span><span class="n">VQMemoryWindow</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">db</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">rname</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">getRendererNames</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">addRenderer</span><span class="p">(</span><span class="n">rname</span><span class="p">,</span> <span class="n">db</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">getRenderer</span><span class="p">(</span><span class="n">rname</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadRendSelect</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">t</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_renderMemory</span><span class="p">()</span>
+
+    <span class="nd">@vq_main.idlethreadsync</span>
+<div class="viewcode-block" id="VdbMemoryWindow.notify"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbMemoryWindow.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="p">[</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CONTINUE</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_DETACH</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_EXIT</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># If the trace is just going to run again, skip the update.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">trace</span><span class="o">.</span><span class="n">shouldRunAgain</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setEnabled</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_renderMemory</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="VdbWindow"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow">[docs]</a><span class="k">class</span> <span class="nc">VdbWindow</span><span class="p">(</span><span class="n">vq_app</span><span class="o">.</span><span class="n">VQMainCmdWindow</span><span class="p">,</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="p">):</span>
+
+    <span class="nd">@QtCore.pyqtSlot</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<div class="viewcode-block" id="VdbWindow.vqThreadSelected"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.vqThreadSelected">[docs]</a>    <span class="k">def</span> <span class="nf">vqThreadSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tid</span><span class="p">):</span>  
+        <span class="k">print</span> <span class="s">&#39;THREAD SELECTED!&#39;</span><span class="p">,</span> <span class="n">tid</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c"># Gui constructor needs these set...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">db</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db_t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">VdbTrace</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">vq_app</span><span class="o">.</span><span class="n">VQMainCmdWindow</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;Vdb&#39;</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+
+        <span class="n">tbar</span> <span class="o">=</span> <span class="n">vtrace_qt</span><span class="o">.</span><span class="n">VQTraceToolBar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_t</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addToolBar</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TopToolBarArea</span><span class="p">,</span> <span class="n">tbar</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;File.&amp;Quit&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuFileQuit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;View.&amp;Memory&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuViewMemory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;View.&amp;Memory Maps&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuViewMemMaps</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;View.&amp;Threads&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuViewThreads</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;View.&amp;Registers&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuViewRegisters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;View.&amp;File Descriptors&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuViewFileDesc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;View.&amp;Layouts.&amp;Load&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuViewLayoutsLoad</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;View.&amp;Layouts.&amp;Save&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuViewLayoutsSave</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;View.&amp;Layouts.&amp;Clear&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuViewLayoutsClear</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddMenuField</span><span class="p">(</span><span class="s">&#39;&amp;Tools.&amp;Python&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuToolsPython</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VdbWindow.vqInitDockWidgetClasses"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.vqInitDockWidgetClasses">[docs]</a>    <span class="k">def</span> <span class="nf">vqInitDockWidgetClasses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddDockWidgetClass</span><span class="p">(</span><span class="n">VdbMemoryWindow</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddDockWidgetClass</span><span class="p">(</span><span class="n">vtrace_qt</span><span class="o">.</span><span class="n">VQMemoryMapView</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_t</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddDockWidgetClass</span><span class="p">(</span><span class="n">vtrace_qt</span><span class="o">.</span><span class="n">VQFileDescView</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_t</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddDockWidgetClass</span><span class="p">(</span><span class="n">vtrace_qt</span><span class="o">.</span><span class="n">VQThreadsView</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_t</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vqThreadSelected</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddDockWidgetClass</span><span class="p">(</span><span class="n">vtrace_qt</span><span class="o">.</span><span class="n">VQRegistersView</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db_t</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqAddDockWidgetClass</span><span class="p">(</span><span class="n">vq_python</span><span class="o">.</span><span class="n">VQPythonView</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">getExpressionLocals</span><span class="p">(),))</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuToolsPython"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuToolsPython">[docs]</a>    <span class="k">def</span> <span class="nf">menuToolsPython</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqBuildDockWidget</span><span class="p">(</span><span class="s">&#39;VQPythonView&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuViewFileDesc"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuViewFileDesc">[docs]</a>    <span class="k">def</span> <span class="nf">menuViewFileDesc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqBuildDockWidget</span><span class="p">(</span><span class="s">&#39;VQFileDescView&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuViewMemMaps"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuViewMemMaps">[docs]</a>    <span class="k">def</span> <span class="nf">menuViewMemMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqBuildDockWidget</span><span class="p">(</span><span class="s">&#39;VQMemoryMapView&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuViewMemory"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuViewMemory">[docs]</a>    <span class="k">def</span> <span class="nf">menuViewMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqBuildDockWidget</span><span class="p">(</span><span class="s">&#39;VdbMemoryWindow&#39;</span><span class="p">,</span> <span class="n">floating</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuViewThreads"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuViewThreads">[docs]</a>    <span class="k">def</span> <span class="nf">menuViewThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqBuildDockWidget</span><span class="p">(</span><span class="s">&#39;VQThreadsView&#39;</span><span class="p">,</span> <span class="n">area</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuViewRegisters"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuViewRegisters">[docs]</a>    <span class="k">def</span> <span class="nf">menuViewRegisters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqBuildDockWidget</span><span class="p">(</span><span class="s">&#39;VQRegistersView&#39;</span><span class="p">,</span> <span class="n">area</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuViewLayoutsLoad"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuViewLayoutsLoad">[docs]</a>    <span class="k">def</span> <span class="nf">menuViewLayoutsLoad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;Load Layout&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fname</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqClearDockWidgets</span><span class="p">()</span>
+
+        <span class="n">settings</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSettings</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSettings</span><span class="o">.</span><span class="n">IniFormat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqRestoreGuiSettings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuViewLayoutsSave"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuViewLayoutsSave">[docs]</a>    <span class="k">def</span> <span class="nf">menuViewLayoutsSave</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;Save Layout&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fname</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">settings</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSettings</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSettings</span><span class="o">.</span><span class="n">IniFormat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqSaveGuiSettings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuViewLayoutsClear"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuViewLayoutsClear">[docs]</a>    <span class="k">def</span> <span class="nf">menuViewLayoutsClear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vqClearDockWidgets</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.menuFileQuit"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.menuFileQuit">[docs]</a>    <span class="k">def</span> <span class="nf">menuFileQuit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.notify"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="VdbWindow.closeEvent"><a class="viewcode-back" href="../../../vdb.qt.html#vdb.qt.windows.VdbWindow.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">isAttached</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;Error Detaching: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">vq_app</span><span class="o">.</span><span class="n">VQMainCmdWindow</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

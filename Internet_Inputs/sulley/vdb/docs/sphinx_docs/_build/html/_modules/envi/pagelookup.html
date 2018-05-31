@@ -1,0 +1,172 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.pagelookup &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="envi" href="../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.pagelookup</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A home for the page lookup construct.  Basically it is a</span>
+<span class="sd">python object which implements a similar lookup mechanism</span>
+<span class="sd">to the i386 page table lookups...</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c"># FIXME move functions in here too so there is procedural &quot;speed&quot; way</span>
+<span class="c"># and objecty pythonic way...</span>
+
+<div class="viewcode-block" id="PageLookup"><a class="viewcode-back" href="../../envi.html#envi.pagelookup.PageLookup">[docs]</a><span class="k">class</span> <span class="nc">PageLookup</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    An object capable of rapid lookups across a sparse address</span>
+<span class="sd">    space which will also NOT eat *all* the RAMS like a straight</span>
+<span class="sd">    dictionary full of millions of entries would.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_page_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="PageLookup.getPageLookup"><a class="viewcode-back" href="../../envi.html#envi.pagelookup.PageLookup.getPageLookup">[docs]</a>    <span class="k">def</span> <span class="nf">getPageLookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">va</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span>
+        <span class="n">offs</span> <span class="o">=</span> <span class="n">va</span> <span class="o">&amp;</span> <span class="mh">0xffff</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_page_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">page</span><span class="p">[</span><span class="n">offs</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="PageLookup.setPageLookup"><a class="viewcode-back" href="../../envi.html#envi.pagelookup.PageLookup.setPageLookup">[docs]</a>    <span class="k">def</span> <span class="nf">setPageLookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="n">vamax</span> <span class="o">=</span> <span class="n">va</span><span class="o">+</span><span class="n">size</span>
+        <span class="k">while</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">vamax</span><span class="p">:</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">va</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span>
+            <span class="n">offs</span> <span class="o">=</span> <span class="n">va</span> <span class="o">&amp;</span> <span class="mh">0xffff</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_page_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">page</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="mh">0xffff</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_page_dict</span><span class="p">[</span><span class="n">base</span><span class="p">]</span> <span class="o">=</span> <span class="n">page</span>
+            <span class="n">page</span><span class="p">[</span><span class="n">offs</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="n">va</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c"># __getitem__</span>
+    <span class="c"># __getslice__</span>
+    <span class="c"># __setslice__</span>
+</div></div>
+<div class="viewcode-block" id="MapLookup"><a class="viewcode-back" href="../../envi.html#envi.pagelookup.MapLookup">[docs]</a><span class="k">class</span> <span class="nc">MapLookup</span><span class="p">:</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A specialized lookup object for large densely populated ranges</span>
+<span class="sd">    which are layed out in a sparse field space themselves...</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maps_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="MapLookup.initMapLookup"><a class="viewcode-back" href="../../envi.html#envi.pagelookup.MapLookup.initMapLookup">[docs]</a>    <span class="k">def</span> <span class="nf">initMapLookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">marray</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span>
+        <span class="c"># FIXME optimize by size!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maps_list</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">va</span><span class="p">,</span> <span class="n">va</span><span class="o">+</span><span class="n">size</span><span class="p">,</span> <span class="n">marray</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="MapLookup.setMapLookup"><a class="viewcode-back" href="../../envi.html#envi.pagelookup.MapLookup.setMapLookup">[docs]</a>    <span class="k">def</span> <span class="nf">setMapLookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">mva</span><span class="p">,</span> <span class="n">mvamax</span><span class="p">,</span> <span class="n">marray</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maps_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">va</span> <span class="o">&gt;=</span> <span class="n">mva</span> <span class="ow">and</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">mvamax</span><span class="p">:</span>
+                <span class="n">off</span> <span class="o">=</span> <span class="n">va</span> <span class="o">-</span> <span class="n">mva</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="p">]</span> <span class="o">*</span> <span class="n">size</span>
+                <span class="n">marray</span><span class="p">[</span><span class="n">off</span><span class="p">:</span><span class="n">off</span><span class="o">+</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="k">return</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Address (0x</span><span class="si">%.8x</span><span class="s">) not in maps!&#39;</span> <span class="o">%</span> <span class="n">va</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MapLookup.getMapLookup"><a class="viewcode-back" href="../../envi.html#envi.pagelookup.MapLookup.getMapLookup">[docs]</a>    <span class="k">def</span> <span class="nf">getMapLookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">mva</span><span class="p">,</span> <span class="n">mvamax</span><span class="p">,</span> <span class="n">marray</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maps_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">va</span> <span class="o">&gt;=</span> <span class="n">mva</span> <span class="ow">and</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">mvamax</span><span class="p">:</span>
+                <span class="n">off</span> <span class="o">=</span> <span class="n">va</span> <span class="o">-</span> <span class="n">mva</span>
+                <span class="k">return</span> <span class="n">marray</span><span class="p">[</span><span class="n">off</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+    <span class="k">def</span> <span class="nf">__getslice__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;GET SLICE&#39;</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

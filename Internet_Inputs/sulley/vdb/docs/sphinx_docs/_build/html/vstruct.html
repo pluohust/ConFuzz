@@ -1,0 +1,898 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="vstruct-package">
+<h1>vstruct Package<a class="headerlink" href="#vstruct-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-vstruct" title="vstruct"><tt class="xref py py-mod docutils literal"><span class="pre">vstruct</span></tt></a> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vstruct"></span><dl class="class">
+<dt id="vstruct.VArray">
+<em class="property">class </em><tt class="descclassname">vstruct.</tt><tt class="descname">VArray</tt><big>(</big><em>elems=()</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.VStruct" title="vstruct.VStruct"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.VStruct</span></tt></a></p>
+<dl class="method">
+<dt id="vstruct.VArray.vsAddElement">
+<tt class="descname">vsAddElement</tt><big>(</big><em>elem</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VArray.vsAddElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VArray.vsAddElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to add elements to an array</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.VStruct">
+<em class="property">class </em><tt class="descclassname">vstruct.</tt><tt class="descname">VStruct</tt><a class="reference internal" href="_modules/vstruct.html#VStruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_base" title="vstruct.primitives.v_base"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_base</span></tt></a></p>
+<p>The VStruct class is the bases for all groups of primitive fields which define a &#8220;structure&#8221;.
+Fields may be added with vsAddField() or simply added as attributes (provided you use a VStruct
+or one of the vstruct.primitives in the initial assignment.)</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd><p class="first">import vstruct
+from vstruct.primitives import *</p>
+<p>vs = vstruct.VStruct()
+vs.fieldone = v_uint32()
+vs.fieldtwo = v_str(size=30)</p>
+<p class="last">bytes = vs.vsEmit()</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="vstruct.VStruct.tree">
+<tt class="descname">tree</tt><big>(</big><em>va=0</em>, <em>reprmax=None</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.tree" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsAddField">
+<tt class="descname">vsAddField</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsAddField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsAddField" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsAddParseCallback">
+<tt class="descname">vsAddParseCallback</tt><big>(</big><em>fieldname</em>, <em>callback</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsAddParseCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsAddParseCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a callback which will be triggered when the field with the given name
+is set by the parser.  This can be used to simplify auto-parsing to change fields
+sizes or whatnot during parsing.</p>
+<p>(You may also name a method pcb_&lt;FieldName&gt; to get a callback for your struct.)</p>
+<p>Example:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>def updateLengthTarget(vs):</dt>
+<dd>dostuff()</dd>
+</dl>
+<p>v.vsAddParseCallback(&#8216;lenfield&#8217;, updateLengthTarget)</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsCalculate">
+<tt class="descname">vsCalculate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsCalculate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsCalculate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate fields which need correction before emitting bytes etc...</p>
+<p>(VStruct extenders may call this, then modify fields internally)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsClearFields">
+<tt class="descname">vsClearFields</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsClearFields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsClearFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear all fields from the current vstruct object.  This may be useful
+in specialized parsers which populate their structure on vsParse()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get back the byte sequence associated with this structure.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsGetClassPath">
+<tt class="descname">vsGetClassPath</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsGetClassPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsGetClassPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the entire class name (including module path).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsGetField">
+<tt class="descname">vsGetField</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsGetField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsGetField" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsGetFields">
+<tt class="descname">vsGetFields</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsGetFields"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsGetFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of (fieldname, fieldobj) tuples for all the kids
+in this VStruct (non-recursive)</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd><dl class="first last docutils">
+<dt>for kidname, kidobj in x.vsGetFields():</dt>
+<dd>print kidname</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsGetOffset">
+<tt class="descname">vsGetOffset</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsGetOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsGetOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the offset of a member (by name):</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsGetPrims">
+<tt class="descname">vsGetPrims</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsGetPrims"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsGetPrims" title="Permalink to this definition">¶</a></dt>
+<dd><p>return an order&#8217;d list of the primitive fields in this
+structure definition.  This is recursive and will return
+the sub fields of all nested structures.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsGetPrintInfo">
+<tt class="descname">vsGetPrintInfo</tt><big>(</big><em>offset=0</em>, <em>indent=0</em>, <em>top=True</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsGetPrintInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsGetPrintInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsGetTypeName">
+<tt class="descname">vsGetTypeName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsGetTypeName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsGetTypeName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsHasField">
+<tt class="descname">vsHasField</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsHasField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsHasField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test weather this structure contains a field with the
+given name....</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd><dl class="first last docutils">
+<dt>if x.vsHasField(&#8216;woot&#8217;):</dt>
+<dd>print &#8216;STRUCT HAS WOOT FIELD!&#8217;</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsInsertField">
+<tt class="descname">vsInsertField</tt><big>(</big><em>name</em>, <em>value</em>, <em>befname</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsInsertField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsInsertField" title="Permalink to this definition">¶</a></dt>
+<dd><p>WARNING: vsInsertField does NOT honor field alignment! # FIXME
+(AND CAN MESS UP OTHER FIELDS ALIGNMENT!)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsIsPrim">
+<tt class="descname">vsIsPrim</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsIsPrim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsIsPrim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>sbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd><p>For all the primitives contained within, allow them
+an opportunity to parse the given data and return the
+total offset...</p>
+<p>Any method named pcb_&lt;FieldName&gt; will be called back when the specified
+field is set by the parser.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsParseFd">
+<tt class="descname">vsParseFd</tt><big>(</big><em>fd</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsParseFd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsParseFd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse from the given file like object as input.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VStruct.vsSetField">
+<tt class="descname">vsSetField</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VStruct.vsSetField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VStruct.vsSetField" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mostly for internal use...</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.VUnion">
+<em class="property">class </em><tt class="descclassname">vstruct.</tt><tt class="descname">VUnion</tt><a class="reference internal" href="_modules/vstruct.html#VUnion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VUnion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.VStruct" title="vstruct.VStruct"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.VStruct</span></tt></a></p>
+<dl class="method">
+<dt id="vstruct.VUnion.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#VUnion.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VUnion.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VUnion.vsGetPrintInfo">
+<tt class="descname">vsGetPrintInfo</tt><big>(</big><em>offset=0</em>, <em>indent=0</em>, <em>top=True</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VUnion.vsGetPrintInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VUnion.vsGetPrintInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.VUnion.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>sbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#VUnion.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.VUnion.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd><p>For all the primitives contained within, allow them
+an opportunity to parse the given data and return the
+total offset...</p>
+<p>Any method named pcb_&lt;FieldName&gt; will be called back when the specified
+field is set by the parser.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vstruct.getModuleNames">
+<tt class="descclassname">vstruct.</tt><tt class="descname">getModuleNames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct.html#getModuleNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.getModuleNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vstruct.getStructNames">
+<tt class="descclassname">vstruct.</tt><tt class="descname">getStructNames</tt><big>(</big><em>modname</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#getStructNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.getStructNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vstruct.getStructure">
+<tt class="descclassname">vstruct.</tt><tt class="descname">getStructure</tt><big>(</big><em>sname</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#getStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.getStructure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an instance of the specified structure.  The
+structure name may be a definition that was added with
+addStructure() or a python path (ie. win32.TEB) of a
+definition from within vstruct.defs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vstruct.isVstructType">
+<tt class="descclassname">vstruct.</tt><tt class="descname">isVstructType</tt><big>(</big><em>x</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#isVstructType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.isVstructType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vstruct.resolve">
+<tt class="descclassname">vstruct.</tt><tt class="descname">resolve</tt><big>(</big><em>impmod</em>, <em>nameparts</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#resolve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.resolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolve the given (potentially nested) object
+from within a module.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vstruct.resolvepath">
+<tt class="descclassname">vstruct.</tt><tt class="descname">resolvepath</tt><big>(</big><em>impmod</em>, <em>pathstr</em><big>)</big><a class="reference internal" href="_modules/vstruct.html#resolvepath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.resolvepath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolve an object/module from within the given module
+by path name (ie. &#8216;foo.bar.baz&#8217;)</p>
+<p>Example: x = resolvepath(vstruct.defs, &#8216;win32.SEH_SCOPETABLE&#8217;)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vstruct.builder">
+<span id="builder-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">builder</span></tt> Module<a class="headerlink" href="#module-vstruct.builder" title="Permalink to this headline">¶</a></h2>
+<p>VStruct builder!  Used to serialize structure definitions etc...</p>
+<dl class="class">
+<dt id="vstruct.builder.VStructBuilder">
+<em class="property">class </em><tt class="descclassname">vstruct.builder.</tt><tt class="descname">VStructBuilder</tt><big>(</big><em>defs=()</em>, <em>enums=()</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="vstruct.builder.VStructBuilder.addVStructCtor">
+<tt class="descname">addVStructCtor</tt><big>(</big><em>sname</em>, <em>ctor</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.addVStructCtor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.addVStructCtor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.addVStructDef">
+<tt class="descname">addVStructDef</tt><big>(</big><em>vsdef</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.addVStructDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.addVStructDef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.addVStructEnumeration">
+<tt class="descname">addVStructEnumeration</tt><big>(</big><em>enum</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.addVStructEnumeration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.addVStructEnumeration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.addVStructNamespace">
+<tt class="descname">addVStructNamespace</tt><big>(</big><em>name</em>, <em>builder</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.addVStructNamespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.addVStructNamespace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.buildVStruct">
+<tt class="descname">buildVStruct</tt><big>(</big><em>vsname</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.buildVStruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.buildVStruct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.delVStructCtor">
+<tt class="descname">delVStructCtor</tt><big>(</big><em>sname</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.delVStructCtor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.delVStructCtor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.genVStructPyCode">
+<tt class="descname">genVStructPyCode</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.genVStructPyCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.genVStructPyCode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.getVStructCtorNames">
+<tt class="descname">getVStructCtorNames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.getVStructCtorNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.getVStructCtorNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.getVStructNames">
+<tt class="descname">getVStructNames</tt><big>(</big><em>namespace=None</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.getVStructNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.getVStructNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.getVStructNamespaceNames">
+<tt class="descname">getVStructNamespaceNames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.getVStructNamespaceNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.getVStructNamespaceNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.getVStructNamespaces">
+<tt class="descname">getVStructNamespaces</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.getVStructNamespaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.getVStructNamespaces" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.builder.VStructBuilder.hasVStructNamespace">
+<tt class="descname">hasVStructNamespace</tt><big>(</big><em>namespace</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructBuilder.hasVStructNamespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructBuilder.hasVStructNamespace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.builder.VStructConstructor">
+<em class="property">class </em><tt class="descclassname">vstruct.builder.</tt><tt class="descname">VStructConstructor</tt><big>(</big><em>builder</em>, <em>vsname</em><big>)</big><a class="reference internal" href="_modules/vstruct/builder.html#VStructConstructor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.builder.VStructConstructor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="cparse-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">cparse</span></tt> Module<a class="headerlink" href="#cparse-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-vstruct.primitives">
+<span id="primitives-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">primitives</span></tt> Module<a class="headerlink" href="#module-vstruct.primitives" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="vstruct.primitives.GUID">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">GUID</tt><big>(</big><em>guidstr=None</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#GUID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.GUID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_prim" title="vstruct.primitives.v_prim"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_prim</span></tt></a></p>
+<dl class="method">
+<dt id="vstruct.primitives.GUID.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#GUID.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.GUID.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.GUID.vsGetValue">
+<tt class="descname">vsGetValue</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#GUID.vsGetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.GUID.vsGetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.GUID.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>fbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#GUID.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.GUID.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.GUID.vsSetValue">
+<tt class="descname">vsSetValue</tt><big>(</big><em>guidstr</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#GUID.vsSetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.GUID.vsSetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_base">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_base</tt><a class="reference internal" href="_modules/vstruct/primitives.html#v_base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_base" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="vstruct.primitives.v_base.vsCalculate">
+<tt class="descname">vsCalculate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_base.vsCalculate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_base.vsCalculate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_base.vsGetMeta">
+<tt class="descname">vsGetMeta</tt><big>(</big><em>name</em>, <em>defval=None</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_base.vsGetMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_base.vsGetMeta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_base.vsGetTypeName">
+<tt class="descname">vsGetTypeName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_base.vsGetTypeName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_base.vsGetTypeName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_base.vsIsPrim">
+<tt class="descname">vsIsPrim</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_base.vsIsPrim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_base.vsIsPrim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_base.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>bytes</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_base.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_base.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_base.vsSetMeta">
+<tt class="descname">vsSetMeta</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_base.vsSetMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_base.vsSetMeta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_bytes">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_bytes</tt><big>(</big><em>size=0</em>, <em>vbytes=None</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_bytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_prim" title="vstruct.primitives.v_prim"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_prim</span></tt></a></p>
+<p>v_bytes is used for fixed width byte fields.</p>
+<dl class="method">
+<dt id="vstruct.primitives.v_bytes.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_bytes.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_bytes.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_bytes.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>fbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_bytes.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_bytes.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_bytes.vsSetLength">
+<tt class="descname">vsSetLength</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_bytes.vsSetLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_bytes.vsSetLength" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_bytes.vsSetValue">
+<tt class="descname">vsSetValue</tt><big>(</big><em>val</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_bytes.vsSetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_bytes.vsSetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_enum">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_enum</tt><a class="reference internal" href="_modules/vstruct/primitives.html#v_enum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_enum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_int16">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_int16</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_int16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_int16" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_int24">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_int24</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_int24"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_int24" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_int32">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_int32</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_int32"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_int32" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_int64">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_int64</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_int64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_int64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_int8">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_int8</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_int8"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_int8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_number">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_number</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_prim" title="vstruct.primitives.v_prim"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_prim</span></tt></a></p>
+<dl class="method">
+<dt id="vstruct.primitives.v_number.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_number.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_number.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emit the bytes for this numeric type...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_number.vsGetValue">
+<tt class="descname">vsGetValue</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_number.vsGetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_number.vsGetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_number.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>fbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_number.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_number.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the given numeric type from the given bytes...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_number.vsSetValue">
+<tt class="descname">vsSetValue</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_number.vsSetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_number.vsSetValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assure that the value is long() able for all numeric types.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_prim">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_prim</tt><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_base" title="vstruct.primitives.v_base"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_base</span></tt></a></p>
+<dl class="method">
+<dt id="vstruct.primitives.v_prim.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the actual bytes which represent this field</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_prim.vsGetTypeName">
+<tt class="descname">vsGetTypeName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim.vsGetTypeName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim.vsGetTypeName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_prim.vsGetValue">
+<tt class="descname">vsGetValue</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim.vsGetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim.vsGetValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the type specific value for this field.
+(Used by the structure dereference method to return
+a python native for the field by name)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_prim.vsIsPrim">
+<tt class="descname">vsIsPrim</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim.vsIsPrim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim.vsIsPrim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_prim.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>bytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parser for primitives which assumes we are
+calling parse directly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_prim.vsParseFd">
+<tt class="descname">vsParseFd</tt><big>(</big><em>fd</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim.vsParseFd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim.vsParseFd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_prim.vsSetLength">
+<tt class="descname">vsSetLength</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim.vsSetLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim.vsSetLength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the length of this primitive type.  This may be used to
+dynamically update the length of string fields, etc...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_prim.vsSetValue">
+<tt class="descname">vsSetValue</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_prim.vsSetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_prim.vsSetValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the type specific value for this field.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_ptr">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_ptr</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_ptr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_size_t" title="vstruct.primitives.v_size_t"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_size_t</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_ptr32">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_ptr32</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_ptr32"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_ptr32" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_ptr" title="vstruct.primitives.v_ptr"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_ptr</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_ptr64">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_ptr64</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_ptr64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_ptr64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_ptr" title="vstruct.primitives.v_ptr"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_ptr</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_size_t">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_size_t</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_size_t"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_size_t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_str">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_str</tt><big>(</big><em>size=4</em>, <em>val=''</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_prim" title="vstruct.primitives.v_prim"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_prim</span></tt></a></p>
+<p>A string placeholder class which will automagically return
+up to a null terminator (and will keep it&#8217;s size by null
+padding when assigned to)</p>
+<dl class="method">
+<dt id="vstruct.primitives.v_str.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_str.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_str.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_str.vsGetValue">
+<tt class="descname">vsGetValue</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_str.vsGetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_str.vsGetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_str.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>fbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_str.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_str.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_str.vsSetLength">
+<tt class="descname">vsSetLength</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_str.vsSetLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_str.vsSetLength" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_str.vsSetValue">
+<tt class="descname">vsSetValue</tt><big>(</big><em>val</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_str.vsSetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_str.vsSetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_uint16">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_uint16</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_uint16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_uint16" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_uint24">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_uint24</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_uint24"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_uint24" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_uint32">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_uint32</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_uint32"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_uint32" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_uint64">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_uint64</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_uint64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_uint64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_uint8">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_uint8</tt><big>(</big><em>value=0</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_uint8"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_uint8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_number" title="vstruct.primitives.v_number"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_number</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_wstr">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_wstr</tt><big>(</big><em>size=4</em>, <em>encode='utf-16le'</em>, <em>val=''</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_wstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_wstr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_str" title="vstruct.primitives.v_str"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_str</span></tt></a></p>
+<p>Unicode variant of the above string class</p>
+<p>NOTE: the size paramater is in WCHARs!</p>
+<dl class="method">
+<dt id="vstruct.primitives.v_wstr.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_wstr.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_wstr.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_wstr.vsGetValue">
+<tt class="descname">vsGetValue</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_wstr.vsGetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_wstr.vsGetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_wstr.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>fbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_wstr.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_wstr.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_wstr.vsSetValue">
+<tt class="descname">vsSetValue</tt><big>(</big><em>val</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_wstr.vsSetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_wstr.vsSetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vstruct.primitives.v_zstr">
+<em class="property">class </em><tt class="descclassname">vstruct.primitives.</tt><tt class="descname">v_zstr</tt><big>(</big><em>val=''</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_zstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_zstr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.primitives.v_prim" title="vstruct.primitives.v_prim"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.primitives.v_prim</span></tt></a></p>
+<p>A string placeholder class which will automagically return
+up to a null terminator dynamically.</p>
+<dl class="method">
+<dt id="vstruct.primitives.v_zstr.vsEmit">
+<tt class="descname">vsEmit</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_zstr.vsEmit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_zstr.vsEmit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_zstr.vsGetValue">
+<tt class="descname">vsGetValue</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_zstr.vsGetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_zstr.vsGetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_zstr.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>fbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_zstr.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_zstr.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_zstr.vsSetLength">
+<tt class="descname">vsSetLength</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_zstr.vsSetLength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_zstr.vsSetLength" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vstruct.primitives.v_zstr.vsSetValue">
+<tt class="descname">vsSetValue</tt><big>(</big><em>val</em><big>)</big><a class="reference internal" href="_modules/vstruct/primitives.html#v_zstr.vsSetValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.primitives.v_zstr.vsSetValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vstruct.unittest">
+<span id="unittest-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">unittest</span></tt> Module<a class="headerlink" href="#module-vstruct.unittest" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="vstruct.unittest.test">
+<tt class="descclassname">vstruct.unittest.</tt><tt class="descname">test</tt><big>(</big><em>vs</em>, <em>hexstr</em><big>)</big><a class="reference internal" href="_modules/vstruct/unittest.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.unittest.test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vstruct.unittest.updatelen">
+<tt class="descclassname">vstruct.unittest.</tt><tt class="descname">updatelen</tt><big>(</big><em>vs</em><big>)</big><a class="reference internal" href="_modules/vstruct/unittest.html#updatelen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.unittest.updatelen" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="vstruct.unittest.woot">
+<em class="property">class </em><tt class="descclassname">vstruct.unittest.</tt><tt class="descname">woot</tt><a class="reference internal" href="_modules/vstruct/unittest.html#woot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.unittest.woot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vstruct.VStruct" title="vstruct.VStruct"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.VStruct</span></tt></a></p>
+<dl class="method">
+<dt id="vstruct.unittest.woot.pcb_lenfield">
+<tt class="descname">pcb_lenfield</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vstruct/unittest.html#woot.pcb_lenfield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vstruct.unittest.woot.pcb_lenfield" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vstruct.constants.html">constants Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.constants.html#id1"><tt class="docutils literal"><span class="pre">constants</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.constants.html#module-vstruct.constants.ntstatus"><tt class="docutils literal"><span class="pre">ntstatus</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vstruct.defs.html">defs Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#id1"><tt class="docutils literal"><span class="pre">defs</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.dns"><tt class="docutils literal"><span class="pre">dns</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.elf"><tt class="docutils literal"><span class="pre">elf</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.gif"><tt class="docutils literal"><span class="pre">gif</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.inet"><tt class="docutils literal"><span class="pre">inet</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.kdcom"><tt class="docutils literal"><span class="pre">kdcom</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.pcap"><tt class="docutils literal"><span class="pre">pcap</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.pe"><tt class="docutils literal"><span class="pre">pe</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.rar"><tt class="docutils literal"><span class="pre">rar</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#module-vstruct.defs.win32"><tt class="docutils literal"><span class="pre">win32</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.defs.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vstruct.defs.arm7.html">arm7 Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="vstruct.defs.arm7.html#id1"><tt class="docutils literal"><span class="pre">arm7</span></tt> Package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="vstruct.defs.macho.html">macho Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="vstruct.defs.macho.html#id1"><tt class="docutils literal"><span class="pre">macho</span></tt> Package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vstruct.defs.macho.html#module-vstruct.defs.macho.const"><tt class="docutils literal"><span class="pre">const</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vstruct.defs.macho.html#module-vstruct.defs.macho.fat"><tt class="docutils literal"><span class="pre">fat</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vstruct.defs.macho.html#module-vstruct.defs.macho.loader"><tt class="docutils literal"><span class="pre">loader</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vstruct.defs.macho.html#module-vstruct.defs.macho.stabs"><tt class="docutils literal"><span class="pre">stabs</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="vstruct.defs.windows.html">windows Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="vstruct.defs.windows.html#id1"><tt class="docutils literal"><span class="pre">windows</span></tt> Package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vstruct.defs.windows.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="vstruct.defs.windows.win_5_1_i386.html">win_5_1_i386 Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_5_1_i386.html#module-vstruct.defs.windows.win_5_1_i386.ntdll"><tt class="docutils literal"><span class="pre">ntdll</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_5_1_i386.html#module-vstruct.defs.windows.win_5_1_i386.ntoskrnl"><tt class="docutils literal"><span class="pre">ntoskrnl</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_5_1_i386.html#module-vstruct.defs.windows.win_5_1_i386.win32k"><tt class="docutils literal"><span class="pre">win32k</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="vstruct.defs.windows.win_5_2_i386.html">win_5_2_i386 Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_5_2_i386.html#module-vstruct.defs.windows.win_5_2_i386.ntdll"><tt class="docutils literal"><span class="pre">ntdll</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_5_2_i386.html#module-vstruct.defs.windows.win_5_2_i386.ntoskrnl"><tt class="docutils literal"><span class="pre">ntoskrnl</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_5_2_i386.html#module-vstruct.defs.windows.win_5_2_i386.win32k"><tt class="docutils literal"><span class="pre">win32k</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="vstruct.defs.windows.win_6_1_amd64.html">win_6_1_amd64 Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_6_1_amd64.html#module-vstruct.defs.windows.win_6_1_amd64.ntdll"><tt class="docutils literal"><span class="pre">ntdll</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_6_1_amd64.html#module-vstruct.defs.windows.win_6_1_amd64.ntoskrnl"><tt class="docutils literal"><span class="pre">ntoskrnl</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_6_1_amd64.html#module-vstruct.defs.windows.win_6_1_amd64.win32k"><tt class="docutils literal"><span class="pre">win32k</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="vstruct.defs.windows.win_6_1_i386.html">win_6_1_i386 Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_6_1_i386.html#module-vstruct.defs.windows.win_6_1_i386.ntdll"><tt class="docutils literal"><span class="pre">ntdll</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_6_1_i386.html#module-vstruct.defs.windows.win_6_1_i386.ntoskrnl"><tt class="docutils literal"><span class="pre">ntoskrnl</span></tt> Module</a></li>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_6_1_i386.html#module-vstruct.defs.windows.win_6_1_i386.win32k"><tt class="docutils literal"><span class="pre">win32k</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="vstruct.defs.windows.win_6_1_wow64.html">win_6_1_wow64 Package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="vstruct.defs.windows.win_6_1_wow64.html#module-vstruct.defs.windows.win_6_1_wow64.ntdll"><tt class="docutils literal"><span class="pre">ntdll</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vstruct.qt.html">qt Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vstruct.qt.html#id1"><tt class="docutils literal"><span class="pre">qt</span></tt> Package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">vstruct Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">vstruct</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-vstruct.builder"><tt class="docutils literal"><span class="pre">builder</span></tt> Module</a></li>
+<li><a class="reference internal" href="#cparse-module"><tt class="docutils literal"><span class="pre">cparse</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vstruct.primitives"><tt class="docutils literal"><span class="pre">primitives</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vstruct.unittest"><tt class="docutils literal"><span class="pre">unittest</span></tt> Module</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vstruct.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

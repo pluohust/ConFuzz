@@ -1,0 +1,802 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>cobra &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for cobra</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Cobra RMI Framework</span>
+
+<span class="sd">Cobra is a remote method invocation interface that is very &quot;pythony&quot;.  It is</span>
+<span class="sd">MUCH like its inspiration pyro, but slimmer and safer for things like threading</span>
+<span class="sd">and object de-registration.  Essentially, cobra allows you to call methods from</span>
+<span class="sd">and get/set attributes on objects that exist on a remote system.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2011 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">errno</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">currentThread</span><span class="p">,</span><span class="n">Thread</span><span class="p">,</span><span class="n">RLock</span>
+<span class="kn">from</span> <span class="nn">SocketServer</span> <span class="kn">import</span> <span class="n">ThreadingTCPServer</span><span class="p">,</span> <span class="n">BaseRequestHandler</span>
+
+<span class="n">daemon</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span>
+<span class="n">version</span> <span class="o">=</span> <span class="s">&quot;Cobra2&quot;</span>
+<span class="n">COBRA_PORT</span><span class="o">=</span><span class="mi">5656</span>
+<span class="n">COBRASSL_PORT</span><span class="o">=</span><span class="mi">5653</span>
+<span class="n">cobra_retrymax</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># Optional *global* retry max count</span>
+
+<span class="c"># Message Types</span>
+<span class="n">COBRA_HELLO</span>     <span class="o">=</span> <span class="mi">0</span>
+<span class="n">COBRA_CALL</span>      <span class="o">=</span> <span class="mi">1</span>
+<span class="n">COBRA_GETATTR</span>   <span class="o">=</span> <span class="mi">2</span>
+<span class="n">COBRA_SETATTR</span>   <span class="o">=</span> <span class="mi">3</span>
+<span class="n">COBRA_ERROR</span>     <span class="o">=</span> <span class="mi">4</span>
+<span class="n">COBRA_GOODBYE</span>   <span class="o">=</span> <span class="mi">5</span>
+
+
+<div class="viewcode-block" id="CobraException"><a class="viewcode-back" href="../cobra.html#cobra.CobraException">[docs]</a><span class="k">class</span> <span class="nc">CobraException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base for Cobra exceptions&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CobraClosedException"><a class="viewcode-back" href="../cobra.html#cobra.CobraClosedException">[docs]</a><span class="k">class</span> <span class="nc">CobraClosedException</span><span class="p">(</span><span class="n">CobraException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when a connection is unexpectedly closed.&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CobraRetryException"><a class="viewcode-back" href="../cobra.html#cobra.CobraRetryException">[docs]</a><span class="k">class</span> <span class="nc">CobraRetryException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when the retrymax (if present) for a proxy object is exceeded.&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CobraPickleException"><a class="viewcode-back" href="../cobra.html#cobra.CobraPickleException">[docs]</a><span class="k">class</span> <span class="nc">CobraPickleException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised when pickling fails.&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="connectSocket"><a class="viewcode-back" href="../cobra.html#cobra.connectSocket">[docs]</a><span class="k">def</span> <span class="nf">connectSocket</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make the long names go away....</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+    <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">s</span>
+</div>
+<div class="viewcode-block" id="getCallerInfo"><a class="viewcode-back" href="../cobra.html#cobra.getCallerInfo">[docs]</a><span class="k">def</span> <span class="nf">getCallerInfo</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function may be used from *inside* a method being called</span>
+<span class="sd">    by a remote caller.  It will return a tuple of host,port for the</span>
+<span class="sd">    other side of the connection... use wisely ;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">currentThread</span><span class="p">(),</span><span class="s">&quot;_cobra_caller_info&quot;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="getLocalInfo"><a class="viewcode-back" href="../cobra.html#cobra.getLocalInfo">[docs]</a><span class="k">def</span> <span class="nf">getLocalInfo</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns the local host,port combination being</span>
+<span class="sd">    used in the socket servicing the current request</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">currentThread</span><span class="p">(),</span> <span class="s">&quot;_cobra_local_info&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="setCallerInfo"><a class="viewcode-back" href="../cobra.html#cobra.setCallerInfo">[docs]</a><span class="k">def</span> <span class="nf">setCallerInfo</span><span class="p">(</span><span class="n">callerinfo</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is necissary because of crazy python method call</span>
+<span class="sd">    name munging for thread attributes ;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">_cobra_caller_info</span> <span class="o">=</span> <span class="n">callerinfo</span>
+</div>
+<div class="viewcode-block" id="setLocalInfo"><a class="viewcode-back" href="../cobra.html#cobra.setLocalInfo">[docs]</a><span class="k">def</span> <span class="nf">setLocalInfo</span><span class="p">(</span><span class="n">localinfo</span><span class="p">):</span>
+    <span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">_cobra_local_info</span> <span class="o">=</span> <span class="n">localinfo</span>
+</div>
+<div class="viewcode-block" id="CobraMethod"><a class="viewcode-back" href="../cobra.html#cobra.CobraMethod">[docs]</a><span class="k">class</span> <span class="nc">CobraMethod</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proxy</span><span class="p">,</span> <span class="n">methname</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="n">proxy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methname</span> <span class="o">=</span> <span class="n">methname</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">_cobra_name</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;CALLING:&quot;</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">methname</span><span class="p">,</span><span class="nb">repr</span><span class="p">(</span><span class="n">args</span><span class="p">)[:</span><span class="mi">20</span><span class="p">],</span><span class="nb">repr</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)[:</span><span class="mi">20</span><span class="p">]</span>
+        <span class="n">csock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">_cobra_getsock</span><span class="p">()</span>
+        <span class="n">mtype</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">csock</span><span class="o">.</span><span class="n">cobraTransaction</span><span class="p">(</span><span class="n">COBRA_CALL</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">methname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">mtype</span> <span class="o">==</span> <span class="n">COBRA_CALL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="k">raise</span> <span class="n">data</span>
+</div>
+<div class="viewcode-block" id="CobraSocket"><a class="viewcode-back" href="../cobra.html#cobra.CobraSocket">[docs]</a><span class="k">class</span> <span class="nc">CobraSocket</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span>
+
+<div class="viewcode-block" id="CobraSocket.getSockName"><a class="viewcode-back" href="../cobra.html#cobra.CobraSocket.getSockName">[docs]</a>    <span class="k">def</span> <span class="nf">getSockName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CobraSocket.getPeerName"><a class="viewcode-back" href="../cobra.html#cobra.CobraSocket.getPeerName">[docs]</a>    <span class="k">def</span> <span class="nf">getPeerName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CobraSocket.sendMessage"><a class="viewcode-back" href="../cobra.html#cobra.CobraSocket.sendMessage">[docs]</a>    <span class="k">def</span> <span class="nf">sendMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="n">objname</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send message is responsable for transmission of cobra messages,</span>
+<span class="sd">        and socket reconnection in the event that the send fails for network</span>
+<span class="sd">        reasons.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">pickle</span><span class="o">.</span><span class="n">PickleError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CobraPickleException</span><span class="p">(</span><span class="s">&quot;The arguments/attributes must be pickleable: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendExact</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;III&quot;</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">objname</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span> <span class="o">+</span> <span class="n">objname</span> <span class="o">+</span> <span class="n">buf</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CobraSocket.recvMessage"><a class="viewcode-back" href="../cobra.html#cobra.CobraSocket.recvMessage">[docs]</a>    <span class="k">def</span> <span class="nf">recvMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns tuple of mtype, objname, and data</span>
+<span class="sd">        This method is *NOT* responsable for re-connection, because there</span>
+<span class="sd">        is not context on the server side for what to send on re-connect.</span>
+<span class="sd">        Client side uses of the CobraSocket object should use cobraTransaction</span>
+<span class="sd">        to ensure re-tranmission of the request on reception errors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span>
+        <span class="n">hdr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recvExact</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>
+        <span class="n">mtype</span><span class="p">,</span> <span class="n">nsize</span><span class="p">,</span> <span class="n">dsize</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;III&quot;</span><span class="p">,</span> <span class="n">hdr</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recvExact</span><span class="p">(</span><span class="n">nsize</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recvExact</span><span class="p">(</span><span class="n">dsize</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">mtype</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CobraSocket.recvExact"><a class="viewcode-back" href="../cobra.html#cobra.CobraSocket.recvExact">[docs]</a>    <span class="k">def</span> <span class="nf">recvExact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">size</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CobraClosedException</span><span class="p">(</span><span class="s">&quot;Socket closed in recvExact...&quot;</span><span class="p">)</span>
+            <span class="n">buf</span> <span class="o">+=</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">buf</span>
+</div>
+<div class="viewcode-block" id="CobraSocket.sendExact"><a class="viewcode-back" href="../cobra.html#cobra.CobraSocket.sendExact">[docs]</a>    <span class="k">def</span> <span class="nf">sendExact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="SocketBuilder"><a class="viewcode-back" href="../cobra.html#cobra.SocketBuilder">[docs]</a><span class="k">class</span> <span class="nc">SocketBuilder</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    For internal use by CobraClientSocket</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scheme</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span> <span class="o">=</span> <span class="n">scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">host</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;CONNECTING TO:&quot;</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span>
+        <span class="n">timeout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s">&#39;cobrassl&#39;</span><span class="p">:</span>
+            <span class="c"># A cobra SSL socket can take a few keywords in the</span>
+            <span class="c"># CobraProxy constructor...</span>
+            <span class="kn">import</span> <span class="nn">ssl</span>
+            <span class="n">sslkwargs</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">sslca</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslca&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sslca</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">sslkwargs</span><span class="p">[</span><span class="s">&#39;ca_certs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sslca</span>
+                <span class="n">sslkwargs</span><span class="p">[</span><span class="s">&#39;cert_reqs&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">ssl</span><span class="o">.</span><span class="n">CERT_REQUIRED</span>
+
+            <span class="c"># Check for specified client certificate info</span>
+            <span class="n">sslkey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslkey&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sslkey</span><span class="p">:</span>
+                <span class="n">sslkwargs</span><span class="p">[</span><span class="s">&#39;keyfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sslkey</span>
+
+            <span class="n">sslcrt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslcrt&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sslcrt</span><span class="p">:</span>
+                <span class="n">sslkwargs</span><span class="p">[</span><span class="s">&#39;certfile&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sslcrt</span>
+
+            <span class="n">sock</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="o">**</span><span class="n">sslkwargs</span><span class="p">)</span>
+
+        <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span><span class="s">&#39;CONNECTED!&#39;</span>
+        <span class="k">return</span> <span class="n">sock</span>
+
+</div>
+<div class="viewcode-block" id="CobraClientSocket"><a class="viewcode-back" href="../cobra.html#cobra.CobraClientSocket">[docs]</a><span class="k">class</span> <span class="nc">CobraClientSocket</span><span class="p">(</span><span class="n">CobraSocket</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockctor</span><span class="p">,</span> <span class="n">retrymax</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">CobraSocket</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sockctor</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sockctor</span> <span class="o">=</span> <span class="n">sockctor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retrymax</span> <span class="o">=</span> <span class="n">retrymax</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrymax</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">retrymax</span> <span class="o">=</span> <span class="n">cobra_retrymax</span>
+
+<div class="viewcode-block" id="CobraClientSocket.reConnect"><a class="viewcode-back" href="../cobra.html#cobra.CobraClientSocket.reConnect">[docs]</a>    <span class="k">def</span> <span class="nf">reConnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle the event where we need to reconnect</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrymax</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrymax</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;COBRA: Reconnection Attempt</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sockctor</span><span class="p">()</span>
+                <span class="k">return</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">retries</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">retries</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">raise</span> <span class="n">CobraRetryException</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CobraClientSocket.cobraTransaction"><a class="viewcode-back" href="../cobra.html#cobra.CobraClientSocket.cobraTransaction">[docs]</a>    <span class="k">def</span> <span class="nf">cobraTransaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mtype</span><span class="p">,</span> <span class="n">objname</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is an API for clients to use.  It will retransmit</span>
+<span class="sd">        a sendMessage() automagically on recpt of an exception</span>
+<span class="sd">        in recvMessage()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">mtype</span><span class="p">,</span> <span class="n">objname</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recvMessage</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reConnect</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reConnect</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="CobraDaemon"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon">[docs]</a><span class="k">class</span> <span class="nc">CobraDaemon</span><span class="p">(</span><span class="n">ThreadingTCPServer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">COBRA_PORT</span><span class="p">,</span> <span class="n">sslcrt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sslkey</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sslca</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Construct a cobra daemon object.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        host        - Optional hostname/ip to bind the service to (default: inaddr_any)</span>
+<span class="sd">        port        - The port to bind (Default: COBRA_PORT)</span>
+
+<span class="sd">        # SSL Options</span>
+<span class="sd">        sslcrt / sslkey     - Specify sslcrt and sslkey to enable SSL server side</span>
+<span class="sd">        sslca               - Specify an SSL CA key to use validating client certs</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shared</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reflock</span> <span class="o">=</span> <span class="n">RLock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refcnts</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c"># SSL Options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sslca</span> <span class="o">=</span> <span class="n">sslca</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sslcrt</span> <span class="o">=</span> <span class="n">sslcrt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sslkey</span> <span class="o">=</span> <span class="n">sslkey</span>
+
+        <span class="k">if</span> <span class="n">sslcrt</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">sslcrt</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;CobraDaemon: sslcrt param must be a file!&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sslkey</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">sslkey</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;CobraDaemon: sslkey param must be a file!&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sslca</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">sslca</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;CobraDaemon: sslca param must be a file!&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_reuse_address</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">ThreadingTCPServer</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">CobraRequestHandler</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">port</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">daemon_threads</span> <span class="o">=</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="CobraDaemon.fireThread"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.fireThread">[docs]</a>    <span class="k">def</span> <span class="nf">fireThread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">thr</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">)</span>
+        <span class="n">thr</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">thr</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.getSharedObject"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.getSharedObject">[docs]</a>    <span class="k">def</span> <span class="nf">getSharedObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.getSharedObjects"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.getSharedObjects">[docs]</a>    <span class="k">def</span> <span class="nf">getSharedObjects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of (name, obj) for the currently shared objects.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            for name,obj in daemon.getSharedObjects():</span>
+<span class="sd">                print(&#39;%s: %r&#39; % (name,obj))</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.getSharedName"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.getSharedName">[docs]</a>    <span class="k">def</span> <span class="nf">getSharedName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        If this object is shared already, get the name...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">sobj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">sobj</span> <span class="o">==</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.getRandomName"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.getRandomName">[docs]</a>    <span class="k">def</span> <span class="nf">getRandomName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="si">%.2x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">ord</span><span class="p">(</span><span class="n">byte</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.shareObject"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.shareObject">[docs]</a>    <span class="k">def</span> <span class="nf">shareObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">doref</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Share an object in this cobra server.  By specifying</span>
+<span class="sd">        doref=True you will let CobraProxy objects decide that</span>
+<span class="sd">        the object is done and should be un-shared.  Also, if</span>
+<span class="sd">        name == None a random name is chosen.</span>
+
+<span class="sd">        Returns: name (or the newly generated random one)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">refcnt</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">doref</span><span class="p">:</span>
+            <span class="n">refcnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRandomName</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refcnts</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">refcnt</span>
+        <span class="k">return</span> <span class="n">name</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.getObjectRefCount"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.getObjectRefCount">[docs]</a>    <span class="k">def</span> <span class="nf">getObjectRefCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">refcnts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.decrefObject"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.decrefObject">[docs]</a>    <span class="k">def</span> <span class="nf">decrefObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decref this object and if it reaches 0, unshare it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;DECREF:&quot;</span><span class="p">,</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reflock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">refcnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refcnts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">refcnt</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">refcnt</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refcnts</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">refcnt</span>
+                <span class="k">if</span> <span class="n">refcnt</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">unshareObject</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reflock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.increfObject"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.increfObject">[docs]</a>    <span class="k">def</span> <span class="nf">increfObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;INCREF:&quot;</span><span class="p">,</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reflock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">refcnt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">refcnts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">refcnt</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">refcnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refcnts</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">refcnt</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reflock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="CobraDaemon.unshareObject"><a class="viewcode-back" href="../cobra.html#cobra.CobraDaemon.unshareObject">[docs]</a>    <span class="k">def</span> <span class="nf">unshareObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&#39;UNSHARE&#39;</span><span class="p">,</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refcnts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shared</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="CobraRequestHandler"><a class="viewcode-back" href="../cobra.html#cobra.CobraRequestHandler">[docs]</a><span class="k">class</span> <span class="nc">CobraRequestHandler</span><span class="p">(</span><span class="n">BaseRequestHandler</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CobraRequestHandler.handle"><a class="viewcode-back" href="../cobra.html#cobra.CobraRequestHandler.handle">[docs]</a>    <span class="k">def</span> <span class="nf">handle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">CobraConnectionHandler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">handleClient</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="CobraConnectionHandler"><a class="viewcode-back" href="../cobra.html#cobra.CobraConnectionHandler">[docs]</a><span class="k">class</span> <span class="nc">CobraConnectionHandler</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">daemon</span><span class="p">,</span> <span class="n">socket</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="n">daemon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleHello</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleCall</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleGetAttr</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleSetAttr</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleError</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleGoodbye</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CobraConnectionHandler.handleClient"><a class="viewcode-back" href="../cobra.html#cobra.CobraConnectionHandler.handleClient">[docs]</a>    <span class="k">def</span> <span class="nf">handleClient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">peer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">getpeername</span><span class="p">()</span>
+        <span class="n">me</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;GOT A CONNECTIONN&quot;</span><span class="p">,</span><span class="n">peer</span>
+
+        <span class="n">sock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">sslkey</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">ssl</span>
+            <span class="n">sslca</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">sslca</span>
+            <span class="n">keyfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">sslkey</span>
+            <span class="n">certfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">sslcrt</span>
+            <span class="n">sslreq</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CERT_NONE</span>
+            <span class="c"># If they specify a CA key, require valid client certs</span>
+            <span class="k">if</span> <span class="n">sslca</span><span class="p">:</span>
+                <span class="n">sslreq</span><span class="o">=</span><span class="n">ssl</span><span class="o">.</span><span class="n">CERT_REQUIRED</span>
+
+            <span class="n">sock</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span>
+                                     <span class="n">keyfile</span><span class="o">=</span><span class="n">keyfile</span><span class="p">,</span> <span class="n">certfile</span><span class="o">=</span><span class="n">certfile</span><span class="p">,</span>
+                                     <span class="n">ca_certs</span><span class="o">=</span><span class="n">sslca</span><span class="p">,</span> <span class="n">cert_reqs</span><span class="o">=</span><span class="n">sslreq</span><span class="p">,</span>
+                                     <span class="n">server_side</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="n">csock</span> <span class="o">=</span> <span class="n">CobraSocket</span><span class="p">(</span><span class="n">sock</span><span class="p">)</span>
+        <span class="n">setCallerInfo</span><span class="p">(</span><span class="n">peer</span><span class="p">)</span>
+        <span class="n">setLocalInfo</span><span class="p">(</span><span class="n">me</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mtype</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">data</span> <span class="o">=</span> <span class="n">csock</span><span class="o">.</span><span class="n">recvMessage</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="k">break</span>
+
+            <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">getSharedObject</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;MSG FOR:&quot;</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_ERROR</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Unknown object requested: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">))</span>
+                <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;WARNING: Got request for unknown object&quot;</span><span class="p">,</span><span class="n">name</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="n">mtype</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_ERROR</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid Message Type&quot;</span><span class="p">))</span>
+                <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;WARNING: Got Invalid Message Type: </span><span class="si">%d</span><span class="s"> for </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">mtype</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">handler</span><span class="p">(</span><span class="n">csock</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_ERROR</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="n">typee</span><span class="p">:</span>
+                    <span class="c"># Probably about pickling...</span>
+                    <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_ERROR</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+                <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+                    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CobraConnectionHandler.handleError"><a class="viewcode-back" href="../cobra.html#cobra.CobraConnectionHandler.handleError">[docs]</a>    <span class="k">def</span> <span class="nf">handleError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csock</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;THIS SHOULD NEVER HAPPEN&quot;</span>
+</div>
+<div class="viewcode-block" id="CobraConnectionHandler.handleHello"><a class="viewcode-back" href="../cobra.html#cobra.CobraConnectionHandler.handleHello">[docs]</a>    <span class="k">def</span> <span class="nf">handleHello</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csock</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hello messages are used to get the initial cache of</span>
+<span class="sd">        method names for the newly connected object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;GOT A HELLO&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">increfObject</span><span class="p">(</span><span class="n">oname</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="n">name</span><span class="p">))</span> <span class="ow">in</span> <span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">MethodType</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">BuiltinMethodType</span><span class="p">):</span>
+                <span class="n">ret</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_HELLO</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+            <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CobraConnectionHandler.handleCall"><a class="viewcode-back" href="../cobra.html#cobra.CobraConnectionHandler.handleCall">[docs]</a>    <span class="k">def</span> <span class="nf">handleCall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csock</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;GOT A CALL&quot;</span><span class="p">,</span><span class="n">data</span>
+        <span class="n">methodname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">meth</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">methodname</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_CALL</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">meth</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+            <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CobraConnectionHandler.handleGetAttr"><a class="viewcode-back" href="../cobra.html#cobra.CobraConnectionHandler.handleGetAttr">[docs]</a>    <span class="k">def</span> <span class="nf">handleGetAttr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csock</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;GETTING ATTRIBUTE:&quot;</span><span class="p">,</span><span class="n">name</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_GETATTR</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+            <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CobraConnectionHandler.handleSetAttr"><a class="viewcode-back" href="../cobra.html#cobra.CobraConnectionHandler.handleSetAttr">[docs]</a>    <span class="k">def</span> <span class="nf">handleSetAttr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csock</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;SETTING ATTRIBUTE:&quot;</span><span class="p">,</span><span class="n">data</span>
+        <span class="n">name</span><span class="p">,</span><span class="n">value</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_SETATTR</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+            <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="CobraConnectionHandler.handleGoodbye"><a class="viewcode-back" href="../cobra.html#cobra.CobraConnectionHandler.handleGoodbye">[docs]</a>    <span class="k">def</span> <span class="nf">handleGoodbye</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">csock</span><span class="p">,</span> <span class="n">oname</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&#39;GOODBYE!&#39;</span><span class="p">,</span><span class="n">oname</span><span class="p">,</span><span class="n">obj</span><span class="p">,</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">daemon</span><span class="o">.</span><span class="n">decrefObject</span><span class="p">(</span><span class="n">oname</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">csock</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">COBRA_GOODBYE</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CobraClosedException</span><span class="p">:</span>
+            <span class="k">pass</span>
+</div></div>
+<div class="viewcode-block" id="isCobraUri"><a class="viewcode-back" href="../cobra.html#cobra.isCobraUri">[docs]</a><span class="k">def</span> <span class="nf">isCobraUri</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;cobra&quot;</span><span class="p">,</span><span class="s">&quot;cobrassl&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="CobraProxy"><a class="viewcode-back" href="../cobra.html#cobra.CobraProxy">[docs]</a><span class="k">class</span> <span class="nc">CobraProxy</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A proxy object for remote objects shared with Cobra</span>
+
+<span class="sd">    Additional keyword arguments may depend on protocol.</span>
+
+<span class="sd">    cobra://</span>
+<span class="sd">        Only the standard args</span>
+
+<span class="sd">    cobrassl://</span>
+<span class="sd">        sslca           - File path to a CA certs file.  Causes server validation.</span>
+<span class="sd">        sslcrt / sslkey - Client side cert info</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">URI</span><span class="p">,</span> <span class="n">retrymax</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">COBRA_PORT</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">URI</span><span class="p">)</span>
+        <span class="n">scheme</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">get_type</span><span class="p">()</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">get_host</span><span class="p">()</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">get_selector</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">scheme</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;cobra&quot;</span><span class="p">,</span><span class="s">&quot;cobrassl&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid scheme: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">scheme</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s">&quot;:&quot;</span> <span class="ow">in</span> <span class="n">host</span><span class="p">:</span>
+            <span class="n">host</span><span class="p">,</span><span class="n">portstr</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">portstr</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;HOST&quot;</span><span class="p">,</span><span class="n">host</span><span class="p">,</span><span class="s">&quot;PORT&quot;</span><span class="p">,</span><span class="n">port</span><span class="p">,</span><span class="s">&quot;OBJ&quot;</span><span class="p">,</span><span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_uri</span> <span class="o">=</span> <span class="n">URI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_scheme</span> <span class="o">=</span> <span class="n">scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_slookup</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_retrymax</span> <span class="o">=</span> <span class="n">retrymax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslkey&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslkey&#39;</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;CobraProxy: sslkey must be a file!&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslcrt&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslcrt&#39;</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;CobraProxy: sslcrt must be a file!&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslca&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sslca&#39;</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;CobraProxy: sslca must be a file!&#39;</span><span class="p">)</span>
+
+        <span class="n">csock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_getsock</span><span class="p">()</span>
+        <span class="n">mtype</span><span class="p">,</span><span class="n">rver</span><span class="p">,</span><span class="n">data</span> <span class="o">=</span> <span class="n">csock</span><span class="o">.</span><span class="n">cobraTransaction</span><span class="p">(</span><span class="n">COBRA_HELLO</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mtype</span> <span class="o">==</span> <span class="n">COBRA_ERROR</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="n">rver</span> <span class="o">!=</span> <span class="n">version</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Server Version Not Supported: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">rver</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mtype</span> <span class="o">!=</span> <span class="n">COBRA_HELLO</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid Cobra Hello Response&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_methods</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">_cobra_getsock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">thr</span> <span class="o">=</span> <span class="n">currentThread</span><span class="p">()</span>
+        <span class="n">tsocks</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">thr</span><span class="p">,</span> <span class="s">&#39;cobrasocks&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tsocks</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">tsocks</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">thr</span><span class="o">.</span><span class="n">cobrasocks</span> <span class="o">=</span> <span class="n">tsocks</span>
+
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">tsocks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cobra_slookup</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sock</span><span class="p">:</span>
+            <span class="n">sock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_newsock</span><span class="p">()</span>
+            <span class="n">tsocks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cobra_slookup</span><span class="p">]</span> <span class="o">=</span> <span class="n">sock</span>
+        <span class="k">return</span> <span class="n">sock</span>
+
+    <span class="k">def</span> <span class="nf">_cobra_newsock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is only used by *clients*</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">retrymax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_retrymax</span>
+        <span class="n">builder</span> <span class="o">=</span> <span class="n">SocketBuilder</span><span class="p">(</span>    <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_scheme</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_host</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_port</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_timeout</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">CobraClientSocket</span><span class="p">(</span><span class="n">builder</span><span class="p">,</span> <span class="n">retrymax</span><span class="o">=</span><span class="n">retrymax</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span>
+
+    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sdict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sdict</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cobra_uri</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__nonzero__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;CobraProxy </span><span class="si">%s</span><span class="s">&gt;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_uri</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="n">ouri</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;_cobra_uri&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_uri</span> <span class="o">==</span> <span class="n">ouri</span>
+
+    <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="o">==</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;SETATTR </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">value</span><span class="p">)[:</span><span class="mi">20</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;_cobra_&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">return</span>
+
+        <span class="n">csock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_getsock</span><span class="p">()</span>
+        <span class="n">mtype</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">data</span> <span class="o">=</span> <span class="n">csock</span><span class="o">.</span><span class="n">cobraTransaction</span><span class="p">(</span><span class="n">COBRA_SETATTR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_name</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">mtype</span> <span class="o">==</span> <span class="n">COBRA_ERROR</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">data</span>
+        <span class="k">elif</span> <span class="n">mtype</span> <span class="o">==</span> <span class="n">COBRA_SETATTR</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid Cobra Response&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;GETATTR&quot;</span><span class="p">,</span><span class="n">name</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&quot;__getinitargs__&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">()</span>
+
+        <span class="c"># Handle methods</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_methods</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">CobraMethod</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="n">csock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_getsock</span><span class="p">()</span>
+        <span class="n">mtype</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">data</span> <span class="o">=</span> <span class="n">csock</span><span class="o">.</span><span class="n">cobraTransaction</span><span class="p">(</span><span class="n">COBRA_GETATTR</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mtype</span> <span class="o">==</span> <span class="n">COBRA_ERROR</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">data</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tell the server we&#39;re done with our reference in case it&#39;s refcnt&#39;d</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">csock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_getsock</span><span class="p">()</span>
+            <span class="n">csock</span><span class="o">.</span><span class="n">cobraTransaction</span><span class="p">(</span><span class="n">COBRA_GOODBYE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cobra_name</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;Probably Harmless: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">e</span>
+        <span class="k">except</span> <span class="n">CobraException</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;Probably Harmless: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">e</span>
+</div>
+<div class="viewcode-block" id="startCobraServer"><a class="viewcode-back" href="../cobra.html#cobra.startCobraServer">[docs]</a><span class="k">def</span> <span class="nf">startCobraServer</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">COBRA_PORT</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">daemon</span>
+    <span class="k">if</span> <span class="n">daemon</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">daemon</span> <span class="o">=</span> <span class="n">CobraDaemon</span><span class="p">(</span><span class="n">host</span><span class="p">,</span><span class="n">port</span><span class="p">)</span>
+        <span class="n">daemon</span><span class="o">.</span><span class="n">fireThread</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">daemon</span>
+</div>
+<div class="viewcode-block" id="runCobraServer"><a class="viewcode-back" href="../cobra.html#cobra.runCobraServer">[docs]</a><span class="k">def</span> <span class="nf">runCobraServer</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">COBRA_PORT</span><span class="p">):</span>
+    <span class="n">daemon</span> <span class="o">=</span> <span class="n">CobraDaemon</span><span class="p">(</span><span class="n">host</span><span class="p">,</span><span class="n">port</span><span class="p">)</span>
+    <span class="n">daemon</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="shareObject"><a class="viewcode-back" href="../cobra.html#cobra.shareObject">[docs]</a><span class="k">def</span> <span class="nf">shareObject</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">doref</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If shareObject is called before startCobraServer </span>
+<span class="sd">    or startCobraSslServer, it will call startCobraServer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">daemon</span>
+    <span class="k">if</span> <span class="n">daemon</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">startCobraServer</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">daemon</span><span class="o">.</span><span class="n">shareObject</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">doref</span><span class="o">=</span><span class="n">doref</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="unshareObject"><a class="viewcode-back" href="../cobra.html#cobra.unshareObject">[docs]</a><span class="k">def</span> <span class="nf">unshareObject</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">daemon</span><span class="o">.</span><span class="n">unshareObject</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

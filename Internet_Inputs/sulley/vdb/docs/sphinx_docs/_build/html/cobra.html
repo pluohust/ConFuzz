@@ -1,0 +1,853 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>cobra Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="cobra-package">
+<h1>cobra Package<a class="headerlink" href="#cobra-package" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The documentation for cobra hasn&#8217;t been touched yet! If you want to contribute (or have ideas for better documentation), feel free to <a class="reference external" href="https://github.com/Fitblip/vdb-fork">send me a pull request</a> or <a class="reference external" href="https://github.com/Fitblip">email me</a>.</p>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-cobra" title="cobra"><tt class="xref py py-mod docutils literal"><span class="pre">cobra</span></tt></a> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-cobra"></span><p>Cobra RMI Framework</p>
+<p>Cobra is a remote method invocation interface that is very &#8220;pythony&#8221;.  It is
+MUCH like its inspiration pyro, but slimmer and safer for things like threading
+and object de-registration.  Essentially, cobra allows you to call methods from
+and get/set attributes on objects that exist on a remote system.</p>
+<dl class="class">
+<dt id="cobra.CobraClientSocket">
+<em class="property">class </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraClientSocket</tt><big>(</big><em>sockctor</em>, <em>retrymax=None</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraClientSocket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraClientSocket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cobra.CobraSocket" title="cobra.CobraSocket"><tt class="xref py py-class docutils literal"><span class="pre">cobra.CobraSocket</span></tt></a></p>
+<dl class="method">
+<dt id="cobra.CobraClientSocket.cobraTransaction">
+<tt class="descname">cobraTransaction</tt><big>(</big><em>mtype</em>, <em>objname</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraClientSocket.cobraTransaction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraClientSocket.cobraTransaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is an API for clients to use.  It will retransmit
+a sendMessage() automagically on recpt of an exception
+in recvMessage()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraClientSocket.reConnect">
+<tt class="descname">reConnect</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraClientSocket.reConnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraClientSocket.reConnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handle the event where we need to reconnect</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="cobra.CobraClosedException">
+<em class="property">exception </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraClosedException</tt><a class="reference internal" href="_modules/cobra.html#CobraClosedException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraClosedException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cobra.CobraException" title="cobra.CobraException"><tt class="xref py py-class docutils literal"><span class="pre">cobra.CobraException</span></tt></a></p>
+<p>Raised when a connection is unexpectedly closed.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.CobraConnectionHandler">
+<em class="property">class </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraConnectionHandler</tt><big>(</big><em>daemon</em>, <em>socket</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraConnectionHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraConnectionHandler" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="cobra.CobraConnectionHandler.handleCall">
+<tt class="descname">handleCall</tt><big>(</big><em>csock</em>, <em>oname</em>, <em>obj</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraConnectionHandler.handleCall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraConnectionHandler.handleCall" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraConnectionHandler.handleClient">
+<tt class="descname">handleClient</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraConnectionHandler.handleClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraConnectionHandler.handleClient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraConnectionHandler.handleError">
+<tt class="descname">handleError</tt><big>(</big><em>csock</em>, <em>oname</em>, <em>obj</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraConnectionHandler.handleError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraConnectionHandler.handleError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraConnectionHandler.handleGetAttr">
+<tt class="descname">handleGetAttr</tt><big>(</big><em>csock</em>, <em>oname</em>, <em>obj</em>, <em>name</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraConnectionHandler.handleGetAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraConnectionHandler.handleGetAttr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraConnectionHandler.handleGoodbye">
+<tt class="descname">handleGoodbye</tt><big>(</big><em>csock</em>, <em>oname</em>, <em>obj</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraConnectionHandler.handleGoodbye"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraConnectionHandler.handleGoodbye" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraConnectionHandler.handleHello">
+<tt class="descname">handleHello</tt><big>(</big><em>csock</em>, <em>oname</em>, <em>obj</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraConnectionHandler.handleHello"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraConnectionHandler.handleHello" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hello messages are used to get the initial cache of
+method names for the newly connected object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraConnectionHandler.handleSetAttr">
+<tt class="descname">handleSetAttr</tt><big>(</big><em>csock</em>, <em>oname</em>, <em>obj</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraConnectionHandler.handleSetAttr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraConnectionHandler.handleSetAttr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.CobraDaemon">
+<em class="property">class </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraDaemon</tt><big>(</big><em>host=''</em>, <em>port=5656</em>, <em>sslcrt=None</em>, <em>sslkey=None</em>, <em>sslca=None</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">SocketServer.ThreadingTCPServer</span></tt></p>
+<dl class="method">
+<dt id="cobra.CobraDaemon.decrefObject">
+<tt class="descname">decrefObject</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.decrefObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.decrefObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decref this object and if it reaches 0, unshare it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.fireThread">
+<tt class="descname">fireThread</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.fireThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.fireThread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.getObjectRefCount">
+<tt class="descname">getObjectRefCount</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.getObjectRefCount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.getObjectRefCount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.getRandomName">
+<tt class="descname">getRandomName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.getRandomName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.getRandomName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.getSharedName">
+<tt class="descname">getSharedName</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.getSharedName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.getSharedName" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this object is shared already, get the name...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.getSharedObject">
+<tt class="descname">getSharedObject</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.getSharedObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.getSharedObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.getSharedObjects">
+<tt class="descname">getSharedObjects</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.getSharedObjects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.getSharedObjects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of (name, obj) for the currently shared objects.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd><dl class="first last docutils">
+<dt>for name,obj in daemon.getSharedObjects():</dt>
+<dd>print(&#8216;%s: %r&#8217; % (name,obj))</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.increfObject">
+<tt class="descname">increfObject</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.increfObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.increfObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.shareObject">
+<tt class="descname">shareObject</tt><big>(</big><em>obj</em>, <em>name=None</em>, <em>doref=False</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.shareObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.shareObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Share an object in this cobra server.  By specifying
+doref=True you will let CobraProxy objects decide that
+the object is done and should be un-shared.  Also, if
+name == None a random name is chosen.</p>
+<p>Returns: name (or the newly generated random one)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraDaemon.unshareObject">
+<tt class="descname">unshareObject</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraDaemon.unshareObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraDaemon.unshareObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="cobra.CobraException">
+<em class="property">exception </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraException</tt><a class="reference internal" href="_modules/cobra.html#CobraException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Base for Cobra exceptions</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.CobraMethod">
+<em class="property">class </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraMethod</tt><big>(</big><em>proxy</em>, <em>methname</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraMethod" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="exception">
+<dt id="cobra.CobraPickleException">
+<em class="property">exception </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraPickleException</tt><a class="reference internal" href="_modules/cobra.html#CobraPickleException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraPickleException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Raised when pickling fails.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.CobraProxy">
+<em class="property">class </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraProxy</tt><big>(</big><em>URI</em>, <em>retrymax=None</em>, <em>timeout=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraProxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraProxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>A proxy object for remote objects shared with Cobra</p>
+<p>Additional keyword arguments may depend on protocol.</p>
+<dl class="docutils">
+<dt>cobra://</dt>
+<dd>Only the standard args</dd>
+<dt>cobrassl://</dt>
+<dd>sslca           - File path to a CA certs file.  Causes server validation.
+sslcrt / sslkey - Client side cert info</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.CobraRequestHandler">
+<em class="property">class </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraRequestHandler</tt><big>(</big><em>request</em>, <em>client_address</em>, <em>server</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraRequestHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraRequestHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">SocketServer.BaseRequestHandler</span></tt></p>
+<dl class="method">
+<dt id="cobra.CobraRequestHandler.handle">
+<tt class="descname">handle</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraRequestHandler.handle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraRequestHandler.handle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="cobra.CobraRetryException">
+<em class="property">exception </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraRetryException</tt><a class="reference internal" href="_modules/cobra.html#CobraRetryException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraRetryException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Raised when the retrymax (if present) for a proxy object is exceeded.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.CobraSocket">
+<em class="property">class </em><tt class="descclassname">cobra.</tt><tt class="descname">CobraSocket</tt><big>(</big><em>socket</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraSocket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraSocket" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="cobra.CobraSocket.getPeerName">
+<tt class="descname">getPeerName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraSocket.getPeerName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraSocket.getPeerName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraSocket.getSockName">
+<tt class="descname">getSockName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraSocket.getSockName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraSocket.getSockName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraSocket.recvExact">
+<tt class="descname">recvExact</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraSocket.recvExact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraSocket.recvExact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraSocket.recvMessage">
+<tt class="descname">recvMessage</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraSocket.recvMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraSocket.recvMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns tuple of mtype, objname, and data
+This method is <em>NOT</em> responsable for re-connection, because there
+is not context on the server side for what to send on re-connect.
+Client side uses of the CobraSocket object should use cobraTransaction
+to ensure re-tranmission of the request on reception errors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraSocket.sendExact">
+<tt class="descname">sendExact</tt><big>(</big><em>buf</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraSocket.sendExact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraSocket.sendExact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.CobraSocket.sendMessage">
+<tt class="descname">sendMessage</tt><big>(</big><em>mtype</em>, <em>objname</em>, <em>data</em><big>)</big><a class="reference internal" href="_modules/cobra.html#CobraSocket.sendMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.CobraSocket.sendMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message is responsable for transmission of cobra messages,
+and socket reconnection in the event that the send fails for network
+reasons.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.SocketBuilder">
+<em class="property">class </em><tt class="descclassname">cobra.</tt><tt class="descname">SocketBuilder</tt><big>(</big><em>scheme</em>, <em>host</em>, <em>port</em>, <em>timeout</em>, <em>kwargs</em><big>)</big><a class="reference internal" href="_modules/cobra.html#SocketBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.SocketBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>For internal use by CobraClientSocket</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.connectSocket">
+<tt class="descclassname">cobra.</tt><tt class="descname">connectSocket</tt><big>(</big><em>host</em>, <em>port</em>, <em>timeout=None</em><big>)</big><a class="reference internal" href="_modules/cobra.html#connectSocket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.connectSocket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the long names go away....</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.getCallerInfo">
+<tt class="descclassname">cobra.</tt><tt class="descname">getCallerInfo</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#getCallerInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.getCallerInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function may be used from <em>inside</em> a method being called
+by a remote caller.  It will return a tuple of host,port for the
+other side of the connection... use wisely ;)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.getLocalInfo">
+<tt class="descclassname">cobra.</tt><tt class="descname">getLocalInfo</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra.html#getLocalInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.getLocalInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the local host,port combination being
+used in the socket servicing the current request</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.isCobraUri">
+<tt class="descclassname">cobra.</tt><tt class="descname">isCobraUri</tt><big>(</big><em>uri</em><big>)</big><a class="reference internal" href="_modules/cobra.html#isCobraUri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.isCobraUri" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cobra.runCobraServer">
+<tt class="descclassname">cobra.</tt><tt class="descname">runCobraServer</tt><big>(</big><em>host=''</em>, <em>port=5656</em><big>)</big><a class="reference internal" href="_modules/cobra.html#runCobraServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.runCobraServer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cobra.setCallerInfo">
+<tt class="descclassname">cobra.</tt><tt class="descname">setCallerInfo</tt><big>(</big><em>callerinfo</em><big>)</big><a class="reference internal" href="_modules/cobra.html#setCallerInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.setCallerInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is necissary because of crazy python method call
+name munging for thread attributes ;)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.setLocalInfo">
+<tt class="descclassname">cobra.</tt><tt class="descname">setLocalInfo</tt><big>(</big><em>localinfo</em><big>)</big><a class="reference internal" href="_modules/cobra.html#setLocalInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.setLocalInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cobra.shareObject">
+<tt class="descclassname">cobra.</tt><tt class="descname">shareObject</tt><big>(</big><em>obj</em>, <em>name=None</em>, <em>doref=False</em><big>)</big><a class="reference internal" href="_modules/cobra.html#shareObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.shareObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>If shareObject is called before startCobraServer 
+or startCobraSslServer, it will call startCobraServer</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.startCobraServer">
+<tt class="descclassname">cobra.</tt><tt class="descname">startCobraServer</tt><big>(</big><em>host=''</em>, <em>port=5656</em><big>)</big><a class="reference internal" href="_modules/cobra.html#startCobraServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.startCobraServer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cobra.unshareObject">
+<tt class="descclassname">cobra.</tt><tt class="descname">unshareObject</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/cobra.html#unshareObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.unshareObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-cobra.cluster">
+<span id="cluster-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">cluster</span></tt> Module<a class="headerlink" href="#module-cobra.cluster" title="Permalink to this headline">¶</a></h2>
+<p>Cobra&#8217;s built in clustering framework</p>
+<dl class="class">
+<dt id="cobra.cluster.ClusterCallback">
+<em class="property">class </em><tt class="descclassname">cobra.cluster.</tt><tt class="descname">ClusterCallback</tt><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Place one of these in the ClusterServer to get synchronous
+event information about what&#8217;s going on in the cluster server.
+(mostly for the GUI).</p>
+<dl class="method">
+<dt id="cobra.cluster.ClusterCallback.workAdded">
+<tt class="descname">workAdded</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback.workAdded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback.workAdded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterCallback.workCanceled">
+<tt class="descname">workCanceled</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback.workCanceled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback.workCanceled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterCallback.workCompletion">
+<tt class="descname">workCompletion</tt><big>(</big><em>server</em>, <em>workid</em>, <em>completion</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback.workCompletion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback.workCompletion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterCallback.workDone">
+<tt class="descname">workDone</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback.workDone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback.workDone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterCallback.workFailed">
+<tt class="descname">workFailed</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback.workFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback.workFailed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterCallback.workGotten">
+<tt class="descname">workGotten</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback.workGotten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback.workGotten" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterCallback.workStatus">
+<tt class="descname">workStatus</tt><big>(</big><em>server</em>, <em>workid</em>, <em>status</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback.workStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback.workStatus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterCallback.workTimeout">
+<tt class="descname">workTimeout</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterCallback.workTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterCallback.workTimeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.cluster.ClusterClient">
+<em class="property">class </em><tt class="descclassname">cobra.cluster.</tt><tt class="descname">ClusterClient</tt><big>(</big><em>name</em>, <em>maxwidth=4</em>, <em>docode=False</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Listen for our name (or any name if name==&#8221;*&#8221;) on the cobra cluster
+multicast address and if we find a server in need, go help.</p>
+<p>maxwidth is the number of work units to do in parallel
+docode will enable code sharing with the server</p>
+<dl class="method">
+<dt id="cobra.cluster.ClusterClient.fireRunner">
+<tt class="descname">fireRunner</tt><big>(</big><em>uri</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterClient.fireRunner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterClient.fireRunner" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterClient.processWork">
+<tt class="descname">processWork</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterClient.processWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterClient.processWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs handing out work up to maxwidth until self.go == False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterClient.threadForker">
+<tt class="descname">threadForker</tt><big>(</big><em>uri</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterClient.threadForker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterClient.threadForker" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.cluster.ClusterQueen">
+<em class="property">class </em><tt class="descclassname">cobra.cluster.</tt><tt class="descname">ClusterQueen</tt><big>(</big><em>ifip</em>, <em>recast=True</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterQueen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterQueen" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="cobra.cluster.ClusterQueen.proxyAnnounceWork">
+<tt class="descname">proxyAnnounceWork</tt><big>(</big><em>name</em>, <em>cobraname</em>, <em>port</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterQueen.proxyAnnounceWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterQueen.proxyAnnounceWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send out a multicast announcement to our subjects to go help
+a cluster server.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.cluster.ClusterServer">
+<em class="property">class </em><tt class="descclassname">cobra.cluster.</tt><tt class="descname">ClusterServer</tt><big>(</big><em>name</em>, <em>maxsize=None</em>, <em>docode=False</em>, <em>bindsrc=''</em>, <em>cobrad=None</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="cobra.cluster.ClusterServer.addClusterQueen">
+<tt class="descname">addClusterQueen</tt><big>(</big><em>queenhost</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.addClusterQueen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.addClusterQueen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inform the ClusterServer about the presence of a ClusterQueen instance
+on the given host.  When the ClusterServer begins to announce work,
+he will do so in &#8220;infrastructure mode&#8221; and ask any set queens for help.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.addWork">
+<tt class="descname">addWork</tt><big>(</big><em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.addWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.addWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a work object to the ClusterServer.  This</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.announceWork">
+<tt class="descname">announceWork</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.announceWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.announceWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Announce to our multicast cluster peers that we have work
+to do! (Or use a queen to proxy to them...)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.cancelAllWork">
+<tt class="descname">cancelAllWork</tt><big>(</big><em>inprog=True</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.cancelAllWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.cancelAllWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel all of the currently pending work units.  You may
+specify inprog=False to cancel all <em>queued</em> work units
+but allow inprogress work units to complete.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.cancelWork">
+<tt class="descname">cancelWork</tt><big>(</big><em>workid</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.cancelWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.cancelWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel a work unit by ID.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.doneWork">
+<tt class="descname">doneWork</tt><big>(</big><em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.doneWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.doneWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used by the clients to report work as done.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.failWork">
+<tt class="descname">failWork</tt><big>(</big><em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.failWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.failWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called for a work unit that is in a failed state.  This is most
+commonly that the work() method has raised an exception.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.getWork">
+<tt class="descname">getWork</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.getWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.getWork" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.inProgressCount">
+<tt class="descname">inProgressCount</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.inProgressCount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.inProgressCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>How many work units are in progress?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.inQueueCount">
+<tt class="descname">inQueueCount</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.inQueueCount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.inQueueCount" title="Permalink to this definition">¶</a></dt>
+<dd><p>How long is the current work unit queue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.openSharedFile">
+<tt class="descname">openSharedFile</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.openSharedFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.openSharedFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a URI for an open file decriptor for the specified filename.</p>
+<p>NOTE: use openSharedFile() method on work unit to get back a proxy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.runServer">
+<tt class="descname">runServer</tt><big>(</big><em>firethread=False</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.runServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.runServer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.setWorkCompletion">
+<tt class="descname">setWorkCompletion</tt><big>(</big><em>workid</em>, <em>percent</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.setWorkCompletion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.setWorkCompletion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the percentage completion status for this work unit.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.setWorkStatus">
+<tt class="descname">setWorkStatus</tt><big>(</big><em>workid</em>, <em>status</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.setWorkStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.setWorkStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the humon readable status for the given work unit.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.shareFileToWorkers">
+<tt class="descname">shareFileToWorkers</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.shareFileToWorkers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.shareFileToWorkers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a file to the list of files which are &#8220;shared&#8221; to worker clients.
+This allows workers to access a file from the server.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>s.shareFileToWorkers(&#8216;/path/to/file&#8217;)</dd>
+</dl>
+<p>NOTE: Workers may use the openSharedFile() API to access them.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.shutdownServer">
+<tt class="descname">shutdownServer</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.shutdownServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.shutdownServer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.timeoutWork">
+<tt class="descname">timeoutWork</tt><big>(</big><em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.timeoutWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.timeoutWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method may be over-ridden to handle
+work units that time our for whatever reason.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterServer.timerThread">
+<tt class="descname">timerThread</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterServer.timerThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterServer.timerThread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.cluster.ClusterWork">
+<em class="property">class </em><tt class="descclassname">cobra.cluster.</tt><tt class="descname">ClusterWork</tt><big>(</big><em>timeout=None</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterWork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Extend this object to create your own work units.  Do it in
+a proper module (and not __main__ to be able to use this
+in conjunction with cobra.dcode).</p>
+<dl class="method">
+<dt id="cobra.cluster.ClusterWork.done">
+<tt class="descname">done</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterWork.done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterWork.done" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called back on the server once a work unit
+is complete and returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterWork.isTimedOut">
+<tt class="descname">isTimedOut</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterWork.isTimedOut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterWork.isTimedOut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this work unit is timed out.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterWork.openSharedFile">
+<tt class="descname">openSharedFile</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterWork.openSharedFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterWork.openSharedFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper API to open a file like object on the server.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>fd = self.openSharedFile(&#8216;/foo/bar/baz&#8217;)
+fbytes = fd.read()</dd>
+</dl>
+<p>NOTE: The server must use shareFileToWorkers().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterWork.setCompletion">
+<tt class="descname">setCompletion</tt><big>(</big><em>percent</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterWork.setCompletion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterWork.setCompletion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Work units may call this whenever they like to
+tell the server how far along their work they are.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterWork.setStatus">
+<tt class="descname">setStatus</tt><big>(</big><em>status</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterWork.setStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterWork.setStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Work units may call this to inform the server of
+their status.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterWork.touch">
+<tt class="descname">touch</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterWork.touch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterWork.touch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the internal &#8220;touch time&#8221; which is used by the timeout
+subsystem to see if this work unit has gone too long without
+making progress...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.ClusterWork.work">
+<tt class="descname">work</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#ClusterWork.work"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.ClusterWork.work" title="Permalink to this definition">¶</a></dt>
+<dd><p>Actually do the work associated with this work object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="cobra.cluster.InvalidInProgWorkId">
+<em class="property">exception </em><tt class="descclassname">cobra.cluster.</tt><tt class="descname">InvalidInProgWorkId</tt><big>(</big><em>workid</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#InvalidInProgWorkId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.InvalidInProgWorkId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.cluster.VerboseCallback">
+<em class="property">class </em><tt class="descclassname">cobra.cluster.</tt><tt class="descname">VerboseCallback</tt><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cobra.cluster.ClusterCallback" title="cobra.cluster.ClusterCallback"><tt class="xref py py-class docutils literal"><span class="pre">cobra.cluster.ClusterCallback</span></tt></a></p>
+<dl class="method">
+<dt id="cobra.cluster.VerboseCallback.workAdded">
+<tt class="descname">workAdded</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback.workAdded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback.workAdded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.VerboseCallback.workCanceled">
+<tt class="descname">workCanceled</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback.workCanceled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback.workCanceled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.VerboseCallback.workCompletion">
+<tt class="descname">workCompletion</tt><big>(</big><em>server</em>, <em>workid</em>, <em>completion</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback.workCompletion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback.workCompletion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.VerboseCallback.workDone">
+<tt class="descname">workDone</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback.workDone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback.workDone" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.VerboseCallback.workFailed">
+<tt class="descname">workFailed</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback.workFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback.workFailed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.VerboseCallback.workGotten">
+<tt class="descname">workGotten</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback.workGotten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback.workGotten" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.VerboseCallback.workStatus">
+<tt class="descname">workStatus</tt><big>(</big><em>server</em>, <em>workid</em>, <em>status</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback.workStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback.workStatus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.cluster.VerboseCallback.workTimeout">
+<tt class="descname">workTimeout</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#VerboseCallback.workTimeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.VerboseCallback.workTimeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.cluster.getAndDoWork">
+<tt class="descclassname">cobra.cluster.</tt><tt class="descname">getAndDoWork</tt><big>(</big><em>uri</em>, <em>docode=False</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#getAndDoWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.getAndDoWork" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cobra.cluster.getHostPortFromUri">
+<tt class="descclassname">cobra.cluster.</tt><tt class="descname">getHostPortFromUri</tt><big>(</big><em>uri</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#getHostPortFromUri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.getHostPortFromUri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the server URI and pull out the
+host and port for use in building the
+dcode uri.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.cluster.runAndWaitWork">
+<tt class="descclassname">cobra.cluster.</tt><tt class="descname">runAndWaitWork</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#runAndWaitWork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.runAndWaitWork" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cobra.cluster.workThread">
+<tt class="descclassname">cobra.cluster.</tt><tt class="descname">workThread</tt><big>(</big><em>server</em>, <em>work</em><big>)</big><a class="reference internal" href="_modules/cobra/cluster.html#workThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.cluster.workThread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-cobra.dcode">
+<span id="dcode-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">dcode</span></tt> Module<a class="headerlink" href="#module-cobra.dcode" title="Permalink to this headline">¶</a></h2>
+<p>Cobra&#8217;s distributed code module capable of allowing
+serialization of code from one system to another.</p>
+<p>Particularly useful for clustering and workunit stuff.</p>
+<dl class="class">
+<dt id="cobra.dcode.DcodeFinder">
+<em class="property">class </em><tt class="descclassname">cobra.dcode.</tt><tt class="descname">DcodeFinder</tt><a class="reference internal" href="_modules/cobra/dcode.html#DcodeFinder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.DcodeFinder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>This is the module finder which is exposed by a dcode
+server to allow clients to attempt to find modules.</p>
+<dl class="method">
+<dt id="cobra.dcode.DcodeFinder.find_module">
+<tt class="descname">find_module</tt><big>(</big><em>fullname</em>, <em>uri</em>, <em>path=None</em><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#DcodeFinder.find_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.DcodeFinder.find_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.dcode.DcodeImporter">
+<em class="property">class </em><tt class="descclassname">cobra.dcode.</tt><tt class="descname">DcodeImporter</tt><big>(</big><em>uri</em>, <em>retrymax=3</em>, <em>timeout=10</em><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#DcodeImporter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.DcodeImporter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>This object goes into the client side import path_hooks
+to allow cobra:// uri&#8217;s to be added to the import path.</p>
+<dl class="method">
+<dt id="cobra.dcode.DcodeImporter.find_module">
+<tt class="descname">find_module</tt><big>(</big><em>fullname</em>, <em>path=None</em><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#DcodeImporter.find_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.DcodeImporter.find_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="cobra.dcode.DcodeLoader">
+<em class="property">class </em><tt class="descclassname">cobra.dcode.</tt><tt class="descname">DcodeLoader</tt><big>(</big><em>fbytes</em>, <em>filename</em>, <em>path</em><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#DcodeLoader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.DcodeLoader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>This object gets pickled by the DcodeFinder and returned
+to the client who calls load_module.</p>
+<dl class="method">
+<dt id="cobra.dcode.DcodeLoader.get_source">
+<tt class="descname">get_source</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#DcodeLoader.get_source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.DcodeLoader.get_source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cobra.dcode.DcodeLoader.load_module">
+<tt class="descname">load_module</tt><big>(</big><em>fullname</em><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#DcodeLoader.load_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.DcodeLoader.load_module" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.dcode.addDcodeServer">
+<tt class="descclassname">cobra.dcode.</tt><tt class="descname">addDcodeServer</tt><big>(</big><em>server</em>, <em>port=None</em>, <em>override=False</em>, <em>ssl=False</em><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#addDcodeServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.addDcodeServer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="cobra.dcode.enableDcodeClient">
+<tt class="descclassname">cobra.dcode.</tt><tt class="descname">enableDcodeClient</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#enableDcodeClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.enableDcodeClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Once having called this, a client will be able to add cobra URIs
+to sys.path (one will be added automatically for the optional
+server parameter) and code will be imported via the distributed method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cobra.dcode.enableDcodeServer">
+<tt class="descclassname">cobra.dcode.</tt><tt class="descname">enableDcodeServer</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/cobra/dcode.html#enableDcodeServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cobra.dcode.enableDcodeServer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cobra.tools.html">tools Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cobra.tools.html#module-cobra.tools.cluster_queen"><tt class="docutils literal"><span class="pre">cluster_queen</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cobra.tools.html#module-cobra.tools.cluster_worker"><tt class="docutils literal"><span class="pre">cluster_worker</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">cobra Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">cobra</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-cobra.cluster"><tt class="docutils literal"><span class="pre">cluster</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-cobra.dcode"><tt class="docutils literal"><span class="pre">dcode</span></tt> Module</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/cobra.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vdb.stalker &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vdb" href="../vdb.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vdb.html" accesskey="U">vdb</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vdb.stalker</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The stalker subsystem is a breakpoint based coverage tool</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">vtrace</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.codeflow</span> <span class="kn">as</span> <span class="nn">e_codeflow</span>
+
+<div class="viewcode-block" id="StalkerCodeFlow"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerCodeFlow">[docs]</a><span class="k">class</span> <span class="nc">StalkerCodeFlow</span><span class="p">(</span><span class="n">e_codeflow</span><span class="o">.</span><span class="n">CodeFlowContext</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">e_codeflow</span><span class="o">.</span><span class="n">CodeFlowContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupBreakLists</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StalkerCodeFlow.setupBreakLists"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerCodeFlow.setupBreakLists">[docs]</a>    <span class="k">def</span> <span class="nf">setupBreakLists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mmap</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mmap</span> <span class="o">=</span> <span class="n">mmap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bplist</span> <span class="o">=</span> <span class="p">[]</span>   <span class="c"># Block Breaks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sbreaks</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># Stalker Breaks</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scbreaks</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># Callbreaks</span>
+</div>
+    <span class="k">def</span> <span class="nf">_cb_opcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">branches</span><span class="p">):</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">br</span><span class="p">,</span><span class="n">bflags</span> <span class="ow">in</span> <span class="n">branches</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">bflags</span> <span class="o">&amp;</span> <span class="n">envi</span><span class="o">.</span><span class="n">BR_DEREF</span> <span class="ow">and</span> <span class="n">br</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">bflags</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">envi</span><span class="o">.</span><span class="n">BR_DEREF</span> <span class="c"># Mask it back out...</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">probeMemory</span><span class="p">(</span><span class="n">br</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">MM_READ</span><span class="p">):</span>
+                    <span class="k">continue</span>
+
+                <span class="n">br</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">br</span><span class="p">,</span> <span class="s">&#39;&lt;P&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c"># Skip branches to other maps...</span>
+            <span class="k">if</span> <span class="n">br</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">br</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mmap</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">br</span><span class="p">,</span> <span class="n">bflags</span><span class="p">)</span> <span class="p">)</span>
+
+            <span class="c"># Procedural branches to regs etc must be marked</span>
+            <span class="c"># Otherwise, add another breakpoint like us</span>
+            <span class="k">if</span> <span class="n">bflags</span> <span class="o">&amp;</span> <span class="n">envi</span><span class="o">.</span><span class="n">BR_PROC</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">br</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scbreaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">va</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sbreaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">br</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">br</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="c">#print &#39;Skipping a branch from 0x%.8x: %s&#39; % (op.va, repr(op))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scbreaks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">va</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c"># Conditional branches always create new blocks...</span>
+            <span class="k">if</span> <span class="n">bflags</span> <span class="o">&amp;</span> <span class="n">envi</span><span class="o">.</span><span class="n">BR_COND</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bplist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">br</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c"># Even non-conditional jmp&#39;s will create new blocks for now...</span>
+            <span class="k">if</span> <span class="n">br</span> <span class="o">!=</span> <span class="n">op</span><span class="o">.</span><span class="n">va</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">op</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bplist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">br</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="StalkerBreak"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerBreak">[docs]</a><span class="k">class</span> <span class="nc">StalkerBreak</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Stalker breakpoints are added to function entry points</span>
+<span class="sd">    to trigger code-flow analysis and subsequent block breakpoint</span>
+<span class="sd">    addition.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">expression</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mymap</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="StalkerBreak.resolvedaddr"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerBreak.resolvedaddr">[docs]</a>    <span class="k">def</span> <span class="nf">resolvedaddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="o">.</span><span class="n">resolvedaddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mymap</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="StalkerBreak.notify"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerBreak.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+
+        <span class="c"># Get out of the way</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+
+        <span class="n">breaks</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerBreaks&#39;</span><span class="p">)</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerHits&#39;</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+
+        <span class="n">cf</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerCodeFlow&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cf</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">cf</span> <span class="o">=</span> <span class="n">StalkerCodeFlow</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;StalkerCodeFlow&#39;</span><span class="p">,</span> <span class="n">cf</span><span class="p">)</span>
+
+        <span class="n">cf</span><span class="o">.</span><span class="n">setupBreakLists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mymap</span><span class="p">)</span>
+        <span class="n">cf</span><span class="o">.</span><span class="n">addCodeFlow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">va</span> <span class="ow">in</span> <span class="n">cf</span><span class="o">.</span><span class="n">bplist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">breaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">va</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">breaks</span><span class="p">[</span><span class="n">va</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="c">#print &#39;block: 0x%.8x&#39; % va</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">StalkerBlockBreak</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+            <span class="n">bid</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">va</span> <span class="ow">in</span> <span class="n">cf</span><span class="o">.</span><span class="n">sbreaks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">breaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">va</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">breaks</span><span class="p">[</span><span class="n">va</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="c">#print &#39;func: 0x%.8x&#39; % va</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">StalkerBreak</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+            <span class="n">bid</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">va</span> <span class="ow">in</span> <span class="n">cf</span><span class="o">.</span><span class="n">scbreaks</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">breaks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">va</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">breaks</span><span class="p">[</span><span class="n">va</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="c">#print &#39;call: 0x%.8x&#39; % va</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">StalkerDynBreak</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+            <span class="n">bid</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="StalkerBlockBreak"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerBlockBreak">[docs]</a><span class="k">class</span> <span class="nc">StalkerBlockBreak</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A breakpoint object which is put on codeblock boundaries</span>
+<span class="sd">    to track hits.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">expression</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="StalkerBlockBreak.notify"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerBlockBreak.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerHits&#39;</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">runAgain</span><span class="p">()</span>
+</div></div>
+<div class="viewcode-block" id="StalkerDynBreak"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerDynBreak">[docs]</a><span class="k">class</span> <span class="nc">StalkerDynBreak</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A breakpoint which is placed on dynamic branches to track</span>
+<span class="sd">    code flow across them.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">expression</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mymap</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lasthit</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastcnt</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="StalkerDynBreak.resolvedaddr"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerDynBreak.resolvedaddr">[docs]</a>    <span class="k">def</span> <span class="nf">resolvedaddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="o">.</span><span class="n">resolvedaddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mymap</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="StalkerDynBreak.notify"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.StalkerDynBreak.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+
+        <span class="n">trace</span><span class="o">.</span><span class="n">runAgain</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">parseOpcode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="c"># Where is the call going?</span>
+        <span class="n">dva</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">getOperValue</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">emu</span><span class="o">=</span><span class="n">trace</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lasthit</span> <span class="o">==</span> <span class="n">dva</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lastcnt</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lasthit</span> <span class="o">=</span> <span class="n">dva</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lastcnt</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c">#print &#39;Dynamic: 0x%.8x: %s -&gt; 0x%.8x&#39; % (self.address, repr(op), dva)</span>
+        <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">dva</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mymap</span><span class="p">:</span>
+            <span class="n">addStalkerEntry</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">dva</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lastcnt</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span> <span class="c"># FIXME what should this be??!?!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lasthit</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lastcnt</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="initStalker"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.initStalker">[docs]</a><span class="k">def</span> <span class="nf">initStalker</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerBreaks&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;StalkerBreaks&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;StalkerHits&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</div>
+<div class="viewcode-block" id="clearStalkerHits"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.clearStalkerHits">[docs]</a><span class="k">def</span> <span class="nf">clearStalkerHits</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Clear the stalker hit list for the given trace</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">initStalker</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;StalkerHits&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</div>
+<div class="viewcode-block" id="getStalkerHits"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.getStalkerHits">[docs]</a><span class="k">def</span> <span class="nf">getStalkerHits</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Retrieve the list of blocks hit in the current stalker</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">initStalker</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerHits&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</div>
+<div class="viewcode-block" id="clearStalkerBreaks"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.clearStalkerBreaks">[docs]</a><span class="k">def</span> <span class="nf">clearStalkerBreaks</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Cleanup all stalker breaks and metadata</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">initStalker</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+    <span class="n">breaks</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerBreaks&#39;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;StalkerCodeFlow&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">bpaddrs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">breaks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">va</span> <span class="ow">in</span> <span class="n">bpaddrs</span><span class="p">:</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getBreakpointByAddr</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">removeBreakpoint</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">breaks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="resetStalkerBreaks"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.resetStalkerBreaks">[docs]</a><span class="k">def</span> <span class="nf">resetStalkerBreaks</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Re-enable all previously hit stalker breakpoints.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">initStalker</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+    <span class="n">breaks</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerBreaks&#39;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">bpaddrs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">breaks</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">fb_bp_done</span> <span class="o">=</span> <span class="bp">False</span> <span class="c"># FIXME HACK</span>
+    <span class="k">for</span> <span class="n">va</span> <span class="ow">in</span> <span class="n">bpaddrs</span><span class="p">:</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getBreakpointByAddr</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">setBreakpointEnabled</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="addStalkerEntry"><a class="viewcode-back" href="../../vdb.stalker.html#vdb.stalker.addStalkerEntry">[docs]</a><span class="k">def</span> <span class="nf">addStalkerEntry</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Add stalker coverage beginning with the specified entry point</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">initStalker</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;StalkerBreaks&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">va</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">StalkerBreak</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+    <span class="n">b</span><span class="p">[</span><span class="n">va</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vdb.html" >vdb</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

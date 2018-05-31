@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>visgraph.renderers.qgraphtree &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="visgraph.renderers" href="../renderers.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../renderers.html" accesskey="U">visgraph.renderers</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for visgraph.renderers.qgraphtree</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">PyQt4</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWebKit</span>
+
+<div class="viewcode-block" id="NodeColumn"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn">[docs]</a><span class="k">class</span> <span class="nc">NodeColumn</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vg</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">scene</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="n">scene</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span> <span class="o">-</span><span class="mi">100</span> <span class="p">)</span> <span class="c"># Get behind click events...</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span> <span class="o">=</span> <span class="n">vg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_nodes</span> <span class="o">=</span> <span class="n">nodes</span>
+
+        <span class="c"># Remember if we srarted with something on our right or left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_goleft</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span> <span class="o">==</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_goright</span> <span class="o">=</span> <span class="p">(</span><span class="n">right</span> <span class="o">==</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_left</span> <span class="o">=</span> <span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_right</span> <span class="o">=</span> <span class="n">right</span>
+
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">nprops</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="n">QGraphNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid</span><span class="p">,</span> <span class="n">nprops</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="n">scene</span><span class="p">)</span>
+            <span class="n">txt</span><span class="o">.</span><span class="n">setY</span><span class="p">(</span> <span class="n">offset</span> <span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">txt</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+
+<div class="viewcode-block" id="NodeColumn.takeOverView"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.takeOverView">[docs]</a>    <span class="k">def</span> <span class="nf">takeOverView</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_removeLeft</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_removeRight</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setX</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setY</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_goleft</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_goright</span> <span class="o">=</span> <span class="bp">True</span>
+</div>
+    <span class="k">def</span> <span class="nf">_removeLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_left</span>
+        <span class="k">while</span> <span class="n">left</span><span class="p">:</span>
+            <span class="n">nextleft</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">_v_left</span>
+            <span class="n">left</span><span class="o">.</span><span class="n">removeColumn</span><span class="p">()</span>
+            <span class="n">left</span> <span class="o">=</span> <span class="n">nextleft</span>
+
+    <span class="k">def</span> <span class="nf">_removeRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_right</span>
+        <span class="k">while</span> <span class="n">right</span><span class="p">:</span>
+            <span class="n">nextright</span> <span class="o">=</span> <span class="n">right</span><span class="o">.</span><span class="n">_v_right</span>
+            <span class="n">right</span><span class="o">.</span><span class="n">removeColumn</span><span class="p">()</span>
+            <span class="n">right</span> <span class="o">=</span> <span class="n">nextright</span>
+
+<div class="viewcode-block" id="NodeColumn.removeColumn"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.removeColumn">[docs]</a>    <span class="k">def</span> <span class="nf">removeColumn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_lines</span><span class="p">:</span>
+            <span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span> <span class="n">item</span> <span class="p">)</span>
+        <span class="n">scene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+</div>
+<div class="viewcode-block" id="NodeColumn.boundingRect"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.boundingRect">[docs]</a>    <span class="k">def</span> <span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">childrenBoundingRect</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="NodeColumn.paint"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span> <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="NodeColumn.getRightBoundary"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.getRightBoundary">[docs]</a>    <span class="k">def</span> <span class="nf">getRightBoundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">rect</span><span class="o">.</span><span class="n">width</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="NodeColumn.getLeftBoundary"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.getLeftBoundary">[docs]</a>    <span class="k">def</span> <span class="nf">getLeftBoundary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="NodeColumn.getYMid"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.getYMid">[docs]</a>    <span class="k">def</span> <span class="nf">getYMid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="NodeColumn.drawLinesTo"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.drawLinesTo">[docs]</a>    <span class="k">def</span> <span class="nf">drawLinesTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnode</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Draw lines to our nodes from the specified one</span>
+<span class="sd">        (used when we are on the right...)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+        <span class="n">colpos</span> <span class="o">=</span> <span class="n">colnode</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span>
+        <span class="n">colrect</span> <span class="o">=</span> <span class="n">colnode</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span>
+
+        <span class="n">pen</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ecolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;edgecolor&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ecolor</span><span class="p">:</span>
+            <span class="n">pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">(</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span> <span class="n">ecolor</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childItems</span><span class="p">():</span>
+            <span class="n">itpos</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span>
+            <span class="n">itrect</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span>
+
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">colpos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">colrect</span><span class="o">.</span><span class="n">width</span><span class="p">()</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="n">colpos</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="n">colrect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span>
+
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">itpos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+            <span class="n">y2</span> <span class="o">=</span> <span class="n">itpos</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span> <span class="n">itrect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="n">lineitem</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">pen</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_v_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">lineitem</span> <span class="p">)</span>
+            <span class="c">#lineitem.setParentItem(self)</span>
+</div>
+<div class="viewcode-block" id="NodeColumn.drawLinesFrom"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.drawLinesFrom">[docs]</a>    <span class="k">def</span> <span class="nf">drawLinesFrom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnode</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Draw lines from our nodes to the specified one</span>
+<span class="sd">        (used when we are on the left...)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span>
+        <span class="n">colpos</span> <span class="o">=</span> <span class="n">colnode</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span>
+        <span class="n">colrect</span> <span class="o">=</span> <span class="n">colnode</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span>
+
+        <span class="n">pen</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ecolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;edgecolor&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ecolor</span><span class="p">:</span>
+            <span class="n">pen</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPen</span><span class="p">(</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span> <span class="n">ecolor</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childItems</span><span class="p">():</span>
+            <span class="n">itpos</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span>
+            <span class="n">itrect</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span>
+
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">itpos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">itrect</span><span class="o">.</span><span class="n">width</span><span class="p">()</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="n">itpos</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span> <span class="n">itrect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span>
+
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">colpos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+            <span class="n">y2</span> <span class="o">=</span> <span class="n">colpos</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span> <span class="n">colrect</span><span class="o">.</span><span class="n">height</span><span class="p">()</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+            <span class="n">lineitem</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">addLine</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">pen</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_v_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">lineitem</span> <span class="p">)</span>
+            <span class="c">#lineitem.setParentItem(self)</span>
+</div>
+<div class="viewcode-block" id="NodeColumn.expandNode"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.NodeColumn.expandNode">[docs]</a>    <span class="k">def</span> <span class="nf">expandNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">colnode</span><span class="p">):</span>
+
+        <span class="n">mymid</span> <span class="o">=</span> <span class="n">colnode</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_goleft</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_removeLeft</span><span class="p">()</span>
+
+            <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">n1</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">eid</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">einfo</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span><span class="o">.</span><span class="n">getRefsTo</span><span class="p">(</span> <span class="n">colnode</span><span class="o">.</span><span class="n">_v_nid</span> <span class="p">)</span> <span class="p">]</span>
+
+            <span class="n">col</span> <span class="o">=</span> <span class="n">NodeColumn</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">(),</span> <span class="n">right</span><span class="o">=</span><span class="bp">self</span> <span class="p">)</span>
+            <span class="n">hiswidth</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span><span class="o">.</span><span class="n">width</span><span class="p">()</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">setX</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">getLeftBoundary</span><span class="p">()</span> <span class="o">-</span> <span class="n">hiswidth</span> <span class="o">-</span> <span class="mi">20</span> <span class="p">)</span>
+
+            <span class="c"># Check if we want to scoot it down...</span>
+            <span class="n">hismid</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">getYMid</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">hismid</span> <span class="o">&lt;</span> <span class="n">mymid</span><span class="p">:</span>
+                <span class="n">col</span><span class="o">.</span><span class="n">setY</span><span class="p">(</span> <span class="n">col</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="n">mymid</span> <span class="o">-</span> <span class="n">hismid</span><span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">col</span><span class="o">.</span><span class="n">drawLinesFrom</span><span class="p">(</span> <span class="n">colnode</span> <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_v_left</span> <span class="o">=</span> <span class="n">col</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_goright</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_removeRight</span><span class="p">()</span>
+
+            <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">n2</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">eid</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">einfo</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span> <span class="n">colnode</span><span class="o">.</span><span class="n">_v_nid</span> <span class="p">)</span> <span class="p">]</span>
+
+            <span class="n">col</span> <span class="o">=</span> <span class="n">NodeColumn</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">(),</span> <span class="n">left</span><span class="o">=</span><span class="bp">self</span> <span class="p">)</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">setX</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRightBoundary</span><span class="p">()</span> <span class="o">+</span> <span class="mi">20</span> <span class="p">)</span>
+
+            <span class="c"># Check if we want to scoot it down...</span>
+            <span class="n">hismid</span> <span class="o">=</span> <span class="n">col</span><span class="o">.</span><span class="n">getYMid</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">hismid</span> <span class="o">&lt;</span> <span class="n">mymid</span><span class="p">:</span>
+                <span class="n">col</span><span class="o">.</span><span class="n">setY</span><span class="p">(</span> <span class="n">col</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="n">mymid</span> <span class="o">-</span> <span class="n">hismid</span><span class="p">)</span> <span class="p">)</span>
+
+            <span class="n">col</span><span class="o">.</span><span class="n">drawLinesTo</span><span class="p">(</span> <span class="n">colnode</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_v_right</span> <span class="o">=</span> <span class="n">col</span>
+</div></div>
+<div class="viewcode-block" id="QGraphNode"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.QGraphNode">[docs]</a><span class="k">class</span> <span class="nc">QGraphNode</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsSimpleTextItem</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">nid</span><span class="p">,</span> <span class="n">nprops</span><span class="p">,</span> <span class="n">scene</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsSimpleTextItem</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nprops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;repr&#39;</span><span class="p">,</span> <span class="s">&#39;node:</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">nid</span><span class="p">),</span> <span class="n">scene</span><span class="o">=</span><span class="n">scene</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">column</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_nid</span> <span class="o">=</span> <span class="n">nid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_nprops</span> <span class="o">=</span> <span class="n">nprops</span>
+
+        <span class="n">color</span> <span class="o">=</span> <span class="n">nprops</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;color&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">color</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">brush</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QBrush</span><span class="p">(</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QColor</span><span class="p">(</span> <span class="n">color</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span> <span class="n">brush</span> <span class="p">)</span>
+
+    <span class="c"># TODO mouseDoubleClickEvent to take over center of view.</span>
+
+<div class="viewcode-block" id="QGraphNode.mousePressEvent"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.QGraphNode.mousePressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentItem</span><span class="p">()</span><span class="o">.</span><span class="n">expandNode</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        <span class="c"># Our scene&#39;s parent is a QGraphTreeView...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_sig_NodeSelected</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_v_nid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_nprops</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="QGraphNode.contextMenuEvent"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.QGraphNode.contextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">mapFromGlobal</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QCursor</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span> <span class="c"># FIXME cheating</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span><span class="o">.</span><span class="n">_sig_NodeContextMenu</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_nid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_v_nprops</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="QGraphTreeView"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.QGraphTreeView">[docs]</a><span class="k">class</span> <span class="nc">QGraphTreeView</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="p">):</span>
+
+    <span class="n">_sig_NodeSelected</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+    <span class="n">_sig_NodeContextMenu</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span> <span class="nb">object</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span> <span class="p">)</span> <span class="c"># pos, nid, nprops</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vg</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QGraphicsScene</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setScene</span><span class="p">(</span> <span class="n">scene</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_nodecol</span> <span class="o">=</span> <span class="n">NodeColumn</span><span class="p">(</span><span class="n">vg</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">scene</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span> <span class="o">=</span> <span class="n">vg</span>
+
+<div class="viewcode-block" id="QGraphTreeView.loadNewGraph"><a class="viewcode-back" href="../../../visgraph.renderers.html#visgraph.renderers.qgraphtree.QGraphTreeView.loadNewGraph">[docs]</a>    <span class="k">def</span> <span class="nf">loadNewGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vg</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_nodecol</span><span class="o">.</span><span class="n">_removeLeft</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_nodecol</span><span class="o">.</span><span class="n">_removeRight</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_nodecol</span><span class="o">.</span><span class="n">removeColumn</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_nodecol</span> <span class="o">=</span> <span class="n">NodeColumn</span><span class="p">(</span><span class="n">vg</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_v_vg</span> <span class="o">=</span> <span class="n">vg</span>
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">visgraph.graphcore</span> <span class="kn">as</span> <span class="nn">vg_graphcore</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QFont</span><span class="p">(</span><span class="s">&#39;Courier&#39;</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="n">initnodes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;repr&#39;</span><span class="p">:</span><span class="s">&#39;node</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">})</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span> <span class="mi">30</span> <span class="p">)</span> <span class="p">]</span>
+
+    <span class="c"># Build up a fake graph</span>
+    <span class="n">vg</span> <span class="o">=</span> <span class="n">vg_graphcore</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">nprops</span> <span class="ow">in</span> <span class="n">initnodes</span><span class="p">:</span>
+        <span class="n">vg</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">nodeid</span><span class="o">=</span><span class="n">nid</span><span class="p">,</span> <span class="nb">repr</span><span class="o">=</span><span class="s">&#39;node </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">nid</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">nprops</span> <span class="ow">in</span> <span class="n">initnodes</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">knid</span><span class="p">,</span><span class="n">knprops</span> <span class="ow">in</span> <span class="n">initnodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nid</span> <span class="o">==</span> <span class="n">knid</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">vg</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">knid</span><span class="p">)</span>
+
+    <span class="n">win</span> <span class="o">=</span> <span class="n">QGraphTreeView</span><span class="p">(</span> <span class="n">vg</span><span class="p">,</span> <span class="n">initnodes</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span> <span class="p">)</span>
+
+    <span class="n">win</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../renderers.html" >visgraph.renderers</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

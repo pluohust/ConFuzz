@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>envi.archs.i386.regs</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="envi-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="envi-module.html">Package&nbsp;envi</a> ::
+        <a href="envi.archs-module.html">Package&nbsp;archs</a> ::
+        <a href="envi.archs.i386-module.html">Package&nbsp;i386</a> ::
+        Module&nbsp;regs
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="envi.archs.i386.regs-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="envi.archs.i386.regs-module.html">Module envi.archs.i386.regs</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">Home of the i386 module's register specs/code.</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package envi=envi-module.html"><a title="envi" class="py-name" href="#" onclick="return doclink('link-0', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module envi.registers=envi.registers-module.html"><a title="envi.registers" class="py-name" href="#" onclick="return doclink('link-1', 'registers', 'link-1');">registers</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_reg</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-comment">## Definitions for some of the i386 MSRs from intel...</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable envi.archs.i386.MSR_DEBUGCTL=envi.archs.i386-module.html#MSR_DEBUGCTL,Variable envi.archs.i386.disasm.MSR_DEBUGCTL=envi.archs.i386.disasm-module.html#MSR_DEBUGCTL,Variable envi.archs.i386.emu.MSR_DEBUGCTL=envi.archs.i386.emu-module.html#MSR_DEBUGCTL,Variable envi.archs.i386.regs.MSR_DEBUGCTL=envi.archs.i386.regs-module.html#MSR_DEBUGCTL"><a title="envi.archs.i386.MSR_DEBUGCTL
+envi.archs.i386.disasm.MSR_DEBUGCTL
+envi.archs.i386.emu.MSR_DEBUGCTL
+envi.archs.i386.regs.MSR_DEBUGCTL" class="py-name" href="#" onclick="return doclink('link-2', 'MSR_DEBUGCTL', 'link-2');">MSR_DEBUGCTL</a></tt>             <tt class="py-op">=</tt> <tt class="py-number">0x01d9</tt> <tt class="py-comment"># Intel p4 and forward, debug behavior control</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt id="link-3" class="py-name" targets="Variable envi.archs.i386.MSR_DEBUGCTL_LBR=envi.archs.i386-module.html#MSR_DEBUGCTL_LBR,Variable envi.archs.i386.disasm.MSR_DEBUGCTL_LBR=envi.archs.i386.disasm-module.html#MSR_DEBUGCTL_LBR,Variable envi.archs.i386.emu.MSR_DEBUGCTL_LBR=envi.archs.i386.emu-module.html#MSR_DEBUGCTL_LBR,Variable envi.archs.i386.regs.MSR_DEBUGCTL_LBR=envi.archs.i386.regs-module.html#MSR_DEBUGCTL_LBR"><a title="envi.archs.i386.MSR_DEBUGCTL_LBR
+envi.archs.i386.disasm.MSR_DEBUGCTL_LBR
+envi.archs.i386.emu.MSR_DEBUGCTL_LBR
+envi.archs.i386.regs.MSR_DEBUGCTL_LBR" class="py-name" href="#" onclick="return doclink('link-3', 'MSR_DEBUGCTL_LBR', 'link-3');">MSR_DEBUGCTL_LBR</a></tt>         <tt class="py-op">=</tt> <tt class="py-number">0x0001</tt> <tt class="py-comment"># last branch recording (in msr's)</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable envi.archs.i386.MSR_DEBUGCTL_BTF=envi.archs.i386-module.html#MSR_DEBUGCTL_BTF,Variable envi.archs.i386.disasm.MSR_DEBUGCTL_BTF=envi.archs.i386.disasm-module.html#MSR_DEBUGCTL_BTF,Variable envi.archs.i386.emu.MSR_DEBUGCTL_BTF=envi.archs.i386.emu-module.html#MSR_DEBUGCTL_BTF,Variable envi.archs.i386.regs.MSR_DEBUGCTL_BTF=envi.archs.i386.regs-module.html#MSR_DEBUGCTL_BTF"><a title="envi.archs.i386.MSR_DEBUGCTL_BTF
+envi.archs.i386.disasm.MSR_DEBUGCTL_BTF
+envi.archs.i386.emu.MSR_DEBUGCTL_BTF
+envi.archs.i386.regs.MSR_DEBUGCTL_BTF" class="py-name" href="#" onclick="return doclink('link-4', 'MSR_DEBUGCTL_BTF', 'link-4');">MSR_DEBUGCTL_BTF</a></tt>         <tt class="py-op">=</tt> <tt class="py-number">0x0002</tt> <tt class="py-comment"># single-step on branches (break on branch)</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt id="link-5" class="py-name" targets="Variable envi.archs.i386.MSR_DEBUGCTL_TR=envi.archs.i386-module.html#MSR_DEBUGCTL_TR,Variable envi.archs.i386.disasm.MSR_DEBUGCTL_TR=envi.archs.i386.disasm-module.html#MSR_DEBUGCTL_TR,Variable envi.archs.i386.emu.MSR_DEBUGCTL_TR=envi.archs.i386.emu-module.html#MSR_DEBUGCTL_TR,Variable envi.archs.i386.regs.MSR_DEBUGCTL_TR=envi.archs.i386.regs-module.html#MSR_DEBUGCTL_TR"><a title="envi.archs.i386.MSR_DEBUGCTL_TR
+envi.archs.i386.disasm.MSR_DEBUGCTL_TR
+envi.archs.i386.emu.MSR_DEBUGCTL_TR
+envi.archs.i386.regs.MSR_DEBUGCTL_TR" class="py-name" href="#" onclick="return doclink('link-5', 'MSR_DEBUGCTL_TR', 'link-5');">MSR_DEBUGCTL_TR</a></tt>          <tt class="py-op">=</tt> <tt class="py-number">0x0004</tt> <tt class="py-comment"># enable sending "branch trace messages" !!</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt id="link-6" class="py-name" targets="Variable envi.archs.i386.MSR_DEBUGCTL_BTS=envi.archs.i386-module.html#MSR_DEBUGCTL_BTS,Variable envi.archs.i386.disasm.MSR_DEBUGCTL_BTS=envi.archs.i386.disasm-module.html#MSR_DEBUGCTL_BTS,Variable envi.archs.i386.emu.MSR_DEBUGCTL_BTS=envi.archs.i386.emu-module.html#MSR_DEBUGCTL_BTS,Variable envi.archs.i386.regs.MSR_DEBUGCTL_BTS=envi.archs.i386.regs-module.html#MSR_DEBUGCTL_BTS"><a title="envi.archs.i386.MSR_DEBUGCTL_BTS
+envi.archs.i386.disasm.MSR_DEBUGCTL_BTS
+envi.archs.i386.emu.MSR_DEBUGCTL_BTS
+envi.archs.i386.regs.MSR_DEBUGCTL_BTS" class="py-name" href="#" onclick="return doclink('link-6', 'MSR_DEBUGCTL_BTS', 'link-6');">MSR_DEBUGCTL_BTS</a></tt>         <tt class="py-op">=</tt> <tt class="py-number">0x0008</tt> <tt class="py-comment"># enable logging BTMs to circular buffer</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt id="link-7" class="py-name" targets="Variable envi.archs.i386.MSR_DEBUGCTL_BTINT=envi.archs.i386-module.html#MSR_DEBUGCTL_BTINT,Variable envi.archs.i386.disasm.MSR_DEBUGCTL_BTINT=envi.archs.i386.disasm-module.html#MSR_DEBUGCTL_BTINT,Variable envi.archs.i386.emu.MSR_DEBUGCTL_BTINT=envi.archs.i386.emu-module.html#MSR_DEBUGCTL_BTINT,Variable envi.archs.i386.regs.MSR_DEBUGCTL_BTINT=envi.archs.i386.regs-module.html#MSR_DEBUGCTL_BTINT"><a title="envi.archs.i386.MSR_DEBUGCTL_BTINT
+envi.archs.i386.disasm.MSR_DEBUGCTL_BTINT
+envi.archs.i386.emu.MSR_DEBUGCTL_BTINT
+envi.archs.i386.regs.MSR_DEBUGCTL_BTINT" class="py-name" href="#" onclick="return doclink('link-7', 'MSR_DEBUGCTL_BTINT', 'link-7');">MSR_DEBUGCTL_BTINT</a></tt>       <tt class="py-op">=</tt> <tt class="py-number">0x0010</tt> <tt class="py-comment"># Branch-trace-interrupt (gen interrupt on BTS full)</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt id="link-8" class="py-name" targets="Variable envi.archs.i386.MSR_DEBUGCTL_BTS_OFF_OS=envi.archs.i386-module.html#MSR_DEBUGCTL_BTS_OFF_OS,Variable envi.archs.i386.disasm.MSR_DEBUGCTL_BTS_OFF_OS=envi.archs.i386.disasm-module.html#MSR_DEBUGCTL_BTS_OFF_OS,Variable envi.archs.i386.emu.MSR_DEBUGCTL_BTS_OFF_OS=envi.archs.i386.emu-module.html#MSR_DEBUGCTL_BTS_OFF_OS,Variable envi.archs.i386.regs.MSR_DEBUGCTL_BTS_OFF_OS=envi.archs.i386.regs-module.html#MSR_DEBUGCTL_BTS_OFF_OS"><a title="envi.archs.i386.MSR_DEBUGCTL_BTS_OFF_OS
+envi.archs.i386.disasm.MSR_DEBUGCTL_BTS_OFF_OS
+envi.archs.i386.emu.MSR_DEBUGCTL_BTS_OFF_OS
+envi.archs.i386.regs.MSR_DEBUGCTL_BTS_OFF_OS" class="py-name" href="#" onclick="return doclink('link-8', 'MSR_DEBUGCTL_BTS_OFF_OS', 'link-8');">MSR_DEBUGCTL_BTS_OFF_OS</a></tt>  <tt class="py-op">=</tt> <tt class="py-number">0x0020</tt> <tt class="py-comment"># disable ring0 branch trace store</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt id="link-9" class="py-name" targets="Variable envi.archs.i386.MSR_DEBUGCTL_BTS_OFF_USR=envi.archs.i386-module.html#MSR_DEBUGCTL_BTS_OFF_USR,Variable envi.archs.i386.disasm.MSR_DEBUGCTL_BTS_OFF_USR=envi.archs.i386.disasm-module.html#MSR_DEBUGCTL_BTS_OFF_USR,Variable envi.archs.i386.emu.MSR_DEBUGCTL_BTS_OFF_USR=envi.archs.i386.emu-module.html#MSR_DEBUGCTL_BTS_OFF_USR,Variable envi.archs.i386.regs.MSR_DEBUGCTL_BTS_OFF_USR=envi.archs.i386.regs-module.html#MSR_DEBUGCTL_BTS_OFF_USR"><a title="envi.archs.i386.MSR_DEBUGCTL_BTS_OFF_USR
+envi.archs.i386.disasm.MSR_DEBUGCTL_BTS_OFF_USR
+envi.archs.i386.emu.MSR_DEBUGCTL_BTS_OFF_USR
+envi.archs.i386.regs.MSR_DEBUGCTL_BTS_OFF_USR" class="py-name" href="#" onclick="return doclink('link-9', 'MSR_DEBUGCTL_BTS_OFF_USR', 'link-9');">MSR_DEBUGCTL_BTS_OFF_USR</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0x0040</tt> <tt class="py-comment"># disable non-ring0 branch trace store</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt id="link-10" class="py-name" targets="Variable envi.archs.i386.MSR_SYSENTER_EIP=envi.archs.i386-module.html#MSR_SYSENTER_EIP,Variable envi.archs.i386.disasm.MSR_SYSENTER_EIP=envi.archs.i386.disasm-module.html#MSR_SYSENTER_EIP,Variable envi.archs.i386.emu.MSR_SYSENTER_EIP=envi.archs.i386.emu-module.html#MSR_SYSENTER_EIP,Variable envi.archs.i386.regs.MSR_SYSENTER_EIP=envi.archs.i386.regs-module.html#MSR_SYSENTER_EIP"><a title="envi.archs.i386.MSR_SYSENTER_EIP
+envi.archs.i386.disasm.MSR_SYSENTER_EIP
+envi.archs.i386.emu.MSR_SYSENTER_EIP
+envi.archs.i386.regs.MSR_SYSENTER_EIP" class="py-name" href="#" onclick="return doclink('link-10', 'MSR_SYSENTER_EIP', 'link-10');">MSR_SYSENTER_EIP</a></tt>         <tt class="py-op">=</tt> <tt class="py-number">0x0176</tt> <tt class="py-comment"># Where is EIP at sysenter?</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"><tt id="link-11" class="py-name" targets="Variable envi.archs.i386.IA32_DS_AREA_MSR=envi.archs.i386-module.html#IA32_DS_AREA_MSR,Variable envi.archs.i386.disasm.IA32_DS_AREA_MSR=envi.archs.i386.disasm-module.html#IA32_DS_AREA_MSR,Variable envi.archs.i386.emu.IA32_DS_AREA_MSR=envi.archs.i386.emu-module.html#IA32_DS_AREA_MSR,Variable envi.archs.i386.regs.IA32_DS_AREA_MSR=envi.archs.i386.regs-module.html#IA32_DS_AREA_MSR"><a title="envi.archs.i386.IA32_DS_AREA_MSR
+envi.archs.i386.disasm.IA32_DS_AREA_MSR
+envi.archs.i386.emu.IA32_DS_AREA_MSR
+envi.archs.i386.regs.IA32_DS_AREA_MSR" class="py-name" href="#" onclick="return doclink('link-11', 'IA32_DS_AREA_MSR', 'link-11');">IA32_DS_AREA_MSR</a></tt>         <tt class="py-op">=</tt> <tt class="py-number">0x0600</tt> <tt class="py-comment"># pointer to the configured debug storage area</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"><tt class="py-comment"># Eflags bit masks</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt id="link-12" class="py-name" targets="Variable envi.archs.i386.EFLAGS_CF=envi.archs.i386-module.html#EFLAGS_CF,Variable envi.archs.i386.disasm.EFLAGS_CF=envi.archs.i386.disasm-module.html#EFLAGS_CF,Variable envi.archs.i386.emu.EFLAGS_CF=envi.archs.i386.emu-module.html#EFLAGS_CF,Variable envi.archs.i386.regs.EFLAGS_CF=envi.archs.i386.regs-module.html#EFLAGS_CF"><a title="envi.archs.i386.EFLAGS_CF
+envi.archs.i386.disasm.EFLAGS_CF
+envi.archs.i386.emu.EFLAGS_CF
+envi.archs.i386.regs.EFLAGS_CF" class="py-name" href="#" onclick="return doclink('link-12', 'EFLAGS_CF', 'link-12');">EFLAGS_CF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">0</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt id="link-13" class="py-name" targets="Variable envi.archs.i386.EFLAGS_PF=envi.archs.i386-module.html#EFLAGS_PF,Variable envi.archs.i386.disasm.EFLAGS_PF=envi.archs.i386.disasm-module.html#EFLAGS_PF,Variable envi.archs.i386.emu.EFLAGS_PF=envi.archs.i386.emu-module.html#EFLAGS_PF,Variable envi.archs.i386.regs.EFLAGS_PF=envi.archs.i386.regs-module.html#EFLAGS_PF"><a title="envi.archs.i386.EFLAGS_PF
+envi.archs.i386.disasm.EFLAGS_PF
+envi.archs.i386.emu.EFLAGS_PF
+envi.archs.i386.regs.EFLAGS_PF" class="py-name" href="#" onclick="return doclink('link-13', 'EFLAGS_PF', 'link-13');">EFLAGS_PF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">2</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"><tt id="link-14" class="py-name" targets="Variable envi.archs.i386.EFLAGS_AF=envi.archs.i386-module.html#EFLAGS_AF,Variable envi.archs.i386.disasm.EFLAGS_AF=envi.archs.i386.disasm-module.html#EFLAGS_AF,Variable envi.archs.i386.emu.EFLAGS_AF=envi.archs.i386.emu-module.html#EFLAGS_AF,Variable envi.archs.i386.regs.EFLAGS_AF=envi.archs.i386.regs-module.html#EFLAGS_AF"><a title="envi.archs.i386.EFLAGS_AF
+envi.archs.i386.disasm.EFLAGS_AF
+envi.archs.i386.emu.EFLAGS_AF
+envi.archs.i386.regs.EFLAGS_AF" class="py-name" href="#" onclick="return doclink('link-14', 'EFLAGS_AF', 'link-14');">EFLAGS_AF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">4</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"><tt id="link-15" class="py-name" targets="Variable envi.archs.i386.EFLAGS_ZF=envi.archs.i386-module.html#EFLAGS_ZF,Variable envi.archs.i386.disasm.EFLAGS_ZF=envi.archs.i386.disasm-module.html#EFLAGS_ZF,Variable envi.archs.i386.emu.EFLAGS_ZF=envi.archs.i386.emu-module.html#EFLAGS_ZF,Variable envi.archs.i386.regs.EFLAGS_ZF=envi.archs.i386.regs-module.html#EFLAGS_ZF"><a title="envi.archs.i386.EFLAGS_ZF
+envi.archs.i386.disasm.EFLAGS_ZF
+envi.archs.i386.emu.EFLAGS_ZF
+envi.archs.i386.regs.EFLAGS_ZF" class="py-name" href="#" onclick="return doclink('link-15', 'EFLAGS_ZF', 'link-15');">EFLAGS_ZF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">6</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt id="link-16" class="py-name" targets="Variable envi.archs.i386.EFLAGS_SF=envi.archs.i386-module.html#EFLAGS_SF,Variable envi.archs.i386.disasm.EFLAGS_SF=envi.archs.i386.disasm-module.html#EFLAGS_SF,Variable envi.archs.i386.emu.EFLAGS_SF=envi.archs.i386.emu-module.html#EFLAGS_SF,Variable envi.archs.i386.regs.EFLAGS_SF=envi.archs.i386.regs-module.html#EFLAGS_SF"><a title="envi.archs.i386.EFLAGS_SF
+envi.archs.i386.disasm.EFLAGS_SF
+envi.archs.i386.emu.EFLAGS_SF
+envi.archs.i386.regs.EFLAGS_SF" class="py-name" href="#" onclick="return doclink('link-16', 'EFLAGS_SF', 'link-16');">EFLAGS_SF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">7</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt id="link-17" class="py-name" targets="Variable envi.archs.i386.EFLAGS_TF=envi.archs.i386-module.html#EFLAGS_TF,Variable envi.archs.i386.disasm.EFLAGS_TF=envi.archs.i386.disasm-module.html#EFLAGS_TF,Variable envi.archs.i386.emu.EFLAGS_TF=envi.archs.i386.emu-module.html#EFLAGS_TF,Variable envi.archs.i386.regs.EFLAGS_TF=envi.archs.i386.regs-module.html#EFLAGS_TF"><a title="envi.archs.i386.EFLAGS_TF
+envi.archs.i386.disasm.EFLAGS_TF
+envi.archs.i386.emu.EFLAGS_TF
+envi.archs.i386.regs.EFLAGS_TF" class="py-name" href="#" onclick="return doclink('link-17', 'EFLAGS_TF', 'link-17');">EFLAGS_TF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">8</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt id="link-18" class="py-name" targets="Variable envi.archs.i386.EFLAGS_IF=envi.archs.i386-module.html#EFLAGS_IF,Variable envi.archs.i386.disasm.EFLAGS_IF=envi.archs.i386.disasm-module.html#EFLAGS_IF,Variable envi.archs.i386.emu.EFLAGS_IF=envi.archs.i386.emu-module.html#EFLAGS_IF,Variable envi.archs.i386.regs.EFLAGS_IF=envi.archs.i386.regs-module.html#EFLAGS_IF"><a title="envi.archs.i386.EFLAGS_IF
+envi.archs.i386.disasm.EFLAGS_IF
+envi.archs.i386.emu.EFLAGS_IF
+envi.archs.i386.regs.EFLAGS_IF" class="py-name" href="#" onclick="return doclink('link-18', 'EFLAGS_IF', 'link-18');">EFLAGS_IF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">9</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"><tt id="link-19" class="py-name" targets="Variable envi.archs.i386.EFLAGS_DF=envi.archs.i386-module.html#EFLAGS_DF,Variable envi.archs.i386.disasm.EFLAGS_DF=envi.archs.i386.disasm-module.html#EFLAGS_DF,Variable envi.archs.i386.emu.EFLAGS_DF=envi.archs.i386.emu-module.html#EFLAGS_DF,Variable envi.archs.i386.regs.EFLAGS_DF=envi.archs.i386.regs-module.html#EFLAGS_DF"><a title="envi.archs.i386.EFLAGS_DF
+envi.archs.i386.disasm.EFLAGS_DF
+envi.archs.i386.emu.EFLAGS_DF
+envi.archs.i386.regs.EFLAGS_DF" class="py-name" href="#" onclick="return doclink('link-19', 'EFLAGS_DF', 'link-19');">EFLAGS_DF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">10</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"><tt id="link-20" class="py-name" targets="Variable envi.archs.i386.EFLAGS_OF=envi.archs.i386-module.html#EFLAGS_OF,Variable envi.archs.i386.disasm.EFLAGS_OF=envi.archs.i386.disasm-module.html#EFLAGS_OF,Variable envi.archs.i386.emu.EFLAGS_OF=envi.archs.i386.emu-module.html#EFLAGS_OF,Variable envi.archs.i386.regs.EFLAGS_OF=envi.archs.i386.regs-module.html#EFLAGS_OF"><a title="envi.archs.i386.EFLAGS_OF
+envi.archs.i386.disasm.EFLAGS_OF
+envi.archs.i386.emu.EFLAGS_OF
+envi.archs.i386.regs.EFLAGS_OF" class="py-name" href="#" onclick="return doclink('link-20', 'EFLAGS_OF', 'link-20');">EFLAGS_OF</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">11</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line"><tt id="link-21" class="py-name" targets="Variable envi.archs.i386.disasm.i386regs=envi.archs.i386.disasm-module.html#i386regs,Variable envi.archs.i386.emu.i386regs=envi.archs.i386.emu-module.html#i386regs,Variable envi.archs.i386.i386regs=envi.archs.i386-module.html#i386regs,Variable envi.archs.i386.regs.i386regs=envi.archs.i386.regs-module.html#i386regs"><a title="envi.archs.i386.disasm.i386regs
+envi.archs.i386.emu.i386regs
+envi.archs.i386.i386regs
+envi.archs.i386.regs.i386regs" class="py-name" href="#" onclick="return doclink('link-21', 'i386regs', 'link-21');">i386regs</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"eax"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ecx"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"edx"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ebx"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"esp"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ebp"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"esi"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"edi"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">    <tt class="py-comment">#FIXME are these 64?</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"mm0"</tt><tt class="py-op">,</tt><tt class="py-number">64</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"mm1"</tt><tt class="py-op">,</tt><tt class="py-number">64</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-string">"mm2"</tt><tt class="py-op">,</tt><tt class="py-number">64</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-string">"mm3"</tt><tt class="py-op">,</tt><tt class="py-number">64</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-string">"mm4"</tt><tt class="py-op">,</tt><tt class="py-number">64</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-string">"mm5"</tt><tt class="py-op">,</tt><tt class="py-number">64</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-string">"mm6"</tt><tt class="py-op">,</tt><tt class="py-number">64</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-string">"mm7"</tt><tt class="py-op">,</tt><tt class="py-number">64</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">    <tt class="py-comment"># SIMD registers</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"xmm0"</tt><tt class="py-op">,</tt><tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"xmm1"</tt><tt class="py-op">,</tt><tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"xmm2"</tt><tt class="py-op">,</tt><tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"xmm3"</tt><tt class="py-op">,</tt><tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"xmm4"</tt><tt class="py-op">,</tt><tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"xmm5"</tt><tt class="py-op">,</tt><tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"xmm6"</tt><tt class="py-op">,</tt><tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"xmm7"</tt><tt class="py-op">,</tt><tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">    <tt class="py-comment"># Debug registers</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"debug0"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"debug1"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"debug2"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"debug3"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"debug4"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"debug5"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"debug6"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"debug7"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">    <tt class="py-comment"># Control registers</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"ctrl0"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ctrl1"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ctrl2"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ctrl3"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ctrl4"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ctrl5"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ctrl6"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ctrl7"</tt><tt class="py-op">,</tt><tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">    <tt class="py-comment"># Test registers</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"test0"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"test1"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"test2"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"test3"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"test4"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"test5"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"test6"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"test7"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">    <tt class="py-comment"># Segment registers</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"es"</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"cs"</tt><tt class="py-op">,</tt><tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ss"</tt><tt class="py-op">,</tt><tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"ds"</tt><tt class="py-op">,</tt><tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"fs"</tt><tt class="py-op">,</tt><tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"gs"</tt><tt class="py-op">,</tt><tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">    <tt class="py-comment"># FPU Registers</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"st0"</tt><tt class="py-op">,</tt> <tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"st1"</tt><tt class="py-op">,</tt> <tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"st2"</tt><tt class="py-op">,</tt> <tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"st3"</tt><tt class="py-op">,</tt> <tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"st4"</tt><tt class="py-op">,</tt> <tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"st5"</tt><tt class="py-op">,</tt> <tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"st6"</tt><tt class="py-op">,</tt> <tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-string">"st7"</tt><tt class="py-op">,</tt> <tt class="py-number">128</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">    <tt class="py-comment"># Leftovers ;)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"eflags"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-string">"eip"</tt><tt class="py-op">,</tt> <tt class="py-number">32</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"><tt class="py-op">]</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"> </tt>
+<a name="getRegOffset"></a><div id="getRegOffset-def"><a name="L51"></a><tt class="py-lineno">51</tt> <a class="py-toggle" href="#" id="getRegOffset-toggle" onclick="return toggle('getRegOffset');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.i386.regs-module.html#getRegOffset">getRegOffset</a><tt class="py-op">(</tt><tt class="py-param">regs</tt><tt class="py-op">,</tt> <tt class="py-param">regname</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getRegOffset-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="getRegOffset-expanded"><a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">    <tt class="py-comment"># NOTE: dynamically calculate this on import so we are less</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">    <tt class="py-comment"># likely to fuck it up...</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt id="link-22" class="py-name" targets="Variable envi.archs.i386.disasm.i=envi.archs.i386.disasm-module.html#i,Variable envi.archs.i386.emu.i=envi.archs.i386.emu-module.html#i,Variable envi.archs.i386.i=envi.archs.i386-module.html#i,Variable envi.bits.i=envi.bits-module.html#i"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-22', 'i', 'link-22');">i</a></tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">enumerate</tt><tt class="py-op">(</tt><tt id="link-23" class="py-name" targets="Module envi.archs.amd64.regs=envi.archs.amd64.regs-module.html,Module envi.archs.arm.regs=envi.archs.arm.regs-module.html,Variable envi.archs.i386.opcode86.regs=envi.archs.i386.opcode86-module.html#regs,Module envi.archs.i386.regs=envi.archs.i386.regs-module.html,Module envi.archs.z80.regs=envi.archs.z80.regs-module.html"><a title="envi.archs.amd64.regs
+envi.archs.arm.regs
+envi.archs.i386.opcode86.regs
+envi.archs.i386.regs
+envi.archs.z80.regs" class="py-name" href="#" onclick="return doclink('link-23', 'regs', 'link-23');">regs</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">name</tt> <tt class="py-op">==</tt> <tt class="py-name">regname</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-24" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-24', 'i', 'link-22');">i</a></tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">    <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">"getRegOffset doesn't know about: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">regname</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"><tt class="py-comment"># Setup REG_EAX and the like in our module</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"><tt id="link-25" class="py-name" targets="Variable envi.archs.amd64.disasm.l=envi.archs.amd64.disasm-module.html#l,Variable envi.archs.amd64.l=envi.archs.amd64-module.html#l,Variable envi.archs.amd64.regs.l=envi.archs.amd64.regs-module.html#l,Variable envi.archs.arm.armdisasm.l=envi.archs.arm.armdisasm-module.html#l,Variable envi.archs.arm.disasm.l=envi.archs.arm.disasm-module.html#l,Variable envi.archs.arm.emu.l=envi.archs.arm.emu-module.html#l,Variable envi.archs.arm.l=envi.archs.arm-module.html#l,Variable envi.archs.arm.regs.l=envi.archs.arm.regs-module.html#l,Variable envi.archs.arm.thumbdisasm.l=envi.archs.arm.thumbdisasm-module.html#l,Variable envi.archs.i386.disasm.l=envi.archs.i386.disasm-module.html#l,Variable envi.archs.i386.emu.l=envi.archs.i386.emu-module.html#l,Variable envi.archs.i386.l=envi.archs.i386-module.html#l,Variable envi.archs.i386.regs.l=envi.archs.i386.regs-module.html#l,Variable envi.archs.z80.regs.l=envi.archs.z80.regs-module.html#l"><a title="envi.archs.amd64.disasm.l
+envi.archs.amd64.l
+envi.archs.amd64.regs.l
+envi.archs.arm.armdisasm.l
+envi.archs.arm.disasm.l
+envi.archs.arm.emu.l
+envi.archs.arm.l
+envi.archs.arm.regs.l
+envi.archs.arm.thumbdisasm.l
+envi.archs.i386.disasm.l
+envi.archs.i386.emu.l
+envi.archs.i386.l
+envi.archs.i386.regs.l
+envi.archs.z80.regs.l" class="py-name" href="#" onclick="return doclink('link-25', 'l', 'link-25');">l</a></tt> <tt class="py-op">=</tt> <tt class="py-name">locals</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line"><tt class="py-name">e_reg</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Function envi.registers.addLocalEnums()=envi.registers-module.html#addLocalEnums"><a title="envi.registers.addLocalEnums" class="py-name" href="#" onclick="return doclink('link-26', 'addLocalEnums', 'link-26');">addLocalEnums</a></tt><tt class="py-op">(</tt><tt id="link-27" class="py-name"><a title="envi.archs.amd64.disasm.l
+envi.archs.amd64.l
+envi.archs.amd64.regs.l
+envi.archs.arm.armdisasm.l
+envi.archs.arm.disasm.l
+envi.archs.arm.emu.l
+envi.archs.arm.l
+envi.archs.arm.regs.l
+envi.archs.arm.thumbdisasm.l
+envi.archs.i386.disasm.l
+envi.archs.i386.emu.l
+envi.archs.i386.l
+envi.archs.i386.regs.l
+envi.archs.z80.regs.l" class="py-name" href="#" onclick="return doclink('link-27', 'l', 'link-25');">l</a></tt><tt class="py-op">,</tt> <tt id="link-28" class="py-name"><a title="envi.archs.i386.disasm.i386regs
+envi.archs.i386.emu.i386regs
+envi.archs.i386.i386regs
+envi.archs.i386.regs.i386regs" class="py-name" href="#" onclick="return doclink('link-28', 'i386regs', 'link-21');">i386regs</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"><tt id="link-29" class="py-name" targets="Variable envi.archs.i386.disasm.i386meta=envi.archs.i386.disasm-module.html#i386meta,Variable envi.archs.i386.emu.i386meta=envi.archs.i386.emu-module.html#i386meta,Variable envi.archs.i386.i386meta=envi.archs.i386-module.html#i386meta,Variable envi.archs.i386.regs.i386meta=envi.archs.i386.regs-module.html#i386meta"><a title="envi.archs.i386.disasm.i386meta
+envi.archs.i386.emu.i386meta
+envi.archs.i386.i386meta
+envi.archs.i386.regs.i386meta" class="py-name" href="#" onclick="return doclink('link-29', 'i386meta', 'link-29');">i386meta</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"ax"</tt><tt class="py-op">,</tt> <tt id="link-30" class="py-name" targets="Variable envi.archs.amd64.REG_EAX=envi.archs.amd64-module.html#REG_EAX,Variable envi.archs.amd64.disasm.REG_EAX=envi.archs.amd64.disasm-module.html#REG_EAX,Variable envi.archs.amd64.regs.REG_EAX=envi.archs.amd64.regs-module.html#REG_EAX,Variable envi.archs.i386.REG_EAX=envi.archs.i386-module.html#REG_EAX,Variable envi.archs.i386.disasm.REG_EAX=envi.archs.i386.disasm-module.html#REG_EAX,Variable envi.archs.i386.emu.REG_EAX=envi.archs.i386.emu-module.html#REG_EAX,Variable envi.archs.i386.regs.REG_EAX=envi.archs.i386.regs-module.html#REG_EAX"><a title="envi.archs.amd64.REG_EAX
+envi.archs.amd64.disasm.REG_EAX
+envi.archs.amd64.regs.REG_EAX
+envi.archs.i386.REG_EAX
+envi.archs.i386.disasm.REG_EAX
+envi.archs.i386.emu.REG_EAX
+envi.archs.i386.regs.REG_EAX" class="py-name" href="#" onclick="return doclink('link-30', 'REG_EAX', 'link-30');">REG_EAX</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"cx"</tt><tt class="py-op">,</tt> <tt id="link-31" class="py-name" targets="Variable envi.archs.amd64.REG_ECX=envi.archs.amd64-module.html#REG_ECX,Variable envi.archs.amd64.disasm.REG_ECX=envi.archs.amd64.disasm-module.html#REG_ECX,Variable envi.archs.amd64.regs.REG_ECX=envi.archs.amd64.regs-module.html#REG_ECX,Variable envi.archs.i386.REG_ECX=envi.archs.i386-module.html#REG_ECX,Variable envi.archs.i386.disasm.REG_ECX=envi.archs.i386.disasm-module.html#REG_ECX,Variable envi.archs.i386.emu.REG_ECX=envi.archs.i386.emu-module.html#REG_ECX,Variable envi.archs.i386.regs.REG_ECX=envi.archs.i386.regs-module.html#REG_ECX"><a title="envi.archs.amd64.REG_ECX
+envi.archs.amd64.disasm.REG_ECX
+envi.archs.amd64.regs.REG_ECX
+envi.archs.i386.REG_ECX
+envi.archs.i386.disasm.REG_ECX
+envi.archs.i386.emu.REG_ECX
+envi.archs.i386.regs.REG_ECX" class="py-name" href="#" onclick="return doclink('link-31', 'REG_ECX', 'link-31');">REG_ECX</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"dx"</tt><tt class="py-op">,</tt> <tt id="link-32" class="py-name" targets="Variable envi.archs.amd64.REG_EDX=envi.archs.amd64-module.html#REG_EDX,Variable envi.archs.amd64.disasm.REG_EDX=envi.archs.amd64.disasm-module.html#REG_EDX,Variable envi.archs.amd64.regs.REG_EDX=envi.archs.amd64.regs-module.html#REG_EDX,Variable envi.archs.i386.REG_EDX=envi.archs.i386-module.html#REG_EDX,Variable envi.archs.i386.disasm.REG_EDX=envi.archs.i386.disasm-module.html#REG_EDX,Variable envi.archs.i386.emu.REG_EDX=envi.archs.i386.emu-module.html#REG_EDX,Variable envi.archs.i386.regs.REG_EDX=envi.archs.i386.regs-module.html#REG_EDX"><a title="envi.archs.amd64.REG_EDX
+envi.archs.amd64.disasm.REG_EDX
+envi.archs.amd64.regs.REG_EDX
+envi.archs.i386.REG_EDX
+envi.archs.i386.disasm.REG_EDX
+envi.archs.i386.emu.REG_EDX
+envi.archs.i386.regs.REG_EDX" class="py-name" href="#" onclick="return doclink('link-32', 'REG_EDX', 'link-32');">REG_EDX</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"bx"</tt><tt class="py-op">,</tt> <tt id="link-33" class="py-name" targets="Variable envi.archs.amd64.REG_EBX=envi.archs.amd64-module.html#REG_EBX,Variable envi.archs.amd64.disasm.REG_EBX=envi.archs.amd64.disasm-module.html#REG_EBX,Variable envi.archs.amd64.regs.REG_EBX=envi.archs.amd64.regs-module.html#REG_EBX,Variable envi.archs.i386.REG_EBX=envi.archs.i386-module.html#REG_EBX,Variable envi.archs.i386.disasm.REG_EBX=envi.archs.i386.disasm-module.html#REG_EBX,Variable envi.archs.i386.emu.REG_EBX=envi.archs.i386.emu-module.html#REG_EBX,Variable envi.archs.i386.regs.REG_EBX=envi.archs.i386.regs-module.html#REG_EBX"><a title="envi.archs.amd64.REG_EBX
+envi.archs.amd64.disasm.REG_EBX
+envi.archs.amd64.regs.REG_EBX
+envi.archs.i386.REG_EBX
+envi.archs.i386.disasm.REG_EBX
+envi.archs.i386.emu.REG_EBX
+envi.archs.i386.regs.REG_EBX" class="py-name" href="#" onclick="return doclink('link-33', 'REG_EBX', 'link-33');">REG_EBX</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"sp"</tt><tt class="py-op">,</tt> <tt id="link-34" class="py-name" targets="Variable envi.archs.amd64.REG_ESP=envi.archs.amd64-module.html#REG_ESP,Variable envi.archs.amd64.disasm.REG_ESP=envi.archs.amd64.disasm-module.html#REG_ESP,Variable envi.archs.amd64.regs.REG_ESP=envi.archs.amd64.regs-module.html#REG_ESP,Variable envi.archs.i386.REG_ESP=envi.archs.i386-module.html#REG_ESP,Variable envi.archs.i386.disasm.REG_ESP=envi.archs.i386.disasm-module.html#REG_ESP,Variable envi.archs.i386.emu.REG_ESP=envi.archs.i386.emu-module.html#REG_ESP,Variable envi.archs.i386.regs.REG_ESP=envi.archs.i386.regs-module.html#REG_ESP"><a title="envi.archs.amd64.REG_ESP
+envi.archs.amd64.disasm.REG_ESP
+envi.archs.amd64.regs.REG_ESP
+envi.archs.i386.REG_ESP
+envi.archs.i386.disasm.REG_ESP
+envi.archs.i386.emu.REG_ESP
+envi.archs.i386.regs.REG_ESP" class="py-name" href="#" onclick="return doclink('link-34', 'REG_ESP', 'link-34');">REG_ESP</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"bp"</tt><tt class="py-op">,</tt> <tt id="link-35" class="py-name" targets="Variable envi.archs.amd64.REG_EBP=envi.archs.amd64-module.html#REG_EBP,Variable envi.archs.amd64.disasm.REG_EBP=envi.archs.amd64.disasm-module.html#REG_EBP,Variable envi.archs.amd64.regs.REG_EBP=envi.archs.amd64.regs-module.html#REG_EBP,Variable envi.archs.i386.REG_EBP=envi.archs.i386-module.html#REG_EBP,Variable envi.archs.i386.disasm.REG_EBP=envi.archs.i386.disasm-module.html#REG_EBP,Variable envi.archs.i386.emu.REG_EBP=envi.archs.i386.emu-module.html#REG_EBP,Variable envi.archs.i386.regs.REG_EBP=envi.archs.i386.regs-module.html#REG_EBP"><a title="envi.archs.amd64.REG_EBP
+envi.archs.amd64.disasm.REG_EBP
+envi.archs.amd64.regs.REG_EBP
+envi.archs.i386.REG_EBP
+envi.archs.i386.disasm.REG_EBP
+envi.archs.i386.emu.REG_EBP
+envi.archs.i386.regs.REG_EBP" class="py-name" href="#" onclick="return doclink('link-35', 'REG_EBP', 'link-35');">REG_EBP</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"si"</tt><tt class="py-op">,</tt> <tt id="link-36" class="py-name" targets="Variable envi.archs.amd64.REG_ESI=envi.archs.amd64-module.html#REG_ESI,Variable envi.archs.amd64.disasm.REG_ESI=envi.archs.amd64.disasm-module.html#REG_ESI,Variable envi.archs.amd64.regs.REG_ESI=envi.archs.amd64.regs-module.html#REG_ESI,Variable envi.archs.i386.REG_ESI=envi.archs.i386-module.html#REG_ESI,Variable envi.archs.i386.disasm.REG_ESI=envi.archs.i386.disasm-module.html#REG_ESI,Variable envi.archs.i386.emu.REG_ESI=envi.archs.i386.emu-module.html#REG_ESI,Variable envi.archs.i386.regs.REG_ESI=envi.archs.i386.regs-module.html#REG_ESI"><a title="envi.archs.amd64.REG_ESI
+envi.archs.amd64.disasm.REG_ESI
+envi.archs.amd64.regs.REG_ESI
+envi.archs.i386.REG_ESI
+envi.archs.i386.disasm.REG_ESI
+envi.archs.i386.emu.REG_ESI
+envi.archs.i386.regs.REG_ESI" class="py-name" href="#" onclick="return doclink('link-36', 'REG_ESI', 'link-36');">REG_ESI</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"di"</tt><tt class="py-op">,</tt> <tt id="link-37" class="py-name" targets="Variable envi.archs.amd64.REG_EDI=envi.archs.amd64-module.html#REG_EDI,Variable envi.archs.amd64.disasm.REG_EDI=envi.archs.amd64.disasm-module.html#REG_EDI,Variable envi.archs.amd64.regs.REG_EDI=envi.archs.amd64.regs-module.html#REG_EDI,Variable envi.archs.i386.REG_EDI=envi.archs.i386-module.html#REG_EDI,Variable envi.archs.i386.disasm.REG_EDI=envi.archs.i386.disasm-module.html#REG_EDI,Variable envi.archs.i386.emu.REG_EDI=envi.archs.i386.emu-module.html#REG_EDI,Variable envi.archs.i386.regs.REG_EDI=envi.archs.i386.regs-module.html#REG_EDI"><a title="envi.archs.amd64.REG_EDI
+envi.archs.amd64.disasm.REG_EDI
+envi.archs.amd64.regs.REG_EDI
+envi.archs.i386.REG_EDI
+envi.archs.i386.disasm.REG_EDI
+envi.archs.i386.emu.REG_EDI
+envi.archs.i386.regs.REG_EDI" class="py-name" href="#" onclick="return doclink('link-37', 'REG_EDI', 'link-37');">REG_EDI</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line"> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"al"</tt><tt class="py-op">,</tt> <tt id="link-38" class="py-name"><a title="envi.archs.amd64.REG_EAX
+envi.archs.amd64.disasm.REG_EAX
+envi.archs.amd64.regs.REG_EAX
+envi.archs.i386.REG_EAX
+envi.archs.i386.disasm.REG_EAX
+envi.archs.i386.emu.REG_EAX
+envi.archs.i386.regs.REG_EAX" class="py-name" href="#" onclick="return doclink('link-38', 'REG_EAX', 'link-30');">REG_EAX</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"cl"</tt><tt class="py-op">,</tt> <tt id="link-39" class="py-name"><a title="envi.archs.amd64.REG_ECX
+envi.archs.amd64.disasm.REG_ECX
+envi.archs.amd64.regs.REG_ECX
+envi.archs.i386.REG_ECX
+envi.archs.i386.disasm.REG_ECX
+envi.archs.i386.emu.REG_ECX
+envi.archs.i386.regs.REG_ECX" class="py-name" href="#" onclick="return doclink('link-39', 'REG_ECX', 'link-31');">REG_ECX</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"dl"</tt><tt class="py-op">,</tt> <tt id="link-40" class="py-name"><a title="envi.archs.amd64.REG_EDX
+envi.archs.amd64.disasm.REG_EDX
+envi.archs.amd64.regs.REG_EDX
+envi.archs.i386.REG_EDX
+envi.archs.i386.disasm.REG_EDX
+envi.archs.i386.emu.REG_EDX
+envi.archs.i386.regs.REG_EDX" class="py-name" href="#" onclick="return doclink('link-40', 'REG_EDX', 'link-32');">REG_EDX</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"bl"</tt><tt class="py-op">,</tt> <tt id="link-41" class="py-name"><a title="envi.archs.amd64.REG_EBX
+envi.archs.amd64.disasm.REG_EBX
+envi.archs.amd64.regs.REG_EBX
+envi.archs.i386.REG_EBX
+envi.archs.i386.disasm.REG_EBX
+envi.archs.i386.emu.REG_EBX
+envi.archs.i386.regs.REG_EBX" class="py-name" href="#" onclick="return doclink('link-41', 'REG_EBX', 'link-33');">REG_EBX</a></tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line"> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"ah"</tt><tt class="py-op">,</tt> <tt id="link-42" class="py-name"><a title="envi.archs.amd64.REG_EAX
+envi.archs.amd64.disasm.REG_EAX
+envi.archs.amd64.regs.REG_EAX
+envi.archs.i386.REG_EAX
+envi.archs.i386.disasm.REG_EAX
+envi.archs.i386.emu.REG_EAX
+envi.archs.i386.regs.REG_EAX" class="py-name" href="#" onclick="return doclink('link-42', 'REG_EAX', 'link-30');">REG_EAX</a></tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"ch"</tt><tt class="py-op">,</tt> <tt id="link-43" class="py-name"><a title="envi.archs.amd64.REG_ECX
+envi.archs.amd64.disasm.REG_ECX
+envi.archs.amd64.regs.REG_ECX
+envi.archs.i386.REG_ECX
+envi.archs.i386.disasm.REG_ECX
+envi.archs.i386.emu.REG_ECX
+envi.archs.i386.regs.REG_ECX" class="py-name" href="#" onclick="return doclink('link-43', 'REG_ECX', 'link-31');">REG_ECX</a></tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"dh"</tt><tt class="py-op">,</tt> <tt id="link-44" class="py-name"><a title="envi.archs.amd64.REG_EDX
+envi.archs.amd64.disasm.REG_EDX
+envi.archs.amd64.regs.REG_EDX
+envi.archs.i386.REG_EDX
+envi.archs.i386.disasm.REG_EDX
+envi.archs.i386.emu.REG_EDX
+envi.archs.i386.regs.REG_EDX" class="py-name" href="#" onclick="return doclink('link-44', 'REG_EDX', 'link-32');">REG_EDX</a></tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"bh"</tt><tt class="py-op">,</tt> <tt id="link-45" class="py-name"><a title="envi.archs.amd64.REG_EBX
+envi.archs.amd64.disasm.REG_EBX
+envi.archs.amd64.regs.REG_EBX
+envi.archs.i386.REG_EBX
+envi.archs.i386.disasm.REG_EBX
+envi.archs.i386.emu.REG_EBX
+envi.archs.i386.regs.REG_EBX" class="py-name" href="#" onclick="return doclink('link-45', 'REG_EBX', 'link-33');">REG_EBX</a></tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line"> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">    <tt class="py-comment"># FIXME more flags... (here and amd64)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-string">"TF"</tt><tt class="py-op">,</tt> <tt id="link-46" class="py-name" targets="Variable envi.archs.amd64.REG_EFLAGS=envi.archs.amd64-module.html#REG_EFLAGS,Variable envi.archs.amd64.disasm.REG_EFLAGS=envi.archs.amd64.disasm-module.html#REG_EFLAGS,Variable envi.archs.amd64.regs.REG_EFLAGS=envi.archs.amd64.regs-module.html#REG_EFLAGS,Variable envi.archs.i386.REG_EFLAGS=envi.archs.i386-module.html#REG_EFLAGS,Variable envi.archs.i386.disasm.REG_EFLAGS=envi.archs.i386.disasm-module.html#REG_EFLAGS,Variable envi.archs.i386.emu.REG_EFLAGS=envi.archs.i386.emu-module.html#REG_EFLAGS,Variable envi.archs.i386.regs.REG_EFLAGS=envi.archs.i386.regs-module.html#REG_EFLAGS"><a title="envi.archs.amd64.REG_EFLAGS
+envi.archs.amd64.disasm.REG_EFLAGS
+envi.archs.amd64.regs.REG_EFLAGS
+envi.archs.i386.REG_EFLAGS
+envi.archs.i386.disasm.REG_EFLAGS
+envi.archs.i386.emu.REG_EFLAGS
+envi.archs.i386.regs.REG_EFLAGS" class="py-name" href="#" onclick="return doclink('link-46', 'REG_EFLAGS', 'link-46');">REG_EFLAGS</a></tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line"><tt class="py-op">]</tt> </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line"> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line"><tt class="py-name">e_reg</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Function envi.registers.addLocalMetas()=envi.registers-module.html#addLocalMetas"><a title="envi.registers.addLocalMetas" class="py-name" href="#" onclick="return doclink('link-47', 'addLocalMetas', 'link-47');">addLocalMetas</a></tt><tt class="py-op">(</tt><tt id="link-48" class="py-name"><a title="envi.archs.amd64.disasm.l
+envi.archs.amd64.l
+envi.archs.amd64.regs.l
+envi.archs.arm.armdisasm.l
+envi.archs.arm.disasm.l
+envi.archs.arm.emu.l
+envi.archs.arm.l
+envi.archs.arm.regs.l
+envi.archs.arm.thumbdisasm.l
+envi.archs.i386.disasm.l
+envi.archs.i386.emu.l
+envi.archs.i386.l
+envi.archs.i386.regs.l
+envi.archs.z80.regs.l" class="py-name" href="#" onclick="return doclink('link-48', 'l', 'link-25');">l</a></tt><tt class="py-op">,</tt> <tt id="link-49" class="py-name"><a title="envi.archs.i386.disasm.i386meta
+envi.archs.i386.emu.i386meta
+envi.archs.i386.i386meta
+envi.archs.i386.regs.i386meta" class="py-name" href="#" onclick="return doclink('link-49', 'i386meta', 'link-29');">i386meta</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line"> </tt>
+<a name="L89"></a><tt class="py-lineno">89</tt>  <tt class="py-line"> </tt>
+<a name="i386RegisterContext"></a><div id="i386RegisterContext-def"><a name="L90"></a><tt class="py-lineno">90</tt> <a class="py-toggle" href="#" id="i386RegisterContext-toggle" onclick="return toggle('i386RegisterContext');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.archs.i386.regs.i386RegisterContext-class.html">i386RegisterContext</a><tt class="py-op">(</tt><tt class="py-base-class">e_reg</tt><tt class="py-op">.</tt><tt class="py-base-class">RegisterContext</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386RegisterContext-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="i386RegisterContext-expanded"><a name="i386RegisterContext.__init__"></a><div id="i386RegisterContext.__init__-def"><a name="L91"></a><tt class="py-lineno">91</tt> <a class="py-toggle" href="#" id="i386RegisterContext.__init__-toggle" onclick="return toggle('i386RegisterContext.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.i386.regs.i386RegisterContext-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386RegisterContext.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="i386RegisterContext.__init__-expanded"><a name="L92"></a><tt class="py-lineno">92</tt>  <tt class="py-line">        <tt class="py-name">e_reg</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name" targets="Class envi.registers.RegisterContext=envi.registers.RegisterContext-class.html"><a title="envi.registers.RegisterContext" class="py-name" href="#" onclick="return doclink('link-50', 'RegisterContext', 'link-50');">RegisterContext</a></tt><tt class="py-op">.</tt><tt id="link-51" class="py-name" targets="Method envi.ArchitectureModule.__init__()=envi.ArchitectureModule-class.html#__init__,Method envi.EmuException.__init__()=envi.EmuException-class.html#__init__,Method envi.Emulator.__init__()=envi.Emulator-class.html#__init__,Method envi.InvalidInstruction.__init__()=envi.InvalidInstruction-class.html#__init__,Method envi.MapOverlapException.__init__()=envi.MapOverlapException-class.html#__init__,Method envi.Opcode.__init__()=envi.Opcode-class.html#__init__,Method envi.SegmentationViolation.__init__()=envi.SegmentationViolation-class.html#__init__,Method envi.UnsupportedInstruction.__init__()=envi.UnsupportedInstruction-class.html#__init__,Method envi.archs.amd64.Amd64Emulator.__init__()=envi.archs.amd64.Amd64Emulator-class.html#__init__,Method envi.archs.amd64.Amd64Module.__init__()=envi.archs.amd64.Amd64Module-class.html#__init__,Method envi.archs.amd64.disasm.Amd64Disasm.__init__()=envi.archs.amd64.disasm.Amd64Disasm-class.html#__init__,Method envi.archs.amd64.disasm.Amd64RipRelOper.__init__()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#__init__,Method envi.archs.amd64.regs.Amd64RegisterContext.__init__()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#__init__,Method envi.archs.arm.ArmModule.__init__()=envi.archs.arm.ArmModule-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOper.__init__()=envi.archs.arm.armdisasm.ArmImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegListOper.__init__()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#__init__,Method envi.archs.arm.disasm.ArmDisasm.__init__()=envi.archs.arm.disasm.ArmDisasm-class.html#__init__,Method envi.archs.arm.emu.ArmEmulator.__init__()=envi.archs.arm.emu.ArmEmulator-class.html#__init__,Method envi.archs.arm.emu.CoProcEmulator.__init__()=envi.archs.arm.emu.CoProcEmulator-class.html#__init__,Method envi.archs.arm.regs.ArmRegisterContext.__init__()=envi.archs.arm.regs.ArmRegisterContext-class.html#__init__,Method envi.archs.arm.thumb.simpleops.__init__()=envi.archs.arm.thumb.simpleops-class.html#__init__,Method envi.archs.arm.thumbdisasm.simpleops.__init__()=envi.archs.arm.thumbdisasm.simpleops-class.html#__init__,Method envi.archs.i386.disasm.i386Disasm.__init__()=envi.archs.i386.disasm.i386Disasm-class.html#__init__,Method envi.archs.i386.disasm.i386ImmMemOper.__init__()=envi.archs.i386.disasm.i386ImmMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386ImmOper.__init__()=envi.archs.i386.disasm.i386ImmOper-class.html#__init__,Method envi.archs.i386.disasm.i386PcRelOper.__init__()=envi.archs.i386.disasm.i386PcRelOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegMemOper.__init__()=envi.archs.i386.disasm.i386RegMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegOper.__init__()=envi.archs.i386.disasm.i386RegOper-class.html#__init__,Method envi.archs.i386.disasm.i386SibOper.__init__()=envi.archs.i386.disasm.i386SibOper-class.html#__init__,Method envi.archs.i386.emu.BFastCall.__init__()=envi.archs.i386.emu.BFastCall-class.html#__init__,Method envi.archs.i386.emu.FastCall.__init__()=envi.archs.i386.emu.FastCall-class.html#__init__,Method envi.archs.i386.emu.IntelEmulator.__init__()=envi.archs.i386.emu.IntelEmulator-class.html#__init__,Method envi.archs.i386.emu.MsFastCall.__init__()=envi.archs.i386.emu.MsFastCall-class.html#__init__,Method envi.archs.i386.i386Module.__init__()=envi.archs.i386.i386Module-class.html#__init__,Method envi.archs.i386.regs.i386RegisterContext.__init__()=envi.archs.i386.regs.i386RegisterContext-class.html#__init__,Method envi.archs.z80.disasm.z80Disasm.__init__()=envi.archs.z80.disasm.z80Disasm-class.html#__init__,Method envi.archs.z80.disasm.z80ImmOper.__init__()=envi.archs.z80.disasm.z80ImmOper-class.html#__init__,Method envi.archs.z80.disasm.z80RegMem.__init__()=envi.archs.z80.disasm.z80RegMem-class.html#__init__,Method envi.archs.z80.disasm.z80RegOper.__init__()=envi.archs.z80.disasm.z80RegOper-class.html#__init__,Method envi.archs.z80.regs.z80RegisterContext.__init__()=envi.archs.z80.regs.z80RegisterContext-class.html#__init__,Method envi.arm.ArmModule.__init__()=envi.arm.ArmModule-class.html#__init__,Method envi.arm.ArmOpcode.__init__()=envi.arm.ArmOpcode-class.html#__init__,Method envi.arm.ArmOperand.__init__()=envi.arm.ArmOperand-class.html#__init__,Method envi.bintree.BinaryTree.__init__()=envi.bintree.BinaryTree-class.html#__init__,Method envi.bytesig.SignatureTree.__init__()=envi.bytesig.SignatureTree-class.html#__init__,Method envi.cli.CliExtMeth.__init__()=envi.cli.CliExtMeth-class.html#__init__,Method envi.cli.EnviCli.__init__()=envi.cli.EnviCli-class.html#__init__,Method envi.codeflow.CodeFlowContext.__init__()=envi.codeflow.CodeFlowContext-class.html#__init__,Method envi.config.EnviConfig.__init__()=envi.config.EnviConfig-class.html#__init__,Method envi.expression.ExpressionLocals.__init__()=envi.expression.ExpressionLocals-class.html#__init__,Method envi.expression.MemoryExpressionLocals.__init__()=envi.expression.MemoryExpressionLocals-class.html#__init__,Method envi.memcanvas.MemoryCanvas.__init__()=envi.memcanvas.MemoryCanvas-class.html#__init__,Method envi.memcanvas.StringMemoryCanvas.__init__()=envi.memcanvas.StringMemoryCanvas-class.html#__init__,Method envi.memcanvas.renderers.ByteRend.__init__()=envi.memcanvas.renderers.ByteRend-class.html#__init__,Method envi.memory.IMemory.__init__()=envi.memory.IMemory-class.html#__init__,Method envi.memory.MemoryFile.__init__()=envi.memory.MemoryFile-class.html#__init__,Method envi.memory.MemoryObject.__init__()=envi.memory.MemoryObject-class.html#__init__,Method envi.pagelookup.MapLookup.__init__()=envi.pagelookup.MapLookup-class.html#__init__,Method envi.pagelookup.PageLookup.__init__()=envi.pagelookup.PageLookup-class.html#__init__,Method envi.qt.VQMemoryMapView.__init__()=envi.qt.VQMemoryMapView-class.html#__init__,Method envi.qt.memcanvas.VQMemoryCanvas.__init__()=envi.qt.memcanvas.VQMemoryCanvas-class.html#__init__,Method envi.qt.memory.VQMemoryWindow.__init__()=envi.qt.memory.VQMemoryWindow-class.html#__init__,Method envi.registers.RegisterContext.__init__()=envi.registers.RegisterContext-class.html#__init__,Method envi.resolver.FileSymbol.__init__()=envi.resolver.FileSymbol-class.html#__init__,Method envi.resolver.Symbol.__init__()=envi.resolver.Symbol-class.html#__init__,Method envi.resolver.SymbolResolver.__init__()=envi.resolver.SymbolResolver-class.html#__init__,Method envi.util.CopyOnWrite.__init__()=envi.util.CopyOnWrite-class.html#__init__"><a title="envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__" class="py-name" href="#" onclick="return doclink('link-51', '__init__', 'link-51');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno">93</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-52" class="py-name" targets="Method envi.registers.RegisterContext.loadRegDef()=envi.registers.RegisterContext-class.html#loadRegDef"><a title="envi.registers.RegisterContext.loadRegDef" class="py-name" href="#" onclick="return doclink('link-52', 'loadRegDef', 'link-52');">loadRegDef</a></tt><tt class="py-op">(</tt><tt id="link-53" class="py-name"><a title="envi.archs.i386.disasm.i386regs
+envi.archs.i386.emu.i386regs
+envi.archs.i386.i386regs
+envi.archs.i386.regs.i386regs" class="py-name" href="#" onclick="return doclink('link-53', 'i386regs', 'link-21');">i386regs</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L94"></a><tt class="py-lineno">94</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name" targets="Method envi.registers.RegisterContext.loadRegMetas()=envi.registers.RegisterContext-class.html#loadRegMetas"><a title="envi.registers.RegisterContext.loadRegMetas" class="py-name" href="#" onclick="return doclink('link-54', 'loadRegMetas', 'link-54');">loadRegMetas</a></tt><tt class="py-op">(</tt><tt id="link-55" class="py-name"><a title="envi.archs.i386.disasm.i386meta
+envi.archs.i386.emu.i386meta
+envi.archs.i386.i386meta
+envi.archs.i386.regs.i386meta" class="py-name" href="#" onclick="return doclink('link-55', 'i386meta', 'link-29');">i386meta</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno">95</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name" targets="Method envi.registers.RegisterContext.setRegisterIndexes()=envi.registers.RegisterContext-class.html#setRegisterIndexes"><a title="envi.registers.RegisterContext.setRegisterIndexes" class="py-name" href="#" onclick="return doclink('link-56', 'setRegisterIndexes', 'link-56');">setRegisterIndexes</a></tt><tt class="py-op">(</tt><tt id="link-57" class="py-name" targets="Variable envi.archs.i386.REG_EIP=envi.archs.i386-module.html#REG_EIP,Variable envi.archs.i386.disasm.REG_EIP=envi.archs.i386.disasm-module.html#REG_EIP,Variable envi.archs.i386.emu.REG_EIP=envi.archs.i386.emu-module.html#REG_EIP,Variable envi.archs.i386.regs.REG_EIP=envi.archs.i386.regs-module.html#REG_EIP"><a title="envi.archs.i386.REG_EIP
+envi.archs.i386.disasm.REG_EIP
+envi.archs.i386.emu.REG_EIP
+envi.archs.i386.regs.REG_EIP" class="py-name" href="#" onclick="return doclink('link-57', 'REG_EIP', 'link-57');">REG_EIP</a></tt><tt class="py-op">,</tt> <tt id="link-58" class="py-name"><a title="envi.archs.amd64.REG_ESP
+envi.archs.amd64.disasm.REG_ESP
+envi.archs.amd64.regs.REG_ESP
+envi.archs.i386.REG_ESP
+envi.archs.i386.disasm.REG_ESP
+envi.archs.i386.emu.REG_ESP
+envi.archs.i386.regs.REG_ESP" class="py-name" href="#" onclick="return doclink('link-58', 'REG_ESP', 'link-34');">REG_ESP</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L96"></a><tt class="py-lineno">96</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="envi-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:43:38 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

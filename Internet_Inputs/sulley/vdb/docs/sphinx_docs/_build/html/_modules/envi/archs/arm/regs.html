@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.archs.arm.regs &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="envi.archs.arm" href="../arm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../arm.html" accesskey="U">envi.archs.arm</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.archs.arm.regs</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">envi.archs.arm.const</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">envi.registers</span> <span class="kn">as</span> <span class="nn">e_reg</span>
+
+<span class="n">arm_regs</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="s">&#39;r0&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r1&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r2&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r3&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r4&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r5&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r6&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r7&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r8&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;r9&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;sl&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;fp&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;ip&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;sp&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;lr&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;pc&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&#39;cpsr&#39;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="c"># FIXME shadow regs go here (but are not encoded in</span>
+    <span class="c"># instructions... they are used by context only)</span>
+<span class="p">)</span>
+
+<span class="n">l</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
+<span class="n">e_reg</span><span class="o">.</span><span class="n">addLocalEnums</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">arm_regs</span><span class="p">)</span>
+
+<span class="n">PSR_N</span> <span class="o">=</span> <span class="mi">31</span>  <span class="c"># negative</span>
+<span class="n">PSR_Z</span> <span class="o">=</span> <span class="mi">30</span>  <span class="c"># zero</span>
+<span class="n">PSR_C</span> <span class="o">=</span> <span class="mi">29</span>  <span class="c"># carry</span>
+<span class="n">PSR_V</span> <span class="o">=</span> <span class="mi">28</span>  <span class="c"># oVerflow</span>
+<span class="n">PSR_Q</span> <span class="o">=</span> <span class="mi">27</span>
+<span class="n">PSR_J</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="n">PSR_GE</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">PSR_E</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">PSR_A</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">PSR_I</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">PSR_F</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">PSR_T</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">PSR_M</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">PSR_C_bit</span>  <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">PSR_C</span>
+<span class="n">PSR_C_mask</span> <span class="o">=</span> <span class="mh">0xffffffff</span> <span class="o">^</span> <span class="n">PSR_C_bit</span>
+
+<span class="n">psr_fields</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">32</span><span class="p">)]</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_M</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;M&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_T</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;T&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_F</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;F&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_I</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;I&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_A</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;A&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_E</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;E&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_GE</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;GE&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_GE</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;GE+1&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_GE</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;GE+2&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_GE</span><span class="o">+</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;GE+3&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_J</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;J&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_Q</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Q&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_V</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;V&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_C</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;C&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_Z</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;Z&quot;</span>
+<span class="n">psr_fields</span><span class="p">[</span><span class="n">PSR_N</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;N&quot;</span>
+
+<span class="c"># FIXME this is....  hmm....</span>
+<span class="n">ArmMeta</span> <span class="o">=</span><span class="nb">tuple</span><span class="p">([(</span><span class="s">&quot;N&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_N</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;Z&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_Z</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;C&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_C</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;V&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_V</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;Q&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_Q</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;J&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_J</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;GE&quot;</span><span class="p">,</span><span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_GE</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;E&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_E</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;A&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_A</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;I&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_I</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;F&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_F</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;T&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_T</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&quot;M&quot;</span><span class="p">,</span> <span class="n">REG_FLAGS</span><span class="p">,</span> <span class="n">PSR_M</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+                <span class="p">])</span>
+
+
+<div class="viewcode-block" id="ArmRegisterContext"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.regs.ArmRegisterContext">[docs]</a><span class="k">class</span> <span class="nc">ArmRegisterContext</span><span class="p">(</span><span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadRegDef</span><span class="p">(</span><span class="n">arm_regs</span><span class="p">)</span>
+        <span class="c">#self.loadRegMetas(ArmMeta)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegisterIndexes</span><span class="p">(</span><span class="n">REG_PC</span><span class="p">,</span> <span class="n">REG_SP</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../arm.html" >envi.archs.arm</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

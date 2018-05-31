@@ -1,0 +1,342 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.breakpoints &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vtrace" href="../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.breakpoints</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Breakpoint Objects</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">vtrace</span>
+
+<span class="k">class</span> <span class="nc">Breakpoint</span><span class="p">:</span>
+<div class="viewcode-block" id="Breakpoint"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Breakpoints in Vtrace are platform independant objects that</span>
+<span class="sd">    use the underlying trace objects to get things like the</span>
+<span class="sd">    program counter and the break instruction.  As long as</span>
+<span class="sd">    platfforms are completely implemented, all breakpoint</span>
+<span class="sd">    objects should be portable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">bpcodeobj</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># Cache compiled code objects on the class def</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saved</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resonce</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breakinst</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vte</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpcode</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">expression</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vte</span> <span class="o">=</span> <span class="n">expression</span>
+
+    <span class="k">def</span> <span class="nf">getAddress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Breakpoint.getAddress"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.getAddress">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This will return the address for this breakpoint.  If the return&#39;d</span>
+<span class="sd">        address is None, this is a deferred breakpoint which needs to have</span>
+<span class="sd">        resolveAddress() called to attempt to set the address.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
+
+    <span class="k">def</span> <span class="nf">getId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.getId"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.getId">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.getName"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.getName">[docs]</a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vte</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vte</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="s">&quot;unresolved&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
+        <span class="k">return</span> <span class="s">&quot;[</span><span class="si">%d</span><span class="s">] </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">inittrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="Breakpoint.inittrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.inittrace">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A callback to do housekeeping at the time the breakpoint is</span>
+<span class="sd">        added to the tracer object.  This should be used instead of activate</span>
+<span class="sd">        for initialization time infoz to save on time per activate call...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breakinst</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">archGetBreakInstr</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">resolvedaddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.resolvedaddr"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.resolvedaddr">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        An initialization callback which will be executed when the</span>
+<span class="sd">        actual address for this breakpoint has been resolved.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saved</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">breakinst</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.activate"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.activate">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Actually store off and replace memory for this process.  This</span>
+<span class="sd">        is caried out by the trace object itself when it begins</span>
+<span class="sd">        running or stops.  You probably never need to call this</span>
+<span class="sd">        (see isEnabled() setEnabled() for boolean enable/disablle)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">trace</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakinst</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span>
+
+    <span class="k">def</span> <span class="nf">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.deactivate"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.deactivate">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Repair the process for continued execution.  this does NOT</span>
+<span class="sd">        make a breakpoint *inactive*, but removes it&#39;s &quot;0xcc&quot; from mem</span>
+<span class="sd">        (see isEnabled() setEnabled() for boolean enable/dissable)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">saved</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">active</span>
+
+    <span class="k">def</span> <span class="nf">resolveAddress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.resolveAddress"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.resolveAddress">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to resolve the address for this break.  If this is a statically</span>
+<span class="sd">        addressed break, just return the address.  If it has an &quot;expression&quot;</span>
+<span class="sd">        use that to resolve the address...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vte</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vte</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="bp">None</span>
+
+        <span class="c"># If we resolved, lets get our saved code...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">resonce</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resonce</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">resolvedaddr</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
+
+    <span class="k">def</span> <span class="nf">isEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.isEnabled"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.isEnabled">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Is this breakpoint &quot;enabled&quot;?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span>
+
+    <span class="k">def</span> <span class="nf">setEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.setEnabled"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.setEnabled">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set this breakpoints &quot;enabled&quot; status</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">enabled</span>
+
+    <span class="k">def</span> <span class="nf">setBreakpointCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pystr</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.setBreakpointCode"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.setBreakpointCode">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use this method to set custom python code to run when this</span>
+<span class="sd">        breakpoint gets hit.  The code will have the following objects</span>
+<span class="sd">        mapped into it&#39;s namespace when run:</span>
+<span class="sd">            trace - the tracer</span>
+<span class="sd">            vtrace - the vtrace module</span>
+<span class="sd">            bp - the breakpoint</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpcode</span> <span class="o">=</span> <span class="n">pystr</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">bpcodeobj</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getBreakpointCode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.getBreakpointCode"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.getBreakpointCode">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the current python string that will be run when this break is hit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpcode</span>
+
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Breakpoint.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.Breakpoint.notify">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Breakpoints may also extend and implement &quot;notify&quot; which will be</span>
+<span class="sd">        called whenever they are hit.  If you want to continue the ability</span>
+<span class="sd">        for this breakpoint to have bpcode, you must call this method from</span>
+<span class="sd">        your override.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpcode</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">cobj</span> <span class="o">=</span> <span class="n">Breakpoint</span><span class="o">.</span><span class="n">bpcodeobj</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cobj</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="s">&quot;BP:</span><span class="si">%d</span><span class="s"> (0x</span><span class="si">%.8x</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+                <span class="n">cobj</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bpcode</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="s">&quot;exec&quot;</span><span class="p">)</span>
+                <span class="n">Breakpoint</span><span class="o">.</span><span class="n">bpcodeobj</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">cobj</span>
+
+            <span class="n">d</span> <span class="o">=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">VtraceExpressionLocals</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+            <span class="n">d</span><span class="p">[</span><span class="s">&#39;bp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="k">exec</span><span class="p">(</span><span class="n">cobj</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">TrackerBreak</span><span class="p">(</span><span class="n">Breakpoint</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="TrackerBreak"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.TrackerBreak">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A breakpoint which will record how many times it was hit</span>
+<span class="sd">    (by the address it was at) as metadata for the tracer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="TrackerBreak.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.TrackerBreak.notify">[docs]</a>        <span class="n">tb</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;TrackerBreak&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tb</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">tb</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;TrackerBreak&quot;</span><span class="p">,</span> <span class="n">tb</span><span class="p">)</span>
+        <span class="n">tb</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">tb</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">OneTimeBreak</span><span class="p">(</span><span class="n">Breakpoint</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="OneTimeBreak"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.OneTimeBreak">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This type of breakpoint is exclusivly for marking</span>
+<span class="sd">    and code-coverage stuff.  It removes itself.</span>
+<span class="sd">    (most frequently used with a continued trace)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="OneTimeBreak.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.OneTimeBreak.notify">[docs]</a>        <span class="n">trace</span><span class="o">.</span><span class="n">removeBreakpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">StopRunForeverBreak</span><span class="p">(</span><span class="n">Breakpoint</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="StopRunForeverBreak"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.StopRunForeverBreak">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This breakpoint will turn off RunForever mode</span>
+<span class="sd">    on the tracer object when hit.  it&#39;s a good way</span>
+<span class="sd">    to let things run on and on processing exceptions</span>
+<span class="sd">    but stop when you get to this one thing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="StopRunForeverBreak.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.StopRunForeverBreak.notify">[docs]</a>        <span class="n">trace</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;RunForever&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">StopAndRemoveBreak</span><span class="p">(</span><span class="n">Breakpoint</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="StopAndRemoveBreak"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.StopAndRemoveBreak">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    When hit, take the tracer out of run-forever mode and</span>
+<span class="sd">    remove this breakpoint.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="StopAndRemoveBreak.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.StopAndRemoveBreak.notify">[docs]</a>        <span class="n">trace</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;RunForever&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">removeBreakpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">CallBreak</span><span class="p">(</span><span class="n">Breakpoint</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="CallBreak"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.CallBreak">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A special breakpoint which will restore process</span>
+<span class="sd">    state (registers in particular) when it gets hit.</span>
+<span class="sd">    This is primarily used by the call method inside</span>
+<span class="sd">    the trace object to restore original state</span>
+<span class="sd">    after a successful &quot;call&quot; method call.</span>
+
+<span class="sd">    Additionally, the endregs dict will be filled in</span>
+<span class="sd">    with the regs at the time it was hit and kept until</span>
+<span class="sd">    we get garbage collected...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">saved_regs</span><span class="p">):</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endregs</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># Filled in when we get hit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saved_regs</span> <span class="o">=</span> <span class="n">saved_regs</span>
+
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="CallBreak.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.CallBreak.notify">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">endregs</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getRegisters</span><span class="p">()</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">removeBreakpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">setRegisters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saved_regs</span><span class="p">)</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;PendingSignal&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">SnapshotBreak</span><span class="p">(</span><span class="n">Breakpoint</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="SnapshotBreak"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.SnapshotBreak">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A special breakpoint type which will produce vtrace snapshots</span>
+<span class="sd">    for the target process when hit.  The snapshots will be saved</span>
+<span class="sd">    to a default name of &lt;exename&gt;-&lt;timestamp&gt;.vsnap.  This is not</span>
+<span class="sd">    recommended for use in heavily hit breakpoints as taking a</span>
+<span class="sd">    snapshot is processor intensive.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="SnapshotBreak.notify"><a class="viewcode-back" href="../../vtrace.html#vtrace.breakpoints.SnapshotBreak.notify">[docs]</a>        <span class="n">exe</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getExe</span><span class="p">()</span>
+        <span class="n">snap</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">takeSnapshot</span><span class="p">()</span>
+        <span class="n">snap</span><span class="o">.</span><span class="n">saveToFile</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">-</span><span class="si">%d</span><span class="s">.vsnap&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">exe</span><span class="p">,</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
+        <span class="n">Breakpoint</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

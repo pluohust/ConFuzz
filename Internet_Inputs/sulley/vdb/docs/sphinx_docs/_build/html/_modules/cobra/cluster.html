@@ -1,0 +1,720 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>cobra.cluster &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="cobra" href="../cobra.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../cobra.html" accesskey="U">cobra</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for cobra.cluster</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Cobra&#39;s built in clustering framework</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">Queue</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+
+<span class="kn">import</span> <span class="nn">cobra</span>
+<span class="kn">import</span> <span class="nn">dcode</span>
+
+<span class="n">queen_port</span>   <span class="o">=</span> <span class="mi">32124</span>
+
+<span class="n">cluster_port</span> <span class="o">=</span> <span class="mi">32123</span>
+<span class="n">cluster_ip</span> <span class="o">=</span> <span class="s">&quot;224.69.69.69&quot;</span>
+
+<span class="n">sub_cmd</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">import cobra.cluster</span>
+<span class="s">cobra.cluster.getAndDoWork(&quot;</span><span class="si">%s</span><span class="s">&quot;, docode=</span><span class="si">%s</span><span class="s">)</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">InvalidInProgWorkId</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="InvalidInProgWorkId"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.InvalidInProgWorkId">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workid</span><span class="p">):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Work ID </span><span class="si">%d</span><span class="s"> is not valid&quot;</span> <span class="o">%</span> <span class="n">workid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">workid</span> <span class="o">=</span> <span class="n">workid</span>
+
+<span class="k">class</span> <span class="nc">ClusterWork</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterWork">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extend this object to create your own work units.  Do it in</span>
+<span class="sd">    a proper module (and not __main__ to be able to use this</span>
+<span class="sd">    in conjunction with cobra.dcode).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># Set by adding to the server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># Set by ClusterClient</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">starttime</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endtime</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># Both are set by worker before and after work()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">touchtime</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">excinfo</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># Will be exception traceback on work unit fail.</span>
+
+    <span class="k">def</span> <span class="nf">touch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c"># heh...</span>
+<div class="viewcode-block" id="ClusterWork.touch"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterWork.touch">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update the internal &quot;touch time&quot; which is used by the timeout</span>
+<span class="sd">        subsystem to see if this work unit has gone too long without</span>
+<span class="sd">        making progress...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">touchtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">isTimedOut</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterWork.isTimedOut"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterWork.isTimedOut">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this work unit is timed out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">touchtime</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">touchtime</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">work</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterWork.work"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterWork.work">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Actually do the work associated with this work object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">print</span> <span class="s">&quot;OVERRIDE ME&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setCompletion</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setStatus</span><span class="p">(</span><span class="s">&quot;Sleeping: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterWork.done"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterWork.done">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called back on the server once a work unit</span>
+<span class="sd">        is complete and returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">print</span> <span class="s">&quot;OVERRIDE DONE&quot;</span>
+
+    <span class="k">def</span> <span class="nf">setCompletion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percent</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterWork.setCompletion"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterWork.setCompletion">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Work units may call this whenever they like to</span>
+<span class="sd">        tell the server how far along their work they are.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setWorkCompletion</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">percent</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterWork.setStatus"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterWork.setStatus">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Work units may call this to inform the server of</span>
+<span class="sd">        their status.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">setWorkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">openSharedFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterWork.openSharedFile"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterWork.openSharedFile">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        A helper API to open a file like object on the server.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            fd = self.openSharedFile(&#39;/foo/bar/baz&#39;)</span>
+<span class="sd">            fbytes = fd.read()</span>
+
+<span class="sd">        NOTE: The server must use shareFileToWorkers().</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">openSharedFile</span><span class="p">(</span> <span class="n">filename</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraProxy</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ClusterCallback</span><span class="p">:</span></div></div>
+<div class="viewcode-block" id="ClusterCallback"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Place one of these in the ClusterServer to get synchronous</span>
+<span class="sd">    event information about what&#39;s going on in the cluster server.</span>
+<span class="sd">    (mostly for the GUI).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">workAdded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterCallback.workAdded"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback.workAdded">[docs]</a>        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">workGotten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterCallback.workGotten"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback.workGotten">[docs]</a>        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">workStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">workid</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterCallback.workStatus"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback.workStatus">[docs]</a>        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">workCompletion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">workid</span><span class="p">,</span> <span class="n">completion</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterCallback.workCompletion"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback.workCompletion">[docs]</a>        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">workDone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterCallback.workDone"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback.workDone">[docs]</a>        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">workFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterCallback.workFailed"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback.workFailed">[docs]</a>        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">workTimeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterCallback.workTimeout"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback.workTimeout">[docs]</a>        <span class="k">pass</span>
+    <span class="k">def</span> <span class="nf">workCanceled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterCallback.workCanceled"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterCallback.workCanceled">[docs]</a>        <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">VerboseCallback</span><span class="p">(</span><span class="n">ClusterCallback</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="VerboseCallback"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback">[docs]</a>    <span class="c"># This is mostly for testing...</span>
+    <span class="k">def</span> <span class="nf">workAdded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span>
+<div class="viewcode-block" id="VerboseCallback.workAdded"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback.workAdded">[docs]</a>        <span class="k">print</span> <span class="s">&quot;WORK ADDED: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">work</span><span class="o">.</span><span class="n">id</span>
+    <span class="k">def</span> <span class="nf">workGotten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VerboseCallback.workGotten"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback.workGotten">[docs]</a>        <span class="k">print</span> <span class="s">&quot;WORK GOTTEN: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">work</span><span class="o">.</span><span class="n">id</span>
+    <span class="k">def</span> <span class="nf">workStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">workid</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VerboseCallback.workStatus"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback.workStatus">[docs]</a>        <span class="k">print</span> <span class="s">&quot;WORK STATUS: (</span><span class="si">%d</span><span class="s">) </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">workid</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">workCompletion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">workid</span><span class="p">,</span> <span class="n">completion</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VerboseCallback.workCompletion"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback.workCompletion">[docs]</a>        <span class="k">print</span> <span class="s">&quot;WORK COMPLETION: (</span><span class="si">%d</span><span class="s">) </span><span class="si">%d%%</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">workid</span><span class="p">,</span> <span class="n">completion</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">workDone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VerboseCallback.workDone"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback.workDone">[docs]</a>        <span class="k">print</span> <span class="s">&quot;WORK DONE: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">work</span><span class="o">.</span><span class="n">id</span>
+    <span class="k">def</span> <span class="nf">workFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VerboseCallback.workFailed"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback.workFailed">[docs]</a>        <span class="k">print</span> <span class="s">&quot;WORK FAILED: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">work</span><span class="o">.</span><span class="n">id</span>
+    <span class="k">def</span> <span class="nf">workTimeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VerboseCallback.workTimeout"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback.workTimeout">[docs]</a>        <span class="k">print</span> <span class="s">&quot;WORK TIMEOUT: </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">work</span><span class="o">.</span><span class="n">id</span>
+    <span class="k">def</span> <span class="nf">workCanceled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VerboseCallback.workCanceled"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.VerboseCallback.workCanceled">[docs]</a>        <span class="k">print</span> <span class="s">&quot;WORK CANCELED </span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">work</span><span class="o">.</span><span class="n">id</span>
+
+<span class="kn">import</span> <span class="nn">collections</span></div></div>
+
+<span class="k">class</span> <span class="nc">ClusterServer</span><span class="p">:</span>
+<div class="viewcode-block" id="ClusterServer"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">docode</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">bindsrc</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">cobrad</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The cluster server is the core of the code that manages work units.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            maxsize - How big should the work queue be before add blocks</span>
+<span class="sd">            docode  - Should we also be a dcode server?</span>
+<span class="sd">            bindsrc - Should we bind a src IP for our multicast announcements?</span>
+<span class="sd">            cobrad  - Should we use an existing cobra daemon to share our objects?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">go</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextwid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inprog</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sharedfiles</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span> <span class="o">=</span> <span class="n">maxsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Condition</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widiter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="mi">999999999</span><span class="p">))</span>
+
+        <span class="c"># Initialize a cobra daemon if needed</span>
+        <span class="k">if</span> <span class="n">cobrad</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">cobrad</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraDaemon</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cobrad</span> <span class="o">=</span> <span class="n">cobrad</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cobraname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cobrad</span><span class="o">.</span><span class="n">shareObject</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Setup our transmission socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendsock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendsock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">bindsrc</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="c"># Set this to a ClusterCallback extension if</span>
+        <span class="c"># you want notifications.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="n">docode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cobrad</span><span class="o">.</span><span class="n">shareObject</span><span class="p">(</span><span class="n">dcode</span><span class="o">.</span><span class="n">DcodeFinder</span><span class="p">(),</span> <span class="s">&quot;DcodeServer&quot;</span><span class="p">)</span>
+
+        <span class="c"># Fire the timeout monitor thread...</span>
+        <span class="n">thr</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timerThread</span><span class="p">)</span>
+        <span class="n">thr</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">thr</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">addClusterQueen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queenhost</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterServer.addClusterQueen"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.addClusterQueen">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Inform the ClusterServer about the presence of a ClusterQueen instance</span>
+<span class="sd">        on the given host.  When the ClusterServer begins to announce work,</span>
+<span class="sd">        he will do so in &quot;infrastructure mode&quot; and ask any set queens for help.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">queen</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraProxy</span><span class="p">(</span><span class="s">&#39;cobra://</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">/ClusterQueen&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">queenhost</span><span class="p">,</span> <span class="n">queen_port</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">queen</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">shareFileToWorkers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.shareFileToWorkers"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.shareFileToWorkers">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a file to the list of files which are &quot;shared&quot; to worker clients.</span>
+<span class="sd">        This allows workers to access a file from the server.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            s.shareFileToWorkers(&#39;/path/to/file&#39;)</span>
+
+<span class="sd">        NOTE: Workers may use the openSharedFile() API to access them.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sharedfiles</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">openSharedFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.openSharedFile"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.openSharedFile">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a URI for an open file decriptor for the specified filename.</span>
+
+<span class="sd">        NOTE: use openSharedFile() method on work unit to get back a proxy.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sharedfiles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;File </span><span class="si">%s</span><span class="s"> is not shared!&#39;</span><span class="p">)</span>
+
+        <span class="n">fd</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
+
+        <span class="n">cname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cobrad</span><span class="o">.</span><span class="n">shareObject</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">doref</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">host</span><span class="p">,</span><span class="n">port</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">getLocalInfo</span><span class="p">()</span>
+
+        <span class="n">uri</span> <span class="o">=</span> <span class="s">&#39;cobra://</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">/</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">cname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">uri</span>
+
+    <span class="k">def</span> <span class="nf">__touchWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workid</span><span class="p">):</span></div>
+        <span class="c"># Used to both validate an inprog workid *and*</span>
+        <span class="c"># update it&#39;s timestamp for the timeout thread</span>
+        <span class="n">work</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inprog</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">workid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">work</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidInProgWorkId</span><span class="p">(</span><span class="n">workid</span><span class="p">)</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__cleanWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workid</span><span class="p">):</span>
+        <span class="c"># Used by done/timeout/etc to clea up an in</span>
+        <span class="c"># progress work unit</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inprog</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">workid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">timerThread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterServer.timerThread"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.timerThread">[docs]</a>        <span class="c"># Internal function to monitor work unit time</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="nb">id</span><span class="p">,</span><span class="n">work</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inprog</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">work</span><span class="o">.</span><span class="n">isTimedOut</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">timeoutWork</span><span class="p">(</span><span class="n">work</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;ClusterTimer: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">e</span>
+
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">shutdownServer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.shutdownServer"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.shutdownServer">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">go</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">announceWork</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.announceWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.announceWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Announce to our multicast cluster peers that we have work</span>
+<span class="sd">        to do! (Or use a queen to proxy to them...)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">queens</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">queens</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">q</span><span class="o">.</span><span class="n">proxyAnnounceWork</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cobraname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cobrad</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&#39;Queen Error: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="s">&quot;cobra:</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cobraname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cobrad</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendsock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="p">(</span><span class="n">cluster_ip</span><span class="p">,</span> <span class="n">cluster_port</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">runServer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">firethread</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.runServer"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.runServer">[docs]</a>
+        <span class="k">if</span> <span class="n">firethread</span><span class="p">:</span>
+            <span class="n">thr</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">runServer</span><span class="p">)</span>
+            <span class="n">thr</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">thr</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cobrad</span><span class="o">.</span><span class="n">fireThread</span><span class="p">()</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">announceWork</span><span class="p">()</span>
+
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">inQueueCount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.inQueueCount"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.inQueueCount">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        How long is the current work unit queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">inProgressCount</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.inProgressCount"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.inProgressCount">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        How many work units are in progress?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inprog</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">addWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.addWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.addWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a work object to the ClusterServer.  This </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">work</span><span class="p">,</span> <span class="n">ClusterWork</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> is not a ClusterWork extension!&quot;</span><span class="p">)</span>
+
+        <span class="c"># If this work has no ID, give it one</span>
+        <span class="k">if</span> <span class="n">work</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">work</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widiter</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxsize</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">work</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workAdded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getWork</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.getWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.getWork">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">notifyAll</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">inprog</span><span class="p">[</span><span class="n">ret</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__touchWork</span><span class="p">(</span><span class="n">ret</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workGotten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+
+
+    <span class="k">def</span> <span class="nf">doneWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.doneWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.doneWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used by the clients to report work as done.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cleanWork</span><span class="p">(</span><span class="n">work</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="n">work</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workDone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">timeoutWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.timeoutWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.timeoutWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method may be over-ridden to handle</span>
+<span class="sd">        work units that time our for whatever reason.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cleanWork</span><span class="p">(</span><span class="n">work</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workTimeout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">failWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.failWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.failWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is called for a work unit that is in a failed state.  This is most</span>
+<span class="sd">        commonly that the work() method has raised an exception.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cleanWork</span><span class="p">(</span><span class="n">work</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">cancelAllWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inprog</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.cancelAllWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.cancelAllWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancel all of the currently pending work units.  You may</span>
+<span class="sd">        specify inprog=False to cancel all *queued* work units</span>
+<span class="sd">        but allow inprogress work units to complete.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="n">qlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">inprog</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inprog</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inprog</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">qlist</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">notifyAll</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">qlist</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workCanceled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="nf">cancelWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workid</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.cancelWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.cancelWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancel a work unit by ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cwork</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cleanWork</span><span class="p">(</span><span class="n">workid</span><span class="p">)</span>
+
+        <span class="c"># Remove it from the work queue</span>
+        <span class="c"># (if we didn&#39;t find in inprog)</span>
+        <span class="k">if</span> <span class="n">cwork</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+            <span class="n">qlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">work</span> <span class="ow">in</span> <span class="n">qlist</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">work</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">workid</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">work</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cwork</span> <span class="o">=</span> <span class="n">work</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">notifyAll</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">qcond</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">cwork</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workCanceled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cwork</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setWorkStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workid</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.setWorkStatus"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.setWorkStatus">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the humon readable status for the given work unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__touchWork</span><span class="p">(</span><span class="n">workid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workid</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setWorkCompletion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workid</span><span class="p">,</span> <span class="n">percent</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterServer.setWorkCompletion"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterServer.setWorkCompletion">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the percentage completion status for this work unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__touchWork</span><span class="p">(</span><span class="n">workid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="o">.</span><span class="n">workCompletion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">workid</span><span class="p">,</span> <span class="n">percent</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ClusterClient</span><span class="p">:</span></div></div>
+<div class="viewcode-block" id="ClusterClient"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterClient">[docs]</a>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Listen for our name (or any name if name==&quot;*&quot;) on the cobra cluster</span>
+<span class="sd">    multicast address and if we find a server in need, go help.</span>
+
+<span class="sd">    maxwidth is the number of work units to do in parallel</span>
+<span class="sd">    docode will enable code sharing with the server</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">maxwidth</span><span class="o">=</span><span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(),</span> <span class="n">docode</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">go</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxwidth</span> <span class="o">=</span> <span class="n">maxwidth</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">docode</span> <span class="o">=</span> <span class="n">docode</span>
+
+        <span class="k">if</span> <span class="n">docode</span><span class="p">:</span> <span class="n">dcode</span><span class="o">.</span><span class="n">enableDcodeClient</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="n">cluster_port</span><span class="p">))</span>
+        <span class="n">mreq</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;4sL&quot;</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_aton</span><span class="p">(</span><span class="n">cluster_ip</span><span class="p">),</span> <span class="n">socket</span><span class="o">.</span><span class="n">INADDR_ANY</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_IP</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IP_ADD_MEMBERSHIP</span><span class="p">,</span> <span class="n">mreq</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">processWork</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterClient.processWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterClient.processWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs handing out work up to maxwidth until self.go == False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">go</span><span class="p">:</span>
+            
+            <span class="n">buf</span><span class="p">,</span> <span class="n">sockaddr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxwidth</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">server</span><span class="p">,</span> <span class="n">svrport</span> <span class="o">=</span> <span class="n">sockaddr</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">buf</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;cobra&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">info</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)</span>
+
+            <span class="n">ilen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ilen</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">cc</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">cobject</span><span class="p">,</span><span class="n">portstr</span> <span class="o">=</span> <span class="n">info</span>
+            <span class="k">elif</span> <span class="n">ilen</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                <span class="n">cc</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">cobject</span><span class="p">,</span><span class="n">portstr</span><span class="p">,</span><span class="n">server</span> <span class="o">=</span> <span class="n">info</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s">&quot;*&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">portstr</span><span class="p">)</span>
+
+            <span class="n">uri</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">://</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">/</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cc</span><span class="p">,</span><span class="n">server</span><span class="p">,</span><span class="n">port</span><span class="p">,</span><span class="n">cobject</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireRunner</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">fireRunner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterClient.fireRunner"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterClient.fireRunner">[docs]</a>        <span class="n">thr</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threadForker</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">uri</span><span class="p">,))</span>
+        <span class="n">thr</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">thr</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">threadForker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ClusterClient.threadForker"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterClient.threadForker">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">sub_cmd</span> <span class="o">%</span> <span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">docode</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sub</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="s">&#39;-c&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">],</span> <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+            <span class="n">sub</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-=</span> <span class="mi">1</span>
+
+<span class="k">class</span> <span class="nc">ClusterQueen</span><span class="p">:</span></div></div>
+<div class="viewcode-block" id="ClusterQueen"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterQueen">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ifip</span><span class="p">,</span> <span class="n">recast</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+
+        <span class="c"># Setup our transmission socket</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendsock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendsock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">ifip</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="c"># FIXME TODO make her optionally a multicast listener that re-broadcasts</span>
+        <span class="c"># to her subjects...</span>
+
+    <span class="k">def</span> <span class="nf">proxyAnnounceWork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cobraname</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<div class="viewcode-block" id="ClusterQueen.proxyAnnounceWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.ClusterQueen.proxyAnnounceWork">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Send out a multicast announcement to our subjects to go help</span>
+<span class="sd">        a cluster server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Get the host IP from the connection information</span>
+        <span class="n">host</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">getCallerInfo</span><span class="p">()</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="s">&quot;cobra:</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">:</span><span class="si">%d</span><span class="s">:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cobraname</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendsock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="p">(</span><span class="n">cluster_ip</span><span class="p">,</span> <span class="n">cluster_port</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">getHostPortFromUri</span><span class="p">(</span><span class="n">uri</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="getHostPortFromUri"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.getHostPortFromUri">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take the server URI and pull out the</span>
+<span class="sd">    host and port for use in building the</span>
+<span class="sd">    dcode uri.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">hparts</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_host</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="n">hparts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hparts</span><span class="p">):</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">hparts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">host</span><span class="p">,</span><span class="n">port</span>
+
+<span class="k">def</span> <span class="nf">workThread</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="workThread"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.workThread">[docs]</a>    <span class="k">try</span><span class="p">:</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">starttime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">work</span><span class="p">()</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">endtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">doneWork</span><span class="p">(</span><span class="n">work</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">InvalidInProgWorkId</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="c"># the work was canceled</span>
+        <span class="k">pass</span> <span class="c"># Nothing to do, the server already knows</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c"># Tell the server that the work unit failed</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">excinfo</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+        <span class="n">work</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">failWork</span><span class="p">(</span><span class="n">work</span><span class="p">)</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">runAndWaitWork</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">):</span></div>
+<div class="viewcode-block" id="runAndWaitWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.runAndWaitWork">[docs]</a>
+    <span class="n">thr</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">workThread</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">server</span><span class="p">,</span> <span class="n">work</span><span class="p">))</span>
+    <span class="n">thr</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">thr</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+    <span class="c"># Wait around for done or timeout</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">work</span><span class="o">.</span><span class="n">isTimedOut</span><span class="p">():</span>
+            <span class="k">break</span>
+
+        <span class="c"># If the thread is done, lets get out.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">thr</span><span class="o">.</span><span class="n">isAlive</span><span class="p">():</span>
+            <span class="k">break</span>
+
+        <span class="c"># If our parent, or some thread closes stdin,</span>
+        <span class="c"># time to pack up and go.</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">closed</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">getAndDoWork</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">docode</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span></div>
+<div class="viewcode-block" id="getAndDoWork"><a class="viewcode-back" href="../../cobra.html#cobra.cluster.getAndDoWork">[docs]</a>
+    <span class="c"># If we wanna use dcode, set it up</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">docode</span><span class="p">:</span>
+            <span class="n">dcode</span><span class="o">.</span><span class="n">enableDcodeClient</span><span class="p">()</span>
+            <span class="n">host</span><span class="p">,</span><span class="n">port</span> <span class="o">=</span> <span class="n">getHostPortFromUri</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+            <span class="n">cobra</span><span class="o">.</span><span class="n">dcode</span><span class="o">.</span><span class="n">addDcodeServer</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+
+        <span class="c"># Use a cobra proxy with timeout/maxretry so we</span>
+        <span class="c"># don&#39;t hang forever if the server goes away</span>
+        <span class="n">proxy</span> <span class="o">=</span> <span class="n">cobra</span><span class="o">.</span><span class="n">CobraProxy</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span> <span class="n">retrymax</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">work</span> <span class="o">=</span> <span class="n">proxy</span><span class="o">.</span><span class="n">getWork</span><span class="p">()</span>
+        <span class="c"># If we got work, do it.</span>
+        <span class="k">if</span> <span class="n">work</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">runAndWaitWork</span><span class="p">(</span><span class="n">proxy</span><span class="p">,</span> <span class="n">work</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+
+    <span class="c"># Any way it goes we wanna exit now.  Work units may have</span>
+    <span class="c"># spun up non-daemon threads, so lets GTFO.</span>
+    <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span> <span class="c"># Try to call destructors</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c"># GTFO</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../cobra.html" >cobra</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

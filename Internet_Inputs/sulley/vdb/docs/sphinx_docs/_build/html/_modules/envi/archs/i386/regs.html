@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.archs.i386.regs &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="envi.archs.i386" href="../i386.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../i386.html" accesskey="U">envi.archs.i386</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.archs.i386.regs</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Home of the i386 module&#39;s register specs/code.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">envi.registers</span> <span class="kn">as</span> <span class="nn">e_reg</span>
+
+<span class="c">## Definitions for some of the i386 MSRs from intel...</span>
+<span class="n">MSR_DEBUGCTL</span>             <span class="o">=</span> <span class="mh">0x01d9</span> <span class="c"># Intel p4 and forward, debug behavior control</span>
+<span class="n">MSR_DEBUGCTL_LBR</span>         <span class="o">=</span> <span class="mh">0x0001</span> <span class="c"># last branch recording (in msr&#39;s)</span>
+<span class="n">MSR_DEBUGCTL_BTF</span>         <span class="o">=</span> <span class="mh">0x0002</span> <span class="c"># single-step on branches (break on branch)</span>
+<span class="n">MSR_DEBUGCTL_TR</span>          <span class="o">=</span> <span class="mh">0x0004</span> <span class="c"># enable sending &quot;branch trace messages&quot; !!</span>
+<span class="n">MSR_DEBUGCTL_BTS</span>         <span class="o">=</span> <span class="mh">0x0008</span> <span class="c"># enable logging BTMs to circular buffer</span>
+<span class="n">MSR_DEBUGCTL_BTINT</span>       <span class="o">=</span> <span class="mh">0x0010</span> <span class="c"># Branch-trace-interrupt (gen interrupt on BTS full)</span>
+<span class="n">MSR_DEBUGCTL_BTS_OFF_OS</span>  <span class="o">=</span> <span class="mh">0x0020</span> <span class="c"># disable ring0 branch trace store</span>
+<span class="n">MSR_DEBUGCTL_BTS_OFF_USR</span> <span class="o">=</span> <span class="mh">0x0040</span> <span class="c"># disable non-ring0 branch trace store</span>
+
+<span class="n">MSR_SYSENTER_EIP</span>         <span class="o">=</span> <span class="mh">0x0176</span> <span class="c"># Where is EIP at sysenter?</span>
+
+<span class="n">IA32_DS_AREA_MSR</span>         <span class="o">=</span> <span class="mh">0x0600</span> <span class="c"># pointer to the configured debug storage area</span>
+
+<span class="c"># Eflags bit masks</span>
+<span class="n">EFLAGS_CF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">0</span>
+<span class="n">EFLAGS_PF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span>
+<span class="n">EFLAGS_AF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span>
+<span class="n">EFLAGS_ZF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span>
+<span class="n">EFLAGS_SF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span>
+<span class="n">EFLAGS_TF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span>
+<span class="n">EFLAGS_IF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">9</span>
+<span class="n">EFLAGS_DF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">10</span>
+<span class="n">EFLAGS_OF</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">11</span>
+
+<span class="n">i386regs</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&quot;eax&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ecx&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;edx&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ebx&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;esp&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ebp&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;esi&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;edi&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
+    <span class="c">#FIXME are these 64?</span>
+    <span class="p">(</span><span class="s">&quot;mm0&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),(</span><span class="s">&quot;mm1&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm2&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm3&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm4&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm5&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm6&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;mm7&quot;</span><span class="p">,</span><span class="mi">64</span><span class="p">),</span>
+    <span class="c"># SIMD registers</span>
+    <span class="p">(</span><span class="s">&quot;xmm0&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm1&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm2&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm3&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm4&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm5&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm6&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),(</span><span class="s">&quot;xmm7&quot;</span><span class="p">,</span><span class="mi">128</span><span class="p">),</span>
+    <span class="c"># Debug registers</span>
+    <span class="p">(</span><span class="s">&quot;debug0&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;debug1&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;debug2&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;debug3&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;debug4&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;debug5&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;debug6&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;debug7&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
+    <span class="c"># Control registers</span>
+    <span class="p">(</span><span class="s">&quot;ctrl0&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ctrl1&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ctrl2&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ctrl3&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ctrl4&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ctrl5&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ctrl6&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="s">&quot;ctrl7&quot;</span><span class="p">,</span><span class="mi">32</span><span class="p">),</span>
+    <span class="c"># Test registers</span>
+    <span class="p">(</span><span class="s">&quot;test0&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test1&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test2&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test3&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test4&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test5&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test6&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),(</span><span class="s">&quot;test7&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="c"># Segment registers</span>
+    <span class="p">(</span><span class="s">&quot;es&quot;</span><span class="p">,</span> <span class="mi">16</span><span class="p">),(</span><span class="s">&quot;cs&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="s">&quot;ss&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="s">&quot;ds&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="s">&quot;fs&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),(</span><span class="s">&quot;gs&quot;</span><span class="p">,</span><span class="mi">16</span><span class="p">),</span>
+    <span class="c"># FPU Registers</span>
+    <span class="p">(</span><span class="s">&quot;st0&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st1&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st2&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st3&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st4&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st5&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st6&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),(</span><span class="s">&quot;st7&quot;</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="c"># Leftovers ;)</span>
+    <span class="p">(</span><span class="s">&quot;eflags&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="p">(</span><span class="s">&quot;eip&quot;</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+<span class="p">]</span>
+
+<div class="viewcode-block" id="getRegOffset"><a class="viewcode-back" href="../../../../envi.archs.i386.html#envi.archs.i386.regs.getRegOffset">[docs]</a><span class="k">def</span> <span class="nf">getRegOffset</span><span class="p">(</span><span class="n">regs</span><span class="p">,</span> <span class="n">regname</span><span class="p">):</span>
+    <span class="c"># NOTE: dynamically calculate this on import so we are less</span>
+    <span class="c"># likely to fuck it up...</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">name</span><span class="p">,</span><span class="n">width</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">regs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">regname</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">i</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;getRegOffset doesn&#39;t know about: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">regname</span><span class="p">)</span>
+
+<span class="c"># Setup REG_EAX and the like in our module</span></div>
+<span class="n">l</span> <span class="o">=</span> <span class="nb">locals</span><span class="p">()</span>
+<span class="n">e_reg</span><span class="o">.</span><span class="n">addLocalEnums</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">i386regs</span><span class="p">)</span>
+
+<span class="n">i386meta</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s">&quot;ax&quot;</span><span class="p">,</span> <span class="n">REG_EAX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;cx&quot;</span><span class="p">,</span> <span class="n">REG_ECX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;dx&quot;</span><span class="p">,</span> <span class="n">REG_EDX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bx&quot;</span><span class="p">,</span> <span class="n">REG_EBX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;sp&quot;</span><span class="p">,</span> <span class="n">REG_ESP</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bp&quot;</span><span class="p">,</span> <span class="n">REG_EBP</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;si&quot;</span><span class="p">,</span> <span class="n">REG_ESI</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;di&quot;</span><span class="p">,</span> <span class="n">REG_EDI</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span>
+
+    <span class="p">(</span><span class="s">&quot;al&quot;</span><span class="p">,</span> <span class="n">REG_EAX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;cl&quot;</span><span class="p">,</span> <span class="n">REG_ECX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;dl&quot;</span><span class="p">,</span> <span class="n">REG_EDX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bl&quot;</span><span class="p">,</span> <span class="n">REG_EBX</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+
+    <span class="p">(</span><span class="s">&quot;ah&quot;</span><span class="p">,</span> <span class="n">REG_EAX</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;ch&quot;</span><span class="p">,</span> <span class="n">REG_ECX</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;dh&quot;</span><span class="p">,</span> <span class="n">REG_EDX</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="p">(</span><span class="s">&quot;bh&quot;</span><span class="p">,</span> <span class="n">REG_EBX</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span>
+
+    <span class="c"># FIXME more flags... (here and amd64)</span>
+    <span class="p">(</span><span class="s">&quot;TF&quot;</span><span class="p">,</span> <span class="n">REG_EFLAGS</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">e_reg</span><span class="o">.</span><span class="n">addLocalMetas</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">i386meta</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="i386RegisterContext"><a class="viewcode-back" href="../../../../envi.archs.i386.html#envi.archs.i386.regs.i386RegisterContext">[docs]</a><span class="k">class</span> <span class="nc">i386RegisterContext</span><span class="p">(</span><span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">e_reg</span><span class="o">.</span><span class="n">RegisterContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadRegDef</span><span class="p">(</span><span class="n">i386regs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadRegMetas</span><span class="p">(</span><span class="n">i386meta</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegisterIndexes</span><span class="p">(</span><span class="n">REG_EIP</span><span class="p">,</span> <span class="n">REG_ESP</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../i386.html" >envi.archs.i386</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

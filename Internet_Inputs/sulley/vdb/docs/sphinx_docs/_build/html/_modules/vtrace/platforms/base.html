@@ -1,0 +1,999 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.platforms.base &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vtrace" href="../../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.platforms.base</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tracer Platform Base</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+
+<span class="kn">from</span> <span class="nn">Queue</span> <span class="kn">import</span> <span class="n">Queue</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span><span class="p">,</span><span class="n">currentThread</span><span class="p">,</span><span class="n">Lock</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.threads</span> <span class="kn">as</span> <span class="nn">e_threads</span>
+<span class="kn">import</span> <span class="nn">envi.resolver</span> <span class="kn">as</span> <span class="nn">e_resolv</span>
+
+<span class="kn">import</span> <span class="nn">vstruct.builder</span> <span class="kn">as</span> <span class="nn">vs_builder</span>
+
+<div class="viewcode-block" id="TracerBase"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase">[docs]</a><span class="k">class</span> <span class="nc">TracerBase</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The basis for a tracer&#39;s internals.  All platformFoo/archFoo</span>
+<span class="sd">    functions are defaulted, and internal state is initialized.</span>
+<span class="sd">    Additionally, a number of internal utilities are housed here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The routine to initialize a tracer&#39;s initial internal state.  This</span>
+<span class="sd">        is used by the initial creation routines, AND on attaches/executes</span>
+<span class="sd">        to re-fresh the state of the tracer.</span>
+<span class="sd">        WARNING: This will erase all metadata/symbols (modes/notifiers are kept)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># Attached pid (also used to know if attached)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exited</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">newbreaks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpbyid</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bplock</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runagain</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attached</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="c"># A cache for memory maps and fd listings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapcache</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># our proxy thread...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threadcache</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_ignores</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">localvars</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c"># Set if we are RunForever until a thread exit...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_join_thread</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_break_after_bp</span> <span class="o">=</span> <span class="bp">True</span>     <span class="c"># Do we stop on the instruction *after* the bp?</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vsbuilder</span> <span class="o">=</span> <span class="n">vs_builder</span><span class="o">.</span><span class="n">VStructBuilder</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">psize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">()</span> <span class="c"># From the envi arch mod...</span>
+
+        <span class="c"># Track which libraries are parsed, and their</span>
+        <span class="c"># normame to full path mappings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">libloaded</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># True if the library has been loaded already</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">libpaths</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c"># normname-&gt;filename and filename-&gt;normname lookup</span>
+
+        <span class="c"># Set up some globally expected metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;PendingSignal&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;SignalInfo&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;IgnoredSignals&quot;</span><span class="p">,[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="c"># name -&gt; base address mappings for binaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;LibraryPaths&quot;</span><span class="p">,</span> <span class="p">{})</span> <span class="c"># base -&gt; path mappings for binaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="c"># If you *can* have a thread id put it here</span>
+        <span class="n">plat</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span>
+        <span class="n">rel</span>  <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;Platform&quot;</span><span class="p">,</span> <span class="n">plat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;Release&quot;</span><span class="p">,</span> <span class="n">rel</span><span class="p">)</span>
+
+        <span class="c"># Use this if we are *expecting* a break</span>
+        <span class="c"># which is caused by us (so we remove the</span>
+        <span class="c"># SIGBREAK from pending_signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ShouldBreak&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TracerBase.nextBpId"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.nextBpId">[docs]</a>    <span class="k">def</span> <span class="nf">nextBpId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bplock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpid</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bplock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">x</span>
+</div>
+    <span class="k">def</span> <span class="nf">_justAttached</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+        <span class="c"># Used by the top level Trace after platform routines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="n">pid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attached</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bpbyid</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;PendingSignal&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ExitCode&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exited</span> <span class="o">=</span> <span class="bp">False</span>
+
+<div class="viewcode-block" id="TracerBase.getResolverForFile"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.getResolverForFile">[docs]</a>    <span class="k">def</span> <span class="nf">getResolverForFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resbynorm</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span><span class="p">:</span> <span class="k">return</span> <span class="n">res</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resbyfile</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span><span class="p">:</span> <span class="k">return</span> <span class="n">res</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="TracerBase.steploop"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.steploop">[docs]</a>    <span class="k">def</span> <span class="nf">steploop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Continue stepi&#39;ing in a loop until shouldRunAgain()</span>
+<span class="sd">        returns false (like RunForever mode or something)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&quot;NonBlocking&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="n">e_threads</span><span class="o">.</span><span class="n">firethread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">doStepLoop</span><span class="p">)()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">doStepLoop</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TracerBase.doStepLoop"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.doStepLoop">[docs]</a>    <span class="k">def</span> <span class="nf">doStepLoop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">go</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">while</span> <span class="n">go</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stepi</span><span class="p">()</span>
+            <span class="n">go</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shouldRunAgain</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_doRun</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Exists to avoid recursion from loop in doWait</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireNotExited</span><span class="p">()</span>
+
+        <span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span><span class="p">:</span>
+            <span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span><span class="o">.</span><span class="n">fastbreak</span>
+
+        <span class="c"># If we are on a breakpoint, and it&#39;s a fastbreak</span>
+        <span class="c"># we don&#39;t want to fire a &quot;continue&quot; event.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fastbreak</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CONTINUE</span><span class="p">)</span>
+
+        <span class="c"># Step past a breakpoint if we are on one.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkForBreak</span><span class="p">()</span>
+
+        <span class="c"># Throw down and activate breakpoints...</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fastbreak</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_throwdownBreaks</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runagain</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_syncRegs</span><span class="p">()</span>    <span class="c"># Must be basically last...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformContinue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;PendingSignal&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TracerBase.wait"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for the trace target to have</span>
+<span class="sd">        something happen...   If the trace is in</span>
+<span class="sd">        NonBlocking mode, this will fire a thread</span>
+<span class="sd">        to wait for you and return control immediately.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&quot;NonBlocking&quot;</span><span class="p">):</span>
+            <span class="n">e_threads</span><span class="o">.</span><span class="n">firethread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_doWait</span><span class="p">)()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_doWait</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_doWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">doit</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">while</span> <span class="n">doit</span><span class="p">:</span>
+        <span class="c"># A wrapper method for  wait() and the wait thread to use</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;SignalInfo&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;PendingSignal&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformWait</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">platformProcessEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="n">doit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shouldRunAgain</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">doit</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_doRun</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_fireSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signo</span><span class="p">,</span> <span class="n">siginfo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;PendingSignal&#39;</span><span class="p">,</span> <span class="n">signo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;SignalInfo&#39;</span><span class="p">,</span> <span class="n">siginfo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_SIGNAL</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fireExit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ecode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ExitCode&#39;</span><span class="p">,</span> <span class="n">ecode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_EXIT</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fireExitThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">,</span> <span class="n">ecode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ExitThread&#39;</span><span class="p">,</span> <span class="n">threadid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ExitCode&#39;</span><span class="p">,</span> <span class="n">ecode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_EXIT_THREAD</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_activateBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bp</span><span class="p">):</span>
+        <span class="c"># NOTE: This is special cased by hardware debuggers etc...</span>
+        <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">isEnabled</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">bp</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                <span class="k">print</span> <span class="s">&quot;WARNING: bpid </span><span class="si">%d</span><span class="s"> activate failed (deferring): </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_throwdownBreaks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run through the breakpoints and setup</span>
+<span class="sd">        the ones that are enabled.</span>
+
+<span class="sd">        NOTE: This should *not* get called when continuing</span>
+<span class="sd">        from a fastbreak...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># Resolve deferred breaks</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">resolveAddress</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">addr</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deferred</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="p">[</span><span class="n">addr</span><span class="p">]</span> <span class="o">=</span> <span class="n">bp</span>
+
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activateBreak</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_syncRegs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sync the reg-cache into the target process</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">regcache</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tid</span><span class="p">,</span> <span class="n">ctx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regcache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">isDirty</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">platformSetRegCtx</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regcache</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_cacheRegs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make sure the reg-cache is populated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">regcache</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regcache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regcache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">threadid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetRegCtx</span><span class="p">(</span><span class="n">threadid</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">setIsDirty</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regcache</span><span class="p">[</span><span class="n">threadid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_checkForBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check to see if we&#39;ve landed on a breakpoint, and if so</span>
+<span class="sd">        deactivate and step us past it.</span>
+
+<span class="sd">        WARNING: Unfortunatly, cause this is used immidiatly before</span>
+<span class="sd">        a call to run/wait, we must block briefly even for the GUI</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Steal a reference because the step should</span>
+        <span class="c"># clear curbp...</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span><span class="o">.</span><span class="n">isEnabled</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+                <span class="n">bp</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&quot;FastStep&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;FastStep&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stepi</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;FastStep&quot;</span><span class="p">,</span> <span class="n">orig</span><span class="p">)</span>
+            <span class="n">bp</span><span class="o">.</span><span class="n">activate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="TracerBase.shouldRunAgain"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.shouldRunAgain">[docs]</a>    <span class="k">def</span> <span class="nf">shouldRunAgain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A unified place for the test as to weather this trace</span>
+<span class="sd">        should be told to run again after reaching some stopping</span>
+<span class="sd">        condition.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attached</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exited</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&quot;RunForever&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">runagain</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="s">&quot;stopped&quot;</span>
+        <span class="n">exe</span> <span class="o">=</span> <span class="s">&quot;None&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="n">run</span> <span class="o">=</span> <span class="s">&quot;running&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">exited</span><span class="p">:</span>
+            <span class="n">run</span> <span class="o">=</span> <span class="s">&quot;exited&quot;</span>
+        <span class="n">exe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ExeName&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;[</span><span class="si">%d</span><span class="s">]</span><span class="se">\t</span><span class="s">- </span><span class="si">%s</span><span class="s"> &lt;</span><span class="si">%s</span><span class="s">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">exe</span><span class="p">,</span> <span class="n">run</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TracerBase.initMode"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.initMode">[docs]</a>    <span class="k">def</span> <span class="nf">initMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">descr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a mode, this should ONLY be called</span>
+<span class="sd">        during setup routines for the trace!  It determines</span>
+<span class="sd">        the available mode setings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modedocs</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">descr</span>
+</div>
+<div class="viewcode-block" id="TracerBase.release"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.release">[docs]</a>    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Do cleanup when we&#39;re done.  This is mostly necissary</span>
+<span class="sd">        because of the thread proxy holding a reference to this</span>
+<span class="sd">        tracer...  We need to let him die off and try to get</span>
+<span class="sd">        garbage collected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">go</span> <span class="o">=</span> <span class="bp">False</span>
+</div>
+    <span class="k">def</span> <span class="nf">_cleanupResources</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tellThreadExit</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_tellThreadExit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_released</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;Warning! tracer del w/o release()!&#39;</span>
+
+<div class="viewcode-block" id="TracerBase.fireTracerThread"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.fireTracerThread">[docs]</a>    <span class="k">def</span> <span class="nf">fireTracerThread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Fire the threadwrap proxy thread for this tracer</span>
+        <span class="c"># (if it hasnt been fired...)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="n">TracerThread</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TracerBase.fireNotifiers"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.fireNotifiers">[docs]</a>    <span class="k">def</span> <span class="nf">fireNotifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fire the registered notifiers for the NOTIFY_* event.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_SIGNAL</span><span class="p">:</span>
+            <span class="n">signo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentSignal</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">signo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;IgnoredSignals&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">if</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span> <span class="k">print</span> <span class="s">&quot;Ignoring&quot;</span><span class="p">,</span><span class="n">signo</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runAgain</span><span class="p">()</span>
+                <span class="k">return</span>
+
+        <span class="n">alllist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ALL</span><span class="p">)</span>
+        <span class="n">nlist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNotifiers</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="c"># if the trace has a proxy it&#39;s notifiers</span>
+        <span class="c"># need that, cause we can&#39;t be pickled ;)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">:</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span>
+
+        <span class="c"># First we notify ourself....</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handleEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># The &quot;NOTIFY_ALL&quot; guys get priority</span>
+        <span class="k">for</span> <span class="n">notifier</span> <span class="ow">in</span> <span class="n">alllist</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">notifier</span><span class="o">.</span><span class="n">handleEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span><span class="n">trace</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;WARNING: Notifier exception for&quot;</span><span class="p">,</span><span class="nb">repr</span><span class="p">(</span><span class="n">notifier</span><span class="p">)</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">notifier</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">notifier</span><span class="o">.</span><span class="n">handleEvent</span><span class="p">(</span><span class="n">event</span><span class="p">,</span><span class="n">trace</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;WARNING: Notifier exception for&quot;</span><span class="p">,</span><span class="nb">repr</span><span class="p">(</span><span class="n">notifier</span><span class="p">)</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_cleanupBreakpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Cleanup all breakpoints (if the current bp is &quot;fastbreak&quot; this routine</span>
+<span class="sd">        will not be called...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="n">bp</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fireStep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&#39;FastStep&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_STEP</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fireBreakpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bp</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span> <span class="o">=</span> <span class="n">bp</span>
+
+        <span class="c"># A breakpoint should be inactive when fired</span>
+        <span class="c"># (even fastbreaks, we&#39;ll need to deactivate for stepi anyway)</span>
+        <span class="n">bp</span><span class="o">.</span><span class="n">deactivate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">bp</span><span class="o">.</span><span class="n">notify</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_BREAK</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">&quot;Breakpoint Exception 0x</span><span class="si">%.8x</span><span class="s"> : </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">address</span><span class="p">,</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bp</span><span class="o">.</span><span class="n">fastbreak</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_BREAK</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># fastbreak&#39;s are basically always &quot;run again&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runagain</span> <span class="o">=</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="TracerBase.checkPageWatchpoints"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.checkPageWatchpoints">[docs]</a>    <span class="k">def</span> <span class="nf">checkPageWatchpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the given memory fault was part of a valid</span>
+<span class="sd">        MapWatchpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">faultaddr</span><span class="p">,</span><span class="n">faultperm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetMemFault</span><span class="p">()</span>
+
+        <span class="c">#FIXME this is some AWESOME but intel specific nonsense</span>
+        <span class="k">if</span> <span class="n">faultaddr</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="k">return</span> <span class="bp">False</span>
+        <span class="n">faultpage</span> <span class="o">=</span> <span class="n">faultaddr</span> <span class="o">&amp;</span> <span class="mh">0xfffff000</span>
+
+        <span class="n">wp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">faultpage</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wp</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fireBreakpoint</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="TracerBase.checkWatchpoints"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.checkWatchpoints">[docs]</a>    <span class="k">def</span> <span class="nf">checkWatchpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Check for hardware watchpoints</span>
+        <span class="n">waddr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">archCheckWatchpoints</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">waddr</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">wp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">waddr</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fireBreakpoint</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="TracerBase.checkBreakpoints"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.checkBreakpoints">[docs]</a>    <span class="k">def</span> <span class="nf">checkBreakpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is mostly for systems (like linux) where you can&#39;t tell</span>
+<span class="sd">        the difference between some SIGSTOP/SIGBREAK conditions and</span>
+<span class="sd">        an actual breakpoint instruction.</span>
+
+<span class="sd">        This method will return true if either the breakpoint</span>
+<span class="sd">        subsystem or the sendBreak (via ShouldBreak meta) is true</span>
+<span class="sd">        (and it will have handled firing events for the bp)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_break_after_bp</span><span class="p">:</span>
+            <span class="n">bi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">archGetBreakInstr</span><span class="p">()</span>
+            <span class="n">pc</span> <span class="o">-=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bi</span><span class="p">)</span>
+
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pc</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bp</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">getAddress</span><span class="p">()</span>
+            <span class="c"># Step back one instruction to account break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setProgramCounter</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fireBreakpoint</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ShouldBreak&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ShouldBreak&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_BREAK</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span>
+
+        <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="TracerBase.notify"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We are frequently a notifier for ourselves, so we can do things</span>
+<span class="sd">        like handle events on attach and on break in a unified fashion.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threadcache</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapcache</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fds</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_continue</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runAgain</span><span class="p">()</span>
+
+        <span class="c"># For thread exits, make sure the tid</span>
+        <span class="c"># isn&#39;t in </span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_EXIT_THREAD</span><span class="p">:</span>
+            <span class="n">tid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sus_threads</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="c"># Check if this is a thread we were waiting on.</span>
+            <span class="k">if</span> <span class="n">tid</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_join_thread</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_join_thread</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="c"># Turn off the RunForever in joinThread()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&#39;RunForever&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+                <span class="c"># Either way, we don&#39;t want to run again...</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runAgain</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>
+
+        <span class="c"># Do the stuff we do for detach/exit or</span>
+        <span class="c"># cleanup breaks etc...</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_DETACH</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sus_threads</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">resumeThread</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cleanupBreakpoints</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_EXIT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;RunForever&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exited</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attached</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CONTINUE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runagain</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cleanupBreakpoints</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TracerBase.delLibraryBase"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.delLibraryBase">[docs]</a>    <span class="k">def</span> <span class="nf">delLibraryBase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseaddr</span><span class="p">):</span>
+
+        <span class="n">libname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryPaths&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">baseaddr</span><span class="p">,</span> <span class="s">&quot;unknown&quot;</span><span class="p">)</span>
+        <span class="n">normname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normFileName</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+
+        <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSymByName</span><span class="p">(</span><span class="n">normname</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;LatestLibrary&quot;</span><span class="p">,</span> <span class="n">libname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;LatestLibraryNorm&quot;</span><span class="p">,</span> <span class="n">normname</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_UNLOAD_LIBRARY</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">normname</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryPaths&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">baseaddr</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delSymbol</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.addLibraryBase"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.addLibraryBase">[docs]</a>    <span class="k">def</span> <span class="nf">addLibraryBase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This should be used *at load time* to setup the library</span>
+<span class="sd">        event metadata.</span>
+
+<span class="sd">        This *must* be called from a context where it&#39;s safe to</span>
+<span class="sd">        fire notifiers, because it will fire a notifier to alert</span>
+<span class="sd">        about a LOAD_LIBRARY. (This means *not* from inside another</span>
+<span class="sd">        notifer)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;LatestLibrary&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;LatestLibraryNorm&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="n">normname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normFileName</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSymByName</span><span class="p">(</span><span class="n">normname</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">normname</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">_</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">normname</span><span class="p">,</span><span class="n">address</span><span class="p">)</span>
+
+        <span class="c"># Only actually do library work with a file or force</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span> <span class="ow">or</span> <span class="n">always</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryPaths&quot;</span><span class="p">)[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">libname</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)[</span><span class="n">normname</span><span class="p">]</span> <span class="o">=</span> <span class="n">address</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;LatestLibrary&quot;</span><span class="p">,</span> <span class="n">libname</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;LatestLibraryNorm&quot;</span><span class="p">,</span> <span class="n">normname</span><span class="p">)</span>
+
+            <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">()</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">FileSymbol</span><span class="p">(</span><span class="n">normname</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+            <span class="n">sym</span><span class="o">.</span><span class="n">casesens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">casesens</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addSymbol</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">libpaths</span><span class="p">[</span><span class="n">normname</span><span class="p">]</span> <span class="o">=</span> <span class="n">libname</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_LOAD_LIBRARY</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.normFileName"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.normFileName">[docs]</a>    <span class="k">def</span> <span class="nf">normFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">basename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</div>
+    <span class="k">def</span> <span class="nf">_findLibraryMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">magic</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c"># A utility for platforms which lack library load</span>
+        <span class="c"># notification through the operating system</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">mlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">magic</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">addr</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perms</span><span class="p">,</span><span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMaps</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">fname</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">done</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">mlen</span><span class="p">)</span> <span class="o">==</span> <span class="n">magic</span><span class="p">:</span>
+                    <span class="n">done</span><span class="p">[</span><span class="n">fname</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">addLibraryBase</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="n">always</span><span class="p">)</span>
+
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span> <span class="c"># *never* do this... except this once...</span>
+
+    <span class="k">def</span> <span class="nf">_loadBinaryNorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">libloaded</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">normname</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">libpaths</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">normname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fname</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_loadBinary</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_loadBinary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a filename has yet to be parsed.  If it has NOT</span>
+<span class="sd">        been parsed, parse it and return True, otherwise, return False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">normname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normFileName</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">libloaded</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">normname</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">normname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">platformParseBinary</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">normname</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">libloaded</span><span class="p">[</span><span class="n">normname</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_simpleCreateThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fire a thread event for each of the current threads.</span>
+<span class="sd">        (for use by tracers which don&#39;t get help from the OS)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">initid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetThreads</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">,</span> <span class="n">tid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CREATE_THREAD</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">,</span> <span class="n">initid</span><span class="p">)</span>
+
+<span class="c">#######################################################################</span>
+<span class="c">#</span>
+<span class="c"># NOTE: all platform/arch defaults are populated here.</span>
+<span class="c">#</span>
+<div class="viewcode-block" id="TracerBase.platformGetThreads"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformGetThreads">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a dictionary of &lt;threadid&gt;:&lt;tinfo&gt; pairs where tinfo is either</span>
+<span class="sd">        the stack top, or the teb for win32</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformGetThreads()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformSelectThread"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformSelectThread">[docs]</a>    <span class="k">def</span> <span class="nf">platformSelectThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thrid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Platform implementers are encouraged to use the metadata field &quot;ThreadId&quot;</span>
+<span class="sd">        as the identifier (int) for which thread has &quot;focus&quot;.  Additionally, the</span>
+<span class="sd">        field &quot;StoppedThreadId&quot; should be used in instances (like win32) where you</span>
+<span class="sd">        must specify the ORIGINALLY STOPPED thread-id in the continue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">,</span><span class="n">thrid</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformSuspendThread"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformSuspendThread">[docs]</a>    <span class="k">def</span> <span class="nf">platformSuspendThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thrid</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformSuspendThread()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformResumeThread"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformResumeThread">[docs]</a>    <span class="k">def</span> <span class="nf">platformResumeThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thrid</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformResumeThread()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformInjectThread"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformInjectThread">[docs]</a>    <span class="k">def</span> <span class="nf">platformInjectThread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">arg</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformInjectThread()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformKill"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformKill">[docs]</a>    <span class="k">def</span> <span class="nf">platformKill</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformKill()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformExec"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformExec">[docs]</a>    <span class="k">def</span> <span class="nf">platformExec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmdline</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Platform exec will execute the process specified in cmdline</span>
+<span class="sd">        and return the PID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platmform must implement platformExec&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformInjectSo"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformInjectSo">[docs]</a>    <span class="k">def</span> <span class="nf">platformInjectSo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement injectso()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformGetFds"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformGetFds">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetFds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return what getFds() wants for this particular platform</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformGetFds()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformGetSignal"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformGetSignal">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the currently posted exception/signal....</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c"># Default to the thing they all should do...</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;PendingSignal&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformSetSignal"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformSetSignal">[docs]</a>    <span class="k">def</span> <span class="nf">platformSetSignal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sig</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the current signal to deliver to the process on cont.</span>
+<span class="sd">        (Use None for no signal delivery.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;PendingSignal&#39;</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformGetMaps"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformGetMaps">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the memory maps where each element has</span>
+<span class="sd">        the following structure:</span>
+<span class="sd">        (address, length, perms, file=&quot;&quot;)</span>
+<span class="sd">        NOTE: By Default this list is available as Trace.maps</span>
+<span class="sd">        because the default implementation attempts to populate</span>
+<span class="sd">        them on every break/stop/etc...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement GetMaps&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformPs"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformPs">[docs]</a>    <span class="k">def</span> <span class="nf">platformPs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Actually return a list of tuples in the format</span>
+<span class="sd">        (pid, name) for this platform</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement Ps&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.archGetStackTrace"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.archGetStackTrace">[docs]</a>    <span class="k">def</span> <span class="nf">archGetStackTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Architecure must implement argGetStackTrace()!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.archAddWatchpoint"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.archAddWatchpoint">[docs]</a>    <span class="k">def</span> <span class="nf">archAddWatchpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="s">&quot;rw&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a watchpoint for the given address.  Raise if the platform</span>
+<span class="sd">        doesn&#39;t support, or too many are active...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Architecture doesn&#39;t implement watchpoints!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.archRemWatchpoint"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.archRemWatchpoint">[docs]</a>    <span class="k">def</span> <span class="nf">archRemWatchpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Architecture doesn&#39;t implement watchpoints!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.archCheckWatchpoints"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.archCheckWatchpoints">[docs]</a>    <span class="k">def</span> <span class="nf">archCheckWatchpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If the current register state indicates that a watchpoint was hit, </span>
+<span class="sd">        return the address of the watchpoint and clear the event.  Otherwise</span>
+<span class="sd">        return None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="TracerBase.archGetRegCtx"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.archGetRegCtx">[docs]</a>    <span class="k">def</span> <span class="nf">archGetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a new empty envi.registers.RegisterContext object for this</span>
+<span class="sd">        trace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement archGetRegCtx()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.getStackTrace"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.getStackTrace">[docs]</a>    <span class="k">def</span> <span class="nf">getStackTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the stack frames for this process</span>
+<span class="sd">        (currently Intel/ebp based only).  Each element of the</span>
+<span class="sd">        &quot;frames list&quot; consists of another list which is (eip,ebp)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement getStackTrace()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.getExe"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.getExe">[docs]</a>    <span class="k">def</span> <span class="nf">getExe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full path to the main executable for this</span>
+<span class="sd">        *attached* Trace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ExeName&quot;</span><span class="p">,</span><span class="s">&quot;Unknown&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformAttach"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformAttach">[docs]</a>    <span class="k">def</span> <span class="nf">platformAttach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Actually carry out attaching to a target process.  Like</span>
+<span class="sd">        platformStepi this is expected to be ATOMIC and not return</span>
+<span class="sd">        until a complete attach.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformAttach()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformContinue"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformContinue">[docs]</a>    <span class="k">def</span> <span class="nf">platformContinue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformContinue()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformDetach"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformDetach">[docs]</a>    <span class="k">def</span> <span class="nf">platformDetach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Actually perform the detach for this type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformDetach()&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformStepi"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformStepi">[docs]</a>    <span class="k">def</span> <span class="nf">platformStepi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        PlatformStepi should be ATOMIC, meaning it gets called, and</span>
+<span class="sd">        by the time it returns, you&#39;re one step further.  This is completely</span>
+<span class="sd">        regardless of blocking/nonblocking/whatever.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformStepi!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformCall"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformCall">[docs]</a>    <span class="k">def</span> <span class="nf">platformCall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">convention</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Platform call takes an address, and an array of args</span>
+<span class="sd">        (string types will be mapped and located for you)</span>
+
+<span class="sd">        platformCall is expected to return a dicionary of the</span>
+<span class="sd">        current register values at the point where the call</span>
+<span class="sd">        has returned...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformCall&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformGetRegCtx"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformGetRegCtx">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformGetRegCtx!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformSetRegCtx"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformSetRegCtx">[docs]</a>    <span class="k">def</span> <span class="nf">platformSetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformSetRegCtx!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformProtectMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformProtectMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformProtectMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Plaform does not implement protect memory&quot;</span><span class="p">)</span>
+        </div>
+<div class="viewcode-block" id="TracerBase.platformAllocateMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformAllocateMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformAllocateMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="n">e_mem</span><span class="o">.</span><span class="n">MM_RWX</span><span class="p">,</span> <span class="n">suggestaddr</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Plaform does not implement allocate memory&quot;</span><span class="p">)</span>
+        </div>
+<div class="viewcode-block" id="TracerBase.platformReadMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformReadMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformReadMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformReadMemory!&quot;</span><span class="p">)</span>
+        </div>
+<div class="viewcode-block" id="TracerBase.platformWriteMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformWriteMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformWriteMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformWriteMemory!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformGetMemFault"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformGetMemFault">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetMemFault</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the addr of the current memory fault</span>
+<span class="sd">        or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">#NOTE: This is used by the PageWatchpoint subsystem</span>
+        <span class="c"># (and is still considered experimental)</span>
+        <span class="k">return</span> <span class="bp">None</span><span class="p">,</span><span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformWait"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformWait">[docs]</a>    <span class="k">def</span> <span class="nf">platformWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for something interesting to occur and return a</span>
+<span class="sd">        *platform specific* representation of what happened.</span>
+
+<span class="sd">        This will then be passed to the platformProcessEvent()</span>
+<span class="sd">        method which will be responsible for doing things like</span>
+<span class="sd">        firing notifiers.  Because the platformWait() method needs</span>
+<span class="sd">        to be commonly @threadwrap and you can&#39;t fire notifiers</span>
+<span class="sd">        from within a threadwrapped function...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformWait!&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformProcessEvent"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformProcessEvent">[docs]</a>    <span class="k">def</span> <span class="nf">platformProcessEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method processes the event data provided by platformWait()</span>
+
+<span class="sd">        This method is responsible for firing ALL notifiers *except*:</span>
+
+<span class="sd">        vtrace.NOTIFY_CONTINUE - This is handled by the run api (and isn&#39;t the result of an event)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformProcessEvent&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformOpenFile"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformOpenFile">[docs]</a>    <span class="k">def</span> <span class="nf">platformOpenFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="c"># Open a file for reading</span>
+        <span class="k">return</span> <span class="nb">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformParseBinary"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformParseBinary">[docs]</a>    <span class="k">def</span> <span class="nf">platformParseBinary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">baseaddr</span><span class="p">,</span> <span class="n">normname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Platforms must parse the given binary file and load any symbols</span>
+<span class="sd">        into the internal SymbolResolver using self.addSymbol()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Platform must implement platformParseBinary&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TracerBase.platformRelease"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerBase.platformRelease">[docs]</a>    <span class="k">def</span> <span class="nf">platformRelease</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called back on release.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span>
+</div></div>
+<span class="kn">import</span> <span class="nn">threading</span>
+<div class="viewcode-block" id="threadwrap"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.threadwrap">[docs]</a><span class="k">def</span> <span class="nf">threadwrap</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">trfunc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">threading</span><span class="o">.</span><span class="n">currentThread</span><span class="p">()</span><span class="o">.</span><span class="n">__class__</span> <span class="o">==</span> <span class="n">TracerThread</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c"># Proxy the call through a single thread</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="c"># FIXME change calling convention!</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="n">args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">((</span><span class="n">func</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">q</span><span class="p">))</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">ret</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ret</span>
+        <span class="k">return</span> <span class="n">ret</span>
+    <span class="k">return</span> <span class="n">trfunc</span>
+</div>
+<div class="viewcode-block" id="TracerThread"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerThread">[docs]</a><span class="k">class</span> <span class="nc">TracerThread</span><span class="p">(</span><span class="n">Thread</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Ok... so here&#39;s the catch... most debug APIs do *not* allow</span>
+<span class="sd">    one thread to do the attach and another to do continue and another</span>
+<span class="sd">    to do wait... they just dont.  So there.  I have to make a thread</span>
+<span class="sd">    per-tracer (on most platforms) and proxy requests (for *some* trace</span>
+<span class="sd">    API methods) to it for actual execution.  SUCK!</span>
+
+<span class="sd">    However, this lets async things like GUIs and threaded things like</span>
+<span class="sd">    cobra not have to be aware of which one is allowed and not allowed</span>
+<span class="sd">    to make particular calls and on what platforms...  YAY!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Thread</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TracerThread.run"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.base.TracerThread.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run in a circle getting requests from our queue and</span>
+<span class="sd">        executing them based on the thread.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">qobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">qobj</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">meth</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="n">qobj</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">meth</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span><span class="n">e</span><span class="p">:</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+                    <span class="k">continue</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

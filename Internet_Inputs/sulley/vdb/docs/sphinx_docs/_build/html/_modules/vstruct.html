@@ -1,0 +1,553 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isclass</span>
+<span class="kn">from</span> <span class="nn">StringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="kn">import</span> <span class="nn">vstruct.primitives</span> <span class="kn">as</span> <span class="nn">vs_prims</span>
+
+<span class="k">def</span> <span class="nf">isVstructType</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="isVstructType"><a class="viewcode-back" href="../vstruct.html#vstruct.isVstructType">[docs]</a>    <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">vs_prims</span><span class="o">.</span><span class="n">v_base</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">VStruct</span><span class="p">(</span><span class="n">vs_prims</span><span class="o">.</span><span class="n">v_base</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct">[docs]</a>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The VStruct class is the bases for all groups of primitive fields which define a &quot;structure&quot;.</span>
+<span class="sd">    Fields may be added with vsAddField() or simply added as attributes (provided you use a VStruct</span>
+<span class="sd">    or one of the vstruct.primitives in the initial assignment.)</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        import vstruct</span>
+<span class="sd">        from vstruct.primitives import *</span>
+
+<span class="sd">        vs = vstruct.VStruct()</span>
+<span class="sd">        vs.fieldone = v_uint32()</span>
+<span class="sd">        vs.fieldtwo = v_str(size=30)</span>
+
+<span class="sd">        bytes = vs.vsEmit()</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># A tiny bit of evil...</span>
+        <span class="nb">object</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;_vs_values&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">vs_prims</span><span class="o">.</span><span class="n">v_base</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_field_align</span> <span class="o">=</span> <span class="bp">False</span> <span class="c"># To toggle visual studio style packing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_padnum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_pcallbacks</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">vsAddParseCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fieldname</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+<div class="viewcode-block" id="VStruct.vsAddParseCallback"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsAddParseCallback">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Register a callback which will be triggered when the field with the given name</span>
+<span class="sd">        is set by the parser.  This can be used to simplify auto-parsing to change fields</span>
+<span class="sd">        sizes or whatnot during parsing.</span>
+
+<span class="sd">        (You may also name a method pcb_&lt;FieldName&gt; to get a callback for your struct.)</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">            def updateLengthTarget(vs):</span>
+<span class="sd">                dostuff()</span>
+
+<span class="sd">            v.vsAddParseCallback(&#39;lenfield&#39;, updateLengthTarget)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fieldname</span><span class="p">)</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Invalid Field: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">fieldname</span><span class="p">)</span>
+
+        <span class="n">cblist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_pcallbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fieldname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cblist</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">cblist</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vs_pcallbacks</span><span class="p">[</span><span class="n">fieldname</span><span class="p">]</span> <span class="o">=</span> <span class="n">cblist</span>
+
+        <span class="n">cblist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsGetClassPath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsGetClassPath"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsGetClassPath">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the entire class name (including module path).</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__module__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsParseFd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsParseFd"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsParseFd">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Parse from the given file like object as input.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">:</span>
+            <span class="n">fobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">fobj</span><span class="o">.</span><span class="n">vsParseFd</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;pcb_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">callback</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">callback</span><span class="p">()</span>
+            <span class="n">cblist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_pcallbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cblist</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">cblist</span><span class="p">:</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsParse"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsParse">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For all the primitives contained within, allow them</span>
+<span class="sd">        an opportunity to parse the given data and return the</span>
+<span class="sd">        total offset...</span>
+
+<span class="sd">        Any method named pcb_&lt;FieldName&gt; will be called back when the specified</span>
+<span class="sd">        field is set by the parser.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># In order for callbacks to change fields, we can&#39;t use vsGetFields()</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">:</span>
+            <span class="c">#if fname == &quot;Magic&quot;: import pdb; pdb.set_trace()</span>
+            <span class="c">#if fname == &quot;MajorOperatingSystemVersion&quot;: import pdb; pdb.set_trace()</span>
+
+            <span class="n">fobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="c">#print fname + &quot; &quot; + str(offset) + &quot; &quot; + str(type(fobj))</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="n">sbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;pcb_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">callback</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">callback</span><span class="p">()</span>
+            <span class="n">cblist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_pcallbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cblist</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">cblist</span><span class="p">:</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">offset</span>
+
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsEmit"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsEmit">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get back the byte sequence associated with this structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># FIXME....</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fobj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsGetFields</span><span class="p">():</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">fobj</span><span class="o">.</span><span class="n">vsEmit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span>
+        
+    <span class="k">def</span> <span class="nf">vsCalculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsCalculate"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsCalculate">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Calculate fields which need correction before emitting bytes etc...</span>
+
+<span class="sd">        (VStruct extenders may call this, then modify fields internally)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fobj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsGetFields</span><span class="p">():</span>
+            <span class="n">fobj</span><span class="o">.</span><span class="n">vsCalculate</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">vsIsPrim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsIsPrim"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsIsPrim">[docs]</a>        <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">vsGetFields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsGetFields"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsGetFields">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get a list of (fieldname, fieldobj) tuples for all the kids</span>
+<span class="sd">        in this VStruct (non-recursive)</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">                for kidname, kidobj in x.vsGetFields():</span>
+<span class="sd">                    print kidname</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">:</span>
+            <span class="n">fobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">fname</span><span class="p">,</span><span class="n">fobj</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">vsGetField</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsGetField"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsGetField">[docs]</a>        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid field: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="k">def</span> <span class="nf">vsHasField</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsHasField"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsHasField">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Test weather this structure contains a field with the</span>
+<span class="sd">        given name....</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            if x.vsHasField(&#39;woot&#39;):</span>
+<span class="sd">                print &#39;STRUCT HAS WOOT FIELD!&#39;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">vsSetField</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsSetField"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsSetField">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Mostly for internal use...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">isVstructType</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="k">return</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="c"># FIXME implement more arithmetic for structs...</span>
+    <span class="k">def</span> <span class="nf">__ixor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span></div>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">^=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">vsClearFields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="VStruct.vsClearFields"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsClearFields">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Clear all fields from the current vstruct object.  This may be useful</span>
+<span class="sd">        in specialized parsers which populate their structure on vsParse()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">vsAddField</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsAddField"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsAddField">[docs]</a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">isVstructType</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Added fields MUST be vstruct types!&quot;</span><span class="p">)</span>
+
+        <span class="c"># Do optional field alignment...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_field_align</span><span class="p">:</span>
+
+            <span class="c"># If it&#39;s a primitive, all is well, if not, pad to size of</span>
+            <span class="c"># the first element of the VStruct/VArray...</span>
+            <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">vsIsPrim</span><span class="p">():</span>
+                <span class="n">align</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">_vs_align</span>
+                <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">align</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">field</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+                <span class="n">align</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">_vs_align</span>
+                <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">align</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+
+            <span class="n">delta</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">%</span> <span class="n">align</span>
+            <span class="k">if</span> <span class="n">delta</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">pname</span> <span class="o">=</span> <span class="s">&quot;_pad</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_padnum</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_vs_padnum</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pname</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="p">[</span><span class="n">pname</span><span class="p">]</span> <span class="o">=</span> <span class="n">vs_prims</span><span class="o">.</span><span class="n">v_bytes</span><span class="p">(</span><span class="n">align</span><span class="o">-</span><span class="n">delta</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">vsInsertField</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">befname</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsInsertField"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsInsertField">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        WARNING: vsInsertField does NOT honor field alignment! # FIXME</span>
+<span class="sd">        (AND CAN MESS UP OTHER FIELDS ALIGNMENT!)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">isVstructType</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Added fields MUST be vstruct types!&quot;</span><span class="p">)</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">befname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">vsGetPrims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsGetPrims"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsGetPrims">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return an order&#39;d list of the primitive fields in this</span>
+<span class="sd">        structure definition.  This is recursive and will return</span>
+<span class="sd">        the sub fields of all nested structures.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsGetFields</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">vsIsPrim</span><span class="p">():</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">field</span><span class="o">.</span><span class="n">vsGetPrims</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">vsGetTypeName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsGetTypeName"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsGetTypeName">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_name</span>
+
+    <span class="k">def</span> <span class="nf">vsGetOffset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsGetOffset"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsGetOffset">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the offset of a member (by name):</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">fname</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">offset</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Invalid Field Specified!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsGetPrintInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VStruct.vsGetPrintInfo"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.vsGetPrintInfo">[docs]</a>        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">top</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">offset</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_name</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="n">off</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="n">indent</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="c">#off = offset + self.vsGetOffset(fname)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">VStruct</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">off</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">vsGetPrintInfo</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">off</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">off</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+            <span class="n">off</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fobj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsGetFields</span><span class="p">():</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fobj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="c"># Gotta do this for pickle issues...</span>
+        <span class="n">vsvals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;_vs_values&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vsvals</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">vsvals</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">[</span><span class="s">&quot;_vs_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vsvals</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">vsvals</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">vs_prims</span><span class="o">.</span><span class="n">v_prim</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">vsGetValue</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+    <span class="k">def</span> <span class="nf">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c"># If we have this field, asign to it</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetField</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c"># If it&#39;s a vstruct type, create a new field</span>
+        <span class="k">if</span> <span class="n">isVstructType</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsAddField</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c"># Fail over to standard object attribute behavior</span>
+        <span class="k">return</span> <span class="nb">object</span><span class="o">.</span><span class="n">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Our iteration returns name,field pairs</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;&lt;[</span><span class="si">%s</span><span class="s">] </span><span class="si">%s</span><span class="s">&gt;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;VStruct&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">tree</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">reprmax</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="VStruct.tree"><a class="viewcode-back" href="../vstruct.html#vstruct.VStruct.tree">[docs]</a>        <span class="n">ret</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">off</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsGetPrintInfo</span><span class="p">():</span>
+            <span class="n">rstr</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">vsGetTypeName</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">vs_prims</span><span class="o">.</span><span class="n">v_number</span><span class="p">):</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">vsGetValue</span><span class="p">()</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">val</span><span class="p">,</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">vs_prims</span><span class="o">.</span><span class="n">v_prim</span><span class="p">):</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">reprmax</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">rstr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">reprmax</span><span class="p">:</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="n">rstr</span><span class="p">[:</span><span class="n">reprmax</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;...&#39;</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%.2d</span><span class="s">)</span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">va</span><span class="o">+</span><span class="n">off</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">field</span><span class="p">),</span> <span class="s">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">indent</span><span class="o">*</span><span class="mi">2</span><span class="p">),</span><span class="n">name</span><span class="p">,</span><span class="n">rstr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+<span class="k">class</span> <span class="nc">VArray</span><span class="p">(</span><span class="n">VStruct</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="VArray"><a class="viewcode-back" href="../vstruct.html#vstruct.VArray">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elems</span><span class="o">=</span><span class="p">()):</span>
+        <span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elems</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vsAddElement</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsAddElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elem</span><span class="p">):</span>
+<div class="viewcode-block" id="VArray.vsAddElement"><a class="viewcode-back" href="../vstruct.html#vstruct.VArray.vsAddElement">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Used to add elements to an array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vsAddField</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">idx</span><span class="p">,</span> <span class="n">elem</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsGetField</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">index</span><span class="p">)</span>
+
+    <span class="c">#FIXME slice asignment</span>
+
+<span class="k">class</span> <span class="nc">VUnion</span><span class="p">(</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VUnion"><a class="viewcode-back" href="../vstruct.html#vstruct.VUnion">[docs]</a>
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="VUnion.vsEmit"><a class="viewcode-back" href="../vstruct.html#vstruct.VUnion.vsEmit">[docs]</a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;VUnion is only for parse right now!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VUnion.vsParse"><a class="viewcode-back" href="../vstruct.html#vstruct.VUnion.vsParse">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For all the primitives contained within, allow them</span>
+<span class="sd">        an opportunity to parse the given data and return the</span>
+<span class="sd">        total offset...</span>
+
+<span class="sd">        Any method named pcb_&lt;FieldName&gt; will be called back when the specified</span>
+<span class="sd">        field is set by the parser.</span>
+<span class="sd">        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># In order for callbacks to change fields, we can&#39;t use vsGetFields()</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">:</span>
+            <span class="n">fobj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">fobj</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="n">sbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">))</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;pcb_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">callback</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">callback</span><span class="p">()</span>
+            <span class="n">cblist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_pcallbacks</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cblist</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="n">cblist</span><span class="p">:</span>
+                    <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fobj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsGetFields</span><span class="p">():</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fobj</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">vsGetPrintInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="VUnion.vsGetPrintInfo"><a class="viewcode-back" href="../vstruct.html#vstruct.VUnion.vsGetPrintInfo">[docs]</a>        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">top</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">offset</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_name</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="n">indent</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fields</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">VStruct</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">offset</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">vsGetPrintInfo</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">offset</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+<span class="k">def</span> <span class="nf">resolve</span><span class="p">(</span><span class="n">impmod</span><span class="p">,</span> <span class="n">nameparts</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="resolve"><a class="viewcode-back" href="../vstruct.html#vstruct.resolve">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resolve the given (potentially nested) object</span>
+<span class="sd">    from within a module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nameparts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">impmod</span>
+    <span class="k">for</span> <span class="n">nname</span> <span class="ow">in</span> <span class="n">nameparts</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">nname</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">m</span>
+
+<span class="k">def</span> <span class="nf">resolvepath</span><span class="p">(</span><span class="n">impmod</span><span class="p">,</span> <span class="n">pathstr</span><span class="p">):</span></div>
+<div class="viewcode-block" id="resolvepath"><a class="viewcode-back" href="../vstruct.html#vstruct.resolvepath">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Resolve an object/module from within the given module</span>
+<span class="sd">    by path name (ie. &#39;foo.bar.baz&#39;)</span>
+
+<span class="sd">    Example: x = resolvepath(vstruct.defs, &#39;win32.SEH_SCOPETABLE&#39;)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">nameparts</span> <span class="o">=</span> <span class="n">pathstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resolve</span><span class="p">(</span><span class="n">impmod</span><span class="p">,</span> <span class="n">nameparts</span><span class="p">)</span>
+
+<span class="c"># NOTE: Gotta import this *after* VStruct/VSArray defined</span>
+<span class="kn">import</span> <span class="nn">vstruct.defs</span> <span class="kn">as</span> <span class="nn">vs_defs</span></div>
+
+<span class="k">def</span> <span class="nf">getStructure</span><span class="p">(</span><span class="n">sname</span><span class="p">):</span>
+<div class="viewcode-block" id="getStructure"><a class="viewcode-back" href="../vstruct.html#vstruct.getStructure">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an instance of the specified structure.  The</span>
+<span class="sd">    structure name may be a definition that was added with</span>
+<span class="sd">    addStructure() or a python path (ie. win32.TEB) of a</span>
+<span class="sd">    definition from within vstruct.defs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="n">vs_defs</span><span class="p">,</span> <span class="n">sname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="bp">None</span>
+
+<span class="k">def</span> <span class="nf">getModuleNames</span><span class="p">():</span></div>
+<div class="viewcode-block" id="getModuleNames"><a class="viewcode-back" href="../vstruct.html#vstruct.getModuleNames">[docs]</a>    <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">vs_defs</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&quot;__&quot;</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">getStructNames</span><span class="p">(</span><span class="n">modname</span><span class="p">):</span></div>
+<div class="viewcode-block" id="getStructNames"><a class="viewcode-back" href="../vstruct.html#vstruct.getStructNames">[docs]</a>    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="n">vs_defs</span><span class="p">,</span> <span class="n">modname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mod</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">mod</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isclass</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">VStruct</span><span class="p">):</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ret</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vqt.qpython</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vqt-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vqt-module.html">Package&nbsp;vqt</a> ::
+        Module&nbsp;qpython
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vqt.qpython-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vqt.qpython-module.html">Module vqt.qpython</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">Home of some helpers for python interactive stuff.</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">types</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">traceback</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">threading</tt> <tt class="py-keyword">import</tt> <tt class="py-name">Thread</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">PyQt4</tt> <tt class="py-keyword">import</tt> <tt class="py-name">QtCore</tt><tt class="py-op">,</tt> <tt class="py-name">QtGui</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package vqt=vqt-module.html"><a title="vqt" class="py-name" href="#" onclick="return doclink('link-0', 'vqt', 'link-0');">vqt</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module vqt.main=vqt.main-module.html,Function vqt.main.main()=vqt.main-module.html#main"><a title="vqt.main
+vqt.main.main" class="py-name" href="#" onclick="return doclink('link-1', 'main', 'link-1');">main</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Function vqt.main.idlethread()=vqt.main-module.html#idlethread"><a title="vqt.main.idlethread" class="py-name" href="#" onclick="return doclink('link-2', 'idlethread', 'link-2');">idlethread</a></tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-3" class="py-name"><a title="vqt" class="py-name" href="#" onclick="return doclink('link-3', 'vqt', 'link-0');">vqt</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module vqt.basics=vqt.basics-module.html"><a title="vqt.basics" class="py-name" href="#" onclick="return doclink('link-4', 'basics', 'link-4');">basics</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="scripterr"></a><div id="scripterr-def"><a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-decorator">@</tt><tt class="py-decorator">idlethread</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt> <a class="py-toggle" href="#" id="scripterr-toggle" onclick="return toggle('scripterr');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vqt.qpython-module.html#scripterr">scripterr</a><tt class="py-op">(</tt><tt class="py-param">msg</tt><tt class="py-op">,</tt> <tt class="py-param">info</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="scripterr-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="scripterr-expanded"><a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">    <tt class="py-name">msgbox</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QMessageBox</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line">    <tt class="py-name">msgbox</tt><tt class="py-op">.</tt><tt class="py-name">setText</tt><tt class="py-op">(</tt><tt class="py-string">'Script Error: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">msg</tt><tt class="py-op">)</tt> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">    <tt class="py-name">msgbox</tt><tt class="py-op">.</tt><tt class="py-name">setInformativeText</tt><tt class="py-op">(</tt><tt class="py-name">info</tt><tt class="py-op">)</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">    <tt class="py-name">msgbox</tt><tt class="py-op">.</tt><tt class="py-name">exec_</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"> </tt>
+<a name="ScriptThread"></a><div id="ScriptThread-def"><a name="L20"></a><tt class="py-lineno">20</tt> <a class="py-toggle" href="#" id="ScriptThread-toggle" onclick="return toggle('ScriptThread');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vqt.qpython.ScriptThread-class.html">ScriptThread</a><tt class="py-op">(</tt><tt class="py-base-class">Thread</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ScriptThread-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ScriptThread-expanded"><a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"> </tt>
+<a name="ScriptThread.__init__"></a><div id="ScriptThread.__init__-def"><a name="L22"></a><tt class="py-lineno">22</tt> <a class="py-toggle" href="#" id="ScriptThread.__init__-toggle" onclick="return toggle('ScriptThread.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vqt.qpython.ScriptThread-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">cobj</tt><tt class="py-op">,</tt> <tt class="py-param">locals</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ScriptThread.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ScriptThread.__init__-expanded"><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">        <tt class="py-name">Thread</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Method vqt.application.VQDockWidget.__init__()=vqt.application.VQDockWidget-class.html#__init__,Method vqt.application.VQMainCmdWindow.__init__()=vqt.application.VQMainCmdWindow-class.html#__init__,Method vqt.basics.ACT.__init__()=vqt.basics.ACT-class.html#__init__,Method vqt.basics.HBox.__init__()=vqt.basics.HBox-class.html#__init__,Method vqt.basics.VBox.__init__()=vqt.basics.VBox-class.html#__init__,Method vqt.cli.VQCli.__init__()=vqt.cli.VQCli-class.html#__init__,Method vqt.main.VQApplication.__init__()=vqt.main.VQApplication-class.html#__init__,Method vqt.menubuilder.ActionCall.__init__()=vqt.menubuilder.ActionCall-class.html#__init__,Method vqt.menubuilder.FieldAdder.__init__()=vqt.menubuilder.FieldAdder-class.html#__init__,Method vqt.menubuilder.VQMenu.__init__()=vqt.menubuilder.VQMenu-class.html#__init__,Method vqt.menubuilder.VQMenuBar.__init__()=vqt.menubuilder.VQMenuBar-class.html#__init__,Method vqt.qpython.ScriptThread.__init__()=vqt.qpython.ScriptThread-class.html#__init__,Method vqt.qpython.VQPythonView.__init__()=vqt.qpython.VQPythonView-class.html#__init__,Method vqt.tree.VQTreeItem.__init__()=vqt.tree.VQTreeItem-class.html#__init__,Method vqt.tree.VQTreeModel.__init__()=vqt.tree.VQTreeModel-class.html#__init__,Method vqt.tree.VQTreeSorter.__init__()=vqt.tree.VQTreeSorter-class.html#__init__,Method vqt.tree.VQTreeView.__init__()=vqt.tree.VQTreeView-class.html#__init__"><a title="vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__" class="py-name" href="#" onclick="return doclink('link-5', '__init__', 'link-5');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setDaemon</tt><tt class="py-op">(</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cobj</tt> <tt class="py-op">=</tt> <tt class="py-name">cobj</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locals</tt> <tt class="py-op">=</tt> <tt class="py-name">locals</tt> </tt>
+</div><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"> </tt>
+<a name="ScriptThread.run"></a><div id="ScriptThread.run-def"><a name="L28"></a><tt class="py-lineno">28</tt> <a class="py-toggle" href="#" id="ScriptThread.run-toggle" onclick="return toggle('ScriptThread.run');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vqt.qpython.ScriptThread-class.html#run">run</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ScriptThread.run-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ScriptThread.run-expanded"><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">            <tt class="py-keyword">exec</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">cobj</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">locals</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">            <tt class="py-name">scripterr</tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">traceback</tt><tt class="py-op">.</tt><tt class="py-name">format_exc</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"> </tt>
+<a name="VQPythonView"></a><div id="VQPythonView-def"><a name="L34"></a><tt class="py-lineno">34</tt> <a class="py-toggle" href="#" id="VQPythonView-toggle" onclick="return toggle('VQPythonView');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vqt.qpython.VQPythonView-class.html">VQPythonView</a><tt class="py-op">(</tt><tt class="py-base-class">QtGui</tt><tt class="py-op">.</tt><tt class="py-base-class">QWidget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQPythonView-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="VQPythonView-expanded"><a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"> </tt>
+<a name="VQPythonView.__init__"></a><div id="VQPythonView.__init__-def"><a name="L36"></a><tt class="py-lineno">36</tt> <a class="py-toggle" href="#" id="VQPythonView.__init__-toggle" onclick="return toggle('VQPythonView.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vqt.qpython.VQPythonView-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">locals</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">parent</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQPythonView.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="VQPythonView.__init__-expanded"><a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">locals</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">            <tt class="py-name">locals</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_locals</tt> <tt class="py-op">=</tt> <tt class="py-name">locals</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">        <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QWidget</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name"><a title="vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__" class="py-name" href="#" onclick="return doclink('link-6', '__init__', 'link-5');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-7" class="py-name" targets="Method vqt.tree.VQTreeModel.parent()=vqt.tree.VQTreeModel-class.html#parent"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-7', 'parent', 'link-7');">parent</a></tt><tt class="py-op">=</tt><tt id="link-8" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-8', 'parent', 'link-7');">parent</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_textWidget</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QTextEdit</tt><tt class="py-op">(</tt><tt id="link-9" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-9', 'parent', 'link-7');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_botWidget</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QWidget</tt><tt class="py-op">(</tt><tt id="link-10" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-10', 'parent', 'link-7');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_button</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QPushButton</tt><tt class="py-op">(</tt><tt class="py-string">'?'</tt><tt class="py-op">,</tt> <tt id="link-11" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-11', 'parent', 'link-7');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_botWidget</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_run_button</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QPushButton</tt><tt class="py-op">(</tt><tt class="py-string">'Run'</tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-12', 'parent', 'link-7');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_botWidget</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_run_button</tt><tt class="py-op">.</tt><tt class="py-name">clicked</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method vqt.qpython.VQPythonView._okClicked()=vqt.qpython.VQPythonView-class.html#_okClicked"><a title="vqt.qpython.VQPythonView._okClicked" class="py-name" href="#" onclick="return doclink('link-13', '_okClicked', 'link-13');">_okClicked</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_button</tt><tt class="py-op">.</tt><tt class="py-name">clicked</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Method vqt.qpython.VQPythonView._helpClicked()=vqt.qpython.VQPythonView-class.html#_helpClicked"><a title="vqt.qpython.VQPythonView._helpClicked" class="py-name" href="#" onclick="return doclink('link-14', '_helpClicked', 'link-14');">_helpClicked</a></tt> <tt class="py-op">)</tt>  </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line"> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_text</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-name">hbox</tt> <tt class="py-op">=</tt> <tt id="link-15" class="py-name" targets="Class vqt.basics.HBox=vqt.basics.HBox-class.html"><a title="vqt.basics.HBox" class="py-name" href="#" onclick="return doclink('link-15', 'HBox', 'link-15');">HBox</a></tt><tt class="py-op">(</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_button</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_run_button</tt> <tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_botWidget</tt><tt class="py-op">.</tt><tt class="py-name">setLayout</tt><tt class="py-op">(</tt> <tt class="py-name">hbox</tt> <tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">        <tt class="py-name">vbox</tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name" targets="Class vqt.basics.VBox=vqt.basics.VBox-class.html"><a title="vqt.basics.VBox" class="py-name" href="#" onclick="return doclink('link-16', 'VBox', 'link-16');">VBox</a></tt><tt class="py-op">(</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_textWidget</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_botWidget</tt> <tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setLayout</tt><tt class="py-op">(</tt> <tt class="py-name">vbox</tt> <tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setWindowTitle</tt><tt class="py-op">(</tt><tt class="py-string">'Python Interactive'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt>
+<a name="VQPythonView._okClicked"></a><div id="VQPythonView._okClicked-def"><a name="L61"></a><tt class="py-lineno">61</tt> <a class="py-toggle" href="#" id="VQPythonView._okClicked-toggle" onclick="return toggle('VQPythonView._okClicked');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vqt.qpython.VQPythonView-class.html#_okClicked">_okClicked</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQPythonView._okClicked-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="VQPythonView._okClicked-expanded"><a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">        <tt class="py-name">pycode</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_textWidget</tt><tt class="py-op">.</tt><tt class="py-name">document</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">toPlainText</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">        <tt class="py-name">cobj</tt> <tt class="py-op">=</tt> <tt class="py-name">compile</tt><tt class="py-op">(</tt><tt class="py-name">pycode</tt><tt class="py-op">,</tt> <tt class="py-string">"vqpython_exec.py"</tt><tt class="py-op">,</tt> <tt class="py-string">"exec"</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">        <tt class="py-name">sthr</tt> <tt class="py-op">=</tt> <tt id="link-17" class="py-name" targets="Class vqt.qpython.ScriptThread=vqt.qpython.ScriptThread-class.html"><a title="vqt.qpython.ScriptThread" class="py-name" href="#" onclick="return doclink('link-17', 'ScriptThread', 'link-17');">ScriptThread</a></tt><tt class="py-op">(</tt><tt class="py-name">cobj</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_locals</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">        <tt class="py-name">sthr</tt><tt class="py-op">.</tt><tt class="py-name">start</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line"> </tt>
+<a name="VQPythonView._helpClicked"></a><div id="VQPythonView._helpClicked-def"><a name="L67"></a><tt class="py-lineno">67</tt> <a class="py-toggle" href="#" id="VQPythonView._helpClicked-toggle" onclick="return toggle('VQPythonView._helpClicked');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vqt.qpython.VQPythonView-class.html#_helpClicked">_helpClicked</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQPythonView._helpClicked-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="VQPythonView._helpClicked-expanded"><a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">        <tt class="py-name">withhelp</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">lname</tt><tt class="py-op">,</tt><tt class="py-name">lval</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_locals</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">type</tt><tt class="py-op">(</tt><tt class="py-name">lval</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-name">types</tt><tt class="py-op">.</tt><tt class="py-name">ModuleType</tt><tt class="py-op">,</tt> <tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">                <tt class="py-keyword">continue</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">            <tt class="py-name">doc</tt> <tt class="py-op">=</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">lval</tt><tt class="py-op">,</tt> <tt class="py-string">'__doc__'</tt><tt class="py-op">,</tt> <tt class="py-string">'\nNo Documentation\n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">doc</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">                <tt class="py-name">doc</tt> <tt class="py-op">=</tt> <tt class="py-string">'\nNo Documentation\n'</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">            <tt class="py-name">withhelp</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method vqt.tree.VQTreeItem.append()=vqt.tree.VQTreeItem-class.html#append,Method vqt.tree.VQTreeModel.append()=vqt.tree.VQTreeModel-class.html#append"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-18', 'append', 'link-18');">append</a></tt><tt class="py-op">(</tt> <tt class="py-op">(</tt><tt class="py-name">lname</tt><tt class="py-op">,</tt> <tt class="py-name">doc</tt><tt class="py-op">)</tt> <tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">        <tt class="py-name">withhelp</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method vqt.tree.VQTreeModel.sort()=vqt.tree.VQTreeModel-class.html#sort"><a title="vqt.tree.VQTreeModel.sort" class="py-name" href="#" onclick="return doclink('link-19', 'sort', 'link-19');">sort</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line"> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">        <tt class="py-name">txt</tt> <tt class="py-op">=</tt> <tt class="py-string">'Objects/Functions in the namespace:\n'</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">doc</tt> <tt class="py-keyword">in</tt> <tt class="py-name">withhelp</tt><tt class="py-op">:</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">            <tt class="py-name">txt</tt> <tt class="py-op">+=</tt> <tt class="py-op">(</tt> <tt class="py-string">'====== %s\n'</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt> <tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">            <tt class="py-name">txt</tt> <tt class="py-op">+=</tt> <tt class="py-op">(</tt> <tt class="py-string">'%s\n'</tt> <tt class="py-op">%</tt> <tt class="py-name">doc</tt> <tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line"> </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_text</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QTextEdit</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_text</tt><tt class="py-op">.</tt><tt class="py-name">setReadOnly</tt><tt class="py-op">(</tt> <tt class="py-name">True</tt> <tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_text</tt><tt class="py-op">.</tt><tt class="py-name">setWindowTitle</tt><tt class="py-op">(</tt><tt class="py-string">'Python Interactive Help'</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_text</tt><tt class="py-op">.</tt><tt class="py-name">setText</tt><tt class="py-op">(</tt> <tt class="py-name">txt</tt> <tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_help_text</tt><tt class="py-op">.</tt><tt class="py-name">show</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L89"></a><tt class="py-lineno">89</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vqt-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:44:46 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

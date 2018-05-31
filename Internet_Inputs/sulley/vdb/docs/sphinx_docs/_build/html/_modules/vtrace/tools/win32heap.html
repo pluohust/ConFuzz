@@ -1,0 +1,469 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.tools.win32heap &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vtrace" href="../../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.tools.win32heap</h1><div class="highlight"><pre>
+<span class="c"># Heap Flags</span>
+<span class="n">HEAP_NO_SERIALIZE</span>               <span class="o">=</span> <span class="mh">0x00000001</span>
+<span class="n">HEAP_GROWABLE</span>                   <span class="o">=</span> <span class="mh">0x00000002</span>
+<span class="n">HEAP_GENERATE_EXCEPTIONS</span>        <span class="o">=</span> <span class="mh">0x00000004</span>
+<span class="n">HEAP_ZERO_MEMORY</span>                <span class="o">=</span> <span class="mh">0x00000008</span>
+<span class="n">HEAP_REALLOC_IN_PLACE_ONLY</span>      <span class="o">=</span> <span class="mh">0x00000010</span>
+<span class="n">HEAP_TAIL_CHECKING_ENABLED</span>      <span class="o">=</span> <span class="mh">0x00000020</span>
+<span class="n">HEAP_FREE_CHECKING_ENABLED</span>      <span class="o">=</span> <span class="mh">0x00000040</span>
+<span class="n">HEAP_DISABLE_COALESCE_ON_FREE</span>   <span class="o">=</span> <span class="mh">0x00000080</span>
+<span class="n">HEAP_CREATE_ALIGN_16</span>            <span class="o">=</span> <span class="mh">0x00010000</span>
+<span class="n">HEAP_CREATE_ENABLE_TRACING</span>      <span class="o">=</span> <span class="mh">0x00020000</span>
+<span class="n">HEAP_CREATE_ENABLE_EXECUTE</span>      <span class="o">=</span> <span class="mh">0x00040000</span>
+
+<span class="n">heap_flag_names</span> <span class="o">=</span> <span class="p">{</span>
+<span class="n">HEAP_NO_SERIALIZE</span><span class="p">:</span><span class="s">&quot;HEAP_NO_SERIALIZE&quot;</span><span class="p">,</span>
+<span class="n">HEAP_GROWABLE</span><span class="p">:</span><span class="s">&quot;HEAP_GROWABLE&quot;</span><span class="p">,</span>
+<span class="n">HEAP_GENERATE_EXCEPTIONS</span><span class="p">:</span><span class="s">&quot;HEAP_GENERATE_EXCEPTIONS&quot;</span><span class="p">,</span>
+<span class="n">HEAP_ZERO_MEMORY</span><span class="p">:</span><span class="s">&quot;HEAP_ZERO_MEMORY&quot;</span><span class="p">,</span>
+<span class="n">HEAP_REALLOC_IN_PLACE_ONLY</span><span class="p">:</span><span class="s">&quot;HEAP_REALLOC_IN_PLACE_ONLY&quot;</span><span class="p">,</span>
+<span class="n">HEAP_TAIL_CHECKING_ENABLED</span><span class="p">:</span><span class="s">&quot;HEAP_TAIL_CHECKING_ENABLED&quot;</span><span class="p">,</span>
+<span class="n">HEAP_FREE_CHECKING_ENABLED</span><span class="p">:</span><span class="s">&quot;HEAP_FREE_CHECKING_ENABLED&quot;</span><span class="p">,</span>
+<span class="n">HEAP_DISABLE_COALESCE_ON_FREE</span><span class="p">:</span><span class="s">&quot;HEAP_DISABLE_COALESCE_ON_FREE&quot;</span><span class="p">,</span>
+<span class="n">HEAP_CREATE_ALIGN_16</span><span class="p">:</span><span class="s">&quot;HEAP_CREATE_ALIGN_16&quot;</span><span class="p">,</span>
+<span class="n">HEAP_CREATE_ENABLE_TRACING</span><span class="p">:</span><span class="s">&quot;HEAP_CREATE_ENABLE_TRACING&quot;</span><span class="p">,</span>
+<span class="n">HEAP_CREATE_ENABLE_EXECUTE</span><span class="p">:</span><span class="s">&quot;HEAP_CREATE_ENABLE_EXECUTE&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c"># Heap Chunk Flags</span>
+<span class="n">HEAP_ENTRY_BUSY</span>             <span class="o">=</span> <span class="mh">0x01</span>
+<span class="n">HEAP_ENTRY_EXTRA_PRESENT</span>    <span class="o">=</span> <span class="mh">0x02</span>
+<span class="n">HEAP_ENTRY_FILL_PATTERN</span>     <span class="o">=</span> <span class="mh">0x04</span>
+<span class="n">HEAP_ENTRY_VIRTUAL_ALLOC</span>    <span class="o">=</span> <span class="mh">0x08</span>
+<span class="n">HEAP_ENTRY_LAST_ENTRY</span>       <span class="o">=</span> <span class="mh">0x10</span>
+<span class="n">HEAP_ENTRY_SETTABLE_FLAG1</span>   <span class="o">=</span> <span class="mh">0x20</span>
+<span class="n">HEAP_ENTRY_SETTABLE_FLAG2</span>   <span class="o">=</span> <span class="mh">0x40</span>
+<span class="n">HEAP_ENTRY_SETTABLE_FLAG3</span>   <span class="o">=</span> <span class="mh">0x80</span>
+
+
+
+<span class="k">def</span> <span class="nf">reprHeapFlags</span><span class="p">(</span><span class="n">flags</span><span class="p">):</span>
+<div class="viewcode-block" id="reprHeapFlags"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.reprHeapFlags">[docs]</a>    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="n">HEAP_ENTRY_BUSY</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;BUSY&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="n">HEAP_ENTRY_FILL_PATTERN</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;FILL&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="n">HEAP_ENTRY_LAST_ENTRY</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;LAST&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s">&quot;NONE&quot;</span>
+
+<span class="k">class</span> <span class="nc">HeapCorruptionException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span></div>
+<div class="viewcode-block" id="HeapCorruptionException"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.HeapCorruptionException">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">heap</span><span class="p">,</span> <span class="n">segment</span><span class="p">,</span> <span class="n">prevchunk</span><span class="p">,</span> <span class="n">badchunk</span><span class="p">):</span>
+        <span class="n">prevaddr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">badaddr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">prevchunk</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">prevaddr</span> <span class="o">=</span> <span class="n">prevchunk</span><span class="o">.</span><span class="n">address</span>
+        <span class="k">if</span> <span class="n">badchunk</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">badaddr</span> <span class="o">=</span> <span class="n">badchunk</span><span class="o">.</span><span class="n">address</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Prev Chunk: 0x</span><span class="si">%.8x</span><span class="s"> Bad Chunk: 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prevaddr</span><span class="p">,</span> <span class="n">badaddr</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heap</span> <span class="o">=</span> <span class="n">heap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segment</span> <span class="o">=</span> <span class="n">segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prevchunk</span> <span class="o">=</span> <span class="n">prevchunk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">badchunk</span> <span class="o">=</span> <span class="n">badchunk</span>
+
+<span class="k">class</span> <span class="nc">FreeListCorruption</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span></div>
+<div class="viewcode-block" id="FreeListCorruption"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.FreeListCorruption">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">heap</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">prevchunk</span><span class="p">,</span> <span class="n">badchunk</span><span class="p">):</span>
+        <span class="n">prevaddr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">badaddr</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">prevchunk</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">prevaddr</span> <span class="o">=</span> <span class="n">prevchunk</span><span class="o">.</span><span class="n">address</span>
+        <span class="k">if</span> <span class="n">badchunk</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">badaddr</span> <span class="o">=</span> <span class="n">badchunk</span><span class="o">.</span><span class="n">address</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;Index: </span><span class="si">%d</span><span class="s"> Prev Chunk: 0x</span><span class="si">%.8x</span><span class="s"> Bad Chunk: 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">prevaddr</span><span class="p">,</span> <span class="n">badaddr</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heap</span> <span class="o">=</span> <span class="n">heap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prevchunk</span> <span class="o">=</span> <span class="n">prevchunk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">badchunk</span> <span class="o">=</span> <span class="n">badchunk</span>
+
+<span class="k">class</span> <span class="nc">ChunkNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ChunkNotFound"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.ChunkNotFound">[docs]</a>    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">getHeapSegChunk</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span></div>
+<div class="viewcode-block" id="getHeapSegChunk"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.getHeapSegChunk">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find and return the heap, segment, and chunk for the given addres</span>
+<span class="sd">    (or exception).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">heap</span> <span class="ow">in</span> <span class="n">getHeaps</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+
+        <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="n">heap</span><span class="o">.</span><span class="n">getSegments</span><span class="p">():</span>
+
+            <span class="n">segstart</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">address</span>
+            <span class="n">segend</span> <span class="o">=</span> <span class="n">seg</span><span class="o">.</span><span class="n">getSegmentEnd</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="n">segstart</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;</span> <span class="n">segend</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">seg</span><span class="o">.</span><span class="n">getChunks</span><span class="p">():</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">address</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">heap</span><span class="p">,</span><span class="n">seg</span><span class="p">,</span><span class="n">chunk</span>
+
+    <span class="k">raise</span> <span class="n">ChunkNotFound</span><span class="p">(</span><span class="s">&quot;No Chunk Found for 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">address</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">getHeaps</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="getHeaps"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.getHeaps">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the win32 heaps (returns a list of Win32Heap objects)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pebaddr</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;PEB&quot;</span><span class="p">)</span>
+    <span class="n">peb</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&quot;ntdll.PEB&quot;</span><span class="p">,</span> <span class="n">pebaddr</span><span class="p">)</span>
+    <span class="n">heapcount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">peb</span><span class="o">.</span><span class="n">NumberOfHeaps</span><span class="p">)</span>
+    <span class="n">hlist</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="n">peb</span><span class="o">.</span><span class="n">ProcessHeaps</span><span class="p">),</span> <span class="s">&quot;&lt;&quot;</span><span class="o">+</span><span class="p">(</span><span class="s">&#39;P&#39;</span><span class="o">*</span><span class="n">heapcount</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">haddr</span> <span class="ow">in</span> <span class="n">hlist</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Win32Heap</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">haddr</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ret</span>
+
+<span class="k">class</span> <span class="nc">Win32Heap</span><span class="p">:</span></div>
+<div class="viewcode-block" id="Win32Heap"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Heap">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heap</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&quot;ntdll.HEAP&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_win7_heap</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heapenc</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">vsHasField</span><span class="p">(</span><span class="s">&#39;Encoding&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">heapenc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">Encoding</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_win7_heap</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seglist</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ucrdict</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">hasLookAside</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Win32Heap.hasLookAside"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Heap.hasLookAside">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Does this heap have a lookaside?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">Flags</span> <span class="o">&amp;</span> <span class="n">HEAP_GROWABLE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">Flags</span> <span class="o">&amp;</span> <span class="n">HEAP_NO_SERIALIZE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">getUCRDict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Heap.getUCRDict"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Heap.getUCRDict">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Retrieve a dictionary of &lt;ucr_address&gt;:&lt;ucr_size&gt; items.</span>
+
+<span class="sd">        (If this windows version doesn&#39;t support UCRs, the dict will be empty)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ucrdict</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ucrdict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">vsHasField</span><span class="p">(</span><span class="s">&#39;UCRList&#39;</span><span class="p">):</span>
+                <span class="n">listhead_va</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">vsGetOffset</span><span class="p">(</span><span class="s">&#39;UCRList&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">lva</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getListEntries</span><span class="p">(</span><span class="n">listhead_va</span><span class="p">):</span>
+                    <span class="n">ucrent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;ntdll.HEAP_UCR_DESCRIPTOR&#39;</span><span class="p">,</span> <span class="n">lva</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">ucrent</span><span class="o">.</span><span class="n">Size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">ucrdict</span><span class="p">[</span><span class="n">ucrent</span><span class="o">.</span><span class="n">Address</span><span class="p">]</span> <span class="o">=</span> <span class="n">ucrent</span><span class="o">.</span><span class="n">Size</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ucrdict</span>
+
+    <span class="k">def</span> <span class="nf">_win7ParseSegments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="c"># Address doesn&#39;t matter for the below call</span>
+        <span class="n">heapseg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;ntdll.HEAP_SEGMENT&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+
+        <span class="n">listhead</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">vsGetOffset</span><span class="p">(</span><span class="s">&#39;SegmentList&#39;</span><span class="p">)</span>
+        <span class="c"># Negative offset from segment list entry to segment</span>
+        <span class="n">segoff</span> <span class="o">=</span> <span class="n">heapseg</span><span class="o">.</span><span class="n">vsGetOffset</span><span class="p">(</span><span class="s">&#39;SegmentListEntry&#39;</span><span class="p">)</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">SegmentList</span><span class="o">.</span><span class="n">Flink</span>
+        <span class="k">while</span> <span class="n">entry</span> <span class="o">!=</span> <span class="n">listhead</span><span class="p">:</span>
+            <span class="n">seg</span> <span class="o">=</span> <span class="n">Win32Segment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">entry</span> <span class="o">-</span> <span class="n">segoff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seglist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seg</span><span class="p">)</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s">&#39;&lt;P&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">getSegments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Win32Heap.getSegments"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Heap.getSegments">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of Win32Segment objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglist</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seglist</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c"># Windows 7 style heap segment list</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">vsHasField</span><span class="p">(</span><span class="s">&#39;SegmentList&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_win7ParseSegments</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">LastSegmentIndex</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">sa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">Segments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">seglist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Win32Segment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="nb">long</span><span class="p">(</span><span class="n">sa</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">seglist</span>
+
+    <span class="k">def</span> <span class="nf">getLookAsideLists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Heap.getLookAsideLists"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Heap.getLookAsideLists">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the lookaside list for this heap</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasLookAside</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Heap at 0x</span><span class="si">%.8x</span><span class="s"> has no lookaside!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">))</span>
+        <span class="c"># Look aside lists are 128 pointer slots in a chunk pointed</span>
+        <span class="c"># to by the FrontEndHeap field in the heap structure.</span>
+        <span class="c">#fetype = self.heap.FrontEndHeapType</span>
+
+        <span class="n">laside</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">FrontEndHeap</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
+            <span class="n">slot</span> <span class="o">=</span> <span class="n">laside</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="mh">0x30</span><span class="p">)</span>
+            <span class="n">bucket</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span> <span class="s">&quot;&lt;I&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">base</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">Win32Chunk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span>
+                <span class="n">bucket</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                <span class="n">base</span><span class="p">,</span><span class="n">blink</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">getFlinkBlink</span><span class="p">()</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_getListEntries</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">listhead</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span></div>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">listhead</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+        <span class="n">le</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;ntdll.LIST_ENTRY&#39;</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">le</span><span class="o">.</span><span class="n">Flink</span> <span class="o">!=</span> <span class="n">addr</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">le</span><span class="o">.</span><span class="n">Flink</span><span class="p">)</span>
+            <span class="n">le</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;ntdll.LIST_ENTRY&#39;</span><span class="p">,</span> <span class="n">le</span><span class="o">.</span><span class="n">Flink</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_win7FreeLists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#print &#39;Windows 7 Free List Parsing Fixme!&#39;</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">getFreeLists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Win32Heap.getFreeLists"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Heap.getFreeLists">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the free lists in this heap.</span>
+<span class="sd">        (Not including look-aside)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">foff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">vsGetOffset</span><span class="p">(</span><span class="s">&quot;FreeLists&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_win7_heap</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_win7FreeLists</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
+            <span class="n">le</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">FreeLists</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">bucket</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="n">foff</span> <span class="o">+</span> <span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span>
+
+            <span class="n">addr</span> <span class="o">=</span> <span class="n">le</span><span class="o">.</span><span class="n">Flink</span>
+
+            <span class="k">while</span> <span class="n">addr</span> <span class="o">!=</span> <span class="n">base</span><span class="p">:</span>
+
+                <span class="c"># If we die here, the guy before us was dorked.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">chunk</span> <span class="o">=</span> <span class="n">Win32Chunk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">chunk</span> <span class="o">=</span> <span class="n">bucket</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">pchunk</span> <span class="o">=</span> <span class="bp">None</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">pchunk</span> <span class="o">=</span> <span class="n">bucket</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="k">raise</span> <span class="n">FreeListCorruption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">pchunk</span><span class="p">,</span> <span class="n">chunk</span><span class="p">)</span>
+
+                <span class="c"># Check our back pointer</span>
+                <span class="n">flink</span><span class="p">,</span><span class="n">blink</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">getFlinkBlink</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bucket</span><span class="p">):</span>
+                    <span class="n">pchunk</span> <span class="o">=</span> <span class="n">bucket</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">blink</span> <span class="o">!=</span> <span class="n">pchunk</span><span class="o">.</span><span class="n">getDataAddress</span><span class="p">():</span>
+                        <span class="k">raise</span> <span class="n">FreeListCorruption</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">pchunk</span><span class="p">,</span> <span class="n">chunk</span><span class="p">)</span>
+
+                <span class="n">addr</span> <span class="o">=</span> <span class="n">flink</span>
+                <span class="n">bucket</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">getFlagNames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Heap.getFlagNames"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Heap.getFlagNames">[docs]</a>        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">heap_flag_names</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">Flags</span> <span class="o">&amp;</span> <span class="n">k</span><span class="p">:</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="s">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getFlagNames</span><span class="p">())</span>
+        <span class="k">return</span> <span class="s">&quot;heap: 0x</span><span class="si">%.8x</span><span class="s"> flags:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">fnames</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Win32Segment</span><span class="p">:</span></div>
+<div class="viewcode-block" id="Win32Segment"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Segment">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">heap</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heap</span> <span class="o">=</span> <span class="n">heap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seg</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&quot;ntdll.HEAP_SEGMENT&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="c">#FIXME segments can specify chunk Size granularity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg</span><span class="o">.</span><span class="n">NumberOfPages</span> <span class="o">*</span> <span class="mi">4096</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getSegmentEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Win32Segment.getSegmentEnd"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Segment.getSegmentEnd">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">segend</span>
+
+    <span class="k">def</span> <span class="nf">getChunks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Segment.getChunks"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Segment.getChunks">[docs]</a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
+            <span class="n">lastchunk</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">ucrdict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">getUCRDict</span><span class="p">()</span>
+
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+
+                <span class="c"># Skip any uncommited ranges...</span>
+                <span class="n">usize</span> <span class="o">=</span> <span class="n">ucrdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">usize</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">lastchunk</span> <span class="o">=</span> <span class="bp">None</span>
+                    <span class="n">addr</span> <span class="o">+=</span> <span class="n">usize</span>
+                    <span class="k">continue</span>
+
+                <span class="c"># Since an un-commited range may put us past the</span>
+                <span class="c"># lastblock (segend) we must double check...</span>
+                <span class="k">if</span> <span class="n">addr</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">segend</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">Win32Chunk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+                <span class="c">#if lastchunk != None:</span>
+                    <span class="c">#if lastchunk.chunk.Size != chunk.chunk.PreviousSize:</span>
+                        <span class="c">#print &#39;last size:&#39;,lastchunk.chunk.Size,&#39;prev&#39;,chunk.chunk.PreviousSize</span>
+                        <span class="c">#raise HeapCorruptionException(self.heap, self, lastchunk, chunk)</span>
+
+                <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">isLast</span><span class="p">():</span>
+                    <span class="k">break</span>
+
+                <span class="n">lastchunk</span> <span class="o">=</span> <span class="n">chunk</span>
+                <span class="n">addr</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunks</span>
+
+    <span class="k">def</span> <span class="nf">getLastChunk</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Segment.getLastChunk"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Segment.getLastChunk">[docs]</a>        <span class="n">va</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">seg</span><span class="o">.</span><span class="n">LastEntryInSegment</span>
+        <span class="k">return</span> <span class="n">Win32Chunk</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Win32Chunk</span><span class="p">:</span></div></div>
+<div class="viewcode-block" id="Win32Chunk"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Chunk">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span> <span class="n">heap</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heap</span> <span class="o">=</span> <span class="n">heap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&quot;ntdll.HEAP_ENTRY&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+
+        <span class="c"># Decode the heap chunk if needed...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">heapenc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chunk</span> <span class="o">^=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heap</span><span class="o">.</span><span class="n">heapenc</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;HeapChunk: 0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%d</span><span class="s">) </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">reprFlags</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="n">Size</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span>
+
+    <span class="k">def</span> <span class="nf">isLast</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Win32Chunk.isLast"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Chunk.isLast">[docs]</a>        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="n">Flags</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">HEAP_ENTRY_LAST_ENTRY</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">isBusy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Chunk.isBusy"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Chunk.isBusy">[docs]</a>        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="n">Flags</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">HEAP_ENTRY_BUSY</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getDataAddress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Chunk.getDataAddress"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Chunk.getDataAddress">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getDataSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Chunk.getDataSize"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Chunk.getDataSize">[docs]</a>        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getDataBytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxsize</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Chunk.getDataBytes"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Chunk.getDataBytes">[docs]</a>        <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getDataSize</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">maxsize</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">maxsize</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getDataAddress</span><span class="p">(),</span> <span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getFlinkBlink</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Chunk.getFlinkBlink"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Chunk.getFlinkBlink">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getDataAddress</span><span class="p">(),</span> <span class="s">&quot;&lt;PP&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reprFlags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="Win32Chunk.reprFlags"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32heap.Win32Chunk.reprFlags">[docs]</a>        <span class="k">return</span> <span class="n">reprHeapFlags</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk</span><span class="o">.</span><span class="n">Flags</span><span class="p">))</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

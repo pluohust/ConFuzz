@@ -1,0 +1,579 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.primitives &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vstruct" href="../vstruct.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vstruct.html" accesskey="U">vstruct</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.primitives</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="k">class</span> <span class="nc">v_enum</span><span class="p">:</span> <span class="k">pass</span>
+<div class="viewcode-block" id="v_enum"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_enum">[docs]</a>
+<span class="k">class</span> <span class="nc">v_base</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_base"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_base">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_meta</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">vsGetMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">defval</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="v_base.vsGetMeta"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_base.vsGetMeta">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">defval</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsSetMeta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_base.vsSetMeta"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_base.vsSetMeta">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_meta</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c"># Sub-classes (primitive base, or VStruct must have these</span>
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span> <span class="k">return</span> <span class="bp">NotImplemented</span></div>
+<div class="viewcode-block" id="v_base.vsParse"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_base.vsParse">[docs]</a>    <span class="k">def</span> <span class="nf">vsCalculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">pass</span></div>
+<div class="viewcode-block" id="v_base.vsCalculate"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_base.vsCalculate">[docs]</a>    <span class="k">def</span> <span class="nf">vsIsPrim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">NotImplemented</span></div>
+<div class="viewcode-block" id="v_base.vsIsPrim"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_base.vsIsPrim">[docs]</a>    <span class="k">def</span> <span class="nf">vsGetTypeName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="bp">NotImplemented</span></div>
+<div class="viewcode-block" id="v_base.vsGetTypeName"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_base.vsGetTypeName">[docs]</a>
+<span class="k">class</span> <span class="nc">v_prim</span><span class="p">(</span><span class="n">v_base</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="v_prim"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">v_base</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c"># Used by base len(),vsGetFormat, etc...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fmt</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_align</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">vsIsPrim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="v_prim.vsIsPrim"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim.vsIsPrim">[docs]</a>        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">vsGetTypeName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_prim.vsGetTypeName"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim.vsGetTypeName">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_prim.vsParse"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim.vsParse">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parser for primitives which assumes we are</span>
+<span class="sd">        calling parse directly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="nf">vsParseFd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_prim.vsParseFd"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim.vsParseFd">[docs]</a>        <span class="c"># Most primitives should be able to simply use this...</span>
+        <span class="n">fbytes</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fbytes</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">Excetpion</span><span class="p">(</span><span class="s">&#39;Not enough data in fd!&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="n">fbytes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_prim.vsEmit"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim.vsEmit">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the actual bytes which represent this field</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="nf">vsGetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_prim.vsGetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim.vsGetValue">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the type specific value for this field.</span>
+<span class="sd">        (Used by the structure dereference method to return</span>
+<span class="sd">        a python native for the field by name)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span>
+
+    <span class="k">def</span> <span class="nf">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_prim.vsSetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim.vsSetValue">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the type specific value for this field.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">vsSetLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_prim.vsSetLength"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_prim.vsSetLength">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the length of this primitive type.  This may be used to</span>
+<span class="sd">        dynamically update the length of string fields, etc...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vsGetValue</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vsGetValue</span><span class="p">())</span>
+
+<span class="n">num_fmts</span> <span class="o">=</span> <span class="p">{</span></div>
+    <span class="p">(</span><span class="bp">True</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="s">&#39;&gt;B&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="bp">True</span><span class="p">,</span><span class="mi">2</span><span class="p">):</span><span class="s">&#39;&gt;H&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="bp">True</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span><span class="s">&#39;&gt;I&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="bp">True</span><span class="p">,</span><span class="mi">8</span><span class="p">):</span><span class="s">&#39;&gt;Q&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="bp">False</span><span class="p">,</span><span class="mi">1</span><span class="p">):</span><span class="s">&#39;&lt;B&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="bp">False</span><span class="p">,</span><span class="mi">2</span><span class="p">):</span><span class="s">&#39;&lt;H&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="bp">False</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span><span class="s">&#39;&lt;I&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="bp">False</span><span class="p">,</span><span class="mi">8</span><span class="p">):</span><span class="s">&#39;&lt;Q&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">v_number</span><span class="p">(</span><span class="n">v_prim</span><span class="p">):</span>
+<div class="viewcode-block" id="v_number"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_number">[docs]</a>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="n">v_prim</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_bigend</span> <span class="o">=</span> <span class="n">bigend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">_vs_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fmt</span> <span class="o">=</span> <span class="n">num_fmts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span> <span class="p">(</span><span class="n">bigend</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsGetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="v_number.vsGetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_number.vsGetValue">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_number.vsParse"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_number.vsParse">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Parse the given numeric type from the given bytes...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">sizeoff</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fmt</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">fbytes</span><span class="p">[</span> <span class="n">offset</span> <span class="p">:</span> <span class="n">sizeoff</span> <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_fmt</span><span class="p">,</span> <span class="n">b</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span><span class="p">):</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">ord</span><span class="p">(</span> <span class="n">fbytes</span><span class="p">[</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">i</span> <span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_bigend</span><span class="p">:</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="n">x</span>
+
+        <span class="k">return</span> <span class="n">sizeoff</span>
+
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_number.vsEmit"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_number.vsEmit">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Emit the bytes for this numeric type...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fmt</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_fmt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="p">)</span>
+
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span><span class="p">):</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="nb">chr</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="mi">8</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_bigend</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_number.vsSetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_number.vsSetValue">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Assure that the value is long() able for all numeric types.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="nb">long</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__int__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__long__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="p">)</span>
+
+    <span class="c">##################################################################</span>
+    <span class="c"># Implement the number API</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">+</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">*</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__div__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">/</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__floordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">//</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__mod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">%</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__divmod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">divmod</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__pow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">modulo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span> <span class="k">return</span> <span class="nb">pow</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="n">modulo</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__lshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__xor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">^</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">|</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="c"># Operator swapped variants</span>
+    <span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">+</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">-</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">*</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rdiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">/</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rfloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">//</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rmod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">%</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rdivmod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">divmod</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__rpow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">modulo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span> <span class="k">return</span> <span class="nb">pow</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">),</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">modulo</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rlshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rrshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__rxor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">^</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__ror__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">|</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="c"># Inplace variants</span>
+    <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">+</span><span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__isub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span> <span class="o">-</span> <span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__imul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">*</span><span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__idiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">/</span><span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__ifloordiv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span> <span class="o">//</span> <span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__imod__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span> <span class="o">%</span> <span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__ipow__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">modulo</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="nb">pow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">modulo</span><span class="p">));</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__ilshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span> <span class="o">&lt;&lt;</span> <span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__irshift__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span> <span class="o">&gt;&gt;</span> <span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__iand__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span> <span class="o">&amp;</span> <span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__ixor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span> <span class="o">^</span> <span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="nf">__ior__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span> <span class="bp">self</span><span class="o">.</span><span class="n">vsSetValue</span><span class="p">(</span><span class="bp">self</span> <span class="o">|</span> <span class="n">other</span><span class="p">);</span> <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="c"># operator helpers</span>
+    <span class="k">def</span> <span class="nf">__neg__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="o">-</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__pos__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="o">+</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__abs__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="o">~</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="c"># index use helper</span>
+    <span class="k">def</span> <span class="nf">__index__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__coerce__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span><span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+
+    <span class="c"># Print helpers</span>
+    <span class="k">def</span> <span class="nf">__hex__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__oct__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="k">return</span> <span class="nb">oct</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">v_uint8</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_uint8"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_uint8">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">class</span> <span class="nc">v_uint16</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_uint16"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_uint16">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="k">class</span> <span class="nc">v_uint24</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_uint24"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_uint24">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="k">class</span> <span class="nc">v_uint32</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_uint32"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_uint32">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">class</span> <span class="nc">v_uint64</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_uint64"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_uint64">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="k">class</span> <span class="nc">v_int8</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_int8"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_int8">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">class</span> <span class="nc">v_int16</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_int16"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_int16">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="k">class</span> <span class="nc">v_int24</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_int24"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_int24">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="k">class</span> <span class="nc">v_int32</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_int32"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_int32">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">class</span> <span class="nc">v_int64</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_int64"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_int64">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="n">pointersize</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="s">&quot;P&quot;</span><span class="p">)</span></div>
+
+<span class="k">class</span> <span class="nc">v_size_t</span><span class="p">(</span><span class="n">v_number</span><span class="p">):</span>
+<div class="viewcode-block" id="v_size_t"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_size_t">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="n">pointersize</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span>
+
+<span class="k">class</span> <span class="nc">v_ptr</span><span class="p">(</span><span class="n">v_size_t</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_ptr"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_ptr">[docs]</a>    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">v_ptr32</span><span class="p">(</span><span class="n">v_ptr</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_ptr32"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_ptr32">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">class</span> <span class="nc">v_ptr64</span><span class="p">(</span><span class="n">v_ptr</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_ptr64"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_ptr64">[docs]</a>    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="k">class</span> <span class="nc">v_bytes</span><span class="p">(</span><span class="n">v_prim</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_bytes"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_bytes">[docs]</a>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    v_bytes is used for fixed width byte fields.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vbytes</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">v_prim</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vbytes</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">vbytes</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span> <span class="o">*</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vbytes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">vbytes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_align</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="v_bytes.vsSetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_bytes.vsSetValue">[docs]</a>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;v_bytes field set to wrong length!&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="c"># We have a winner!</span>
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_bytes.vsParse"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_bytes.vsParse">[docs]</a>        <span class="n">offend</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">fbytes</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offend</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">offend</span>
+
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_bytes.vsEmit"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_bytes.vsEmit">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span>
+
+    <span class="k">def</span> <span class="nf">vsSetLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_bytes.vsSetLength"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_bytes.vsSetLength">[docs]</a>        <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="c"># Either chop or expand my string...</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="p">[:</span><span class="n">size</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">v_str</span><span class="p">(</span><span class="n">v_prim</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_str"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_str">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A string placeholder class which will automagically return</span>
+<span class="sd">    up to a null terminator (and will keep it&#39;s size by null</span>
+<span class="sd">    padding when assigned to)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">v_prim</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_align</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="v_str.vsParse"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_str.vsParse">[docs]</a>        <span class="n">offend</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">fbytes</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offend</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">offend</span>
+
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_str.vsEmit"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_str.vsEmit">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span>
+
+    <span class="k">def</span> <span class="nf">vsGetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_str.vsGetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_str.vsGetValue">[docs]</a>        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_str.vsSetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_str.vsSetValue">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsSetLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_str.vsSetLength"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_str.vsSetLength">[docs]</a>        <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="c"># Either chop or expand my string...</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="p">[:</span><span class="n">size</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">v_zstr</span><span class="p">(</span><span class="n">v_prim</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="v_zstr"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_zstr">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A string placeholder class which will automagically return</span>
+<span class="sd">    up to a null terminator dynamically.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">v_prim</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">val</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_align</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="v_zstr.vsParse"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_zstr.vsParse">[docs]</a>        <span class="n">nulloff</span> <span class="o">=</span> <span class="n">fbytes</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nulloff</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;v_zstr found no NULL terminator!&#39;</span><span class="p">)</span>
+
+        <span class="n">nulloff</span> <span class="o">+=</span> <span class="mi">1</span> <span class="c"># *include* the null</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">fbytes</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">nulloff</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nulloff</span>
+
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_zstr.vsEmit"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_zstr.vsEmit">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span>
+
+    <span class="k">def</span> <span class="nf">vsGetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_zstr.vsGetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_zstr.vsGetValue">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_zstr.vsSetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_zstr.vsSetValue">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">val</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span>
+
+    <span class="k">def</span> <span class="nf">vsSetLength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_zstr.vsSetLength"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_zstr.vsSetLength">[docs]</a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Cannot vsSetLength on v_zstr! (its dynamic)&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">v_wstr</span><span class="p">(</span><span class="n">v_str</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="v_wstr"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_wstr">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Unicode variant of the above string class</span>
+
+<span class="sd">    NOTE: the size paramater is in WCHARs!</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">encode</span><span class="o">=</span><span class="s">&#39;utf-16le&#39;</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">v_prim</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_encode</span> <span class="o">=</span> <span class="n">encode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_align</span> <span class="o">=</span> <span class="mi">2</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="v_wstr.vsParse"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_wstr.vsParse">[docs]</a>        <span class="n">offend</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">fbytes</span><span class="p">[</span><span class="n">offset</span> <span class="p">:</span> <span class="n">offend</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">offend</span>
+
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_wstr.vsEmit"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_wstr.vsEmit">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span>
+
+    <span class="k">def</span> <span class="nf">vsGetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="n">cstr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_encode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="v_wstr.vsSetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_wstr.vsSetValue">[docs]</a>        <span class="n">rbytes</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_encode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="n">rbytes</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsGetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="v_wstr.vsGetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.v_wstr.vsGetValue">[docs]</a>        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vs_encode</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+<span class="k">class</span> <span class="nc">GUID</span><span class="p">(</span><span class="n">v_prim</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="GUID"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.GUID">[docs]</a>
+    <span class="n">_vs_builder</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guidstr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a new GUID primitive.  You may specify a GUID string in the</span>
+<span class="sd">        constructor to populate initial values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">v_prim</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span> <span class="o">=</span> <span class="mi">16</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_value</span> <span class="o">=</span> <span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span> <span class="o">*</span> <span class="mi">16</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fmt</span> <span class="o">=</span> <span class="s">&quot;16s&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_guid_fields</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">guidstr</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parseGuidStr</span><span class="p">(</span><span class="n">guidstr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fbytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="GUID.vsParse"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.GUID.vsParse">[docs]</a>        <span class="n">offend</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_guid_fields</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;IHH8B&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offend</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">offend</span>
+
+    <span class="k">def</span> <span class="nf">vsEmit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GUID.vsEmit"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.GUID.vsEmit">[docs]</a>        <span class="k">return</span> <span class="n">struck</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;IHH8B&quot;</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_guid_fields</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parseGuidStr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gstr</span><span class="p">):</span></div>
+        <span class="n">gstr</span> <span class="o">=</span> <span class="n">gstr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;{&quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">gstr</span> <span class="o">=</span> <span class="n">gstr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;}&quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">gstr</span> <span class="o">=</span> <span class="n">gstr</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">,</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="n">gstr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;hex&quot;</span><span class="p">)</span>
+        <span class="c"># Totally cheating... ;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_guid_fields</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&gt;IHH8B&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsSetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guidstr</span><span class="p">):</span>
+<div class="viewcode-block" id="GUID.vsSetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.GUID.vsSetValue">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_parseGuidStr</span><span class="p">(</span><span class="n">guidstr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">vsGetValue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GUID.vsGetValue"><a class="viewcode-back" href="../../vstruct.html#vstruct.primitives.GUID.vsGetValue">[docs]</a>        <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="n">base</span> <span class="o">=</span> <span class="s">&quot;{</span><span class="si">%.8x</span><span class="s">-</span><span class="si">%.4x</span><span class="s">-</span><span class="si">%.4x</span><span class="s">-</span><span class="si">%.2x%.2x</span><span class="s">-</span><span class="si">%.2x%.2x%.2x%.2x%.2x%.2x</span><span class="s">}&quot;</span>
+        <span class="k">return</span> <span class="n">base</span>  <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_guid_fields</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vstruct.html" >vstruct</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

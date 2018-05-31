@@ -1,0 +1,355 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.bits &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="envi" href="../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.bits</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A file full of bit twidling helpers</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="n">MAX_WORD</span> <span class="o">=</span> <span class="mi">8</span> <span class="c"># Dont have any more than 64 bit archs</span>
+
+<span class="c"># Masks to use for unsigned anding to size</span>
+<span class="n">u_maxes</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">i</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_WORD</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
+<span class="n">u_maxes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># powers of 0 are 1, but we need 0</span>
+
+<span class="c"># Masks of just the sign bit for different sizes</span>
+<span class="n">sign_bits</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">i</span><span class="p">))</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_WORD</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
+<span class="n">sign_bits</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="c"># powers of 0 are 1, but we need 0</span>
+
+<span class="c"># Max *signed* masks (all but top bit )</span>
+<span class="n">s_maxes</span> <span class="o">=</span> <span class="p">[</span> <span class="n">u_maxes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">^</span> <span class="n">sign_bits</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">u_maxes</span><span class="p">))]</span>
+<span class="n">s_maxes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c"># bit width masks </span>
+<span class="n">b_masks</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">i</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_WORD</span><span class="o">*</span><span class="mi">8</span><span class="p">)</span> <span class="p">]</span>
+<span class="n">b_masks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="unsigned"><a class="viewcode-back" href="../../envi.html#envi.bits.unsigned">[docs]</a><span class="k">def</span> <span class="nf">unsigned</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a value unsigned based on it&#39;s size.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># In python &quot;&amp;&quot; will do abs value</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="n">u_maxes</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="signed"><a class="viewcode-back" href="../../envi.html#envi.bits.signed">[docs]</a><span class="k">def</span> <span class="nf">signed</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a value signed based on it&#39;s size.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">unsigned</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&amp;</span> <span class="n">sign_bits</span><span class="p">[</span><span class="n">size</span><span class="p">]:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">u_maxes</span><span class="p">[</span><span class="n">size</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="is_signed"><a class="viewcode-back" href="../../envi.html#envi.bits.is_signed">[docs]</a><span class="k">def</span> <span class="nf">is_signed</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">unsigned</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">sign_bits</span><span class="p">[</span><span class="n">size</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="sign_extend"><a class="viewcode-back" href="../../envi.html#envi.bits.sign_extend">[docs]</a><span class="k">def</span> <span class="nf">sign_extend</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">cursize</span><span class="p">,</span> <span class="n">newsize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take a value and extend it&#39;s size filling</span>
+<span class="sd">    in the space with the value of the high </span>
+<span class="sd">    order bit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">unsigned</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">cursize</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cursize</span> <span class="o">!=</span> <span class="n">newsize</span><span class="p">:</span>
+        <span class="c"># Test for signed w/o the call</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&amp;</span> <span class="n">sign_bits</span><span class="p">[</span><span class="n">cursize</span><span class="p">]:</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">newsize</span> <span class="o">-</span> <span class="n">cursize</span>
+            <span class="n">highbits</span> <span class="o">=</span> <span class="n">u_maxes</span><span class="p">[</span><span class="n">delta</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">|=</span> <span class="n">highbits</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">cursize</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="is_parity"><a class="viewcode-back" href="../../envi.html#envi.bits.is_parity">[docs]</a><span class="k">def</span> <span class="nf">is_parity</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">val</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">^=</span> <span class="n">val</span> <span class="o">&amp;</span> <span class="mi">1</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">val</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="p">(</span><span class="ow">not</span> <span class="n">s</span><span class="p">)</span>
+</div>
+<span class="n">parity_table</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+    <span class="n">parity_table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">is_parity</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+<div class="viewcode-block" id="is_parity_byte"><a class="viewcode-back" href="../../envi.html#envi.bits.is_parity_byte">[docs]</a><span class="k">def</span> <span class="nf">is_parity_byte</span><span class="p">(</span><span class="n">bval</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An &quot;optimized&quot; parity checker that looks up the index.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">parity_table</span><span class="p">[</span><span class="n">bval</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="lsb"><a class="viewcode-back" href="../../envi.html#envi.bits.lsb">[docs]</a><span class="k">def</span> <span class="nf">lsb</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0x1</span>
+</div>
+<div class="viewcode-block" id="msb"><a class="viewcode-back" href="../../envi.html#envi.bits.msb">[docs]</a><span class="k">def</span> <span class="nf">msb</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="n">sign_bits</span><span class="p">[</span><span class="n">size</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="mi">0</span>
+</div>
+<div class="viewcode-block" id="is_signed_overflow"><a class="viewcode-back" href="../../envi.html#envi.bits.is_signed_overflow">[docs]</a><span class="k">def</span> <span class="nf">is_signed_overflow</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="nb">max</span> <span class="o">=</span> <span class="n">s_maxes</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="nb">max</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="o">-</span><span class="nb">max</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="is_unsigned_carry"><a class="viewcode-back" href="../../envi.html#envi.bits.is_unsigned_carry">[docs]</a><span class="k">def</span> <span class="nf">is_unsigned_carry</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="n">umax</span> <span class="o">=</span> <span class="n">u_maxes</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">umax</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">elif</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span>
+</div>
+<div class="viewcode-block" id="is_aux_carry"><a class="viewcode-back" href="../../envi.html#envi.bits.is_aux_carry">[docs]</a><span class="k">def</span> <span class="nf">is_aux_carry</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">):</span>
+    <span class="c"># FIXME this is only how to do it for add...</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="n">dst</span> <span class="o">&amp;</span> <span class="mh">0xf</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="n">src</span> <span class="o">&amp;</span> <span class="mh">0xf</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">dst</span> <span class="o">+</span> <span class="n">src</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">15</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="bp">False</span>
+</div>
+<span class="n">le_fmt_chars</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="s">&quot;&lt;H&quot;</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="s">&quot;&lt;L&quot;</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="s">&quot;&lt;Q&quot;</span><span class="p">)</span>
+<span class="n">be_fmt_chars</span> <span class="o">=</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="s">&quot;&gt;H&quot;</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="s">&quot;&gt;L&quot;</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="s">&quot;&gt;Q&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="parsebytes"><a class="viewcode-back" href="../../envi.html#envi.bits.parsebytes">[docs]</a><span class="k">def</span> <span class="nf">parsebytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mostly for pulling immediates out of strings...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">slowparsebytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="n">sign</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="n">bigend</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bigend</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">be_fmt_chars</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">le_fmt_chars</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">slowparsebytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="n">sign</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="n">bigend</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="n">size</span><span class="p">]</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">d</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">sign</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">signed</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="slowparsebytes"><a class="viewcode-back" href="../../envi.html#envi.bits.slowparsebytes">[docs]</a><span class="k">def</span> <span class="nf">slowparsebytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">bigend</span><span class="p">:</span>
+        <span class="n">begin</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="n">inc</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">begin</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="p">(</span><span class="n">size</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">inc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ioff</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span>
+        <span class="n">ret</span> <span class="o">|=</span> <span class="nb">ord</span><span class="p">(</span><span class="nb">bytes</span><span class="p">[</span><span class="n">begin</span><span class="o">+</span><span class="n">ioff</span><span class="p">])</span>
+        <span class="n">ioff</span> <span class="o">+=</span> <span class="n">inc</span>
+    <span class="k">if</span> <span class="n">sign</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">signed</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="buildbytes"><a class="viewcode-back" href="../../envi.html#envi.bits.buildbytes">[docs]</a><span class="k">def</span> <span class="nf">buildbytes</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">bigend</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">be_fmt_chars</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">le_fmt_chars</span><span class="p">[</span><span class="n">size</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;envi.bits.buildbytes needs slowbuildbytes&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="byteswap"><a class="viewcode-back" href="../../envi.html#envi.bits.byteswap">[docs]</a><span class="k">def</span> <span class="nf">byteswap</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">|=</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">8</span><span class="o">*</span><span class="n">i</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">ret</span> <span class="o">&lt;&lt;</span> <span class="mi">8</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</div>
+<span class="n">hex_fmt</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">1</span><span class="p">:</span><span class="s">&quot;0x</span><span class="si">%.2x</span><span class="s">&quot;</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">:</span><span class="s">&quot;0x</span><span class="si">%.4x</span><span class="s">&quot;</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">:</span><span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span><span class="p">,</span>
+    <span class="mi">8</span><span class="p">:</span><span class="s">&quot;0x</span><span class="si">%.16x</span><span class="s">&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="intwidth"><a class="viewcode-back" href="../../envi.html#envi.bits.intwidth">[docs]</a><span class="k">def</span> <span class="nf">intwidth</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">val</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">val</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span>
+    <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="hex"><a class="viewcode-back" href="../../envi.html#envi.bits.hex">[docs]</a><span class="k">def</span> <span class="nf">hex</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">intwidth</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="n">hex_fmt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fmt</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">fmt</span> <span class="o">%</span> <span class="n">value</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">value</span><span class="p">:</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%.2x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">))</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span>
+    <span class="n">x</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="k">return</span> <span class="s">&#39;0x%.s&#39;</span> <span class="o">%</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+
+    <span class="k">return</span> <span class="n">hex_fmt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">size</span><span class="p">)</span> <span class="o">%</span> <span class="n">value</span>
+</div>
+<div class="viewcode-block" id="binrepr"><a class="viewcode-back" href="../../envi.html#envi.bits.binrepr">[docs]</a><span class="k">def</span> <span class="nf">binrepr</span><span class="p">(</span><span class="n">intval</span><span class="p">,</span> <span class="n">bitwidth</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return a string of one&#39;s and zero&#39;s for the given value.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="n">intval</span><span class="p">:</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">intval</span> <span class="o">&amp;</span> <span class="mh">0x1</span><span class="p">))</span>
+        <span class="n">intval</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>
+    <span class="n">ret</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+    <span class="n">binstr</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bitwidth</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">binstr</span> <span class="o">=</span> <span class="n">binstr</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="n">bitwidth</span><span class="p">,</span> <span class="s">&#39;0&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">binstr</span>
+</div>
+<div class="viewcode-block" id="binary"><a class="viewcode-back" href="../../envi.html#envi.bits.binary">[docs]</a><span class="k">def</span> <span class="nf">binary</span><span class="p">(</span><span class="n">binstr</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Decode a binary string of 1/0&#39;s into a python number</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">binstr</span><span class="p">:</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span>
+</div>
+<div class="viewcode-block" id="binbytes"><a class="viewcode-back" href="../../envi.html#envi.bits.binbytes">[docs]</a><span class="k">def</span> <span class="nf">binbytes</span><span class="p">(</span><span class="n">binstr</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Decode a binary string of 1/0&#39;s into a python binary</span>
+<span class="sd">    string.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">binstr</span><span class="p">)</span> <span class="o">%</span> <span class="mi">8</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Byte padded binary strings only for now!&#39;</span><span class="p">)</span>
+    <span class="nb">bytes</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">while</span> <span class="n">binstr</span><span class="p">:</span>
+        <span class="nb">bytes</span> <span class="o">+=</span> <span class="nb">chr</span><span class="p">(</span> <span class="n">binary</span><span class="p">(</span><span class="n">binstr</span><span class="p">[:</span><span class="mi">8</span><span class="p">])</span> <span class="p">)</span>
+        <span class="n">binstr</span> <span class="o">=</span> <span class="n">binstr</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="nb">bytes</span>
+</div>
+<div class="viewcode-block" id="parsebits"><a class="viewcode-back" href="../../envi.html#envi.bits.parsebits">[docs]</a><span class="k">def</span> <span class="nf">parsebits</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">bitoff</span><span class="p">,</span> <span class="n">bitsize</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parse bitsize bits from the bit offset bitoff beginning</span>
+<span class="sd">    at offset bytes.</span>
+
+<span class="sd">    Example: </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">cnt</span> <span class="o">&lt;</span> <span class="n">bitsize</span><span class="p">:</span>
+
+        <span class="n">addbit</span> <span class="o">=</span> <span class="n">bitoff</span> <span class="o">+</span> <span class="n">cnt</span>
+        <span class="n">addoff</span> <span class="o">=</span> <span class="n">offset</span> <span class="o">+</span> <span class="p">(</span><span class="n">addbit</span> <span class="o">/</span> <span class="mi">8</span><span class="p">)</span>
+
+        <span class="n">modoff</span> <span class="o">=</span> <span class="n">addbit</span> <span class="o">%</span> <span class="mi">8</span>
+
+        <span class="n">o</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="nb">bytes</span><span class="p">[</span><span class="n">addoff</span><span class="p">])</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">val</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="n">o</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">7</span> <span class="o">-</span> <span class="n">modoff</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">val</span>
+
+<span class="c">#if __name__ == &#39;__main__&#39;:</span>
+    <span class="c">#print hex(parsebits(&#39;\x0f\x00&#39;, 0, 4, 8))</span>
+    <span class="c">#print hex(parsebits(&#39;\x0f\x0f&#39;, 0, 4, 12))</span>
+    <span class="c">#print hex(parsebits(&#39;\x0f\x0f\xf0&#39;, 1, 4, 4))</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

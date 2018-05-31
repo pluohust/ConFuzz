@@ -1,0 +1,1972 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="vtrace-package">
+<h1>vtrace Package<a class="headerlink" href="#vtrace-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-vtrace" title="vtrace"><tt class="xref py py-mod docutils literal"><span class="pre">vtrace</span></tt></a> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vtrace"></span><p>Vtrace Debugger Framework</p>
+<p>Vtrace is a <em>mostly</em> native python debugging framework which
+can be used to quickly write programatic debuggers and research
+tools.</p>
+<p>I&#8217;m not known for writting great docs...  but the code should
+be pretty straight forward...</p>
+<p>This has been in use for many years privately, but is nowhere
+<em>near</em> free of bugs...  idiosyncracies abound.</p>
+<p>==== Werd =====================================================</p>
+<p>Blah blah blah... many more docs to come.</p>
+<p>Brought to you by kenshoto.  e-mail invisigoth.</p>
+<dl class="docutils">
+<dt>Greetz:</dt>
+<dd>h1kari - eeeeeooorrrmmm  CHKCHKCHKCHKCHKCHKCHK
+Ghetto - wizoo... to the tizoot.
+atlas - <em>whew</em> finally...  no more teasing...
+beatle/dnm - come out and play yo!
+The Kenshoto Gophers.
+Blackhats Everywhere.</dd>
+</dl>
+<dl class="exception">
+<dt id="vtrace.AccessViolation">
+<em class="property">exception </em><tt class="descclassname">vtrace.</tt><tt class="descname">AccessViolation</tt><big>(</big><em>va</em>, <em>perm=0</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#AccessViolation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.AccessViolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>An exception which is raised on bad-touch to memory</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vtrace.PlatformException">
+<em class="property">exception </em><tt class="descclassname">vtrace.</tt><tt class="descname">PlatformException</tt><a class="reference internal" href="_modules/vtrace.html#PlatformException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.PlatformException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>A universal way to represent a failure in the
+platform layer for this tracer.  platformFoo methods
+should raise this rather than allowing their platform
+specific exception types (which don&#8217;t likely pickle, or
+are not cross platform)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.Trace">
+<em class="property">class </em><tt class="descclassname">vtrace.</tt><tt class="descname">Trace</tt><big>(</big><em>archname=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="envi.html#envi.memory.IMemory" title="envi.memory.IMemory"><tt class="xref py py-class docutils literal"><span class="pre">envi.memory.IMemory</span></tt></a>, <a class="reference internal" href="envi.html#envi.registers.RegisterContext" title="envi.registers.RegisterContext"><tt class="xref py py-class docutils literal"><span class="pre">envi.registers.RegisterContext</span></tt></a>, <a class="reference internal" href="envi.html#envi.resolver.SymbolResolver" title="envi.resolver.SymbolResolver"><tt class="xref py py-class docutils literal"><span class="pre">envi.resolver.SymbolResolver</span></tt></a>, <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>The main tracer object.  A trace instance is dynamically generated using
+this and <em>many</em> potential mixin classes.  However, API users should <em>not</em>
+worry about the methods that come from the mixins...  Everything that is
+<em>meant</em> to be used from the API is contained and documented here.</p>
+<dl class="method">
+<dt id="vtrace.Trace.addBreakByAddr">
+<tt class="descname">addBreakByAddr</tt><big>(</big><em>va</em>, <em>fastbreak=False</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.addBreakByAddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.addBreakByAddr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a breakpoint by address.  This will create the Breakpoint
+object for you and add it to the trace.  It returns the newly
+created breakpoint id.</p>
+<p>Optionally, set fastbreak=True to have the breakpoint behave in
+&#8220;fast break&#8221; mode which automatically continues execution and does
+not fire notifiers for the breakpoint.</p>
+<p>Example: trace.addBreakByAddr(0x7c770308)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.addBreakByExpr">
+<tt class="descname">addBreakByExpr</tt><big>(</big><em>symname</em>, <em>fastbreak=False</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.addBreakByExpr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.addBreakByExpr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a breakpoint by resolving an expression.  This will create
+the Breakpoint object for you and add it to the trace.  It
+returns the newly created breakpoint id.</p>
+<p>Optionally, set fastbreak=True to have the breakpoint behave in
+&#8220;fast break&#8221; mode which automatically continues execution and does
+not fire notifiers for the breakpoint.</p>
+<p>Example: trace.addBreakByExpr(&#8216;kernel32.CreateFileA + ecx&#8217;)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.addBreakpoint">
+<tt class="descname">addBreakpoint</tt><big>(</big><em>breakpoint</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.addBreakpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.addBreakpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a breakpoint/watchpoint to the trace.  The &#8220;breakpoint&#8221; argument
+is a vtrace Breakpoint/Watchpoint object or something that extends it.</p>
+<p>To add a basic breakpoint use trace.addBreakpoint(vtrace.Breakpoint(address))
+NOTE: expression breakpoints do <em>not</em> get evaluated in fastbreak mode</p>
+<p>This will return the internal ID given to the new breakpoint</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.addIgnoreSignal">
+<tt class="descname">addIgnoreSignal</tt><big>(</big><em>code</em>, <em>address=0</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.addIgnoreSignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.addIgnoreSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>By adding an IgnoreSignal you tell the tracer object to
+supress the notification of a particular type of signal.
+In POSIX, these are regular signals, in Win32, these
+are exception codes.  This is mostly useful in RunForever
+mode because you still need the process to begin running again.
+(these may be viewed/modified by the metadata key &#8220;IgnoredSignals&#8221;)
+FIXME: make address do something.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.allocateMemory">
+<tt class="descname">allocateMemory</tt><big>(</big><em>size</em>, <em>perms=7</em>, <em>suggestaddr=0</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.allocateMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.allocateMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocate a chunk of memory inside the target process&#8217; address
+space.  Memory wil be mapped rwx unless otherwise specified with
+perms=envi.memory.MM_FOO values. Optionally you may <em>suggest</em> an address
+to the allocator, but there is no guarentee.  Returns the mapped
+memory address.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.attach">
+<tt class="descname">attach</tt><big>(</big><em>pid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.attach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.attach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach to a new process ID.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.buildNewTrace">
+<tt class="descname">buildNewTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.buildNewTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.buildNewTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a new/clean trace &#8220;like&#8221; this one.  For platforms where a
+special trace was handed in, this allows initialization of a new one.
+For most implementations, this is very simple....</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd><dl class="first last docutils">
+<dt>if need_another_trace:</dt>
+<dd>newt = trace.buildNewTrace()</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.call">
+<tt class="descname">call</tt><big>(</big><em>address</em>, <em>args</em>, <em>convention=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setup the &#8220;stack&#8221; and call the target address with the following
+arguments.  If the argument is a string or a buffer, copy that into
+memory and hand in the argument.</p>
+<p>The current state of ALL registers are returned as a dictionary at the
+end of the call...</p>
+<p>Additionally, a &#8220;convention&#8221; string may be specified that the underlying
+platform may be able to interpret...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.delIgnoreSignal">
+<tt class="descname">delIgnoreSignal</tt><big>(</big><em>code</em>, <em>address=0</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.delIgnoreSignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.delIgnoreSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>See addIgnoreSignal for a description of signal ignoring.
+This removes an ignored signal and re-enables it&#8217;s delivery.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.deregisterNotifier">
+<tt class="descname">deregisterNotifier</tt><big>(</big><em>event</em>, <em>notifier</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.deregisterNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.deregisterNotifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.detach">
+<tt class="descname">detach</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.detach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.detach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detach from the currently attached process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.disableAutoContinue">
+<tt class="descname">disableAutoContinue</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.disableAutoContinue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.disableAutoContinue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable Auto Continue for the specified
+event.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.enableAutoContinue">
+<tt class="descname">enableAutoContinue</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.enableAutoContinue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.enableAutoContinue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put the tracer object in to AutoContinue mode
+for the specified event.  To make all events
+continue running see RunForever mode in setMode().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.execute">
+<tt class="descname">execute</tt><big>(</big><em>cmdline</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a new process and debug it</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getAutoContinueList">
+<tt class="descname">getAutoContinueList</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getAutoContinueList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getAutoContinueList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the list of vtrace notification events
+that will be auto-continued.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getBreakpoint">
+<tt class="descname">getBreakpoint</tt><big>(</big><em>id</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getBreakpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getBreakpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a reference to the breakpoint with the requested ID.</p>
+<p>NOTE: NEVER set locals or use things like setBreakpointCode()
+method on return&#8217;d breakpoint objects as they may be remote
+and would then be <em>coppies</em> of the bp objects. (use the trace&#8217;s
+setBreakpointCode() instead).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getBreakpointByAddr">
+<tt class="descname">getBreakpointByAddr</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getBreakpointByAddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getBreakpointByAddr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the breakpoint object (or None) for a given virtual address.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getBreakpointCode">
+<tt class="descname">getBreakpointCode</tt><big>(</big><em>bpid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getBreakpointCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getBreakpointCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the python string of user specified code that will run
+when this breakpoint is hit.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getBreakpointEnabled">
+<tt class="descname">getBreakpointEnabled</tt><big>(</big><em>bpid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getBreakpointEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getBreakpointEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>An accessor method for returning if a breakpoint is
+currently enabled.
+NOTE: code which wants to be remote-safe should use this</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getBreakpoints">
+<tt class="descname">getBreakpoints</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getBreakpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getBreakpoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the current breakpoints.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getCurrentBreakpoint">
+<tt class="descname">getCurrentBreakpoint</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getCurrentBreakpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getCurrentBreakpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current breakpoint otherwise None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getCurrentSignal">
+<tt class="descname">getCurrentSignal</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getCurrentSignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getCurrentSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the current signal/exception posted to the process.
+If there are no pending signals/exceptions the API will return
+None.  For POSIX systems, this will be a traditional POSIX signal.
+For Windows systems it will be a current exception code (if any).</p>
+<p>Example: sig = trace.getCurrentSignal()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getCurrentThread">
+<tt class="descname">getCurrentThread</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getCurrentThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getCurrentThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the thread id of the currently selected thread.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getFds">
+<tt class="descname">getFds</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getFds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getFds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of (fd,type,bestname) pairs.  This is MOSTLY useful
+for HUMON consumtion...  or giving HUMONs consumption...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getMemoryFault">
+<tt class="descname">getMemoryFault</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getMemoryFault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getMemoryFault" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the most receent event is a memory access error, this API will
+return a tuple of (&lt;addr&gt;,&lt;perm&gt;) on supported platforms.  Otherwise,
+a (None, None) will result.</p>
+<p>Example:
+import envi.memory as e_mem
+vaddr,vperm = trace.getMemoryFault()
+if vaddr != None:</p>
+<blockquote>
+<div>print &#8216;Memory Fault At: 0x%.8x (perm: %d)&#8217; % (vaddr, vperm)</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getMemoryMaps">
+<tt class="descname">getMemoryMaps</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getMemoryMaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getMemoryMaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the currently mapped memory for the target
+process.  This is acomplished by calling the platform&#8217;s
+platformGetMaps() mixin method.  This will also cache the
+results until CONTINUE.  The format is (addr,len,perms,file).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getMeta">
+<tt class="descname">getMeta</tt><big>(</big><em>name</em>, <em>default=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get some metadata.  Metadata is a clean way for
+arbitrary trace consumers (and notifiers) to present
+and track additional information in trace objects.</p>
+<p>If you specify a default and the key doesn&#8217;t exist, not
+not only will the default be returned, but the key will
+be set to the default specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getMode">
+<tt class="descname">getMode</tt><big>(</big><em>name</em>, <em>default=False</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value for a mode setting allowing
+for a clean default...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getNormalizedLibNames">
+<tt class="descname">getNormalizedLibNames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getNormalizedLibNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getNormalizedLibNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Symbols are stored internally based off of
+&#8220;normalized&#8221; library names.  This method returns
+the list of normalized names for the loaded libraries.</p>
+<p>(probably only useful for writting symbol browsers...)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getNotifiers">
+<tt class="descname">getNotifiers</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getNotifiers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getNotifiers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getPid">
+<tt class="descname">getPid</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getPid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getPid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pid for this Trace</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getRegister">
+<tt class="descname">getRegister</tt><big>(</big><em>idx</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getRegister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getRegister" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getRegisterContext">
+<tt class="descname">getRegisterContext</tt><big>(</big><em>threadid=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getRegisterContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getRegisterContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the envi.registers.RegisterContext object for the
+specified thread.  Use this API to iterate over threads
+register values without setting the global tracer thread context.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getStackTrace">
+<tt class="descname">getStackTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getStackTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getStackTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of (instruction pointer, stack frame) tuples.
+If stack tracing results in an error, the error entry will
+be (-1,-1).  Otherwise most platforms end up with 0,0 as
+the top stack frame</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getStruct">
+<tt class="descname">getStruct</tt><big>(</big><em>sname</em>, <em>address</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getStruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getStruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a vstruct structure populated with memory from
+the specified address.  Returns a standard vstruct object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getStructNames">
+<tt class="descname">getStructNames</tt><big>(</big><em>namespace=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getStructNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getStructNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns either the structure names, or
+the structure namespaces that the target tracer is aware
+of.  If &#8220;namespace&#8221; is specified, it is structures within
+that namespace, otherwise it is &#8220;known namespaces&#8221;</p>
+<dl class="docutils">
+<dt>Example: namespaces = trace.getStructNames()</dt>
+<dd>ntdll_structs = trace.getStructNames(namespace=&#8217;ntdll&#8217;)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getSymByAddr">
+<tt class="descname">getSymByAddr</tt><big>(</big><em>addr</em>, <em>exact=True</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getSymByAddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getSymByAddr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an envi Symbol object for an address.
+Use exact=False to get the nearest previous match.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getSymByName">
+<tt class="descname">getSymByName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getSymByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getSymByName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an envi.Symbol object for the given name (or None)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getSymsForFile">
+<tt class="descname">getSymsForFile</tt><big>(</big><em>libname</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getSymsForFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getSymsForFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the entire symbol list for the specified
+normalized library name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getThreads">
+<tt class="descname">getThreads</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getThreads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getThreads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dictionary of &lt;threadid&gt;:&lt;tinfo&gt; pairs where
+tinfo is platform dependant, but is tyically either
+the top of the stack for that thread, or the TEB on
+win32</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getVariable">
+<tt class="descname">getVariable</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of a previously set variable name.
+(or None on not found)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.getVariables">
+<tt class="descname">getVariables</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.getVariables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.getVariables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the dictionary of named variables.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.hasMeta">
+<tt class="descname">hasMeta</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.hasMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.hasMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to see if a metadata key exists... Mostly un-necissary
+as getMeta() with a default will set the key to the default
+if non-existant.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.hex">
+<tt class="descname">hex</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.hex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.hex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Much like the python hex routine, except this will automatically
+pad the value&#8217;s string length out to pointer width.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.injectThread">
+<tt class="descname">injectThread</tt><big>(</big><em>pc</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.injectThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.injectThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new thread inside the target process.  This thread
+will begin execution on the next process run().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.injectso">
+<tt class="descname">injectso</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.injectso"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.injectso" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inject a shared object into the target of the trace.  So, on windows
+this is easy with InjectDll and on <a href="#id2"><span class="problematic" id="id3">*</span></a>nix... it&#8217;s.. fugly...</p>
+<dl class="docutils">
+<dt>NOTE: This method will likely cause the trace to run.  Do not call from</dt>
+<dd>within a notifier!</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.isAttached">
+<tt class="descname">isAttached</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.isAttached"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.isAttached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return boolean true/false for weather or not this trace is
+currently attached to a process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.isRemote">
+<tt class="descname">isRemote</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.isRemote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.isRemote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the trace is a CobraProxy object to a trace on another system</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.isRunning">
+<tt class="descname">isRunning</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.isRunning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.isRunning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return true or false if this trace&#8217;s target process is &#8220;running&#8221;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.isThreadSuspended">
+<tt class="descname">isThreadSuspended</tt><big>(</big><em>threadid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.isThreadSuspended"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.isThreadSuspended" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to determine if a thread is suspended.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.joinThread">
+<tt class="descname">joinThread</tt><big>(</big><em>threadid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.joinThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.joinThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the trace in a loop until the specified thread exits.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.kill">
+<tt class="descname">kill</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.kill"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.kill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kill the target process for this trace (will result in process
+exit and fire appropriate notifiers)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.parseExpression">
+<tt class="descname">parseExpression</tt><big>(</big><em>expression</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.parseExpression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.parseExpression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a python expression with many useful helpers mapped
+into the execution namespace.</p>
+<p>Example: trace.parseExpression(&#8220;ispoi(ecx+ntdll.RtlAllocateHeap)&#8221;)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.protectMemory">
+<tt class="descname">protectMemory</tt><big>(</big><em>va</em>, <em>size</em>, <em>perms</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.protectMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.protectMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the page protections on the specified region of memory.
+See envi.memory for perms values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.ps">
+<tt class="descname">ps</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.ps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.ps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of proccesses which are currently running on the
+system.
+(pid, name)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.readMemory">
+<tt class="descname">readMemory</tt><big>(</big><em>address</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.readMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.readMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read memory from address.  Areas that are NOT valid memory will be read
+back as s (this probably goes in a mixin soon)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.registerNotifier">
+<tt class="descname">registerNotifier</tt><big>(</big><em>event</em>, <em>notifier</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.registerNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.registerNotifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a notifier who will be called for various
+events.  See NOTIFY_* constants for handler hooks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.release">
+<tt class="descname">release</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.release" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release resources for this tracer.  This API should be called
+once you are done with the trace.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.removeBreakpoint">
+<tt class="descname">removeBreakpoint</tt><big>(</big><em>id</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.removeBreakpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.removeBreakpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the breakpoint with the specified ID</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.requireAttached">
+<tt class="descname">requireAttached</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.requireAttached"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.requireAttached" title="Permalink to this definition">¶</a></dt>
+<dd><p>A utility method for other methods to use in order
+to require being attached</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.requireNotExited">
+<tt class="descname">requireNotExited</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.requireNotExited"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.requireNotExited" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.requireNotRunning">
+<tt class="descname">requireNotRunning</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.requireNotRunning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.requireNotRunning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Just a quick method to throw an error if the
+tracer is already running...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.resumeThread">
+<tt class="descname">resumeThread</tt><big>(</big><em>threadid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.resumeThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.resumeThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resume a suspended thread.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.run">
+<tt class="descname">run</tt><big>(</big><em>until=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allow the traced target to continue execution.  (Depending on the mode
+&#8220;Blocking&#8221; this will either block until an event, or return immediately)
+Additionally, the argument until may be used to cause execution to continue
+until the specified address is reached (internally uses and removes a breakpoint).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.runAgain">
+<tt class="descname">runAgain</tt><big>(</big><em>val=True</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.runAgain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.runAgain" title="Permalink to this definition">¶</a></dt>
+<dd><p>The runAgain() method may be used from inside a notifier
+(Notifier, Breakpoint, Watchpoint, etc...) to inform the trace
+that once event processing is complete, it should continue
+running the trace.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.searchMemory">
+<tt class="descname">searchMemory</tt><big>(</big><em>needle</em>, <em>regex=False</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.searchMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.searchMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search all of process memory for a sequence of bytes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.searchMemoryRange">
+<tt class="descname">searchMemoryRange</tt><big>(</big><em>needle</em>, <em>address</em>, <em>size</em>, <em>regex=False</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.searchMemoryRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.searchMemoryRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search a memory range for the specified sequence of bytes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.searchSymbols">
+<tt class="descname">searchSymbols</tt><big>(</big><em>regex</em>, <em>libname=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.searchSymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.searchSymbols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for symbols which match the given regular expression.  Specify libname
+as the &#8220;normalized&#8221; library name to only search the specified lib.</p>
+<p>Example:  for sym in trace.searchSymbols(&#8216;.*CreateFile.*&#8217;, &#8216;kernel32&#8217;):</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.selectThread">
+<tt class="descname">selectThread</tt><big>(</big><em>threadid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.selectThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.selectThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the &#8220;current thread&#8221; context to the given thread id.
+(For example stack traces and register values will depend
+on the current thread context).  By default the thread
+responsible for an &#8220;interesting event&#8221; is selected.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.sendBreak">
+<tt class="descname">sendBreak</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.sendBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.sendBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send an asynchronous break signal to the target process.
+This is only valid if the target is actually running...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.setBreakpointCode">
+<tt class="descname">setBreakpointCode</tt><big>(</big><em>bpid</em>, <em>pystr</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.setBreakpointCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.setBreakpointCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Because breakpoints are potentially on the remote debugger
+and code is not pickleable in python, special access methods
+which takes strings of python code are necissary for the
+vdb interface to quick script breakpoint code.  Use this method
+to set the python code for this breakpoint.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.setBreakpointEnabled">
+<tt class="descname">setBreakpointEnabled</tt><big>(</big><em>bpid</em>, <em>enabled=True</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.setBreakpointEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.setBreakpointEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>An accessor method for setting a breakpoint enabled/disabled.</p>
+<p>NOTE: code which wants to be remote-safe should use this</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.setCurrentSignal">
+<tt class="descname">setCurrentSignal</tt><big>(</big><em>sig=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.setCurrentSignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.setCurrentSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the currently pending signal for delivery to the target process on
+continue.  This is intended for use by programs wishing the mask or change
+the delivery of exceptions on a NOTIFY_SIGNAL event.</p>
+<p>Example:  trace.setCurrentSignal(None)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.setMeta">
+<tt class="descname">setMeta</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.setMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.setMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set some metadata.  Metadata is a clean way for
+arbitrary trace consumers (and notifiers) to present
+and track additional information in trace objects.</p>
+<p>Any modules which use this <em>should</em> initialize them
+on attach (so when they get re-used they&#8217;re clean)</p>
+<p>Some examples of metadata used:
+ShouldBreak - We&#8217;re expecting a non-signal related break
+ExitCode - The int() exit code  (if exited)
+PendingSignal - The current signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.setMode">
+<tt class="descname">setMode</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.setMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.setMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a mode setting...  This is ONLY valid
+if that mode has been iniitialized with
+initMode(name, value).  Otherwise, it&#8217;s an
+unsupported mode for this platform ;)  cute huh?
+This way, platform sections can cleanly setmodes
+and such.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.setRegister">
+<tt class="descname">setRegister</tt><big>(</big><em>idx</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.setRegister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.setRegister" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.setVariable">
+<tt class="descname">setVariable</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.setVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.setVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a named variable in the trace which may be used in
+subsequent VtraceExpressions.</p>
+<p>Example:
+trace.setVariable(&#8220;whereiam&#8221;, trace.getProgramCounter())</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.stepi">
+<tt class="descname">stepi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.stepi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.stepi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single step the target process ONE instruction (and do
+NOT activate breakpoints for the one step). Also, we 
+don&#8217;t deliver pending signals for the single step...
+Use the mode FastStep to allow/supress notifier callbacks on step</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.suspendThread">
+<tt class="descname">suspendThread</tt><big>(</big><em>threadid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.suspendThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.suspendThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suspend a thread by ID.  This will mean that on continuing
+the trace, the suspended thread will not be scheduled.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.Trace.writeMemory">
+<tt class="descname">writeMemory</tt><big>(</big><em>address</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#Trace.writeMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.Trace.writeMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the given bytes to the address in the current trace.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.TraceGroup">
+<em class="property">class </em><tt class="descclassname">vtrace.</tt><tt class="descname">TraceGroup</tt><a class="reference internal" href="_modules/vtrace.html#TraceGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.notifiers.Notifier" title="vtrace.notifiers.Notifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.notifiers.Notifier</span></tt></a>, <a class="reference internal" href="#vtrace.util.TraceManager" title="vtrace.util.TraceManager"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.util.TraceManager</span></tt></a></p>
+<p>Encapsulate several traces, run them, and continue to 
+handle their event notifications.</p>
+<dl class="method">
+<dt id="vtrace.TraceGroup.addTrace">
+<tt class="descname">addTrace</tt><big>(</big><em>proc</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.addTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.addTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new tracer to this group the &#8220;proc&#8221; argument
+may be either an long() for a pid (which we will attach
+to) or an already attached (and broken) tracer object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.delTrace">
+<tt class="descname">delTrace</tt><big>(</big><em>pid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.delTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.delTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a trace from the current TraceGroup</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.detachAll">
+<tt class="descname">detachAll</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.detachAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.detachAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detach from ALL the currently targetd processes</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.execTrace">
+<tt class="descname">execTrace</tt><big>(</big><em>cmdline</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.execTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.execTrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.getTrace">
+<tt class="descname">getTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.getTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.getTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Similar to vtrace.getTrace(), but also init&#8217;s
+the trace for being managed by a TraceGroup.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>tg = TraceGroup()
+t = tg.getTrace()
+t....</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.getTraceByPid">
+<tt class="descname">getTraceByPid</tt><big>(</big><em>pid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.getTraceByPid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.getTraceByPid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the the trace for process PID if we&#8217;re
+already attached.  Return None if not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.getTraces">
+<tt class="descname">getTraces</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.getTraces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.getTraces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the current traces</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Our run method  is a little different than a traditional
+trace. It will <em>never</em> block.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.setMeta">
+<tt class="descname">setMeta</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.setMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.setMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trace group&#8217;s setMeta function will set &#8220;persistant&#8221; metadata
+which will be added again to any trace on attach.  Additionally,
+setting metadata on a tracegroup will cause all current traces
+to get the update as well....</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.TraceGroup.setMode">
+<tt class="descname">setMode</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#TraceGroup.setMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.TraceGroup.setMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.VtraceExpressionLocals">
+<em class="property">class </em><tt class="descclassname">vtrace.</tt><tt class="descname">VtraceExpressionLocals</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#VtraceExpressionLocals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.VtraceExpressionLocals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="envi.html#envi.expression.MemoryExpressionLocals" title="envi.expression.MemoryExpressionLocals"><tt class="xref py py-class docutils literal"><span class="pre">envi.expression.MemoryExpressionLocals</span></tt></a></p>
+<p>A class which serves as the namespace dictionary during the
+evaluation of an expression on a tracer.</p>
+<dl class="method">
+<dt id="vtrace.VtraceExpressionLocals.bp">
+<tt class="descname">bp</tt><big>(</big><em>bpid</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#VtraceExpressionLocals.bp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.VtraceExpressionLocals.bp" title="Permalink to this definition">¶</a></dt>
+<dd><p>The expression bp(0) returns the resolved address of the given
+breakpoint</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.VtraceExpressionLocals.frame">
+<tt class="descname">frame</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#VtraceExpressionLocals.frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.VtraceExpressionLocals.frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the address of the saved base pointer for
+the specified frame.</p>
+<p>Usage: frame(&lt;index&gt;)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.VtraceExpressionLocals.go">
+<tt class="descname">go</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace.html#VtraceExpressionLocals.go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.VtraceExpressionLocals.go" title="Permalink to this definition">¶</a></dt>
+<dd><p>A shortcut for trace.runAgain() which may be used in
+breakpoint code (or similar even processors) to begin
+execution again after event processing...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.VtraceExpressionLocals.meta">
+<tt class="descname">meta</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#VtraceExpressionLocals.meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.VtraceExpressionLocals.meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>An expression friendly (terse) way to get trace metadata
+(equiv to trace.getMeta(name))</p>
+<p>Example: meta(&#8220;foo&#8221;)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.VtraceExpressionLocals.teb">
+<tt class="descname">teb</tt><big>(</big><em>threadnum=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#VtraceExpressionLocals.teb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.VtraceExpressionLocals.teb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The expression teb(threadid) will return whatever the
+platform stores as the int for threadid.  In the case
+of windows, this is the TEB, others may be the thread
+stack base or whatever.  If threadid is left out, it
+uses the threadid of the current thread context.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.getTrace">
+<tt class="descclassname">vtrace.</tt><tt class="descname">getTrace</tt><big>(</big><em>plat=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#getTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.getTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tracer object appropriate for this platform.
+This is the function you will use to get a tracer object
+with the appropriate ancestry for your host.
+ex. mytrace = vtrace.getTrace()</p>
+<dl class="docutils">
+<dt>NOTE: Use the release() method on the tracer once debugging</dt>
+<dd>is complete.  This releases the tracer thread and allows
+garbage collection to function correctly.</dd>
+</dl>
+<p>Some specialized tracers may be constructed by specifying the &#8220;plat&#8221;
+name from one of the following list.  Additionally, each &#8220;specialized&#8221;
+tracer may require additional kwargs (which are listed).</p>
+<dl class="docutils">
+<dt>android - Debug android apps through adb (adb must be in your path)</dt>
+<dd>avd=&lt;name&gt; (None will let adb decide)</dd>
+<dt>vmware32  - Debug a 32bit VMWare target.</dt>
+<dd>host=&lt;host&gt; - Where is the gdb server listening? (default 127.0.0.1)
+port=&lt;port&gt; - What port (default: 8832)
+os=&lt;osname&gt; - On of &#8220;Windows&#8221;, &#8220;Linux&#8221; (that&#8217;s all we support now...)</dd>
+<dt>vmware64  - Debug a 64bit VMWare target.</dt>
+<dd>host=&lt;host&gt; - Where is the gdb server listening? (default 127.0.0.1)
+port=&lt;port&gt; - What port (default: 8864)
+os=&lt;osname&gt; - On of &#8220;Windows&#8221;, &#8220;Linux&#8221; (that&#8217;s all we support now...)</dd>
+<dt>Examples:</dt>
+<dd><p class="first">t = vtrace.getTrace() # A tracer for <em>this</em> os</p>
+<p>t = vtrace.getTrace(plat=&#8217;android&#8217;) # The default ADB device</p>
+<p class="last">t = vtrace.getTrace(plat=&#8217;vmware32&#8217;, host=&#8217;localhost&#8217;, port=31337)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.interact">
+<tt class="descclassname">vtrace.</tt><tt class="descname">interact</tt><big>(</big><em>pid=0</em>, <em>server=None</em>, <em>trace=None</em><big>)</big><a class="reference internal" href="_modules/vtrace.html#interact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.interact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Just a cute and dirty way to get a tracer attached to a pid
+and get a python interpreter instance out of it.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.audit">
+<span id="audit-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">audit</span></tt> Module<a class="headerlink" href="#module-vtrace.audit" title="Permalink to this headline">¶</a></h2>
+<p>Test for platform functionality (for internal use).</p>
+<dl class="function">
+<dt id="vtrace.audit.auditTracer">
+<tt class="descclassname">vtrace.audit.</tt><tt class="descname">auditTracer</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/audit.html#auditTracer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.audit.auditTracer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print out a list of platform requirements and weather
+a particular tracer meets them.  This is mostly a
+development tool to determin what&#8217;s left to do on a 
+tracer implementation.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.breakpoints">
+<span id="breakpoints-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">breakpoints</span></tt> Module<a class="headerlink" href="#module-vtrace.breakpoints" title="Permalink to this headline">¶</a></h2>
+<p>Breakpoint Objects</p>
+<dl class="class">
+<dt id="vtrace.breakpoints.Breakpoint">
+<em class="property">class </em><tt class="descclassname">vtrace.breakpoints.</tt><tt class="descname">Breakpoint</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Breakpoints in Vtrace are platform independant objects that
+use the underlying trace objects to get things like the
+program counter and the break instruction.  As long as
+platfforms are completely implemented, all breakpoint
+objects should be portable.</p>
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.activate">
+<tt class="descname">activate</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.activate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Actually store off and replace memory for this process.  This
+is caried out by the trace object itself when it begins
+running or stops.  You probably never need to call this
+(see isEnabled() setEnabled() for boolean enable/disablle)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vtrace.breakpoints.Breakpoint.bpcodeobj">
+<tt class="descname">bpcodeobj</tt><em class="property"> = {}</em><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.bpcodeobj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.deactivate">
+<tt class="descname">deactivate</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repair the process for continued execution.  this does NOT
+make a breakpoint <em>inactive</em>, but removes it&#8217;s &#8220;0xcc&#8221; from mem
+(see isEnabled() setEnabled() for boolean enable/dissable)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.getAddress">
+<tt class="descname">getAddress</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.getAddress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.getAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will return the address for this breakpoint.  If the return&#8217;d
+address is None, this is a deferred breakpoint which needs to have
+resolveAddress() called to attempt to set the address.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.getBreakpointCode">
+<tt class="descname">getBreakpointCode</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.getBreakpointCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.getBreakpointCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current python string that will be run when this break is hit.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.getId">
+<tt class="descname">getId</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.getId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.getId" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.inittrace">
+<tt class="descname">inittrace</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.inittrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.inittrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>A callback to do housekeeping at the time the breakpoint is
+added to the tracer object.  This should be used instead of activate
+for initialization time infoz to save on time per activate call...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.isEnabled">
+<tt class="descname">isEnabled</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.isEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.isEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is this breakpoint &#8220;enabled&#8221;?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.notify" title="Permalink to this definition">¶</a></dt>
+<dd><p>Breakpoints may also extend and implement &#8220;notify&#8221; which will be
+called whenever they are hit.  If you want to continue the ability
+for this breakpoint to have bpcode, you must call this method from
+your override.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.resolveAddress">
+<tt class="descname">resolveAddress</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.resolveAddress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.resolveAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to resolve the address for this break.  If this is a statically
+addressed break, just return the address.  If it has an &#8220;expression&#8221;
+use that to resolve the address...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.resolvedaddr">
+<tt class="descname">resolvedaddr</tt><big>(</big><em>trace</em>, <em>addr</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.resolvedaddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.resolvedaddr" title="Permalink to this definition">¶</a></dt>
+<dd><p>An initialization callback which will be executed when the
+actual address for this breakpoint has been resolved.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.setBreakpointCode">
+<tt class="descname">setBreakpointCode</tt><big>(</big><em>pystr</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.setBreakpointCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.setBreakpointCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this method to set custom python code to run when this
+breakpoint gets hit.  The code will have the following objects
+mapped into it&#8217;s namespace when run:</p>
+<blockquote>
+<div>trace - the tracer
+vtrace - the vtrace module
+bp - the breakpoint</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.breakpoints.Breakpoint.setEnabled">
+<tt class="descname">setEnabled</tt><big>(</big><em>enabled=True</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#Breakpoint.setEnabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.Breakpoint.setEnabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set this breakpoints &#8220;enabled&#8221; status</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.breakpoints.CallBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.breakpoints.</tt><tt class="descname">CallBreak</tt><big>(</big><em>address</em>, <em>saved_regs</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#CallBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.CallBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>A special breakpoint which will restore process
+state (registers in particular) when it gets hit.
+This is primarily used by the call method inside
+the trace object to restore original state
+after a successful &#8220;call&#8221; method call.</p>
+<p>Additionally, the endregs dict will be filled in
+with the regs at the time it was hit and kept until
+we get garbage collected...</p>
+<dl class="method">
+<dt id="vtrace.breakpoints.CallBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#CallBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.CallBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.breakpoints.OneTimeBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.breakpoints.</tt><tt class="descname">OneTimeBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#OneTimeBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.OneTimeBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>This type of breakpoint is exclusivly for marking
+and code-coverage stuff.  It removes itself.
+(most frequently used with a continued trace)</p>
+<dl class="method">
+<dt id="vtrace.breakpoints.OneTimeBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#OneTimeBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.OneTimeBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.breakpoints.SnapshotBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.breakpoints.</tt><tt class="descname">SnapshotBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#SnapshotBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.SnapshotBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>A special breakpoint type which will produce vtrace snapshots
+for the target process when hit.  The snapshots will be saved
+to a default name of &lt;exename&gt;-&lt;timestamp&gt;.vsnap.  This is not
+recommended for use in heavily hit breakpoints as taking a
+snapshot is processor intensive.</p>
+<dl class="method">
+<dt id="vtrace.breakpoints.SnapshotBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#SnapshotBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.SnapshotBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.breakpoints.StopAndRemoveBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.breakpoints.</tt><tt class="descname">StopAndRemoveBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#StopAndRemoveBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.StopAndRemoveBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>When hit, take the tracer out of run-forever mode and
+remove this breakpoint.</p>
+<dl class="method">
+<dt id="vtrace.breakpoints.StopAndRemoveBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#StopAndRemoveBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.StopAndRemoveBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.breakpoints.StopRunForeverBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.breakpoints.</tt><tt class="descname">StopRunForeverBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#StopRunForeverBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.StopRunForeverBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>This breakpoint will turn off RunForever mode
+on the tracer object when hit.  it&#8217;s a good way
+to let things run on and on processing exceptions
+but stop when you get to this one thing.</p>
+<dl class="method">
+<dt id="vtrace.breakpoints.StopRunForeverBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#StopRunForeverBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.StopRunForeverBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.breakpoints.TrackerBreak">
+<em class="property">class </em><tt class="descclassname">vtrace.breakpoints.</tt><tt class="descname">TrackerBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#TrackerBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.TrackerBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>A breakpoint which will record how many times it was hit
+(by the address it was at) as metadata for the tracer.</p>
+<dl class="method">
+<dt id="vtrace.breakpoints.TrackerBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/breakpoints.html#TrackerBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.breakpoints.TrackerBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.envitools">
+<span id="envitools-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">envitools</span></tt> Module<a class="headerlink" href="#module-vtrace.envitools" title="Permalink to this headline">¶</a></h2>
+<p>Some tools that require the envi framework to be installed</p>
+<dl class="exception">
+<dt id="vtrace.envitools.RegisterException">
+<em class="property">exception </em><tt class="descclassname">vtrace.envitools.</tt><tt class="descname">RegisterException</tt><a class="reference internal" href="_modules/vtrace/envitools.html#RegisterException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.RegisterException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.envitools.TraceEmulator">
+<em class="property">class </em><tt class="descclassname">vtrace.envitools.</tt><tt class="descname">TraceEmulator</tt><big>(</big><em>emu</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.Trace" title="vtrace.Trace"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.Trace</span></tt></a>, <a class="reference internal" href="vtrace.platforms.html#vtrace.platforms.base.TracerBase" title="vtrace.platforms.base.TracerBase"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.platforms.base.TracerBase</span></tt></a></p>
+<p>Wrap an arbitrary emulator in a Tracer compatible API.</p>
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.archGetRegCtx">
+<tt class="descname">archGetRegCtx</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.archGetRegCtx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.archGetRegCtx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.getPointerSize">
+<tt class="descname">getPointerSize</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.getPointerSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.getPointerSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.getStackTrace">
+<tt class="descname">getStackTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.getStackTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.getStackTrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformDetach">
+<tt class="descname">platformDetach</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformDetach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformDetach" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformGetFds">
+<tt class="descname">platformGetFds</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformGetFds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformGetFds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformGetMaps">
+<tt class="descname">platformGetMaps</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformGetMaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformGetMaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformGetRegCtx">
+<tt class="descname">platformGetRegCtx</tt><big>(</big><em>threadid</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformGetRegCtx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformGetRegCtx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformGetThreads">
+<tt class="descname">platformGetThreads</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformGetThreads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformGetThreads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformProcessEvent">
+<tt class="descname">platformProcessEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformProcessEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformProcessEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformReadMemory">
+<tt class="descname">platformReadMemory</tt><big>(</big><em>va</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformReadMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformReadMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformSetRegCtx">
+<tt class="descname">platformSetRegCtx</tt><big>(</big><em>threadid</em>, <em>ctx</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformSetRegCtx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformSetRegCtx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformStepi">
+<tt class="descname">platformStepi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformStepi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformStepi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformWait">
+<tt class="descname">platformWait</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformWait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformWait" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.envitools.TraceEmulator.platformWriteMemory">
+<tt class="descname">platformWriteMemory</tt><big>(</big><em>va</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#TraceEmulator.platformWriteMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.TraceEmulator.platformWriteMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.envitools.cmpRegs">
+<tt class="descclassname">vtrace.envitools.</tt><tt class="descname">cmpRegs</tt><big>(</big><em>emu</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#cmpRegs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.cmpRegs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.envitools.emulatorFromTrace">
+<tt class="descclassname">vtrace.envitools.</tt><tt class="descname">emulatorFromTrace</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#emulatorFromTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.emulatorFromTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce an envi emulator for this tracer object.  Use the trace&#8217;s arch
+info to get the emulator so this can be done on the client side of a remote
+vtrace session.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.envitools.lockStepEmulator">
+<tt class="descclassname">vtrace.envitools.</tt><tt class="descname">lockStepEmulator</tt><big>(</big><em>emu</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#lockStepEmulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.lockStepEmulator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.envitools.main">
+<tt class="descclassname">vtrace.envitools.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.envitools.setRegs">
+<tt class="descclassname">vtrace.envitools.</tt><tt class="descname">setRegs</tt><big>(</big><em>emu</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/envitools.html#setRegs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.envitools.setRegs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.notifiers">
+<span id="notifiers-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">notifiers</span></tt> Module<a class="headerlink" href="#module-vtrace.notifiers" title="Permalink to this headline">¶</a></h2>
+<p>Vtrace notitifers base classes and examples</p>
+<p>Vtrace supports the idea of callback notifiers which
+get called whenever particular events occur in the target
+process.  Notifiers may be registered to recieve a callback
+on any of the vtrace.NOTIFY_FOO events from vtrace.  One notifier
+<em>may</em> be registered with more than one trace, as the &#8220;notify&#8221;
+method is passed a reference to the trace for which an event
+has occured...</p>
+<dl class="class">
+<dt id="vtrace.notifiers.DistributedNotifier">
+<em class="property">class </em><tt class="descclassname">vtrace.notifiers.</tt><tt class="descname">DistributedNotifier</tt><a class="reference internal" href="_modules/vtrace/notifiers.html#DistributedNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.DistributedNotifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.notifiers.Notifier" title="vtrace.notifiers.Notifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.notifiers.Notifier</span></tt></a></p>
+<p>A notifier which will distributed notifications out to
+locally registered notifiers so that remote tracer&#8217;s notifier
+callbacks only require once across the wire.</p>
+<dl class="method">
+<dt id="vtrace.notifiers.DistributedNotifier.deregisterNotifier">
+<tt class="descname">deregisterNotifier</tt><big>(</big><em>event</em>, <em>notif</em><big>)</big><a class="reference internal" href="_modules/vtrace/notifiers.html#DistributedNotifier.deregisterNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.DistributedNotifier.deregisterNotifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.notifiers.DistributedNotifier.fireNotifiers">
+<tt class="descname">fireNotifiers</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/notifiers.html#DistributedNotifier.fireNotifiers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.DistributedNotifier.fireNotifiers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fire all our registerd local-notifiers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.notifiers.DistributedNotifier.getProxy">
+<tt class="descname">getProxy</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/notifiers.html#DistributedNotifier.getProxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.DistributedNotifier.getProxy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.notifiers.DistributedNotifier.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/notifiers.html#DistributedNotifier.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.DistributedNotifier.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.notifiers.DistributedNotifier.registerNotifier">
+<tt class="descname">registerNotifier</tt><big>(</big><em>event</em>, <em>notif</em><big>)</big><a class="reference internal" href="_modules/vtrace/notifiers.html#DistributedNotifier.registerNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.DistributedNotifier.registerNotifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a sub-notifier to get the remote callback&#8217;s via
+our local delivery.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.notifiers.Notifier">
+<em class="property">class </em><tt class="descclassname">vtrace.notifiers.</tt><tt class="descname">Notifier</tt><a class="reference internal" href="_modules/vtrace/notifiers.html#Notifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.Notifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>The top level example notifier...  Anything which registers
+itself for trace events or tracegroup events should implement
+the notify method as shown here.</p>
+<dl class="method">
+<dt id="vtrace.notifiers.Notifier.handleEvent">
+<tt class="descname">handleEvent</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/notifiers.html#Notifier.handleEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.Notifier.handleEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>An &#8220;internal&#8221; handler so if we need to do something
+from an API perspective before calling the notify method
+we can have a good &#8220;all at once&#8221; hook</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.notifiers.Notifier.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/notifiers.html#Notifier.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.Notifier.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.notifiers.VerboseNotifier">
+<em class="property">class </em><tt class="descclassname">vtrace.notifiers.</tt><tt class="descname">VerboseNotifier</tt><a class="reference internal" href="_modules/vtrace/notifiers.html#VerboseNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.VerboseNotifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.notifiers.Notifier" title="vtrace.notifiers.Notifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.notifiers.Notifier</span></tt></a></p>
+<dl class="method">
+<dt id="vtrace.notifiers.VerboseNotifier.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/notifiers.html#VerboseNotifier.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.notifiers.VerboseNotifier.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.qt">
+<span id="qt-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">qt</span></tt> Module<a class="headerlink" href="#module-vtrace.qt" title="Permalink to this headline">¶</a></h2>
+<p>QtGui objects which assist in GUIs which use vtrace parts.</p>
+<dl class="class">
+<dt id="vtrace.qt.FileDescModel">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">FileDescModel</tt><big>(</big><em>parent=None</em>, <em>columns=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#FileDescModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.FileDescModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vqt.html#vqt.tree.VQTreeModel" title="vqt.tree.VQTreeModel"><tt class="xref py py-class docutils literal"><span class="pre">vqt.tree.VQTreeModel</span></tt></a></p>
+<dl class="attribute">
+<dt id="vtrace.qt.FileDescModel.columns">
+<tt class="descname">columns</tt><em class="property"> = ('Fd', 'Type', 'Name')</em><a class="headerlink" href="#vtrace.qt.FileDescModel.columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.RegColorDelegate">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">RegColorDelegate</tt><big>(</big><em>parent</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#RegColorDelegate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.RegColorDelegate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QStyledItemDelegate</span></tt></p>
+<dl class="method">
+<dt id="vtrace.qt.RegColorDelegate.paint">
+<tt class="descname">paint</tt><big>(</big><em>painter</em>, <em>option</em>, <em>index</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#RegColorDelegate.paint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.RegColorDelegate.paint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQFileDescView">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQFileDescView</tt><big>(</big><em>trace</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQFileDescView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQFileDescView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vqt.html#vqt.tree.VQTreeView" title="vqt.tree.VQTreeView"><tt class="xref py py-class docutils literal"><span class="pre">vqt.tree.VQTreeView</span></tt></a>, <a class="reference internal" href="#vtrace.qt.VQTraceNotifier" title="vtrace.qt.VQTraceNotifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.qt.VQTraceNotifier</span></tt></a></p>
+<dl class="method">
+<dt id="vtrace.qt.VQFileDescView.vqLoad">
+<tt class="descname">vqLoad</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQFileDescView.vqLoad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQFileDescView.vqLoad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQMemoryMapView">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQMemoryMapView</tt><big>(</big><em>trace</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQMemoryMapView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQMemoryMapView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="envi.qt.html#envi.qt.VQMemoryMapView" title="envi.qt.VQMemoryMapView"><tt class="xref py py-class docutils literal"><span class="pre">envi.qt.VQMemoryMapView</span></tt></a>, <a class="reference internal" href="#vtrace.qt.VQTraceNotifier" title="vtrace.qt.VQTraceNotifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.qt.VQTraceNotifier</span></tt></a></p>
+<p>A memory map view which is sensitive to the status of a
+trace object.</p>
+<dl class="method">
+<dt id="vtrace.qt.VQMemoryMapView.vqLoad">
+<tt class="descname">vqLoad</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQMemoryMapView.vqLoad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQMemoryMapView.vqLoad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQProcessListModel">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQProcessListModel</tt><big>(</big><em>parent=None</em>, <em>columns=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQProcessListModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQProcessListModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vqt.html#vqt.tree.VQTreeModel" title="vqt.tree.VQTreeModel"><tt class="xref py py-class docutils literal"><span class="pre">vqt.tree.VQTreeModel</span></tt></a></p>
+<dl class="attribute">
+<dt id="vtrace.qt.VQProcessListModel.columns">
+<tt class="descname">columns</tt><em class="property"> = ('Pid', 'Name')</em><a class="headerlink" href="#vtrace.qt.VQProcessListModel.columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQProcessListView">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQProcessListView</tt><big>(</big><em>trace=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQProcessListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQProcessListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vqt.html#vqt.tree.VQTreeView" title="vqt.tree.VQTreeView"><tt class="xref py py-class docutils literal"><span class="pre">vqt.tree.VQTreeView</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQProcessSelectDialog">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQProcessSelectDialog</tt><big>(</big><em>trace=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQProcessSelectDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQProcessSelectDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt></p>
+<dl class="method">
+<dt id="vtrace.qt.VQProcessSelectDialog.dialog_activated">
+<tt class="descname">dialog_activated</tt><big>(</big><em>idx</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQProcessSelectDialog.dialog_activated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQProcessSelectDialog.dialog_activated" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.qt.VQProcessSelectDialog.dialog_cancel">
+<tt class="descname">dialog_cancel</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQProcessSelectDialog.dialog_cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQProcessSelectDialog.dialog_cancel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.qt.VQProcessSelectDialog.dialog_ok">
+<tt class="descname">dialog_ok</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQProcessSelectDialog.dialog_ok"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQProcessSelectDialog.dialog_ok" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQRegisterListModel">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQRegisterListModel</tt><big>(</big><em>parent=None</em>, <em>columns=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQRegisterListModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQRegisterListModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vqt.html#vqt.tree.VQTreeModel" title="vqt.tree.VQTreeModel"><tt class="xref py py-class docutils literal"><span class="pre">vqt.tree.VQTreeModel</span></tt></a></p>
+<dl class="attribute">
+<dt id="vtrace.qt.VQRegisterListModel.columns">
+<tt class="descname">columns</tt><em class="property"> = ('Name', 'Hex', 'Dec')</em><a class="headerlink" href="#vtrace.qt.VQRegisterListModel.columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQRegistersListView">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQRegistersListView</tt><big>(</big><em>trace=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQRegistersListView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQRegistersListView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vqt.html#vqt.tree.VQTreeView" title="vqt.tree.VQTreeView"><tt class="xref py py-class docutils literal"><span class="pre">vqt.tree.VQTreeView</span></tt></a>, <a class="reference internal" href="#vtrace.qt.VQTraceNotifier" title="vtrace.qt.VQTraceNotifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.qt.VQTraceNotifier</span></tt></a></p>
+<p>A pure &#8220;list view&#8221; object for registers</p>
+<dl class="method">
+<dt id="vtrace.qt.VQRegistersListView.vqLoad">
+<tt class="descname">vqLoad</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQRegistersListView.vqLoad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQRegistersListView.vqLoad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQRegistersView">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQRegistersView</tt><big>(</big><em>trace=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQRegistersView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQRegistersView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QWidget</span></tt></p>
+<p>A register view which includes the idea of &#8220;sub views&#8221; for particular
+sets of registers per-architecture.</p>
+<dl class="method">
+<dt id="vtrace.qt.VQRegistersView.regViewNameSelected">
+<tt class="descname">regViewNameSelected</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQRegistersView.regViewNameSelected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQRegistersView.regViewNameSelected" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQThreadListModel">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQThreadListModel</tt><big>(</big><em>parent=None</em>, <em>columns=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQThreadListModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQThreadListModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vqt.html#vqt.tree.VQTreeModel" title="vqt.tree.VQTreeModel"><tt class="xref py py-class docutils literal"><span class="pre">vqt.tree.VQTreeModel</span></tt></a></p>
+<dl class="attribute">
+<dt id="vtrace.qt.VQThreadListModel.columns">
+<tt class="descname">columns</tt><em class="property"> = ('Thread Id', 'Thread Info', 'State')</em><a class="headerlink" href="#vtrace.qt.VQThreadListModel.columns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQThreadsView">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQThreadsView</tt><big>(</big><em>trace=None</em>, <em>parent=None</em>, <em>selectthread=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQThreadsView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQThreadsView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vqt.html#vqt.tree.VQTreeView" title="vqt.tree.VQTreeView"><tt class="xref py py-class docutils literal"><span class="pre">vqt.tree.VQTreeView</span></tt></a>, <a class="reference internal" href="#vtrace.qt.VQTraceNotifier" title="vtrace.qt.VQTraceNotifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.qt.VQTraceNotifier</span></tt></a></p>
+<dl class="method">
+<dt id="vtrace.qt.VQThreadsView.selectionChanged">
+<tt class="descname">selectionChanged</tt><big>(</big><em>selected</em>, <em>deselected</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQThreadsView.selectionChanged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQThreadsView.selectionChanged" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.qt.VQThreadsView.vqLoad">
+<tt class="descname">vqLoad</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQThreadsView.vqLoad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQThreadsView.vqLoad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQTraceNotifier">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQTraceNotifier</tt><big>(</big><em>trace=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceNotifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.notifiers.Notifier" title="vtrace.notifiers.Notifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.notifiers.Notifier</span></tt></a></p>
+<p>A bit of shared mixin code for the handling of vtrace
+notifier callbacks in various VQTreeViews...</p>
+<dl class="method">
+<dt id="vtrace.qt.VQTraceNotifier.notify">
+<tt class="descname">notify</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceNotifier.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceNotifier.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.qt.VQTraceToolBar">
+<em class="property">class </em><tt class="descclassname">vtrace.qt.</tt><tt class="descname">VQTraceToolBar</tt><big>(</big><em>trace</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceToolBar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceToolBar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QToolBar</span></tt>, <a class="reference internal" href="#vtrace.notifiers.Notifier" title="vtrace.notifiers.Notifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.notifiers.Notifier</span></tt></a></p>
+<dl class="method">
+<dt id="vtrace.qt.VQTraceToolBar.actAttach">
+<tt class="descname">actAttach</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceToolBar.actAttach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceToolBar.actAttach" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.qt.VQTraceToolBar.actBreak">
+<tt class="descname">actBreak</tt><big>(</big><em>thing</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceToolBar.actBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceToolBar.actBreak" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.qt.VQTraceToolBar.actContinue">
+<tt class="descname">actContinue</tt><big>(</big><em>thing</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceToolBar.actContinue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceToolBar.actContinue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.qt.VQTraceToolBar.actDetach">
+<tt class="descname">actDetach</tt><big>(</big><em>thing</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceToolBar.actDetach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceToolBar.actDetach" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.qt.VQTraceToolBar.actStepi">
+<tt class="descname">actStepi</tt><big>(</big><em>thing</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceToolBar.actStepi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceToolBar.actStepi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.qt.VQTraceToolBar.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/qt.html#VQTraceToolBar.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.qt.VQTraceToolBar.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.rmi">
+<span id="rmi-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">rmi</span></tt> Module<a class="headerlink" href="#module-vtrace.rmi" title="Permalink to this headline">¶</a></h2>
+<p>Cobra integration for remote debugging</p>
+<dl class="class">
+<dt id="vtrace.rmi.RemoteTrace">
+<em class="property">class </em><tt class="descclassname">vtrace.rmi.</tt><tt class="descname">RemoteTrace</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#RemoteTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.RemoteTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="cobra.html#cobra.CobraProxy" title="cobra.CobraProxy"><tt class="xref py py-class docutils literal"><span class="pre">cobra.CobraProxy</span></tt></a></p>
+<dl class="method">
+<dt id="vtrace.rmi.RemoteTrace.buildNewTrace">
+<tt class="descname">buildNewTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#RemoteTrace.buildNewTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.RemoteTrace.buildNewTrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.rmi.RemoteTrace.isRemote">
+<tt class="descname">isRemote</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#RemoteTrace.isRemote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.RemoteTrace.isRemote" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.rmi.RemoteTrace.release">
+<tt class="descname">release</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#RemoteTrace.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.RemoteTrace.release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.rmi.TraceProxyFactory">
+<em class="property">class </em><tt class="descclassname">vtrace.rmi.</tt><tt class="descname">TraceProxyFactory</tt><a class="reference internal" href="_modules/vtrace/rmi.html#TraceProxyFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.TraceProxyFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>A &#8220;factory&#8221; object for creating tracers and
+wrapping them up in a proxy instance to the
+<em>local</em> server.  This object is shared out
+via the pyro server for vtrace clients.</p>
+<dl class="method">
+<dt id="vtrace.rmi.TraceProxyFactory.getTrace">
+<tt class="descname">getTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#TraceProxyFactory.getTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.TraceProxyFactory.getTrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.rmi.TraceProxyFactory.releaseTrace">
+<tt class="descname">releaseTrace</tt><big>(</big><em>proxy</em><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#TraceProxyFactory.releaseTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.TraceProxyFactory.releaseTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>When a remote system is done with a trace
+and wants the server to clean him up, hand
+the proxy object to this.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.rmi.getCallbackPort">
+<tt class="descclassname">vtrace.rmi.</tt><tt class="descname">getCallbackPort</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#getCallbackPort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.getCallbackPort" title="Permalink to this definition">¶</a></dt>
+<dd><p>If necissary, start a callback daemon.  Return the
+ephemeral port it was bound on.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.rmi.getCallbackProxy">
+<tt class="descclassname">vtrace.rmi.</tt><tt class="descname">getCallbackProxy</tt><big>(</big><em>trace</em>, <em>notifier</em><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#getCallbackProxy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.getCallbackProxy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a proxy object to reference <em>notifier</em> from the
+perspective of <em>trace</em>.  The trace is specified so
+we may check on our side of the connected socket to
+give him the best possible ip address...</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.rmi.getRemoteTrace">
+<tt class="descclassname">vtrace.rmi.</tt><tt class="descname">getRemoteTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#getRemoteTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.getRemoteTrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.rmi.getTracerFactory">
+<tt class="descclassname">vtrace.rmi.</tt><tt class="descname">getTracerFactory</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#getTracerFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.getTracerFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a TracerFactory proxy object from the remote server</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.rmi.releaseRemoteTrace">
+<tt class="descclassname">vtrace.rmi.</tt><tt class="descname">releaseRemoteTrace</tt><big>(</big><em>proxy</em><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#releaseRemoteTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.releaseRemoteTrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.rmi.startCobraDaemon">
+<tt class="descclassname">vtrace.rmi.</tt><tt class="descname">startCobraDaemon</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#startCobraDaemon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.startCobraDaemon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vtrace.rmi.startVtraceServer">
+<tt class="descclassname">vtrace.rmi.</tt><tt class="descname">startVtraceServer</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/rmi.html#startVtraceServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.rmi.startVtraceServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fire up the pyro server and share out our
+&#8220;trace factory&#8221;</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.snapshot">
+<span id="snapshot-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">snapshot</span></tt> Module<a class="headerlink" href="#module-vtrace.snapshot" title="Permalink to this headline">¶</a></h2>
+<p>All the code related to vtrace process snapshots
+and TraceSnapshot classes.</p>
+<dl class="class">
+<dt id="vtrace.snapshot.TraceSnapshot">
+<em class="property">class </em><tt class="descclassname">vtrace.snapshot.</tt><tt class="descname">TraceSnapshot</tt><big>(</big><em>snapdict</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.Trace" title="vtrace.Trace"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.Trace</span></tt></a>, <a class="reference internal" href="vtrace.platforms.html#vtrace.platforms.base.TracerBase" title="vtrace.platforms.base.TracerBase"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.platforms.base.TracerBase</span></tt></a></p>
+<p>A tracer snapshot is similar to a traditional &#8220;core file&#8221; except that
+you may also have memory only snapshots that are never written to disk.</p>
+<p>TraceSnapshots allow you to take a picture of a process from a given point
+in it&#8217;s execution and manipulate/test from there or save it to disk for later
+analysis...</p>
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.cacheRegs">
+<tt class="descname">cacheRegs</tt><big>(</big><em>threadid</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.cacheRegs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.cacheRegs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.getExe">
+<tt class="descname">getExe</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.getExe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.getExe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.getMemoryMap">
+<tt class="descname">getMemoryMap</tt><big>(</big><em>addr</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.getMemoryMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.getMemoryMap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.getStackTrace">
+<tt class="descname">getStackTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.getStackTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.getStackTrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.platformDetach">
+<tt class="descname">platformDetach</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.platformDetach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.platformDetach" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.platformGetFds">
+<tt class="descname">platformGetFds</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.platformGetFds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.platformGetFds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.platformGetMaps">
+<tt class="descname">platformGetMaps</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.platformGetMaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.platformGetMaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.platformGetRegCtx">
+<tt class="descname">platformGetRegCtx</tt><big>(</big><em>thrid</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.platformGetRegCtx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.platformGetRegCtx" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.platformGetThreads">
+<tt class="descname">platformGetThreads</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.platformGetThreads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.platformGetThreads" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.platformParseBinary">
+<tt class="descname">platformParseBinary</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.platformParseBinary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.platformParseBinary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.platformReadMemory">
+<tt class="descname">platformReadMemory</tt><big>(</big><em>address</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.platformReadMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.platformReadMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.platformWriteMemory">
+<tt class="descname">platformWriteMemory</tt><big>(</big><em>address</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.platformWriteMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.platformWriteMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.saveToFd">
+<tt class="descname">saveToFd</tt><big>(</big><em>fd</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.saveToFd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.saveToFd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save this snapshot to the given file like object
+for later reloading...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.saveToFile">
+<tt class="descname">saveToFile</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.saveToFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.saveToFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a snapshot to file for later reading in...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.snapshot.TraceSnapshot.syncRegs">
+<tt class="descname">syncRegs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#TraceSnapshot.syncRegs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.TraceSnapshot.syncRegs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.snapshot.loadSnapshot">
+<tt class="descclassname">vtrace.snapshot.</tt><tt class="descname">loadSnapshot</tt><big>(</big><em>filename</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#loadSnapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.loadSnapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a vtrace process snapshot from a file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vtrace.snapshot.takeSnapshot">
+<tt class="descclassname">vtrace.snapshot.</tt><tt class="descname">takeSnapshot</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/snapshot.html#takeSnapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.snapshot.takeSnapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a snapshot of the process from the current state and return
+a reference to a tracer which wraps a &#8220;snapshot&#8221; or &#8220;core file&#8221;.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.util">
+<span id="util-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">util</span></tt> Module<a class="headerlink" href="#module-vtrace.util" title="Permalink to this headline">¶</a></h2>
+<p>Extra utilities for vtrace</p>
+<dl class="class">
+<dt id="vtrace.util.TraceManager">
+<em class="property">class </em><tt class="descclassname">vtrace.util.</tt><tt class="descname">TraceManager</tt><big>(</big><em>trace=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>A trace-manager is a utility class to extend from when you may be dealing
+with multiple tracer objects.  It allows for persistant mode settings and
+persistent metadata as well as bundling a DistributedNotifier.  You may also
+extend from this to get auto-magic remote stuff for your managed traces.</p>
+<dl class="method">
+<dt id="vtrace.util.TraceManager.deregisterNotifier">
+<tt class="descname">deregisterNotifier</tt><big>(</big><em>event</em>, <em>notif</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.deregisterNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.deregisterNotifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.util.TraceManager.fireLocalNotifiers">
+<tt class="descname">fireLocalNotifiers</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.fireLocalNotifiers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.fireLocalNotifiers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deliver a local event to the DistributedNotifier managing
+the traces. (used to locally bump notifiers)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.util.TraceManager.getMeta">
+<tt class="descname">getMeta</tt><big>(</big><em>name</em>, <em>default=None</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.getMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.getMeta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.util.TraceManager.getMode">
+<tt class="descname">getMode</tt><big>(</big><em>name</em>, <em>default=False</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.getMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.getMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.util.TraceManager.manageTrace">
+<tt class="descname">manageTrace</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.manageTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.manageTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set all the modes/meta/notifiers in this trace for management
+by this TraceManager.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vtrace.util.TraceManager.registerNotifier">
+<tt class="descname">registerNotifier</tt><big>(</big><em>event</em>, <em>notif</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.registerNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.registerNotifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.util.TraceManager.setMeta">
+<tt class="descname">setMeta</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.setMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.setMeta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.util.TraceManager.setMode">
+<tt class="descname">setMode</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.setMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.setMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.util.TraceManager.unManageTrace">
+<tt class="descname">unManageTrace</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/util.html#TraceManager.unManageTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.util.TraceManager.unManageTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Untie this trace manager from the trace.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vtrace.watchpoints">
+<span id="watchpoints-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">watchpoints</span></tt> Module<a class="headerlink" href="#module-vtrace.watchpoints" title="Permalink to this headline">¶</a></h2>
+<p>Watchpoint Objects</p>
+<dl class="class">
+<dt id="vtrace.watchpoints.PageWatchpoint">
+<em class="property">class </em><tt class="descclassname">vtrace.watchpoints.</tt><tt class="descname">PageWatchpoint</tt><big>(</big><em>addr</em>, <em>expression=None</em>, <em>size=4</em>, <em>watchread=False</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#PageWatchpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.PageWatchpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.watchpoints.Watchpoint" title="vtrace.watchpoints.Watchpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.watchpoints.Watchpoint</span></tt></a></p>
+<p>A special &#8220;watchpoint&#8221; that uses memory permissions to
+watch for accesses to whole memory maps.  This <em>requires</em> OS
+help and only works on platforms which support:
+* platformProtectMemory()
+* signal/exceptions which denote the fault address on SEGV</p>
+<p>NOTE: These <em>must</em> be added page aligned</p>
+<dl class="method">
+<dt id="vtrace.watchpoints.PageWatchpoint.activate">
+<tt class="descname">activate</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#PageWatchpoint.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.PageWatchpoint.activate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.watchpoints.PageWatchpoint.deactivate">
+<tt class="descname">deactivate</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#PageWatchpoint.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.PageWatchpoint.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.watchpoints.PageWatchpoint.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#PageWatchpoint.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.PageWatchpoint.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.watchpoints.PageWatchpoint.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#PageWatchpoint.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.PageWatchpoint.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.watchpoints.PageWatchpoint.resolvedaddr">
+<tt class="descname">resolvedaddr</tt><big>(</big><em>trace</em>, <em>addr</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#PageWatchpoint.resolvedaddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.PageWatchpoint.resolvedaddr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vtrace.watchpoints.Watchpoint">
+<em class="property">class </em><tt class="descclassname">vtrace.watchpoints.</tt><tt class="descname">Watchpoint</tt><big>(</big><em>addr</em>, <em>expression=None</em>, <em>size=4</em>, <em>perms='rw'</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#Watchpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.Watchpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>The basic &#8220;break on access&#8221; watchpoint.  Extended from 
+Breakpoints and handled almost exactly the same way...</p>
+<dl class="method">
+<dt id="vtrace.watchpoints.Watchpoint.activate">
+<tt class="descname">activate</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#Watchpoint.activate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.Watchpoint.activate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.watchpoints.Watchpoint.deactivate">
+<tt class="descname">deactivate</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#Watchpoint.deactivate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.Watchpoint.deactivate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.watchpoints.Watchpoint.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#Watchpoint.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.Watchpoint.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.watchpoints.Watchpoint.inittrace">
+<tt class="descname">inittrace</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#Watchpoint.inittrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.Watchpoint.inittrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vtrace.watchpoints.Watchpoint.resolvedaddr">
+<tt class="descname">resolvedaddr</tt><big>(</big><em>trace</em>, <em>addr</em><big>)</big><a class="reference internal" href="_modules/vtrace/watchpoints.html#Watchpoint.resolvedaddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vtrace.watchpoints.Watchpoint.resolvedaddr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vtrace.archs.html">archs Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.archs.html#id1"><tt class="docutils literal"><span class="pre">archs</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.archs.html#module-vtrace.archs.amd64"><tt class="docutils literal"><span class="pre">amd64</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.archs.html#module-vtrace.archs.arm"><tt class="docutils literal"><span class="pre">arm</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.archs.html#module-vtrace.archs.i386"><tt class="docutils literal"><span class="pre">i386</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.archs.html#module-vtrace.archs.ppc"><tt class="docutils literal"><span class="pre">ppc</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vtrace.platforms.html">platforms Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#id1"><tt class="docutils literal"><span class="pre">platforms</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#module-vtrace.platforms.android"><tt class="docutils literal"><span class="pre">android</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#module-vtrace.platforms.base"><tt class="docutils literal"><span class="pre">base</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#freebsd-module"><tt class="docutils literal"><span class="pre">freebsd</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#module-vtrace.platforms.gdbstub"><tt class="docutils literal"><span class="pre">gdbstub</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#linux-module"><tt class="docutils literal"><span class="pre">linux</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#module-vtrace.platforms.posix"><tt class="docutils literal"><span class="pre">posix</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#module-vtrace.platforms.solaris"><tt class="docutils literal"><span class="pre">solaris</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#module-vtrace.platforms.vmware"><tt class="docutils literal"><span class="pre">vmware</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#win32-module"><tt class="docutils literal"><span class="pre">win32</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.platforms.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vtrace.platforms.darwin.html">darwin Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="vtrace.platforms.darwin.html#id1"><tt class="docutils literal"><span class="pre">darwin</span></tt> Package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vtrace.tools.html">tools Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.tools.html#id1"><tt class="docutils literal"><span class="pre">tools</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.tools.html#module-vtrace.tools.iathook"><tt class="docutils literal"><span class="pre">iathook</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.tools.html#module-vtrace.tools.win32alloc"><tt class="docutils literal"><span class="pre">win32alloc</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.tools.html#module-vtrace.tools.win32aslr"><tt class="docutils literal"><span class="pre">win32aslr</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.tools.html#module-vtrace.tools.win32heap"><tt class="docutils literal"><span class="pre">win32heap</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtrace.tools.html#module-vtrace.tools.win32stealth"><tt class="docutils literal"><span class="pre">win32stealth</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">vtrace Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">vtrace</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-vtrace.audit"><tt class="docutils literal"><span class="pre">audit</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.breakpoints"><tt class="docutils literal"><span class="pre">breakpoints</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.envitools"><tt class="docutils literal"><span class="pre">envitools</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.notifiers"><tt class="docutils literal"><span class="pre">notifiers</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.qt"><tt class="docutils literal"><span class="pre">qt</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.rmi"><tt class="docutils literal"><span class="pre">rmi</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.snapshot"><tt class="docutils literal"><span class="pre">snapshot</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.util"><tt class="docutils literal"><span class="pre">util</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-vtrace.watchpoints"><tt class="docutils literal"><span class="pre">watchpoints</span></tt> Module</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vtrace.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

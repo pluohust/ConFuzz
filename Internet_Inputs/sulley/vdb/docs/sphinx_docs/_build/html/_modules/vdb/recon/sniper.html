@@ -1,0 +1,153 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vdb.recon.sniper &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vdb.recon" href="../recon.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../recon.html" accesskey="U">vdb.recon</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vdb.recon.sniper</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Specialized breakpoints which identify dangerous calling</span>
+<span class="sd">mechanisms and tag them.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">vtrace.breakpoints</span> <span class="kn">as</span> <span class="nn">vt_breakpoints</span>
+
+<div class="viewcode-block" id="getStackArg"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.sniper.getStackArg">[docs]</a><span class="k">def</span> <span class="nf">getStackArg</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">argidx</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Assuming we are at the instruction after</span>
+<span class="sd">    a call, grab the stack argument at the specified</span>
+<span class="sd">    index (skipping the saved instruction pointer).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">stack</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStackCounter</span><span class="p">()</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;&lt;P&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;P&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">argidx</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">fmt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="SniperDynArgBreak"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.sniper.SniperDynArgBreak">[docs]</a><span class="k">class</span> <span class="nc">SniperDynArgBreak</span><span class="p">(</span><span class="n">vt_breakpoints</span><span class="o">.</span><span class="n">Breakpoint</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A breakpoint for use in determining if an API was called</span>
+<span class="sd">    with a dynamic pointer.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symname</span><span class="p">,</span> <span class="n">argidx</span><span class="p">):</span>
+        <span class="n">vt_breakpoints</span><span class="o">.</span><span class="n">Breakpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">symname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_argidx</span> <span class="o">=</span> <span class="n">argidx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_symname</span> <span class="o">=</span> <span class="n">symname</span>
+
+<div class="viewcode-block" id="SniperDynArgBreak.getName"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.sniper.SniperDynArgBreak.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> argidx: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_symname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_argidx</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SniperDynArgBreak.notify"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.sniper.SniperDynArgBreak.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">getStackArg</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_argidx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">probeMemory</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">e_mem</span><span class="o">.</span><span class="n">MM_WRITE</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s">&#39;SNIPER: </span><span class="si">%s</span><span class="s"> TOOK DYNAMIC ARG IDX </span><span class="si">%d</span><span class="s"> (0x</span><span class="si">%.8x</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_symname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_argidx</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">False</span>
+</div></div>
+<div class="viewcode-block" id="SniperArgValueBreak"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.sniper.SniperArgValueBreak">[docs]</a><span class="k">class</span> <span class="nc">SniperArgValueBreak</span><span class="p">(</span><span class="n">vt_breakpoints</span><span class="o">.</span><span class="n">Breakpoint</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A breakpoint for monitoring an API for being called with a particular</span>
+<span class="sd">    value.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symname</span><span class="p">,</span> <span class="n">argidx</span><span class="p">,</span> <span class="n">argval</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="snipeDynArg"><a class="viewcode-back" href="../../../vdb.recon.html#vdb.recon.sniper.snipeDynArg">[docs]</a><span class="k">def</span> <span class="nf">snipeDynArg</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">symname</span><span class="p">,</span> <span class="n">argidx</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Construct a SnyperDynArgBreak and snap it in.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">SniperDynArgBreak</span><span class="p">(</span><span class="n">symname</span><span class="p">,</span> <span class="n">argidx</span><span class="p">)</span>
+    <span class="n">bpid</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bpid</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../recon.html" >vdb.recon</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

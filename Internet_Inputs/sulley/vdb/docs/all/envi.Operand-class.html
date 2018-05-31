@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>envi.Operand</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="envi-module.html">Package&nbsp;envi</a> ::
+        Class&nbsp;Operand
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="envi.Operand-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Operand</h1><p class="nomargin-top"><span class="codelink"><a href="envi-pysrc.html#Operand">source&nbsp;code</a></span></p>
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="envi.DerefOper-class.html">DerefOper</a></li><li>, <a href="envi.ImmedOper-class.html">ImmedOper</a></li><li>, <a href="envi.RegisterOper-class.html">RegisterOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html">archs.arm.armdisasm.ArmCoprocOpcodeOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmCoprocOper-class.html">archs.arm.armdisasm.ArmCoprocOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html">archs.arm.armdisasm.ArmCoprocRegOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmImmOper-class.html">archs.arm.armdisasm.ArmImmOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html">archs.arm.armdisasm.ArmImmOffsetOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmOffsetOper-class.html">archs.arm.armdisasm.ArmOffsetOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html">archs.arm.armdisasm.ArmPSRFlagsOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html">archs.arm.armdisasm.ArmPgmStatFlagsOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html">archs.arm.armdisasm.ArmPgmStatRegOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmRegListOper-class.html">archs.arm.armdisasm.ArmRegListOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html">archs.arm.armdisasm.ArmRegOffsetOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmRegOper-class.html">archs.arm.armdisasm.ArmRegOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html">archs.arm.armdisasm.ArmRegShiftImmOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html">archs.arm.armdisasm.ArmRegShiftRegOper</a></li><li>, <a href="envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html">archs.arm.armdisasm.ArmScaledOffsetOper</a></li><li>, <a href="envi.archs.i386.disasm.i386PcRelOper-class.html">archs.i386.disasm.i386PcRelOper</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>Thses are the expected methods needed by any implemented operand 
+  object attached to an envi Opcode.  This does *not* have a constructor of
+  it's pwn on purpose to cut down on memory use and constructor CPU 
+  cost.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__eq__"></a><span class="summary-sig-name">__eq__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">oper</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.__eq__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__ne__"></a><span class="summary-sig-name">__ne__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">op</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.__ne__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.Operand-class.html#getOperAddr" class="summary-sig-name">getOperAddr</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">op</span>,
+        <span class="summary-sig-arg">emu</span>)</span><br />
+      If the operand is a &quot;dereference&quot; operand, this method should use the
+specified op/emu to resolve the address of the dereference.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.getOperAddr">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.Operand-class.html#getOperValue" class="summary-sig-name">getOperValue</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">op</span>,
+        <span class="summary-sig-arg">emu</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Get the current value for the operand.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.getOperValue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isDeref"></a><span class="summary-sig-name">isDeref</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      If the given operand will dereference memory, this method must return
+      True.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.isDeref">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isImmed"></a><span class="summary-sig-name">isImmed</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      If the given operand represents an immediate value, this must return 
+      True.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.isImmed">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isReg"></a><span class="summary-sig-name">isReg</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      If the given operand represents a register value, this must return 
+      True.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.isReg">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="render"></a><span class="summary-sig-name">render</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mcanv</span>,
+        <span class="summary-sig-arg">op</span>,
+        <span class="summary-sig-arg">idx</span>)</span><br />
+      Used by the opcode class when rendering to a memory canvas.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.render">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="repr"></a><span class="summary-sig-name">repr</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">op</span>)</span><br />
+      Used by the Opcode class to get a humon readable string for this 
+      operand.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.repr">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="envi.Operand-class.html#setOperValue" class="summary-sig-name">setOperValue</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">op</span>,
+        <span class="summary-sig-arg">emu</span>,
+        <span class="summary-sig-arg">val</span>)</span><br />
+      Set the current value for the operand.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="envi-pysrc.html#Operand.setOperValue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="getOperAddr"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getOperAddr</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">op</span>,
+        <span class="sig-arg">emu</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi-pysrc.html#Operand.getOperAddr">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+If the operand is a &quot;dereference&quot; operand, this method should use the
+specified op/emu to resolve the address of the dereference.
+
+NOTE: This API may be passed a None emu and should return what it can
+      (or None if it can't be resolved)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getOperValue"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getOperValue</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">op</span>,
+        <span class="sig-arg">emu</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi-pysrc.html#Operand.getOperValue">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Get the current value for the operand.  If needed, use
+the given emulator/workspace/trace to resolve things like
+memory and registers.
+
+NOTE: This API may be passed a None emu and should return what it can
+      (or None if it can't be resolved)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setOperValue"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setOperValue</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">op</span>,
+        <span class="sig-arg">emu</span>,
+        <span class="sig-arg">val</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="envi-pysrc.html#Operand.setOperValue">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set the current value for the operand.  If needed, use the given 
+  emulator/workspace/trace to assign things like memory and registers.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:11 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>visgraph.renderers.svgrend</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="visgraph-module.html">Package&nbsp;visgraph</a> ::
+        <a href="visgraph.renderers-module.html">Package&nbsp;renderers</a> ::
+        Module&nbsp;svgrend
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="visgraph.renderers.svgrend-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="visgraph.renderers.svgrend-module.html">Module visgraph.renderers.svgrend</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package visgraph=visgraph-module.html"><a title="visgraph" class="py-name" href="#" onclick="return doclink('link-0', 'visgraph', 'link-0');">visgraph</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package envi.memcanvas.renderers=envi.memcanvas.renderers-module.html,Module vdb.renderers=vdb.renderers-module.html,Package visgraph.renderers=visgraph.renderers-module.html"><a title="envi.memcanvas.renderers
+vdb.renderers
+visgraph.renderers" class="py-name" href="#" onclick="return doclink('link-1', 'renderers', 'link-1');">renderers</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vg_render</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable visgraph.renderers.svgrend.example=visgraph.renderers.svgrend-module.html#example"><a title="visgraph.renderers.svgrend.example" class="py-name" href="#" onclick="return doclink('link-2', 'example', 'link-2');">example</a></tt> <tt class="py-op">=</tt> <tt class="py-string">'''</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-string">&lt;?xml version="1.0" standalone="no"?&gt;</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-string">&lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" </tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-string">"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"&gt;</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-string"></tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-string">&lt;svg width="100%" height="100%" version="1.1"</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line"><tt class="py-string">xmlns="http://www.w3.org/2000/svg"&gt;</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-string"></tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-string">&lt;rect x="20" y="20" rx="20" ry="20" width="250" height="100"</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-string">style="fill:red;stroke:black;stroke-width:5;opacity:0.5"/&gt;</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-string">&lt;/svg&gt;</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-string">'''</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"> </tt>
+<a name="SvgGraphRenderer"></a><div id="SvgGraphRenderer-def"><a name="L17"></a><tt class="py-lineno">17</tt> <a class="py-toggle" href="#" id="SvgGraphRenderer-toggle" onclick="return toggle('SvgGraphRenderer');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="visgraph.renderers.svgrend.SvgGraphRenderer-class.html">SvgGraphRenderer</a><tt class="py-op">(</tt><tt class="py-base-class">vg_render</tt><tt class="py-op">.</tt><tt class="py-base-class">GraphRenderer</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SvgGraphRenderer-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="SvgGraphRenderer-expanded"><a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"> </tt>
+<a name="SvgGraphRenderer.__init__"></a><div id="SvgGraphRenderer.__init__-def"><a name="L19"></a><tt class="py-lineno">19</tt> <a class="py-toggle" href="#" id="SvgGraphRenderer.__init__-toggle" onclick="return toggle('SvgGraphRenderer.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.renderers.svgrend.SvgGraphRenderer-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">graph</tt><tt class="py-op">,</tt> <tt class="py-param">svgfile</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SvgGraphRenderer.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SvgGraphRenderer.__init__-expanded"><a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">        <tt class="py-name">vg_render</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Class visgraph.renderers.GraphRenderer=visgraph.renderers.GraphRenderer-class.html"><a title="visgraph.renderers.GraphRenderer" class="py-name" href="#" onclick="return doclink('link-3', 'GraphRenderer', 'link-3');">GraphRenderer</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Method Elf.Elf.__init__()=Elf.Elf-class.html#__init__,Method Elf.Elf32Dynamic.__init__()=Elf.Elf32Dynamic-class.html#__init__,Method Elf.Elf32Pheader.__init__()=Elf.Elf32Pheader-class.html#__init__,Method Elf.Elf32Reloc.__init__()=Elf.Elf32Reloc-class.html#__init__,Method Elf.Elf32Reloca.__init__()=Elf.Elf32Reloca-class.html#__init__,Method Elf.Elf32Section.__init__()=Elf.Elf32Section-class.html#__init__,Method Elf.Elf32Symbol.__init__()=Elf.Elf32Symbol-class.html#__init__,Method Elf.Elf64Dynamic.__init__()=Elf.Elf64Dynamic-class.html#__init__,Method Elf.Elf64Pheader.__init__()=Elf.Elf64Pheader-class.html#__init__,Method Elf.Elf64Reloc.__init__()=Elf.Elf64Reloc-class.html#__init__,Method Elf.Elf64Reloca.__init__()=Elf.Elf64Reloca-class.html#__init__,Method Elf.Elf64Section.__init__()=Elf.Elf64Section-class.html#__init__,Method Elf.Elf64Symbol.__init__()=Elf.Elf64Symbol-class.html#__init__,Method Elf.ElfDynamic.__init__()=Elf.ElfDynamic-class.html#__init__,Method Elf.ElfPheader.__init__()=Elf.ElfPheader-class.html#__init__,Method Elf.ElfReloc.__init__()=Elf.ElfReloc-class.html#__init__,Method Elf.ElfSection.__init__()=Elf.ElfSection-class.html#__init__,Method Elf.ElfSymbol.__init__()=Elf.ElfSymbol-class.html#__init__,Method envi.ArchitectureModule.__init__()=envi.ArchitectureModule-class.html#__init__,Method envi.EmuException.__init__()=envi.EmuException-class.html#__init__,Method envi.Emulator.__init__()=envi.Emulator-class.html#__init__,Method envi.InvalidInstruction.__init__()=envi.InvalidInstruction-class.html#__init__,Method envi.MapOverlapException.__init__()=envi.MapOverlapException-class.html#__init__,Method envi.Opcode.__init__()=envi.Opcode-class.html#__init__,Method envi.SegmentationViolation.__init__()=envi.SegmentationViolation-class.html#__init__,Method envi.UnsupportedInstruction.__init__()=envi.UnsupportedInstruction-class.html#__init__,Method envi.archs.amd64.Amd64Emulator.__init__()=envi.archs.amd64.Amd64Emulator-class.html#__init__,Method envi.archs.amd64.Amd64Module.__init__()=envi.archs.amd64.Amd64Module-class.html#__init__,Method envi.archs.amd64.disasm.Amd64Disasm.__init__()=envi.archs.amd64.disasm.Amd64Disasm-class.html#__init__,Method envi.archs.amd64.disasm.Amd64RipRelOper.__init__()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#__init__,Method envi.archs.amd64.regs.Amd64RegisterContext.__init__()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#__init__,Method envi.archs.arm.ArmModule.__init__()=envi.archs.arm.ArmModule-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOper.__init__()=envi.archs.arm.armdisasm.ArmImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegListOper.__init__()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#__init__,Method envi.archs.arm.disasm.ArmDisasm.__init__()=envi.archs.arm.disasm.ArmDisasm-class.html#__init__,Method envi.archs.arm.emu.ArmEmulator.__init__()=envi.archs.arm.emu.ArmEmulator-class.html#__init__,Method envi.archs.arm.emu.CoProcEmulator.__init__()=envi.archs.arm.emu.CoProcEmulator-class.html#__init__,Method envi.archs.arm.regs.ArmRegisterContext.__init__()=envi.archs.arm.regs.ArmRegisterContext-class.html#__init__,Method envi.archs.arm.thumb.simpleops.__init__()=envi.archs.arm.thumb.simpleops-class.html#__init__,Method envi.archs.arm.thumbdisasm.simpleops.__init__()=envi.archs.arm.thumbdisasm.simpleops-class.html#__init__,Method envi.archs.i386.disasm.i386Disasm.__init__()=envi.archs.i386.disasm.i386Disasm-class.html#__init__,Method envi.archs.i386.disasm.i386ImmMemOper.__init__()=envi.archs.i386.disasm.i386ImmMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386ImmOper.__init__()=envi.archs.i386.disasm.i386ImmOper-class.html#__init__,Method envi.archs.i386.disasm.i386PcRelOper.__init__()=envi.archs.i386.disasm.i386PcRelOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegMemOper.__init__()=envi.archs.i386.disasm.i386RegMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegOper.__init__()=envi.archs.i386.disasm.i386RegOper-class.html#__init__,Method envi.archs.i386.disasm.i386SibOper.__init__()=envi.archs.i386.disasm.i386SibOper-class.html#__init__,Method envi.archs.i386.emu.BFastCall.__init__()=envi.archs.i386.emu.BFastCall-class.html#__init__,Method envi.archs.i386.emu.FastCall.__init__()=envi.archs.i386.emu.FastCall-class.html#__init__,Method envi.archs.i386.emu.IntelEmulator.__init__()=envi.archs.i386.emu.IntelEmulator-class.html#__init__,Method envi.archs.i386.emu.MsFastCall.__init__()=envi.archs.i386.emu.MsFastCall-class.html#__init__,Method envi.archs.i386.i386Module.__init__()=envi.archs.i386.i386Module-class.html#__init__,Method envi.archs.i386.regs.i386RegisterContext.__init__()=envi.archs.i386.regs.i386RegisterContext-class.html#__init__,Method envi.archs.z80.disasm.z80Disasm.__init__()=envi.archs.z80.disasm.z80Disasm-class.html#__init__,Method envi.archs.z80.disasm.z80ImmOper.__init__()=envi.archs.z80.disasm.z80ImmOper-class.html#__init__,Method envi.archs.z80.disasm.z80RegMem.__init__()=envi.archs.z80.disasm.z80RegMem-class.html#__init__,Method envi.archs.z80.disasm.z80RegOper.__init__()=envi.archs.z80.disasm.z80RegOper-class.html#__init__,Method envi.archs.z80.regs.z80RegisterContext.__init__()=envi.archs.z80.regs.z80RegisterContext-class.html#__init__,Method envi.arm.ArmModule.__init__()=envi.arm.ArmModule-class.html#__init__,Method envi.arm.ArmOpcode.__init__()=envi.arm.ArmOpcode-class.html#__init__,Method envi.arm.ArmOperand.__init__()=envi.arm.ArmOperand-class.html#__init__,Method envi.bintree.BinaryTree.__init__()=envi.bintree.BinaryTree-class.html#__init__,Method envi.bytesig.SignatureTree.__init__()=envi.bytesig.SignatureTree-class.html#__init__,Method envi.cli.CliExtMeth.__init__()=envi.cli.CliExtMeth-class.html#__init__,Method envi.cli.EnviCli.__init__()=envi.cli.EnviCli-class.html#__init__,Method envi.codeflow.CodeFlowContext.__init__()=envi.codeflow.CodeFlowContext-class.html#__init__,Method envi.config.EnviConfig.__init__()=envi.config.EnviConfig-class.html#__init__,Method envi.expression.ExpressionLocals.__init__()=envi.expression.ExpressionLocals-class.html#__init__,Method envi.expression.MemoryExpressionLocals.__init__()=envi.expression.MemoryExpressionLocals-class.html#__init__,Method envi.memcanvas.MemoryCanvas.__init__()=envi.memcanvas.MemoryCanvas-class.html#__init__,Method envi.memcanvas.StringMemoryCanvas.__init__()=envi.memcanvas.StringMemoryCanvas-class.html#__init__,Method envi.memcanvas.renderers.ByteRend.__init__()=envi.memcanvas.renderers.ByteRend-class.html#__init__,Method envi.memory.IMemory.__init__()=envi.memory.IMemory-class.html#__init__,Method envi.memory.MemoryFile.__init__()=envi.memory.MemoryFile-class.html#__init__,Method envi.memory.MemoryObject.__init__()=envi.memory.MemoryObject-class.html#__init__,Method envi.pagelookup.MapLookup.__init__()=envi.pagelookup.MapLookup-class.html#__init__,Method envi.pagelookup.PageLookup.__init__()=envi.pagelookup.PageLookup-class.html#__init__,Method envi.qt.VQMemoryMapView.__init__()=envi.qt.VQMemoryMapView-class.html#__init__,Method envi.qt.memcanvas.VQMemoryCanvas.__init__()=envi.qt.memcanvas.VQMemoryCanvas-class.html#__init__,Method envi.qt.memory.VQMemoryWindow.__init__()=envi.qt.memory.VQMemoryWindow-class.html#__init__,Method envi.registers.RegisterContext.__init__()=envi.registers.RegisterContext-class.html#__init__,Method envi.resolver.FileSymbol.__init__()=envi.resolver.FileSymbol-class.html#__init__,Method envi.resolver.Symbol.__init__()=envi.resolver.Symbol-class.html#__init__,Method envi.resolver.SymbolResolver.__init__()=envi.resolver.SymbolResolver-class.html#__init__,Method envi.util.CopyOnWrite.__init__()=envi.util.CopyOnWrite-class.html#__init__,Method vdb.ScriptThread.__init__()=vdb.ScriptThread-class.html#__init__,Method vdb.Vdb.__init__()=vdb.Vdb-class.html#__init__,Method vdb.VdbLookup.__init__()=vdb.VdbLookup-class.html#__init__,Method vdb.VdbTrace.__init__()=vdb.VdbTrace-class.html#__init__,Method vdb.extensions.gdbstub.GdbStubNotifier.__init__()=vdb.extensions.gdbstub.GdbStubNotifier-class.html#__init__,Method vdb.gui.VdbFileDescWindow.__init__()=vdb.gui.VdbFileDescWindow-class.html#__init__,Method vdb.gui.VdbGui.__init__()=vdb.gui.VdbGui-class.html#__init__,Method vdb.gui.VdbMainWindow.__init__()=vdb.gui.VdbMainWindow-class.html#__init__,Method vdb.gui.VdbMemoryMapWindow.__init__()=vdb.gui.VdbMemoryMapWindow-class.html#__init__,Method vdb.gui.VdbMemoryView.__init__()=vdb.gui.VdbMemoryView-class.html#__init__,Method vdb.gui.VdbMemoryWindow.__init__()=vdb.gui.VdbMemoryWindow-class.html#__init__,Method vdb.gui.VdbRegisterWindow.__init__()=vdb.gui.VdbRegisterWindow-class.html#__init__,Method vdb.gui.VdbViewWindow.__init__()=vdb.gui.VdbViewWindow-class.html#__init__,Method vdb.gui.VdbWindow.__init__()=vdb.gui.VdbWindow-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapRenderer.__init__()=vdb.gui.extensions.windows.VdbHeapRenderer-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapWindow.__init__()=vdb.gui.extensions.windows.VdbHeapWindow-class.html#__init__,Method vdb.gui.extensions.windows.Win32HeapWindow.__init__()=vdb.gui.extensions.windows.Win32HeapWindow-class.html#__init__,Method vdb.qt.windows.VdbMemoryWindow.__init__()=vdb.qt.windows.VdbMemoryWindow-class.html#__init__,Method vdb.qt.windows.VdbWindow.__init__()=vdb.qt.windows.VdbWindow-class.html#__init__,Method vdb.recon.ReconBreak.__init__()=vdb.recon.ReconBreak-class.html#__init__,Method vdb.recon.sniper.SniperArgValueBreak.__init__()=vdb.recon.sniper.SniperArgValueBreak-class.html#__init__,Method vdb.recon.sniper.SniperDynArgBreak.__init__()=vdb.recon.sniper.SniperDynArgBreak-class.html#__init__,Method vdb.renderers.DerefRenderer.__init__()=vdb.renderers.DerefRenderer-class.html#__init__,Method vdb.renderers.OpcodeRenderer.__init__()=vdb.renderers.OpcodeRenderer-class.html#__init__,Method vdb.renderers.SymbolRenderer.__init__()=vdb.renderers.SymbolRenderer-class.html#__init__,Method vdb.stalker.StalkerBlockBreak.__init__()=vdb.stalker.StalkerBlockBreak-class.html#__init__,Method vdb.stalker.StalkerBreak.__init__()=vdb.stalker.StalkerBreak-class.html#__init__,Method vdb.stalker.StalkerCodeFlow.__init__()=vdb.stalker.StalkerCodeFlow-class.html#__init__,Method vdb.stalker.StalkerDynBreak.__init__()=vdb.stalker.StalkerDynBreak-class.html#__init__,Method visgraph.cli.GraphCli.__init__()=visgraph.cli.GraphCli-class.html#__init__,Method visgraph.dbcore.DbGraphStore.__init__()=visgraph.dbcore.DbGraphStore-class.html#__init__,Method visgraph.dbcore.DbSubGraph.__init__()=visgraph.dbcore.DbSubGraph-class.html#__init__,Method visgraph.exc.DuplicateNode.__init__()=visgraph.exc.DuplicateNode-class.html#__init__,Method visgraph.exc.EdgeNonExistant.__init__()=visgraph.exc.EdgeNonExistant-class.html#__init__,Method visgraph.exc.NodeNonExistant.__init__()=visgraph.exc.NodeNonExistant-class.html#__init__,Method visgraph.graphcore.Graph.__init__()=visgraph.graphcore.Graph-class.html#__init__,Method visgraph.graphcore.HierarchicalGraph.__init__()=visgraph.graphcore.HierarchicalGraph-class.html#__init__,Method visgraph.layouts.GraphLayout.__init__()=visgraph.layouts.GraphLayout-class.html#__init__,Method visgraph.layouts.dynadag.DynadagLayout.__init__()=visgraph.layouts.dynadag.DynadagLayout-class.html#__init__,Method visgraph.renderers.GraphRenderer.__init__()=visgraph.renderers.GraphRenderer-class.html#__init__,Method visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__()=visgraph.renderers.gtkrend.GtkVisGraphOverview-class.html#__init__,Method visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__()=visgraph.renderers.gtkrend.GtkVisGraphRenderer-class.html#__init__,Method visgraph.renderers.qgraphtree.NodeColumn.__init__()=visgraph.renderers.qgraphtree.NodeColumn-class.html#__init__,Method visgraph.renderers.qgraphtree.QGraphNode.__init__()=visgraph.renderers.qgraphtree.QGraphNode-class.html#__init__,Method visgraph.renderers.qgraphtree.QGraphTreeView.__init__()=visgraph.renderers.qgraphtree.QGraphTreeView-class.html#__init__,Method visgraph.renderers.svgrend.SvgGraphRenderer.__init__()=visgraph.renderers.svgrend.SvgGraphRenderer-class.html#__init__,Method vqt.application.VQDockWidget.__init__()=vqt.application.VQDockWidget-class.html#__init__,Method vqt.application.VQMainCmdWindow.__init__()=vqt.application.VQMainCmdWindow-class.html#__init__,Method vqt.basics.ACT.__init__()=vqt.basics.ACT-class.html#__init__,Method vqt.basics.HBox.__init__()=vqt.basics.HBox-class.html#__init__,Method vqt.basics.VBox.__init__()=vqt.basics.VBox-class.html#__init__,Method vqt.cli.VQCli.__init__()=vqt.cli.VQCli-class.html#__init__,Method vqt.main.VQApplication.__init__()=vqt.main.VQApplication-class.html#__init__,Method vqt.menubuilder.ActionCall.__init__()=vqt.menubuilder.ActionCall-class.html#__init__,Method vqt.menubuilder.FieldAdder.__init__()=vqt.menubuilder.FieldAdder-class.html#__init__,Method vqt.menubuilder.VQMenu.__init__()=vqt.menubuilder.VQMenu-class.html#__init__,Method vqt.menubuilder.VQMenuBar.__init__()=vqt.menubuilder.VQMenuBar-class.html#__init__,Method vqt.qpython.ScriptThread.__init__()=vqt.qpython.ScriptThread-class.html#__init__,Method vqt.qpython.VQPythonView.__init__()=vqt.qpython.VQPythonView-class.html#__init__,Method vqt.tree.VQTreeItem.__init__()=vqt.tree.VQTreeItem-class.html#__init__,Method vqt.tree.VQTreeModel.__init__()=vqt.tree.VQTreeModel-class.html#__init__,Method vqt.tree.VQTreeSorter.__init__()=vqt.tree.VQTreeSorter-class.html#__init__,Method vqt.tree.VQTreeView.__init__()=vqt.tree.VQTreeView-class.html#__init__,Method vtrace.AccessViolation.__init__()=vtrace.AccessViolation-class.html#__init__,Method vtrace.Trace.__init__()=vtrace.Trace-class.html#__init__,Method vtrace.TraceGroup.__init__()=vtrace.TraceGroup-class.html#__init__,Method vtrace.VtraceExpressionLocals.__init__()=vtrace.VtraceExpressionLocals-class.html#__init__,Method vtrace.archs.amd64.Amd64Mixin.__init__()=vtrace.archs.amd64.Amd64Mixin-class.html#__init__,Method vtrace.archs.arm.ArmMixin.__init__()=vtrace.archs.arm.ArmMixin-class.html#__init__,Method vtrace.archs.i386.i386Mixin.__init__()=vtrace.archs.i386.i386Mixin-class.html#__init__,Method vtrace.archs.i386.i386WatchMixin.__init__()=vtrace.archs.i386.i386WatchMixin-class.html#__init__,Method vtrace.breakpoints.Breakpoint.__init__()=vtrace.breakpoints.Breakpoint-class.html#__init__,Method vtrace.breakpoints.CallBreak.__init__()=vtrace.breakpoints.CallBreak-class.html#__init__,Method vtrace.envitools.TraceEmulator.__init__()=vtrace.envitools.TraceEmulator-class.html#__init__,Method vtrace.notifiers.DistributedNotifier.__init__()=vtrace.notifiers.DistributedNotifier-class.html#__init__,Method vtrace.notifiers.Notifier.__init__()=vtrace.notifiers.Notifier-class.html#__init__,Method vtrace.platforms.android.AndroidArmTrace.__init__()=vtrace.platforms.android.AndroidArmTrace-class.html#__init__,Method vtrace.platforms.base.TracerBase.__init__()=vtrace.platforms.base.TracerBase-class.html#__init__,Method vtrace.platforms.base.TracerThread.__init__()=vtrace.platforms.base.TracerThread-class.html#__init__,Method vtrace.platforms.darwin.DarwinAmd64Trace.__init__()=vtrace.platforms.darwin.DarwinAmd64Trace-class.html#__init__,Method vtrace.platforms.darwin.DarwinMixin.__init__()=vtrace.platforms.darwin.DarwinMixin-class.html#__init__,Method vtrace.platforms.darwin.Darwini386Trace.__init__()=vtrace.platforms.darwin.Darwini386Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__()=vtrace.platforms.freebsd.FreeBSDAmd64Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDMixin.__init__()=vtrace.platforms.freebsd.FreeBSDMixin-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDi386Trace.__init__()=vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin.__init__()=vtrace.platforms.gdbstub.GdbStubMixin-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin_old.__init__()=vtrace.platforms.gdbstub.GdbStubMixin_old-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubTrace.__init__()=vtrace.platforms.gdbstub.GdbStubTrace-class.html#__init__,Method vtrace.platforms.gdbstub.KeBugCheckBreak.__init__()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#__init__,Method vtrace.platforms.linux.LinuxAmd64Trace.__init__()=vtrace.platforms.linux.LinuxAmd64Trace-class.html#__init__,Method vtrace.platforms.linux.LinuxMixin.__init__()=vtrace.platforms.linux.LinuxMixin-class.html#__init__,Method vtrace.platforms.linux.Linuxi386Trace.__init__()=vtrace.platforms.linux.Linuxi386Trace-class.html#__init__,Method vtrace.platforms.posix.ElfMixin.__init__()=vtrace.platforms.posix.ElfMixin-class.html#__init__,Method vtrace.platforms.posix.PosixMixin.__init__()=vtrace.platforms.posix.PosixMixin-class.html#__init__,Method vtrace.platforms.posix.PtraceMixin.__init__()=vtrace.platforms.posix.PtraceMixin-class.html#__init__,Method vtrace.platforms.win32.Win32SymbolParser.__init__()=vtrace.platforms.win32.Win32SymbolParser-class.html#__init__,Method vtrace.platforms.win32.WindowsAmd64Trace.__init__()=vtrace.platforms.win32.WindowsAmd64Trace-class.html#__init__,Method vtrace.platforms.win32.WindowsMixin.__init__()=vtrace.platforms.win32.WindowsMixin-class.html#__init__,Method vtrace.platforms.win32.Windowsi386Trace.__init__()=vtrace.platforms.win32.Windowsi386Trace-class.html#__init__,Method vtrace.qt.RegColorDelegate.__init__()=vtrace.qt.RegColorDelegate-class.html#__init__,Method vtrace.qt.VQFileDescView.__init__()=vtrace.qt.VQFileDescView-class.html#__init__,Method vtrace.qt.VQMemoryMapView.__init__()=vtrace.qt.VQMemoryMapView-class.html#__init__,Method vtrace.qt.VQProcessListView.__init__()=vtrace.qt.VQProcessListView-class.html#__init__,Method vtrace.qt.VQProcessSelectDialog.__init__()=vtrace.qt.VQProcessSelectDialog-class.html#__init__,Method vtrace.qt.VQRegistersListView.__init__()=vtrace.qt.VQRegistersListView-class.html#__init__,Method vtrace.qt.VQRegistersView.__init__()=vtrace.qt.VQRegistersView-class.html#__init__,Method vtrace.qt.VQThreadsView.__init__()=vtrace.qt.VQThreadsView-class.html#__init__,Method vtrace.qt.VQTraceNotifier.__init__()=vtrace.qt.VQTraceNotifier-class.html#__init__,Method vtrace.qt.VQTraceToolBar.__init__()=vtrace.qt.VQTraceToolBar-class.html#__init__,Method vtrace.rmi.RemoteTrace.__init__()=vtrace.rmi.RemoteTrace-class.html#__init__,Method vtrace.snapshot.TraceSnapshot.__init__()=vtrace.snapshot.TraceSnapshot-class.html#__init__,Method vtrace.tools.iathook.IatHook.__init__()=vtrace.tools.iathook.IatHook-class.html#__init__,Method vtrace.tools.win32alloc.ReturnBreak.__init__()=vtrace.tools.win32alloc.ReturnBreak-class.html#__init__,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__,Method vtrace.tools.win32heap.FreeListCorruption.__init__()=vtrace.tools.win32heap.FreeListCorruption-class.html#__init__,Method vtrace.tools.win32heap.HeapCorruptionException.__init__()=vtrace.tools.win32heap.HeapCorruptionException-class.html#__init__,Method vtrace.tools.win32heap.Win32Chunk.__init__()=vtrace.tools.win32heap.Win32Chunk-class.html#__init__,Method vtrace.tools.win32heap.Win32Heap.__init__()=vtrace.tools.win32heap.Win32Heap-class.html#__init__,Method vtrace.tools.win32heap.Win32Segment.__init__()=vtrace.tools.win32heap.Win32Segment-class.html#__init__,Method vtrace.util.TraceManager.__init__()=vtrace.util.TraceManager-class.html#__init__,Method vtrace.watchpoints.PageWatchpoint.__init__()=vtrace.watchpoints.PageWatchpoint-class.html#__init__,Method vtrace.watchpoints.Watchpoint.__init__()=vtrace.watchpoints.Watchpoint-class.html#__init__,Method vwidget.RefView.__init__()=vwidget.RefView-class.html#__init__,Method vwidget.SpaceView.__init__()=vwidget.SpaceView-class.html#__init__,Method vwidget.VWidget.__init__()=vwidget.VWidget-class.html#__init__,Method vwidget.cluster.ClusterServerView.__init__()=vwidget.cluster.ClusterServerView-class.html#__init__,Method vwidget.config.ConfigDialog.__init__()=vwidget.config.ConfigDialog-class.html#__init__,Method vwidget.layout.LayoutManager.__init__()=vwidget.layout.LayoutManager-class.html#__init__,Method vwidget.memview.MemoryView.__init__()=vwidget.memview.MemoryView-class.html#__init__,Method vwidget.memview.MemoryWindow.__init__()=vwidget.memview.MemoryWindow-class.html#__init__,Method vwidget.memview.VaTag.__init__()=vwidget.memview.VaTag-class.html#__init__,Method vwidget.menubuilder.FieldAdder.__init__()=vwidget.menubuilder.FieldAdder-class.html#__init__,Method vwidget.menubuilder.Menu.__init__()=vwidget.menubuilder.Menu-class.html#__init__,Method vwidget.menubuilder.MenuBar.__init__()=vwidget.menubuilder.MenuBar-class.html#__init__,Method vwidget.pydialog.PyDialog.__init__()=vwidget.pydialog.PyDialog-class.html#__init__,Method vwidget.pydialog.ScriptThread.__init__()=vwidget.pydialog.ScriptThread-class.html#__init__,Method vwidget.views.GladeView.__init__()=vwidget.views.GladeView-class.html#__init__,Method vwidget.views.VTextTag.__init__()=vwidget.views.VTextTag-class.html#__init__,Method vwidget.views.VTextView.__init__()=vwidget.views.VTextView-class.html#__init__,Method vwidget.views.VTreeView.__init__()=vwidget.views.VTreeView-class.html#__init__,Method vwidget.views.VView.__init__()=vwidget.views.VView-class.html#__init__,Method vwidget.vwvstruct.SelectNamespaceDialog.__init__()=vwidget.vwvstruct.SelectNamespaceDialog-class.html#__init__,Method vwidget.vwvstruct.SelectStructureDialog.__init__()=vwidget.vwvstruct.SelectStructureDialog-class.html#__init__,Method vwidget.vwvstruct.VStructBrowser.__init__()=vwidget.vwvstruct.VStructBrowser-class.html#__init__,Method vwidget.vwvstruct.VStructBuilderView.__init__()=vwidget.vwvstruct.VStructBuilderView-class.html#__init__,Method vwidget.vwvstruct.VStructNamespaceSelector.__init__()=vwidget.vwvstruct.VStructNamespaceSelector-class.html#__init__,Method vwidget.vwvstruct.VStructView.__init__()=vwidget.vwvstruct.VStructView-class.html#__init__,Method vwidget.vwvtrace.FileDescView.__init__()=vwidget.vwvtrace.FileDescView-class.html#__init__,Method vwidget.vwvtrace.MemoryMapView.__init__()=vwidget.vwvtrace.MemoryMapView-class.html#__init__,Method vwidget.vwvtrace.ProcessListView.__init__()=vwidget.vwvtrace.ProcessListView-class.html#__init__,Method vwidget.vwvtrace.SelectProcessDialog.__init__()=vwidget.vwvtrace.SelectProcessDialog-class.html#__init__,Method vwidget.vwvtrace.TraceToolBar.__init__()=vwidget.vwvtrace.TraceToolBar-class.html#__init__,Method vwidget.vwvtrace.VtraceView.__init__()=vwidget.vwvtrace.VtraceView-class.html#__init__,Method vwidget.windows.MainWindow.__init__()=vwidget.windows.MainWindow-class.html#__init__,Method vwidget.windows.VWindow.__init__()=vwidget.windows.VWindow-class.html#__init__"><a title="Elf.Elf.__init__
+Elf.Elf32Dynamic.__init__
+Elf.Elf32Pheader.__init__
+Elf.Elf32Reloc.__init__
+Elf.Elf32Reloca.__init__
+Elf.Elf32Section.__init__
+Elf.Elf32Symbol.__init__
+Elf.Elf64Dynamic.__init__
+Elf.Elf64Pheader.__init__
+Elf.Elf64Reloc.__init__
+Elf.Elf64Reloca.__init__
+Elf.Elf64Section.__init__
+Elf.Elf64Symbol.__init__
+Elf.ElfDynamic.__init__
+Elf.ElfPheader.__init__
+Elf.ElfReloc.__init__
+Elf.ElfSection.__init__
+Elf.ElfSymbol.__init__
+envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__
+vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__
+visgraph.cli.GraphCli.__init__
+visgraph.dbcore.DbGraphStore.__init__
+visgraph.dbcore.DbSubGraph.__init__
+visgraph.exc.DuplicateNode.__init__
+visgraph.exc.EdgeNonExistant.__init__
+visgraph.exc.NodeNonExistant.__init__
+visgraph.graphcore.Graph.__init__
+visgraph.graphcore.HierarchicalGraph.__init__
+visgraph.layouts.GraphLayout.__init__
+visgraph.layouts.dynadag.DynadagLayout.__init__
+visgraph.renderers.GraphRenderer.__init__
+visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__
+visgraph.renderers.qgraphtree.NodeColumn.__init__
+visgraph.renderers.qgraphtree.QGraphNode.__init__
+visgraph.renderers.qgraphtree.QGraphTreeView.__init__
+visgraph.renderers.svgrend.SvgGraphRenderer.__init__
+vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__
+vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__
+vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-4', '__init__', 'link-4');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">graph</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">svgfile</tt> <tt class="py-op">=</tt> <tt class="py-name">svgfile</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_node_xml</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_edge_xml</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line"> </tt>
+<a name="SvgGraphRenderer.renderNode"></a><div id="SvgGraphRenderer.renderNode-def"><a name="L25"></a><tt class="py-lineno">25</tt> <a class="py-toggle" href="#" id="SvgGraphRenderer.renderNode-toggle" onclick="return toggle('SvgGraphRenderer.renderNode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.renderers.svgrend.SvgGraphRenderer-class.html#renderNode">renderNode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">nid</tt><tt class="py-op">,</tt> <tt class="py-param">ninfo</tt><tt class="py-op">,</tt> <tt class="py-param">xpos</tt><tt class="py-op">,</tt> <tt class="py-param">ypos</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SvgGraphRenderer.renderNode-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SvgGraphRenderer.renderNode-expanded"><a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-name">rectstr</tt> <tt class="py-op">=</tt> <tt class="py-string">'&lt;rect x="%d" y="%d" width="10" height="10" style="fill:red;stroke:black;stroke-width:5;opacity:0.5"/&gt;'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">xpos</tt><tt class="py-op">,</tt><tt class="py-name">ypos</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_node_xml</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Method vqt.tree.VQTreeItem.append()=vqt.tree.VQTreeItem-class.html#append,Method vqt.tree.VQTreeModel.append()=vqt.tree.VQTreeModel-class.html#append"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-5', 'append', 'link-5');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">rectstr</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"> </tt>
+<a name="SvgGraphRenderer.renderEdge"></a><div id="SvgGraphRenderer.renderEdge-def"><a name="L29"></a><tt class="py-lineno">29</tt> <a class="py-toggle" href="#" id="SvgGraphRenderer.renderEdge-toggle" onclick="return toggle('SvgGraphRenderer.renderEdge');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.renderers.svgrend.SvgGraphRenderer-class.html#renderEdge">renderEdge</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">eid</tt><tt class="py-op">,</tt> <tt class="py-param">einfo</tt><tt class="py-op">,</tt> <tt class="py-param">points</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SvgGraphRenderer.renderEdge-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SvgGraphRenderer.renderEdge-expanded"><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-name">pointstr</tt> <tt class="py-op">=</tt> <tt class="py-string">' '</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-op">[</tt> <tt class="py-string">'%d,%d'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-6" class="py-name" targets="Variable envi.archs.arm.armdisasm.x=envi.archs.arm.armdisasm-module.html#x,Variable envi.archs.arm.disasm.x=envi.archs.arm.disasm-module.html#x,Variable envi.archs.arm.emu.x=envi.archs.arm.emu-module.html#x,Variable envi.archs.arm.regs.x=envi.archs.arm.regs-module.html#x,Variable envi.archs.arm.thumbdisasm.x=envi.archs.arm.thumbdisasm-module.html#x,Variable envi.archs.arm.x=envi.archs.arm-module.html#x,Variable envi.archs.i386.disasm.x=envi.archs.i386.disasm-module.html#x,Variable envi.archs.i386.emu.x=envi.archs.i386.emu-module.html#x,Variable envi.archs.i386.x=envi.archs.i386-module.html#x,Variable vtrace.platforms.win32.x=vtrace.platforms.win32-module.html#x"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-6', 'x', 'link-6');">x</a></tt><tt class="py-op">,</tt><tt class="py-name">y</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt id="link-7" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-7', 'x', 'link-6');">x</a></tt><tt class="py-op">,</tt><tt class="py-name">y</tt> <tt class="py-keyword">in</tt> <tt class="py-name">points</tt> <tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">edgestr</tt> <tt class="py-op">=</tt> <tt class="py-string">'&lt;polyline points="%s" style="fill:white;stroke:red;stroke-width:2"/&gt;'</tt> <tt class="py-op">%</tt> <tt class="py-name">pointstr</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_edge_xml</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-8', 'append', 'link-5');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">edgestr</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"> </tt>
+<a name="SvgGraphRenderer.setNodeSizes"></a><div id="SvgGraphRenderer.setNodeSizes-def"><a name="L34"></a><tt class="py-lineno">34</tt> <a class="py-toggle" href="#" id="SvgGraphRenderer.setNodeSizes-toggle" onclick="return toggle('SvgGraphRenderer.setNodeSizes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.renderers.svgrend.SvgGraphRenderer-class.html#setNodeSizes">setNodeSizes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">graph</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SvgGraphRenderer.setNodeSizes-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SvgGraphRenderer.setNodeSizes-expanded"><a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">        <tt class="py-comment"># Do the node sizing...</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">nid</tt><tt class="py-op">,</tt><tt class="py-name">ninfo</tt> <tt class="py-keyword">in</tt> <tt class="py-name">graph</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Method visgraph.graphcore.Graph.getNodes()=visgraph.graphcore.Graph-class.html#getNodes"><a title="visgraph.graphcore.Graph.getNodes" class="py-name" href="#" onclick="return doclink('link-9', 'getNodes', 'link-9');">getNodes</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">            <tt class="py-name">ninfo</tt><tt class="py-op">[</tt><tt class="py-string">'size'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">10</tt><tt class="py-op">,</tt><tt class="py-number">10</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="SvgGraphRenderer.beginRender"></a><div id="SvgGraphRenderer.beginRender-def"><a name="L39"></a><tt class="py-lineno">39</tt> <a class="py-toggle" href="#" id="SvgGraphRenderer.beginRender-toggle" onclick="return toggle('SvgGraphRenderer.beginRender');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.renderers.svgrend.SvgGraphRenderer-class.html#beginRender">beginRender</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">xsize</tt><tt class="py-op">,</tt> <tt class="py-param">ysize</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SvgGraphRenderer.beginRender-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SvgGraphRenderer.beginRender-expanded"><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">vg_render</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="visgraph.renderers.GraphRenderer" class="py-name" href="#" onclick="return doclink('link-10', 'GraphRenderer', 'link-3');">GraphRenderer</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method visgraph.renderers.GraphRenderer.beginRender()=visgraph.renderers.GraphRenderer-class.html#beginRender,Method visgraph.renderers.gtkrend.GtkVisGraphRenderer.beginRender()=visgraph.renderers.gtkrend.GtkVisGraphRenderer-class.html#beginRender,Method visgraph.renderers.svgrend.SvgGraphRenderer.beginRender()=visgraph.renderers.svgrend.SvgGraphRenderer-class.html#beginRender"><a title="visgraph.renderers.GraphRenderer.beginRender
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.beginRender
+visgraph.renderers.svgrend.SvgGraphRenderer.beginRender" class="py-name" href="#" onclick="return doclink('link-11', 'beginRender', 'link-11');">beginRender</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">xsize</tt><tt class="py-op">,</tt> <tt class="py-name">ysize</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"> </tt>
+<a name="SvgGraphRenderer.endRender"></a><div id="SvgGraphRenderer.endRender-def"><a name="L42"></a><tt class="py-lineno">42</tt> <a class="py-toggle" href="#" id="SvgGraphRenderer.endRender-toggle" onclick="return toggle('SvgGraphRenderer.endRender');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.renderers.svgrend.SvgGraphRenderer-class.html#endRender">endRender</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SvgGraphRenderer.endRender-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="SvgGraphRenderer.endRender-expanded"><a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-comment"># Actually write out the file.</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-name">f</tt> <tt class="py-op">=</tt> <tt class="py-name">file</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">svgfile</tt><tt class="py-op">,</tt><tt class="py-string">'wb'</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">f</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Method envi.cli.EnviCli.write()=envi.cli.EnviCli-class.html#write,Method envi.memcanvas.MemoryCanvas.write()=envi.memcanvas.MemoryCanvas-class.html#write,Method envi.memory.MemoryFile.write()=envi.memory.MemoryFile-class.html#write,Method vwidget.memview.MemoryView.write()=vwidget.memview.MemoryView-class.html#write"><a title="envi.cli.EnviCli.write
+envi.memcanvas.MemoryCanvas.write
+envi.memory.MemoryFile.write
+vwidget.memview.MemoryView.write" class="py-name" href="#" onclick="return doclink('link-12', 'write', 'link-12');">write</a></tt><tt class="py-op">(</tt><tt class="py-string">'&lt;?xml version="1.0" standalone="no"?&gt;\n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-comment">#f.write('&lt;!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" &gt;\n')</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-name">xsize</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_vg_canvas_width</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">        <tt class="py-name">ysize</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_vg_canvas_height</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">        <tt class="py-name">f</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="envi.cli.EnviCli.write
+envi.memcanvas.MemoryCanvas.write
+envi.memory.MemoryFile.write
+vwidget.memview.MemoryView.write" class="py-name" href="#" onclick="return doclink('link-13', 'write', 'link-12');">write</a></tt><tt class="py-op">(</tt><tt class="py-string">'&lt;svg width="%d" height="%d" version="1.1" xmlns="http://www.w3.org/2000/svg"&gt;\n'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">xsize</tt><tt class="py-op">,</tt><tt class="py-name">ysize</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-14" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-14', 'x', 'link-6');">x</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_node_xml</tt><tt class="py-op">:</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">            <tt class="py-name">f</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="envi.cli.EnviCli.write
+envi.memcanvas.MemoryCanvas.write
+envi.memory.MemoryFile.write
+vwidget.memview.MemoryView.write" class="py-name" href="#" onclick="return doclink('link-15', 'write', 'link-12');">write</a></tt><tt class="py-op">(</tt><tt id="link-16" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-16', 'x', 'link-6');">x</a></tt> <tt class="py-op">+</tt> <tt class="py-string">'\n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-17" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-17', 'x', 'link-6');">x</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_edge_xml</tt><tt class="py-op">:</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">            <tt class="py-name">f</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="envi.cli.EnviCli.write
+envi.memcanvas.MemoryCanvas.write
+envi.memory.MemoryFile.write
+vwidget.memview.MemoryView.write" class="py-name" href="#" onclick="return doclink('link-18', 'write', 'link-12');">write</a></tt><tt class="py-op">(</tt><tt id="link-19" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-19', 'x', 'link-6');">x</a></tt> <tt class="py-op">+</tt> <tt class="py-string">'\n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">        <tt class="py-name">f</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="envi.cli.EnviCli.write
+envi.memcanvas.MemoryCanvas.write
+envi.memory.MemoryFile.write
+vwidget.memview.MemoryView.write" class="py-name" href="#" onclick="return doclink('link-20', 'write', 'link-12');">write</a></tt><tt class="py-op">(</tt><tt class="py-string">'&lt;/svg&gt;\n'</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">        <tt class="py-name">f</tt><tt class="py-op">.</tt><tt class="py-name">close</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">'__main__'</tt><tt class="py-op">:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt id="link-21" class="py-name"><a title="visgraph" class="py-name" href="#" onclick="return doclink('link-21', 'visgraph', 'link-0');">visgraph</a></tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Module visgraph.graphcore=visgraph.graphcore-module.html"><a title="visgraph.graphcore" class="py-name" href="#" onclick="return doclink('link-22', 'graphcore', 'link-22');">graphcore</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vg_graphcore</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt id="link-23" class="py-name"><a title="visgraph" class="py-name" href="#" onclick="return doclink('link-23', 'visgraph', 'link-0');">visgraph</a></tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Package visgraph.layouts=visgraph.layouts-module.html"><a title="visgraph.layouts" class="py-name" href="#" onclick="return doclink('link-24', 'layouts', 'link-24');">layouts</a></tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Module visgraph.layouts.dynadag=visgraph.layouts.dynadag-module.html"><a title="visgraph.layouts.dynadag" class="py-name" href="#" onclick="return doclink('link-25', 'dynadag', 'link-25');">dynadag</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vg_dynadag</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt id="link-26" class="py-name"><a title="visgraph" class="py-name" href="#" onclick="return doclink('link-26', 'visgraph', 'link-0');">visgraph</a></tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="envi.memcanvas.renderers
+vdb.renderers
+visgraph.renderers" class="py-name" href="#" onclick="return doclink('link-27', 'renderers', 'link-1');">renderers</a></tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Module visgraph.renderers.svgrend=visgraph.renderers.svgrend-module.html"><a title="visgraph.renderers.svgrend" class="py-name" href="#" onclick="return doclink('link-28', 'svgrend', 'link-28');">svgrend</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vg_svgrend</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">    <tt class="py-name">g</tt> <tt class="py-op">=</tt> <tt class="py-name">vg_graphcore</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Class visgraph.graphcore.HierarchicalGraph=visgraph.graphcore.HierarchicalGraph-class.html"><a title="visgraph.graphcore.HierarchicalGraph" class="py-name" href="#" onclick="return doclink('link-29', 'HierarchicalGraph', 'link-29');">HierarchicalGraph</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line"> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Method visgraph.dbcore.DbGraphStore.addNode()=visgraph.dbcore.DbGraphStore-class.html#addNode,Method visgraph.dbcore.DbSubGraph.addNode()=visgraph.dbcore.DbSubGraph-class.html#addNode,Method visgraph.graphcore.Graph.addNode()=visgraph.graphcore.Graph-class.html#addNode"><a title="visgraph.dbcore.DbGraphStore.addNode
+visgraph.dbcore.DbSubGraph.addNode
+visgraph.graphcore.Graph.addNode" class="py-name" href="#" onclick="return doclink('link-30', 'addNode', 'link-30');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-string">'A'</tt><tt class="py-op">,</tt> <tt class="py-name">rootnode</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addNode
+visgraph.dbcore.DbSubGraph.addNode
+visgraph.graphcore.Graph.addNode" class="py-name" href="#" onclick="return doclink('link-31', 'addNode', 'link-30');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-string">'B'</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addNode
+visgraph.dbcore.DbSubGraph.addNode
+visgraph.graphcore.Graph.addNode" class="py-name" href="#" onclick="return doclink('link-32', 'addNode', 'link-30');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-string">'C'</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addNode
+visgraph.dbcore.DbSubGraph.addNode
+visgraph.graphcore.Graph.addNode" class="py-name" href="#" onclick="return doclink('link-33', 'addNode', 'link-30');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-string">'D'</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line"> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addNode
+visgraph.dbcore.DbSubGraph.addNode
+visgraph.graphcore.Graph.addNode" class="py-name" href="#" onclick="return doclink('link-34', 'addNode', 'link-30');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-string">'E'</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addNode
+visgraph.dbcore.DbSubGraph.addNode
+visgraph.graphcore.Graph.addNode" class="py-name" href="#" onclick="return doclink('link-35', 'addNode', 'link-30');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-string">'F'</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addNode
+visgraph.dbcore.DbSubGraph.addNode
+visgraph.graphcore.Graph.addNode" class="py-name" href="#" onclick="return doclink('link-36', 'addNode', 'link-30');">addNode</a></tt><tt class="py-op">(</tt><tt class="py-string">'G'</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name" targets="Method visgraph.dbcore.DbGraphStore.addEdge()=visgraph.dbcore.DbGraphStore-class.html#addEdge,Method visgraph.dbcore.DbSubGraph.addEdge()=visgraph.dbcore.DbSubGraph-class.html#addEdge,Method visgraph.graphcore.Graph.addEdge()=visgraph.graphcore.Graph-class.html#addEdge"><a title="visgraph.dbcore.DbGraphStore.addEdge
+visgraph.dbcore.DbSubGraph.addEdge
+visgraph.graphcore.Graph.addEdge" class="py-name" href="#" onclick="return doclink('link-37', 'addEdge', 'link-37');">addEdge</a></tt><tt class="py-op">(</tt><tt class="py-string">'A'</tt><tt class="py-op">,</tt><tt class="py-string">'B'</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addEdge
+visgraph.dbcore.DbSubGraph.addEdge
+visgraph.graphcore.Graph.addEdge" class="py-name" href="#" onclick="return doclink('link-38', 'addEdge', 'link-37');">addEdge</a></tt><tt class="py-op">(</tt><tt class="py-string">'A'</tt><tt class="py-op">,</tt><tt class="py-string">'C'</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addEdge
+visgraph.dbcore.DbSubGraph.addEdge
+visgraph.graphcore.Graph.addEdge" class="py-name" href="#" onclick="return doclink('link-39', 'addEdge', 'link-37');">addEdge</a></tt><tt class="py-op">(</tt><tt class="py-string">'B'</tt><tt class="py-op">,</tt><tt class="py-string">'D'</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addEdge
+visgraph.dbcore.DbSubGraph.addEdge
+visgraph.graphcore.Graph.addEdge" class="py-name" href="#" onclick="return doclink('link-40', 'addEdge', 'link-37');">addEdge</a></tt><tt class="py-op">(</tt><tt class="py-string">'B'</tt><tt class="py-op">,</tt><tt class="py-string">'E'</tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line"> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addEdge
+visgraph.dbcore.DbSubGraph.addEdge
+visgraph.graphcore.Graph.addEdge" class="py-name" href="#" onclick="return doclink('link-41', 'addEdge', 'link-37');">addEdge</a></tt><tt class="py-op">(</tt><tt class="py-string">'C'</tt><tt class="py-op">,</tt><tt class="py-string">'F'</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">    <tt class="py-name">g</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="visgraph.dbcore.DbGraphStore.addEdge
+visgraph.dbcore.DbSubGraph.addEdge
+visgraph.graphcore.Graph.addEdge" class="py-name" href="#" onclick="return doclink('link-42', 'addEdge', 'link-37');">addEdge</a></tt><tt class="py-op">(</tt><tt class="py-string">'C'</tt><tt class="py-op">,</tt><tt class="py-string">'G'</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line"> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">    <tt id="link-43" class="py-name" targets="Module vwidget.layout=vwidget.layout-module.html"><a title="vwidget.layout" class="py-name" href="#" onclick="return doclink('link-43', 'layout', 'link-43');">layout</a></tt> <tt class="py-op">=</tt> <tt class="py-name">vg_dynadag</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name" targets="Class visgraph.layouts.dynadag.DynadagLayout=visgraph.layouts.dynadag.DynadagLayout-class.html"><a title="visgraph.layouts.dynadag.DynadagLayout" class="py-name" href="#" onclick="return doclink('link-44', 'DynadagLayout', 'link-44');">DynadagLayout</a></tt><tt class="py-op">(</tt><tt class="py-name">g</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">    <tt class="py-name">rend</tt> <tt class="py-op">=</tt> <tt class="py-name">vg_svgrend</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name" targets="Class visgraph.renderers.svgrend.SvgGraphRenderer=visgraph.renderers.svgrend.SvgGraphRenderer-class.html"><a title="visgraph.renderers.svgrend.SvgGraphRenderer" class="py-name" href="#" onclick="return doclink('link-45', 'SvgGraphRenderer', 'link-45');">SvgGraphRenderer</a></tt><tt class="py-op">(</tt><tt class="py-name">g</tt><tt class="py-op">,</tt> <tt class="py-string">'test.svg'</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line"> </tt>
+<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">    <tt id="link-46" class="py-name"><a title="vwidget.layout" class="py-name" href="#" onclick="return doclink('link-46', 'layout', 'link-43');">layout</a></tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Method visgraph.layouts.GraphLayout.renderGraph()=visgraph.layouts.GraphLayout-class.html#renderGraph"><a title="visgraph.layouts.GraphLayout.renderGraph" class="py-name" href="#" onclick="return doclink('link-47', 'renderGraph', 'link-47');">renderGraph</a></tt><tt class="py-op">(</tt><tt class="py-name">rend</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:26 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

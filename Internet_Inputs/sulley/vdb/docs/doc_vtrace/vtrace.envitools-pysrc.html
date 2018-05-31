@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.envitools</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        Module&nbsp;envitools
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.envitools-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vtrace.envitools-module.html">Module vtrace.envitools</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">Some tools that require the envi framework to be installed</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">traceback</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">envi</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">envi</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Package vtrace.archs=vtrace.archs-module.html"><a title="vtrace.archs" class="py-name" href="#" onclick="return doclink('link-0', 'archs', 'link-0');">archs</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module vtrace.archs.i386=vtrace.archs.i386-module.html"><a title="vtrace.archs.i386" class="py-name" href="#" onclick="return doclink('link-1', 'i386', 'link-1');">i386</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_i386</tt> <tt class="py-comment"># FIXME This should NOT have to be here</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"> </tt>
+<a name="RegisterException"></a><div id="RegisterException-def"><a name="L12"></a><tt class="py-lineno"> 12</tt> <a class="py-toggle" href="#" id="RegisterException-toggle" onclick="return toggle('RegisterException');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.envitools.RegisterException-class.html">RegisterException</a><tt class="py-op">(</tt><tt class="py-base-class">Exception</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterException-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="RegisterException-expanded"><a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line">    <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"> </tt>
+<a name="cmpRegs"></a><div id="cmpRegs-def"><a name="L15"></a><tt class="py-lineno"> 15</tt> <a class="py-toggle" href="#" id="cmpRegs-toggle" onclick="return toggle('cmpRegs');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools-module.html#cmpRegs">cmpRegs</a><tt class="py-op">(</tt><tt class="py-param">emu</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="cmpRegs-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="cmpRegs-expanded"><a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">idx</tt><tt class="py-op">,</tt><tt class="py-name">name</tt> <tt class="py-keyword">in</tt> <tt id="link-2" class="py-name" targets="Variable vtrace.envitools.reg_map=vtrace.envitools-module.html#reg_map"><a title="vtrace.envitools.reg_map" class="py-name" href="#" onclick="return doclink('link-2', 'reg_map', 'link-2');">reg_map</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line">        <tt class="py-name">er</tt> <tt class="py-op">=</tt> <tt class="py-name">emu</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method vtrace.Trace.getRegister()=vtrace.Trace-class.html#getRegister"><a title="vtrace.Trace.getRegister" class="py-name" href="#" onclick="return doclink('link-3', 'getRegister', 'link-3');">getRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line">        <tt class="py-name">tr</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getRegisterByName</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">er</tt> <tt class="py-op">!=</tt> <tt class="py-name">tr</tt><tt class="py-op">:</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-4" class="py-name" targets="Class vtrace.envitools.RegisterException=vtrace.envitools.RegisterException-class.html"><a title="vtrace.envitools.RegisterException" class="py-name" href="#" onclick="return doclink('link-4', 'RegisterException', 'link-4');">RegisterException</a></tt><tt class="py-op">(</tt><tt class="py-string">"REGISTER MISMATCH: %s 0x%.8x 0x%.8x"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">tr</tt><tt class="py-op">,</tt> <tt class="py-name">er</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt id="link-5" class="py-name"><a title="vtrace.envitools.reg_map" class="py-name" href="#" onclick="return doclink('link-5', 'reg_map', 'link-2');">reg_map</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_EAX</tt><tt class="py-op">,</tt> <tt class="py-string">"eax"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_ECX</tt><tt class="py-op">,</tt> <tt class="py-string">"ecx"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_EDX</tt><tt class="py-op">,</tt> <tt class="py-string">"edx"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_EBX</tt><tt class="py-op">,</tt> <tt class="py-string">"ebx"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_ESP</tt><tt class="py-op">,</tt> <tt class="py-string">"esp"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_EBP</tt><tt class="py-op">,</tt> <tt class="py-string">"ebp"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_ESI</tt><tt class="py-op">,</tt> <tt class="py-string">"esi"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_EDI</tt><tt class="py-op">,</tt> <tt class="py-string">"edi"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_EIP</tt><tt class="py-op">,</tt> <tt class="py-string">"eip"</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">    <tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_EFLAGS</tt><tt class="py-op">,</tt> <tt class="py-string">"eflags"</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">    <tt class="py-op">]</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-comment">#FIXME intel specific</tt> </tt>
+<a name="setRegs"></a><div id="setRegs-def"><a name="L37"></a><tt class="py-lineno"> 37</tt> <a class="py-toggle" href="#" id="setRegs-toggle" onclick="return toggle('setRegs');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools-module.html#setRegs">setRegs</a><tt class="py-op">(</tt><tt class="py-param">emu</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="setRegs-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="setRegs-expanded"><a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">idx</tt><tt class="py-op">,</tt><tt class="py-name">name</tt> <tt class="py-keyword">in</tt> <tt id="link-6" class="py-name"><a title="vtrace.envitools.reg_map" class="py-name" href="#" onclick="return doclink('link-6', 'reg_map', 'link-2');">reg_map</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">tr</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getRegisterByName</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-name">emu</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method vtrace.Trace.setRegister()=vtrace.Trace-class.html#setRegister"><a title="vtrace.Trace.setRegister" class="py-name" href="#" onclick="return doclink('link-7', 'setRegister', 'link-7');">setRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">idx</tt><tt class="py-op">,</tt> <tt class="py-name">tr</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"> </tt>
+<a name="emulatorFromTrace"></a><div id="emulatorFromTrace-def"><a name="L42"></a><tt class="py-lineno"> 42</tt> <a class="py-toggle" href="#" id="emulatorFromTrace-toggle" onclick="return toggle('emulatorFromTrace');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools-module.html#emulatorFromTrace">emulatorFromTrace</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="emulatorFromTrace-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="emulatorFromTrace-expanded"><a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-docstring">    Produce an envi emulator for this tracer object.  Use the trace's arch</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-docstring">    info to get the emulator so this can be done on the client side of a remote</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-docstring">    vtrace session.</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">    <tt class="py-name">arch</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method vtrace.Trace.getMeta()=vtrace.Trace-class.html#getMeta,Method vtrace.util.TraceManager.getMeta()=vtrace.util.TraceManager-class.html#getMeta"><a title="vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-8', 'getMeta', 'link-8');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">"Architecture"</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">    <tt class="py-name">amod</tt> <tt class="py-op">=</tt> <tt class="py-name">envi</tt><tt class="py-op">.</tt><tt class="py-name">getArchModule</tt><tt class="py-op">(</tt><tt class="py-name">arch</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">    <tt class="py-name">emu</tt> <tt class="py-op">=</tt> <tt class="py-name">amod</tt><tt class="py-op">.</tt><tt class="py-name">getEmulator</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-9', 'getMeta', 'link-8');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">"Platform"</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-string">"Windows"</tt><tt class="py-op">:</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-name">emu</tt><tt class="py-op">.</tt><tt class="py-name">setSegmentInfo</tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">SEG_FS</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method vtrace.Trace.getThreads()=vtrace.Trace-class.html#getThreads"><a title="vtrace.Trace.getThreads" class="py-name" href="#" onclick="return doclink('link-10', 'getThreads', 'link-10');">getThreads</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-11', 'getMeta', 'link-8');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">"ThreadId"</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-number">0xffffffff</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">    <tt class="py-name">emu</tt><tt class="py-op">.</tt><tt class="py-name">setMemoryObject</tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">    <tt id="link-12" class="py-name" targets="Function vtrace.envitools.setRegs()=vtrace.envitools-module.html#setRegs"><a title="vtrace.envitools.setRegs" class="py-name" href="#" onclick="return doclink('link-12', 'setRegs', 'link-12');">setRegs</a></tt><tt class="py-op">(</tt><tt class="py-name">emu</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">emu</tt> </tt>
+</div><a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"> </tt>
+<a name="lockStepEmulator"></a><div id="lockStepEmulator-def"><a name="L59"></a><tt class="py-lineno"> 59</tt> <a class="py-toggle" href="#" id="lockStepEmulator-toggle" onclick="return toggle('lockStepEmulator');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools-module.html#lockStepEmulator">lockStepEmulator</a><tt class="py-op">(</tt><tt class="py-param">emu</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="lockStepEmulator-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="lockStepEmulator-expanded"><a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">True</tt><tt class="py-op">:</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">"Lockstep: 0x%.8x"</tt> <tt class="py-op">%</tt> <tt class="py-name">emu</tt><tt class="py-op">.</tt><tt class="py-name">getProgramCounter</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">            <tt class="py-name">pc</tt> <tt class="py-op">=</tt> <tt class="py-name">emu</tt><tt class="py-op">.</tt><tt class="py-name">getProgramCounter</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">            <tt class="py-name">op</tt> <tt class="py-op">=</tt> <tt class="py-name">emu</tt><tt class="py-op">.</tt><tt class="py-name">makeOpcode</tt><tt class="py-op">(</tt><tt class="py-name">pc</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method vtrace.Trace.stepi()=vtrace.Trace-class.html#stepi"><a title="vtrace.Trace.stepi" class="py-name" href="#" onclick="return doclink('link-13', 'stepi', 'link-13');">stepi</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">            <tt class="py-name">emu</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="vtrace.Trace.stepi" class="py-name" href="#" onclick="return doclink('link-14', 'stepi', 'link-13');">stepi</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">            <tt id="link-15" class="py-name" targets="Function vtrace.envitools.cmpRegs()=vtrace.envitools-module.html#cmpRegs"><a title="vtrace.envitools.cmpRegs" class="py-name" href="#" onclick="return doclink('link-15', 'cmpRegs', 'link-15');">cmpRegs</a></tt><tt class="py-op">(</tt><tt class="py-name">emu</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt id="link-16" class="py-name"><a title="vtrace.envitools.RegisterException" class="py-name" href="#" onclick="return doclink('link-16', 'RegisterException', 'link-4');">RegisterException</a></tt><tt class="py-op">,</tt> <tt class="py-name">msg</tt><tt class="py-op">:</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Lockstep Error: %s: %s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-name">msg</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt id="link-17" class="py-name"><a title="vtrace.envitools.setRegs" class="py-name" href="#" onclick="return doclink('link-17', 'setRegs', 'link-12');">setRegs</a></tt><tt class="py-op">(</tt><tt class="py-name">emu</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">            <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">stdin</tt><tt class="py-op">.</tt><tt class="py-name">readline</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt id="link-18" class="py-name" targets="Variable vtrace.platforms.win32.DBG_EVENT_UNION.Exception=vtrace.platforms.win32.DBG_EVENT_UNION-class.html#Exception"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-18', 'Exception', 'link-18');">Exception</a></tt><tt class="py-op">,</tt> <tt class="py-name">msg</tt><tt class="py-op">:</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">            <tt class="py-name">traceback</tt><tt class="py-op">.</tt><tt class="py-name">print_exc</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">"Lockstep Error: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">msg</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+</div><a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-19" class="py-name" targets="Package vtrace=vtrace-module.html"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-19', 'vtrace', 'link-19');">vtrace</a></tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-20" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-20', 'vtrace', 'link-19');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Package vtrace.platforms=vtrace.platforms-module.html"><a title="vtrace.platforms" class="py-name" href="#" onclick="return doclink('link-21', 'platforms', 'link-21');">platforms</a></tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Module vtrace.platforms.base=vtrace.platforms.base-module.html"><a title="vtrace.platforms.base" class="py-name" href="#" onclick="return doclink('link-22', 'base', 'link-22');">base</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">v_base</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator"></a><div id="TraceEmulator-def"><a name="L80"></a><tt class="py-lineno"> 80</tt> <a class="py-toggle" href="#" id="TraceEmulator-toggle" onclick="return toggle('TraceEmulator');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html">TraceEmulator</a><tt class="py-op">(</tt><tt class="py-base-class">vtrace</tt><tt class="py-op">.</tt><tt class="py-base-class">Trace</tt><tt class="py-op">,</tt> <tt class="py-base-class">v_base</tt><tt class="py-op">.</tt><tt class="py-base-class">TracerBase</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TraceEmulator-expanded"><a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-docstring">    Wrap an arbitrary emulator in a Tracer compatible API.</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TraceEmulator.__init__"></a><div id="TraceEmulator.__init__-def"><a name="L84"></a><tt class="py-lineno"> 84</tt> <a class="py-toggle" href="#" id="TraceEmulator.__init__-toggle" onclick="return toggle('TraceEmulator.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">emu</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.__init__-expanded"><a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt> <tt class="py-op">=</tt> <tt class="py-name">emu</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt id="link-23" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-23', 'vtrace', 'link-19');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Class vtrace.Trace=vtrace.Trace-class.html"><a title="vtrace.Trace" class="py-name" href="#" onclick="return doclink('link-24', 'Trace', 'link-24');">Trace</a></tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method vtrace.AccessViolation.__init__()=vtrace.AccessViolation-class.html#__init__,Method vtrace.Trace.__init__()=vtrace.Trace-class.html#__init__,Method vtrace.TraceGroup.__init__()=vtrace.TraceGroup-class.html#__init__,Method vtrace.VtraceExpressionLocals.__init__()=vtrace.VtraceExpressionLocals-class.html#__init__,Method vtrace.archs.amd64.Amd64Mixin.__init__()=vtrace.archs.amd64.Amd64Mixin-class.html#__init__,Method vtrace.archs.arm.ArmMixin.__init__()=vtrace.archs.arm.ArmMixin-class.html#__init__,Method vtrace.archs.i386.i386Mixin.__init__()=vtrace.archs.i386.i386Mixin-class.html#__init__,Method vtrace.archs.i386.i386WatchMixin.__init__()=vtrace.archs.i386.i386WatchMixin-class.html#__init__,Method vtrace.breakpoints.Breakpoint.__init__()=vtrace.breakpoints.Breakpoint-class.html#__init__,Method vtrace.breakpoints.CallBreak.__init__()=vtrace.breakpoints.CallBreak-class.html#__init__,Method vtrace.envitools.TraceEmulator.__init__()=vtrace.envitools.TraceEmulator-class.html#__init__,Method vtrace.notifiers.DistributedNotifier.__init__()=vtrace.notifiers.DistributedNotifier-class.html#__init__,Method vtrace.notifiers.Notifier.__init__()=vtrace.notifiers.Notifier-class.html#__init__,Method vtrace.platforms.android.AndroidArmTrace.__init__()=vtrace.platforms.android.AndroidArmTrace-class.html#__init__,Method vtrace.platforms.base.TracerBase.__init__()=vtrace.platforms.base.TracerBase-class.html#__init__,Method vtrace.platforms.base.TracerThread.__init__()=vtrace.platforms.base.TracerThread-class.html#__init__,Method vtrace.platforms.darwin.DarwinAmd64Trace.__init__()=vtrace.platforms.darwin.DarwinAmd64Trace-class.html#__init__,Method vtrace.platforms.darwin.DarwinMixin.__init__()=vtrace.platforms.darwin.DarwinMixin-class.html#__init__,Method vtrace.platforms.darwin.Darwini386Trace.__init__()=vtrace.platforms.darwin.Darwini386Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__()=vtrace.platforms.freebsd.FreeBSDAmd64Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDMixin.__init__()=vtrace.platforms.freebsd.FreeBSDMixin-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDi386Trace.__init__()=vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin.__init__()=vtrace.platforms.gdbstub.GdbStubMixin-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin_old.__init__()=vtrace.platforms.gdbstub.GdbStubMixin_old-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubTrace.__init__()=vtrace.platforms.gdbstub.GdbStubTrace-class.html#__init__,Method vtrace.platforms.gdbstub.KeBugCheckBreak.__init__()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#__init__,Method vtrace.platforms.linux.LinuxAmd64Trace.__init__()=vtrace.platforms.linux.LinuxAmd64Trace-class.html#__init__,Method vtrace.platforms.linux.LinuxMixin.__init__()=vtrace.platforms.linux.LinuxMixin-class.html#__init__,Method vtrace.platforms.linux.Linuxi386Trace.__init__()=vtrace.platforms.linux.Linuxi386Trace-class.html#__init__,Method vtrace.platforms.posix.ElfMixin.__init__()=vtrace.platforms.posix.ElfMixin-class.html#__init__,Method vtrace.platforms.posix.PosixMixin.__init__()=vtrace.platforms.posix.PosixMixin-class.html#__init__,Method vtrace.platforms.posix.PtraceMixin.__init__()=vtrace.platforms.posix.PtraceMixin-class.html#__init__,Method vtrace.platforms.win32.Win32SymbolParser.__init__()=vtrace.platforms.win32.Win32SymbolParser-class.html#__init__,Method vtrace.platforms.win32.WindowsAmd64Trace.__init__()=vtrace.platforms.win32.WindowsAmd64Trace-class.html#__init__,Method vtrace.platforms.win32.WindowsMixin.__init__()=vtrace.platforms.win32.WindowsMixin-class.html#__init__,Method vtrace.platforms.win32.Windowsi386Trace.__init__()=vtrace.platforms.win32.Windowsi386Trace-class.html#__init__,Method vtrace.qt.RegColorDelegate.__init__()=vtrace.qt.RegColorDelegate-class.html#__init__,Method vtrace.qt.VQFileDescView.__init__()=vtrace.qt.VQFileDescView-class.html#__init__,Method vtrace.qt.VQMemoryMapView.__init__()=vtrace.qt.VQMemoryMapView-class.html#__init__,Method vtrace.qt.VQProcessListView.__init__()=vtrace.qt.VQProcessListView-class.html#__init__,Method vtrace.qt.VQProcessSelectDialog.__init__()=vtrace.qt.VQProcessSelectDialog-class.html#__init__,Method vtrace.qt.VQRegistersListView.__init__()=vtrace.qt.VQRegistersListView-class.html#__init__,Method vtrace.qt.VQRegistersView.__init__()=vtrace.qt.VQRegistersView-class.html#__init__,Method vtrace.qt.VQThreadsView.__init__()=vtrace.qt.VQThreadsView-class.html#__init__,Method vtrace.qt.VQTraceNotifier.__init__()=vtrace.qt.VQTraceNotifier-class.html#__init__,Method vtrace.qt.VQTraceToolBar.__init__()=vtrace.qt.VQTraceToolBar-class.html#__init__,Method vtrace.rmi.RemoteTrace.__init__()=vtrace.rmi.RemoteTrace-class.html#__init__,Method vtrace.snapshot.TraceSnapshot.__init__()=vtrace.snapshot.TraceSnapshot-class.html#__init__,Method vtrace.tools.iathook.IatHook.__init__()=vtrace.tools.iathook.IatHook-class.html#__init__,Method vtrace.tools.win32alloc.ReturnBreak.__init__()=vtrace.tools.win32alloc.ReturnBreak-class.html#__init__,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__,Method vtrace.tools.win32heap.FreeListCorruption.__init__()=vtrace.tools.win32heap.FreeListCorruption-class.html#__init__,Method vtrace.tools.win32heap.HeapCorruptionException.__init__()=vtrace.tools.win32heap.HeapCorruptionException-class.html#__init__,Method vtrace.tools.win32heap.Win32Chunk.__init__()=vtrace.tools.win32heap.Win32Chunk-class.html#__init__,Method vtrace.tools.win32heap.Win32Heap.__init__()=vtrace.tools.win32heap.Win32Heap-class.html#__init__,Method vtrace.tools.win32heap.Win32Segment.__init__()=vtrace.tools.win32heap.Win32Segment-class.html#__init__,Method vtrace.util.TraceManager.__init__()=vtrace.util.TraceManager-class.html#__init__,Method vtrace.watchpoints.PageWatchpoint.__init__()=vtrace.watchpoints.PageWatchpoint-class.html#__init__,Method vtrace.watchpoints.Watchpoint.__init__()=vtrace.watchpoints.Watchpoint-class.html#__init__"><a title="vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__" class="py-name" href="#" onclick="return doclink('link-25', '__init__', 'link-25');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-name">v_base</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Class vtrace.platforms.base.TracerBase=vtrace.platforms.base.TracerBase-class.html"><a title="vtrace.platforms.base.TracerBase" class="py-name" href="#" onclick="return doclink('link-26', 'TracerBase', 'link-26');">TracerBase</a></tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__" class="py-name" href="#" onclick="return doclink('link-27', '__init__', 'link-25');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-comment"># Fake out being attached</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">attached</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">pid</tt> <tt class="py-op">=</tt> <tt class="py-number">0x56</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setRegisterInfo</tt><tt class="py-op">(</tt><tt class="py-name">emu</tt><tt class="py-op">.</tt><tt class="py-name">getRegisterInfo</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.getPointerSize"></a><div id="TraceEmulator.getPointerSize-def"><a name="L95"></a><tt class="py-lineno"> 95</tt> <a class="py-toggle" href="#" id="TraceEmulator.getPointerSize-toggle" onclick="return toggle('TraceEmulator.getPointerSize');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#getPointerSize">getPointerSize</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.getPointerSize-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.getPointerSize-expanded"><a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Method vtrace.envitools.TraceEmulator.getPointerSize()=vtrace.envitools.TraceEmulator-class.html#getPointerSize"><a title="vtrace.envitools.TraceEmulator.getPointerSize" class="py-name" href="#" onclick="return doclink('link-28', 'getPointerSize', 'link-28');">getPointerSize</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformStepi"></a><div id="TraceEmulator.platformStepi-def"><a name="L98"></a><tt class="py-lineno"> 98</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformStepi-toggle" onclick="return toggle('TraceEmulator.platformStepi');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformStepi">platformStepi</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformStepi-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformStepi-expanded"><a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="vtrace.Trace.stepi" class="py-name" href="#" onclick="return doclink('link-29', 'stepi', 'link-13');">stepi</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformWait"></a><div id="TraceEmulator.platformWait-def"><a name="L101"></a><tt class="py-lineno">101</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformWait-toggle" onclick="return toggle('TraceEmulator.platformWait');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformWait">platformWait</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformWait-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformWait-expanded"><a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-comment"># We only support single step events now</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.archGetRegCtx"></a><div id="TraceEmulator.archGetRegCtx-def"><a name="L105"></a><tt class="py-lineno">105</tt> <a class="py-toggle" href="#" id="TraceEmulator.archGetRegCtx-toggle" onclick="return toggle('TraceEmulator.archGetRegCtx');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#archGetRegCtx">archGetRegCtx</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.archGetRegCtx-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.archGetRegCtx-expanded"><a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt> </tt>
+</div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformGetRegCtx"></a><div id="TraceEmulator.platformGetRegCtx-def"><a name="L108"></a><tt class="py-lineno">108</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformGetRegCtx-toggle" onclick="return toggle('TraceEmulator.platformGetRegCtx');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformGetRegCtx">platformGetRegCtx</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">threadid</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformGetRegCtx-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformGetRegCtx-expanded"><a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt> </tt>
+</div><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformSetRegCtx"></a><div id="TraceEmulator.platformSetRegCtx-def"><a name="L111"></a><tt class="py-lineno">111</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformSetRegCtx-toggle" onclick="return toggle('TraceEmulator.platformSetRegCtx');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformSetRegCtx">platformSetRegCtx</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">threadid</tt><tt class="py-op">,</tt> <tt class="py-param">ctx</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformSetRegCtx-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformSetRegCtx-expanded"><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setRegisterSnap</tt><tt class="py-op">(</tt><tt class="py-name">ctx</tt><tt class="py-op">.</tt><tt class="py-name">getRegisterSnap</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformProcessEvent"></a><div id="TraceEmulator.platformProcessEvent-def"><a name="L114"></a><tt class="py-lineno">114</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformProcessEvent-toggle" onclick="return toggle('TraceEmulator.platformProcessEvent');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformProcessEvent">platformProcessEvent</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformProcessEvent-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformProcessEvent-expanded"><a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Method vtrace.notifiers.DistributedNotifier.fireNotifiers()=vtrace.notifiers.DistributedNotifier-class.html#fireNotifiers,Method vtrace.platforms.base.TracerBase.fireNotifiers()=vtrace.platforms.base.TracerBase-class.html#fireNotifiers"><a title="vtrace.notifiers.DistributedNotifier.fireNotifiers
+vtrace.platforms.base.TracerBase.fireNotifiers" class="py-name" href="#" onclick="return doclink('link-30', 'fireNotifiers', 'link-30');">fireNotifiers</a></tt><tt class="py-op">(</tt><tt id="link-31" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-31', 'vtrace', 'link-19');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Variable vtrace.NOTIFY_STEP=vtrace-module.html#NOTIFY_STEP,Variable vtrace.watchpoints.NOTIFY_STEP=vtrace.watchpoints-module.html#NOTIFY_STEP"><a title="vtrace.NOTIFY_STEP
+vtrace.watchpoints.NOTIFY_STEP" class="py-name" href="#" onclick="return doclink('link-32', 'NOTIFY_STEP', 'link-32');">NOTIFY_STEP</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformReadMemory"></a><div id="TraceEmulator.platformReadMemory-def"><a name="L117"></a><tt class="py-lineno">117</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformReadMemory-toggle" onclick="return toggle('TraceEmulator.platformReadMemory');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformReadMemory">platformReadMemory</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformReadMemory-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformReadMemory-expanded"><a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name" targets="Method vtrace.Trace.readMemory()=vtrace.Trace-class.html#readMemory"><a title="vtrace.Trace.readMemory" class="py-name" href="#" onclick="return doclink('link-33', 'readMemory', 'link-33');">readMemory</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-name">size</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformWriteMemory"></a><div id="TraceEmulator.platformWriteMemory-def"><a name="L120"></a><tt class="py-lineno">120</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformWriteMemory-toggle" onclick="return toggle('TraceEmulator.platformWriteMemory');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformWriteMemory">platformWriteMemory</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformWriteMemory-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformWriteMemory-expanded"><a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name" targets="Method vtrace.Trace.writeMemory()=vtrace.Trace-class.html#writeMemory"><a title="vtrace.Trace.writeMemory" class="py-name" href="#" onclick="return doclink('link-34', 'writeMemory', 'link-34');">writeMemory</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-name">bytes</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformGetMaps"></a><div id="TraceEmulator.platformGetMaps-def"><a name="L123"></a><tt class="py-lineno">123</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformGetMaps-toggle" onclick="return toggle('TraceEmulator.platformGetMaps');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformGetMaps">platformGetMaps</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformGetMaps-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformGetMaps-expanded"><a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name" targets="Method vtrace.Trace.getMemoryMaps()=vtrace.Trace-class.html#getMemoryMaps"><a title="vtrace.Trace.getMemoryMaps" class="py-name" href="#" onclick="return doclink('link-35', 'getMemoryMaps', 'link-35');">getMemoryMaps</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformGetThreads"></a><div id="TraceEmulator.platformGetThreads-def"><a name="L126"></a><tt class="py-lineno">126</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformGetThreads-toggle" onclick="return toggle('TraceEmulator.platformGetThreads');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformGetThreads">platformGetThreads</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformGetThreads-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformGetThreads-expanded"><a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">{</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-number">0xffff0000</tt><tt class="py-op">,</tt><tt class="py-op">}</tt> </tt>
+</div><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformGetFds"></a><div id="TraceEmulator.platformGetFds-def"><a name="L129"></a><tt class="py-lineno">129</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformGetFds-toggle" onclick="return toggle('TraceEmulator.platformGetFds');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformGetFds">platformGetFds</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformGetFds-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformGetFds-expanded"><a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> <tt class="py-comment">#FIXME perhaps tie this into magic?</tt> </tt>
+</div><a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.getStackTrace"></a><div id="TraceEmulator.getStackTrace-def"><a name="L132"></a><tt class="py-lineno">132</tt> <a class="py-toggle" href="#" id="TraceEmulator.getStackTrace-toggle" onclick="return toggle('TraceEmulator.getStackTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#getStackTrace">getStackTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.getStackTrace-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.getStackTrace-expanded"><a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-comment"># FIXME i386...</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">[</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">emu</tt><tt class="py-op">.</tt><tt class="py-name">getProgramCounter</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-number">0</tt><tt class="py-op">,</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"> </tt>
+<a name="TraceEmulator.platformDetach"></a><div id="TraceEmulator.platformDetach-def"><a name="L136"></a><tt class="py-lineno">136</tt> <a class="py-toggle" href="#" id="TraceEmulator.platformDetach-toggle" onclick="return toggle('TraceEmulator.platformDetach');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools.TraceEmulator-class.html#platformDetach">platformDetach</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceEmulator.platformDetach-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceEmulator.platformDetach-expanded"><a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div></div><a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"> </tt>
+<a name="main"></a><div id="main-def"><a name="L139"></a><tt class="py-lineno">139</tt> <a class="py-toggle" href="#" id="main-toggle" onclick="return toggle('main');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.envitools-module.html#main">main</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="main-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="main-expanded"><a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt id="link-36" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-36', 'vtrace', 'link-19');">vtrace</a></tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">    <tt class="py-name">sym</tt> <tt class="py-op">=</tt> <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">    <tt class="py-name">pid</tt> <tt class="py-op">=</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">2</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">    <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt id="link-37" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-37', 'vtrace', 'link-19');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-38" class="py-name" targets="Method vtrace.TraceGroup.getTrace()=vtrace.TraceGroup-class.html#getTrace,Function vtrace.getTrace()=vtrace-module.html#getTrace,Function vtrace.platforms.android.getTrace()=vtrace.platforms.android-module.html#getTrace,Method vtrace.rmi.TraceProxyFactory.getTrace()=vtrace.rmi.TraceProxyFactory-class.html#getTrace"><a title="vtrace.TraceGroup.getTrace
+vtrace.getTrace
+vtrace.platforms.android.getTrace
+vtrace.rmi.TraceProxyFactory.getTrace" class="py-name" href="#" onclick="return doclink('link-38', 'getTrace', 'link-38');">getTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">    <tt class="py-name">t</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name" targets="Method vtrace.Trace.attach()=vtrace.Trace-class.html#attach"><a title="vtrace.Trace.attach" class="py-name" href="#" onclick="return doclink('link-39', 'attach', 'link-39');">attach</a></tt><tt class="py-op">(</tt><tt class="py-name">pid</tt><tt class="py-op">)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">    <tt class="py-name">symaddr</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method vtrace.Trace.parseExpression()=vtrace.Trace-class.html#parseExpression"><a title="vtrace.Trace.parseExpression" class="py-name" href="#" onclick="return doclink('link-40', 'parseExpression', 'link-40');">parseExpression</a></tt><tt class="py-op">(</tt><tt class="py-name">sym</tt><tt class="py-op">)</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">    <tt class="py-name">t</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name" targets="Method vtrace.Trace.addBreakpoint()=vtrace.Trace-class.html#addBreakpoint"><a title="vtrace.Trace.addBreakpoint" class="py-name" href="#" onclick="return doclink('link-41', 'addBreakpoint', 'link-41');">addBreakpoint</a></tt><tt class="py-op">(</tt><tt id="link-42" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-42', 'vtrace', 'link-19');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-43" class="py-name" targets="Class vtrace.breakpoints.Breakpoint=vtrace.breakpoints.Breakpoint-class.html"><a title="vtrace.breakpoints.Breakpoint" class="py-name" href="#" onclick="return doclink('link-43', 'Breakpoint', 'link-43');">Breakpoint</a></tt><tt class="py-op">(</tt><tt class="py-name">symaddr</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getProgramCounter</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">symaddr</tt><tt class="py-op">:</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-name">t</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name" targets="Method vtrace.Trace.run()=vtrace.Trace-class.html#run,Method vtrace.TraceGroup.run()=vtrace.TraceGroup-class.html#run,Method vtrace.platforms.base.TracerThread.run()=vtrace.platforms.base.TracerThread-class.html#run"><a title="vtrace.Trace.run
+vtrace.TraceGroup.run
+vtrace.platforms.base.TracerThread.run" class="py-name" href="#" onclick="return doclink('link-44', 'run', 'link-44');">run</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">    <tt class="py-name">snap</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name" targets="Function vtrace.snapshot.takeSnapshot()=vtrace.snapshot-module.html#takeSnapshot"><a title="vtrace.snapshot.takeSnapshot" class="py-name" href="#" onclick="return doclink('link-45', 'takeSnapshot', 'link-45');">takeSnapshot</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">    <tt class="py-comment">#snap.saveToFile("woot.snap") # You may open in vdb to follow along</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">    <tt class="py-name">emu</tt> <tt class="py-op">=</tt> <tt id="link-46" class="py-name" targets="Function vtrace.envitools.emulatorFromTrace()=vtrace.envitools-module.html#emulatorFromTrace"><a title="vtrace.envitools.emulatorFromTrace" class="py-name" href="#" onclick="return doclink('link-46', 'emulatorFromTrace', 'link-46');">emulatorFromTrace</a></tt><tt class="py-op">(</tt><tt class="py-name">snap</tt><tt class="py-op">)</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">    <tt id="link-47" class="py-name" targets="Function vtrace.envitools.lockStepEmulator()=vtrace.envitools-module.html#lockStepEmulator"><a title="vtrace.envitools.lockStepEmulator" class="py-name" href="#" onclick="return doclink('link-47', 'lockStepEmulator', 'link-47');">lockStepEmulator</a></tt><tt class="py-op">(</tt><tt class="py-name">emu</tt><tt class="py-op">,</tt> <tt class="py-name">t</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">"__main__"</tt><tt class="py-op">:</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">    <tt class="py-comment"># Copy this file out to the vtrace dir for testing and run as main</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">    <tt id="link-48" class="py-name" targets="Function vtrace.envitools.main()=vtrace.envitools-module.html#main"><a title="vtrace.envitools.main" class="py-name" href="#" onclick="return doclink('link-48', 'main', 'link-48');">main</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:45:00 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

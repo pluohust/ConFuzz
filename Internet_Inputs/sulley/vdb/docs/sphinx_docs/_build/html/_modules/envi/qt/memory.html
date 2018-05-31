@@ -1,0 +1,258 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.qt.memory &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="envi.qt" href="../qt.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../qt.html" accesskey="U">envi.qt</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.qt.memory</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">deque</span>
+
+<span class="kn">from</span> <span class="nn">PyQt4</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="kn">import</span> <span class="nn">envi.memcanvas</span> <span class="kn">as</span> <span class="nn">e_memcanvas</span>
+<span class="kn">import</span> <span class="nn">envi.qt.memcanvas</span> <span class="kn">as</span> <span class="nn">e_memcanvas_qt</span>
+<span class="kn">import</span> <span class="nn">envi.memcanvas.renderers</span> <span class="kn">as</span> <span class="nn">e_render</span>
+
+<span class="kn">import</span> <span class="nn">vqt.colors</span> <span class="kn">as</span> <span class="nn">vq_colors</span>
+<span class="kn">import</span> <span class="nn">vqt.menubuilder</span> <span class="kn">as</span> <span class="nn">vqt_menu</span>
+
+<span class="kn">from</span> <span class="nn">vqt.main</span> <span class="kn">import</span> <span class="n">idlethread</span><span class="p">,</span> <span class="n">idlethreadsync</span>
+
+<div class="viewcode-block" id="VQMemoryWindow"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memory.VQMemoryWindow">[docs]</a><span class="k">class</span> <span class="nc">VQMemoryWindow</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+
+    <span class="n">__canvas_class__</span> <span class="o">=</span> <span class="n">e_memcanvas_qt</span><span class="o">.</span><span class="n">VQMemoryCanvas</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memobj</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mem_obj</span> <span class="o">=</span> <span class="n">memobj</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_box</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">hbox</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_box</span><span class="p">)</span>
+        <span class="n">hbox</span><span class="o">.</span><span class="n">setMargin</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">hbox</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist_button</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s">&#39;History&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">top_box</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hist_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_histButtonClicked</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr_entry</span>  <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">top_box</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_entry</span>  <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QLineEdit</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">top_box</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_entry</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s">&#39;256&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rend_select</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QComboBox</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">top_box</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__canvas_class__</span><span class="p">(</span><span class="n">memobj</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="n">syms</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">vqAddHotKey</span><span class="p">(</span><span class="n">e_memcanvas_qt</span><span class="o">.</span><span class="n">KEY_BACKSPACE</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hotkey_BS</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadDefaultRenderers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loadRendSelect</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr_entry</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_renderMemory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_entry</span><span class="o">.</span><span class="n">returnPressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_renderMemory</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rend_select</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">SIGNAL</span><span class="p">(</span><span class="s">&#39;currentIndexChanged(QString)&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_renderMemory</span><span class="p">)</span>
+
+        <span class="n">hbox</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_button</span><span class="p">)</span>
+        <span class="n">hbox</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr_entry</span><span class="p">)</span>
+        <span class="n">hbox</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size_entry</span><span class="p">)</span>
+        <span class="n">hbox</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rend_select</span><span class="p">)</span>
+
+        <span class="n">vbox</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">vbox</span><span class="o">.</span><span class="n">setMargin</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">vbox</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">vbox</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_box</span><span class="p">)</span>
+        <span class="n">vbox</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="p">,</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_box</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">hbox</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">vbox</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&#39;Mem: None&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_hotkey_BS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">canv</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">hinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+            <span class="n">hinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_histSelected</span><span class="p">(</span> <span class="n">hinfo</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_histSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hinfo</span><span class="p">):</span>
+        <span class="n">addrexpr</span><span class="p">,</span> <span class="n">sizeexpr</span><span class="p">,</span> <span class="n">rendname</span> <span class="o">=</span> <span class="n">hinfo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr_entry</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">addrexpr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_entry</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">sizeexpr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">setRenderer</span><span class="p">(</span><span class="n">rendname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_renderMemory</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_histButtonClicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">vqt_menu</span><span class="o">.</span><span class="n">VQMenu</span><span class="p">(</span><span class="s">&#39;context&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_button</span><span class="p">)</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">splitchar</span> <span class="o">=</span> <span class="s">&#39;&amp;&amp;&amp;&amp;&amp;&#39;</span> <span class="c"># Disable splitting</span>
+        <span class="k">for</span> <span class="n">hinfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span><span class="p">:</span>
+            <span class="n">addrexpr</span><span class="p">,</span> <span class="n">sizeexpr</span><span class="p">,</span> <span class="n">rendname</span> <span class="o">=</span> <span class="n">hinfo</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem_obj</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">addrexpr</span><span class="p">)</span>
+            <span class="n">menustr</span> <span class="o">=</span> <span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">addr</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem_obj</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">menustr</span> <span class="o">+=</span> <span class="s">&#39; - </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+            <span class="n">menu</span><span class="o">.</span><span class="n">addField</span><span class="p">(</span><span class="n">menustr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histSelected</span><span class="p">,</span> <span class="p">(</span><span class="n">hinfo</span><span class="p">,))</span>
+        <span class="n">menu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hist_button</span><span class="o">.</span><span class="n">pos</span><span class="p">()))</span>
+        <span class="k">return</span>
+
+<div class="viewcode-block" id="VQMemoryWindow.vqMemNavSlot"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memory.VQMemoryWindow.vqMemNavSlot">[docs]</a>    <span class="k">def</span> <span class="nf">vqMemNavSlot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="n">sizeexpr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c"># Used by nav event generators to make us render</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr_entry</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sizeexpr</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">size_entry</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">sizeexpr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_renderMemory</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VQMemoryWindow.loadRendSelect"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memory.VQMemoryWindow.loadRendSelect">[docs]</a>    <span class="k">def</span> <span class="nf">loadRendSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rend_select</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">getRendererNames</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rend_select</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VQMemoryWindow.loadDefaultRenderers"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memory.VQMemoryWindow.loadDefaultRenderers">[docs]</a>    <span class="k">def</span> <span class="nf">loadDefaultRenderers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">addRenderer</span><span class="p">(</span><span class="s">&quot;bytes&quot;</span><span class="p">,</span>    <span class="n">e_render</span><span class="o">.</span><span class="n">ByteRend</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">addRenderer</span><span class="p">(</span><span class="s">&quot;u_int_16&quot;</span><span class="p">,</span> <span class="n">e_render</span><span class="o">.</span><span class="n">ShortRend</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">addRenderer</span><span class="p">(</span><span class="s">&quot;u_int_32&quot;</span><span class="p">,</span> <span class="n">e_render</span><span class="o">.</span><span class="n">LongRend</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">addRenderer</span><span class="p">(</span><span class="s">&quot;u_int_64&quot;</span><span class="p">,</span> <span class="n">e_render</span><span class="o">.</span><span class="n">QuadRend</span><span class="p">())</span>
+</div>
+    <span class="k">def</span> <span class="nf">_getRenderVaSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">expr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr_entry</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="n">sizeexpr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size_entry</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">expr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sizeexpr</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem_obj</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39;Invalid Address: </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mem_obj</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">sizeexpr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&#39;Invalid Size: </span><span class="si">%s</span><span class="s"> (</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s">&#39;Mem: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">expr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">addr</span><span class="p">,</span> <span class="n">size</span>
+
+    <span class="nd">@idlethread</span>
+    <span class="k">def</span> <span class="nf">_renderMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">clearText</span><span class="p">()</span>
+
+        <span class="n">addr</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getRenderVaSize</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">addr</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">expr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addr_entry</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="n">rname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rend_select</span><span class="o">.</span><span class="n">currentText</span><span class="p">())</span>
+        <span class="n">sizeexpr</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size_entry</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+
+        <span class="n">mhist</span> <span class="o">=</span> <span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">sizeexpr</span><span class="p">,</span> <span class="n">rname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mhist</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span> <span class="n">mhist</span> <span class="p">)</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mem_history</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">setRenderer</span><span class="p">(</span><span class="n">rname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">renderMemory</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VQMemoryWindow.clearText"><a class="viewcode-back" href="../../../envi.qt.html#envi.qt.memory.VQMemoryWindow.clearText">[docs]</a>    <span class="k">def</span> <span class="nf">clearText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem_canvas</span><span class="o">.</span><span class="n">clearCanvas</span><span class="p">()</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../qt.html" >envi.qt</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

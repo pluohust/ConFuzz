@@ -1,0 +1,924 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.archs.amd64</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        <a href="vtrace.archs-module.html">Package&nbsp;archs</a> ::
+        Module&nbsp;amd64
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.archs.amd64-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vtrace.archs.amd64-module.html">Module vtrace.archs.amd64</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">Amd64 Support Module</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">struct</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package envi=envi-module.html"><a title="envi" class="py-name" href="#" onclick="return doclink('link-0', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package envi.archs=envi.archs-module.html,Package vtrace.archs=vtrace.archs-module.html"><a title="envi.archs
+vtrace.archs" class="py-name" href="#" onclick="return doclink('link-1', 'archs', 'link-1');">archs</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Package envi.archs.amd64=envi.archs.amd64-module.html,Module vdb.extensions.amd64=vdb.extensions.amd64-module.html,Module vtrace.archs.amd64=vtrace.archs.amd64-module.html"><a title="envi.archs.amd64
+vdb.extensions.amd64
+vtrace.archs.amd64" class="py-name" href="#" onclick="return doclink('link-2', 'amd64', 'link-2');">amd64</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_amd64</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-3" class="py-name" targets="Package vtrace=vtrace-module.html"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-3', 'vtrace', 'link-3');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name"><a title="envi.archs
+vtrace.archs" class="py-name" href="#" onclick="return doclink('link-4', 'archs', 'link-1');">archs</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Package envi.archs.i386=envi.archs.i386-module.html,Module vdb.extensions.i386=vdb.extensions.i386-module.html,Module vtrace.archs.i386=vtrace.archs.i386-module.html"><a title="envi.archs.i386
+vdb.extensions.i386
+vtrace.archs.i386" class="py-name" href="#" onclick="return doclink('link-5', 'i386', 'link-5');">i386</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vt_i386</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Mixin"></a><div id="Amd64Mixin-def"><a name="L10"></a><tt class="py-lineno">10</tt> <a class="py-toggle" href="#" id="Amd64Mixin-toggle" onclick="return toggle('Amd64Mixin');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.archs.amd64.Amd64Mixin-class.html">Amd64Mixin</a><tt class="py-op">(</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">        <tt class="py-base-class">e_amd64</tt><tt class="py-op">.</tt><tt class="py-base-class">Amd64Module</tt><tt class="py-op">,</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line">        <tt class="py-base-class">e_amd64</tt><tt class="py-op">.</tt><tt class="py-base-class">Amd64RegisterContext</tt><tt class="py-op">,</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">        <tt class="py-base-class">vt_i386</tt><tt class="py-op">.</tt><tt class="py-base-class">i386WatchMixin</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Mixin-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="Amd64Mixin-expanded"><a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-docstring">    Do what we need to for the lucious amd64</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="Amd64Mixin.__init__"></a><div id="Amd64Mixin.__init__-def"><a name="L17"></a><tt class="py-lineno">17</tt> <a class="py-toggle" href="#" id="Amd64Mixin.__init__-toggle" onclick="return toggle('Amd64Mixin.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.amd64.Amd64Mixin-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Mixin.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Amd64Mixin.__init__-expanded"><a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">e_amd64</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Class envi.archs.amd64.Amd64Module=envi.archs.amd64.Amd64Module-class.html"><a title="envi.archs.amd64.Amd64Module" class="py-name" href="#" onclick="return doclink('link-6', 'Amd64Module', 'link-6');">Amd64Module</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method Elf.Elf.__init__()=Elf.Elf-class.html#__init__,Method Elf.Elf32Dynamic.__init__()=Elf.Elf32Dynamic-class.html#__init__,Method Elf.Elf32Pheader.__init__()=Elf.Elf32Pheader-class.html#__init__,Method Elf.Elf32Reloc.__init__()=Elf.Elf32Reloc-class.html#__init__,Method Elf.Elf32Reloca.__init__()=Elf.Elf32Reloca-class.html#__init__,Method Elf.Elf32Section.__init__()=Elf.Elf32Section-class.html#__init__,Method Elf.Elf32Symbol.__init__()=Elf.Elf32Symbol-class.html#__init__,Method Elf.Elf64Dynamic.__init__()=Elf.Elf64Dynamic-class.html#__init__,Method Elf.Elf64Pheader.__init__()=Elf.Elf64Pheader-class.html#__init__,Method Elf.Elf64Reloc.__init__()=Elf.Elf64Reloc-class.html#__init__,Method Elf.Elf64Reloca.__init__()=Elf.Elf64Reloca-class.html#__init__,Method Elf.Elf64Section.__init__()=Elf.Elf64Section-class.html#__init__,Method Elf.Elf64Symbol.__init__()=Elf.Elf64Symbol-class.html#__init__,Method Elf.ElfDynamic.__init__()=Elf.ElfDynamic-class.html#__init__,Method Elf.ElfPheader.__init__()=Elf.ElfPheader-class.html#__init__,Method Elf.ElfReloc.__init__()=Elf.ElfReloc-class.html#__init__,Method Elf.ElfSection.__init__()=Elf.ElfSection-class.html#__init__,Method Elf.ElfSymbol.__init__()=Elf.ElfSymbol-class.html#__init__,Method envi.ArchitectureModule.__init__()=envi.ArchitectureModule-class.html#__init__,Method envi.EmuException.__init__()=envi.EmuException-class.html#__init__,Method envi.Emulator.__init__()=envi.Emulator-class.html#__init__,Method envi.InvalidInstruction.__init__()=envi.InvalidInstruction-class.html#__init__,Method envi.MapOverlapException.__init__()=envi.MapOverlapException-class.html#__init__,Method envi.Opcode.__init__()=envi.Opcode-class.html#__init__,Method envi.SegmentationViolation.__init__()=envi.SegmentationViolation-class.html#__init__,Method envi.UnsupportedInstruction.__init__()=envi.UnsupportedInstruction-class.html#__init__,Method envi.archs.amd64.Amd64Emulator.__init__()=envi.archs.amd64.Amd64Emulator-class.html#__init__,Method envi.archs.amd64.Amd64Module.__init__()=envi.archs.amd64.Amd64Module-class.html#__init__,Method envi.archs.amd64.disasm.Amd64Disasm.__init__()=envi.archs.amd64.disasm.Amd64Disasm-class.html#__init__,Method envi.archs.amd64.disasm.Amd64RipRelOper.__init__()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#__init__,Method envi.archs.amd64.regs.Amd64RegisterContext.__init__()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#__init__,Method envi.archs.arm.ArmModule.__init__()=envi.archs.arm.ArmModule-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOper.__init__()=envi.archs.arm.armdisasm.ArmImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegListOper.__init__()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#__init__,Method envi.archs.arm.disasm.ArmDisasm.__init__()=envi.archs.arm.disasm.ArmDisasm-class.html#__init__,Method envi.archs.arm.emu.ArmEmulator.__init__()=envi.archs.arm.emu.ArmEmulator-class.html#__init__,Method envi.archs.arm.emu.CoProcEmulator.__init__()=envi.archs.arm.emu.CoProcEmulator-class.html#__init__,Method envi.archs.arm.regs.ArmRegisterContext.__init__()=envi.archs.arm.regs.ArmRegisterContext-class.html#__init__,Method envi.archs.arm.thumb.simpleops.__init__()=envi.archs.arm.thumb.simpleops-class.html#__init__,Method envi.archs.arm.thumbdisasm.simpleops.__init__()=envi.archs.arm.thumbdisasm.simpleops-class.html#__init__,Method envi.archs.i386.disasm.i386Disasm.__init__()=envi.archs.i386.disasm.i386Disasm-class.html#__init__,Method envi.archs.i386.disasm.i386ImmMemOper.__init__()=envi.archs.i386.disasm.i386ImmMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386ImmOper.__init__()=envi.archs.i386.disasm.i386ImmOper-class.html#__init__,Method envi.archs.i386.disasm.i386PcRelOper.__init__()=envi.archs.i386.disasm.i386PcRelOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegMemOper.__init__()=envi.archs.i386.disasm.i386RegMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegOper.__init__()=envi.archs.i386.disasm.i386RegOper-class.html#__init__,Method envi.archs.i386.disasm.i386SibOper.__init__()=envi.archs.i386.disasm.i386SibOper-class.html#__init__,Method envi.archs.i386.emu.BFastCall.__init__()=envi.archs.i386.emu.BFastCall-class.html#__init__,Method envi.archs.i386.emu.FastCall.__init__()=envi.archs.i386.emu.FastCall-class.html#__init__,Method envi.archs.i386.emu.IntelEmulator.__init__()=envi.archs.i386.emu.IntelEmulator-class.html#__init__,Method envi.archs.i386.emu.MsFastCall.__init__()=envi.archs.i386.emu.MsFastCall-class.html#__init__,Method envi.archs.i386.i386Module.__init__()=envi.archs.i386.i386Module-class.html#__init__,Method envi.archs.i386.regs.i386RegisterContext.__init__()=envi.archs.i386.regs.i386RegisterContext-class.html#__init__,Method envi.archs.z80.disasm.z80Disasm.__init__()=envi.archs.z80.disasm.z80Disasm-class.html#__init__,Method envi.archs.z80.disasm.z80ImmOper.__init__()=envi.archs.z80.disasm.z80ImmOper-class.html#__init__,Method envi.archs.z80.disasm.z80RegMem.__init__()=envi.archs.z80.disasm.z80RegMem-class.html#__init__,Method envi.archs.z80.disasm.z80RegOper.__init__()=envi.archs.z80.disasm.z80RegOper-class.html#__init__,Method envi.archs.z80.regs.z80RegisterContext.__init__()=envi.archs.z80.regs.z80RegisterContext-class.html#__init__,Method envi.arm.ArmModule.__init__()=envi.arm.ArmModule-class.html#__init__,Method envi.arm.ArmOpcode.__init__()=envi.arm.ArmOpcode-class.html#__init__,Method envi.arm.ArmOperand.__init__()=envi.arm.ArmOperand-class.html#__init__,Method envi.bintree.BinaryTree.__init__()=envi.bintree.BinaryTree-class.html#__init__,Method envi.bytesig.SignatureTree.__init__()=envi.bytesig.SignatureTree-class.html#__init__,Method envi.cli.CliExtMeth.__init__()=envi.cli.CliExtMeth-class.html#__init__,Method envi.cli.EnviCli.__init__()=envi.cli.EnviCli-class.html#__init__,Method envi.codeflow.CodeFlowContext.__init__()=envi.codeflow.CodeFlowContext-class.html#__init__,Method envi.config.EnviConfig.__init__()=envi.config.EnviConfig-class.html#__init__,Method envi.expression.ExpressionLocals.__init__()=envi.expression.ExpressionLocals-class.html#__init__,Method envi.expression.MemoryExpressionLocals.__init__()=envi.expression.MemoryExpressionLocals-class.html#__init__,Method envi.memcanvas.MemoryCanvas.__init__()=envi.memcanvas.MemoryCanvas-class.html#__init__,Method envi.memcanvas.StringMemoryCanvas.__init__()=envi.memcanvas.StringMemoryCanvas-class.html#__init__,Method envi.memcanvas.renderers.ByteRend.__init__()=envi.memcanvas.renderers.ByteRend-class.html#__init__,Method envi.memory.IMemory.__init__()=envi.memory.IMemory-class.html#__init__,Method envi.memory.MemoryFile.__init__()=envi.memory.MemoryFile-class.html#__init__,Method envi.memory.MemoryObject.__init__()=envi.memory.MemoryObject-class.html#__init__,Method envi.pagelookup.MapLookup.__init__()=envi.pagelookup.MapLookup-class.html#__init__,Method envi.pagelookup.PageLookup.__init__()=envi.pagelookup.PageLookup-class.html#__init__,Method envi.qt.VQMemoryMapView.__init__()=envi.qt.VQMemoryMapView-class.html#__init__,Method envi.qt.memcanvas.VQMemoryCanvas.__init__()=envi.qt.memcanvas.VQMemoryCanvas-class.html#__init__,Method envi.qt.memory.VQMemoryWindow.__init__()=envi.qt.memory.VQMemoryWindow-class.html#__init__,Method envi.registers.RegisterContext.__init__()=envi.registers.RegisterContext-class.html#__init__,Method envi.resolver.FileSymbol.__init__()=envi.resolver.FileSymbol-class.html#__init__,Method envi.resolver.Symbol.__init__()=envi.resolver.Symbol-class.html#__init__,Method envi.resolver.SymbolResolver.__init__()=envi.resolver.SymbolResolver-class.html#__init__,Method envi.util.CopyOnWrite.__init__()=envi.util.CopyOnWrite-class.html#__init__,Method vdb.ScriptThread.__init__()=vdb.ScriptThread-class.html#__init__,Method vdb.Vdb.__init__()=vdb.Vdb-class.html#__init__,Method vdb.VdbLookup.__init__()=vdb.VdbLookup-class.html#__init__,Method vdb.VdbTrace.__init__()=vdb.VdbTrace-class.html#__init__,Method vdb.extensions.gdbstub.GdbStubNotifier.__init__()=vdb.extensions.gdbstub.GdbStubNotifier-class.html#__init__,Method vdb.gui.VdbFileDescWindow.__init__()=vdb.gui.VdbFileDescWindow-class.html#__init__,Method vdb.gui.VdbGui.__init__()=vdb.gui.VdbGui-class.html#__init__,Method vdb.gui.VdbMainWindow.__init__()=vdb.gui.VdbMainWindow-class.html#__init__,Method vdb.gui.VdbMemoryMapWindow.__init__()=vdb.gui.VdbMemoryMapWindow-class.html#__init__,Method vdb.gui.VdbMemoryView.__init__()=vdb.gui.VdbMemoryView-class.html#__init__,Method vdb.gui.VdbMemoryWindow.__init__()=vdb.gui.VdbMemoryWindow-class.html#__init__,Method vdb.gui.VdbRegisterWindow.__init__()=vdb.gui.VdbRegisterWindow-class.html#__init__,Method vdb.gui.VdbViewWindow.__init__()=vdb.gui.VdbViewWindow-class.html#__init__,Method vdb.gui.VdbWindow.__init__()=vdb.gui.VdbWindow-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapRenderer.__init__()=vdb.gui.extensions.windows.VdbHeapRenderer-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapWindow.__init__()=vdb.gui.extensions.windows.VdbHeapWindow-class.html#__init__,Method vdb.gui.extensions.windows.Win32HeapWindow.__init__()=vdb.gui.extensions.windows.Win32HeapWindow-class.html#__init__,Method vdb.qt.windows.VdbMemoryWindow.__init__()=vdb.qt.windows.VdbMemoryWindow-class.html#__init__,Method vdb.qt.windows.VdbWindow.__init__()=vdb.qt.windows.VdbWindow-class.html#__init__,Method vdb.recon.ReconBreak.__init__()=vdb.recon.ReconBreak-class.html#__init__,Method vdb.recon.sniper.SniperArgValueBreak.__init__()=vdb.recon.sniper.SniperArgValueBreak-class.html#__init__,Method vdb.recon.sniper.SniperDynArgBreak.__init__()=vdb.recon.sniper.SniperDynArgBreak-class.html#__init__,Method vdb.renderers.DerefRenderer.__init__()=vdb.renderers.DerefRenderer-class.html#__init__,Method vdb.renderers.OpcodeRenderer.__init__()=vdb.renderers.OpcodeRenderer-class.html#__init__,Method vdb.renderers.SymbolRenderer.__init__()=vdb.renderers.SymbolRenderer-class.html#__init__,Method vdb.stalker.StalkerBlockBreak.__init__()=vdb.stalker.StalkerBlockBreak-class.html#__init__,Method vdb.stalker.StalkerBreak.__init__()=vdb.stalker.StalkerBreak-class.html#__init__,Method vdb.stalker.StalkerCodeFlow.__init__()=vdb.stalker.StalkerCodeFlow-class.html#__init__,Method vdb.stalker.StalkerDynBreak.__init__()=vdb.stalker.StalkerDynBreak-class.html#__init__,Method visgraph.cli.GraphCli.__init__()=visgraph.cli.GraphCli-class.html#__init__,Method visgraph.dbcore.DbGraphStore.__init__()=visgraph.dbcore.DbGraphStore-class.html#__init__,Method visgraph.dbcore.DbSubGraph.__init__()=visgraph.dbcore.DbSubGraph-class.html#__init__,Method visgraph.exc.DuplicateNode.__init__()=visgraph.exc.DuplicateNode-class.html#__init__,Method visgraph.exc.EdgeNonExistant.__init__()=visgraph.exc.EdgeNonExistant-class.html#__init__,Method visgraph.exc.NodeNonExistant.__init__()=visgraph.exc.NodeNonExistant-class.html#__init__,Method visgraph.graphcore.Graph.__init__()=visgraph.graphcore.Graph-class.html#__init__,Method visgraph.graphcore.HierarchicalGraph.__init__()=visgraph.graphcore.HierarchicalGraph-class.html#__init__,Method visgraph.layouts.GraphLayout.__init__()=visgraph.layouts.GraphLayout-class.html#__init__,Method visgraph.layouts.dynadag.DynadagLayout.__init__()=visgraph.layouts.dynadag.DynadagLayout-class.html#__init__,Method visgraph.renderers.GraphRenderer.__init__()=visgraph.renderers.GraphRenderer-class.html#__init__,Method visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__()=visgraph.renderers.gtkrend.GtkVisGraphOverview-class.html#__init__,Method visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__()=visgraph.renderers.gtkrend.GtkVisGraphRenderer-class.html#__init__,Method visgraph.renderers.qgraphtree.NodeColumn.__init__()=visgraph.renderers.qgraphtree.NodeColumn-class.html#__init__,Method visgraph.renderers.qgraphtree.QGraphNode.__init__()=visgraph.renderers.qgraphtree.QGraphNode-class.html#__init__,Method visgraph.renderers.qgraphtree.QGraphTreeView.__init__()=visgraph.renderers.qgraphtree.QGraphTreeView-class.html#__init__,Method visgraph.renderers.svgrend.SvgGraphRenderer.__init__()=visgraph.renderers.svgrend.SvgGraphRenderer-class.html#__init__,Method vqt.application.VQDockWidget.__init__()=vqt.application.VQDockWidget-class.html#__init__,Method vqt.application.VQMainCmdWindow.__init__()=vqt.application.VQMainCmdWindow-class.html#__init__,Method vqt.basics.ACT.__init__()=vqt.basics.ACT-class.html#__init__,Method vqt.basics.HBox.__init__()=vqt.basics.HBox-class.html#__init__,Method vqt.basics.VBox.__init__()=vqt.basics.VBox-class.html#__init__,Method vqt.cli.VQCli.__init__()=vqt.cli.VQCli-class.html#__init__,Method vqt.main.VQApplication.__init__()=vqt.main.VQApplication-class.html#__init__,Method vqt.menubuilder.ActionCall.__init__()=vqt.menubuilder.ActionCall-class.html#__init__,Method vqt.menubuilder.FieldAdder.__init__()=vqt.menubuilder.FieldAdder-class.html#__init__,Method vqt.menubuilder.VQMenu.__init__()=vqt.menubuilder.VQMenu-class.html#__init__,Method vqt.menubuilder.VQMenuBar.__init__()=vqt.menubuilder.VQMenuBar-class.html#__init__,Method vqt.qpython.ScriptThread.__init__()=vqt.qpython.ScriptThread-class.html#__init__,Method vqt.qpython.VQPythonView.__init__()=vqt.qpython.VQPythonView-class.html#__init__,Method vqt.tree.VQTreeItem.__init__()=vqt.tree.VQTreeItem-class.html#__init__,Method vqt.tree.VQTreeModel.__init__()=vqt.tree.VQTreeModel-class.html#__init__,Method vqt.tree.VQTreeSorter.__init__()=vqt.tree.VQTreeSorter-class.html#__init__,Method vqt.tree.VQTreeView.__init__()=vqt.tree.VQTreeView-class.html#__init__,Method vtrace.AccessViolation.__init__()=vtrace.AccessViolation-class.html#__init__,Method vtrace.Trace.__init__()=vtrace.Trace-class.html#__init__,Method vtrace.TraceGroup.__init__()=vtrace.TraceGroup-class.html#__init__,Method vtrace.VtraceExpressionLocals.__init__()=vtrace.VtraceExpressionLocals-class.html#__init__,Method vtrace.archs.amd64.Amd64Mixin.__init__()=vtrace.archs.amd64.Amd64Mixin-class.html#__init__,Method vtrace.archs.arm.ArmMixin.__init__()=vtrace.archs.arm.ArmMixin-class.html#__init__,Method vtrace.archs.i386.i386Mixin.__init__()=vtrace.archs.i386.i386Mixin-class.html#__init__,Method vtrace.archs.i386.i386WatchMixin.__init__()=vtrace.archs.i386.i386WatchMixin-class.html#__init__,Method vtrace.breakpoints.Breakpoint.__init__()=vtrace.breakpoints.Breakpoint-class.html#__init__,Method vtrace.breakpoints.CallBreak.__init__()=vtrace.breakpoints.CallBreak-class.html#__init__,Method vtrace.envitools.TraceEmulator.__init__()=vtrace.envitools.TraceEmulator-class.html#__init__,Method vtrace.notifiers.DistributedNotifier.__init__()=vtrace.notifiers.DistributedNotifier-class.html#__init__,Method vtrace.notifiers.Notifier.__init__()=vtrace.notifiers.Notifier-class.html#__init__,Method vtrace.platforms.android.AndroidArmTrace.__init__()=vtrace.platforms.android.AndroidArmTrace-class.html#__init__,Method vtrace.platforms.base.TracerBase.__init__()=vtrace.platforms.base.TracerBase-class.html#__init__,Method vtrace.platforms.base.TracerThread.__init__()=vtrace.platforms.base.TracerThread-class.html#__init__,Method vtrace.platforms.darwin.DarwinAmd64Trace.__init__()=vtrace.platforms.darwin.DarwinAmd64Trace-class.html#__init__,Method vtrace.platforms.darwin.DarwinMixin.__init__()=vtrace.platforms.darwin.DarwinMixin-class.html#__init__,Method vtrace.platforms.darwin.Darwini386Trace.__init__()=vtrace.platforms.darwin.Darwini386Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__()=vtrace.platforms.freebsd.FreeBSDAmd64Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDMixin.__init__()=vtrace.platforms.freebsd.FreeBSDMixin-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDi386Trace.__init__()=vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin.__init__()=vtrace.platforms.gdbstub.GdbStubMixin-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin_old.__init__()=vtrace.platforms.gdbstub.GdbStubMixin_old-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubTrace.__init__()=vtrace.platforms.gdbstub.GdbStubTrace-class.html#__init__,Method vtrace.platforms.gdbstub.KeBugCheckBreak.__init__()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#__init__,Method vtrace.platforms.linux.LinuxAmd64Trace.__init__()=vtrace.platforms.linux.LinuxAmd64Trace-class.html#__init__,Method vtrace.platforms.linux.LinuxMixin.__init__()=vtrace.platforms.linux.LinuxMixin-class.html#__init__,Method vtrace.platforms.linux.Linuxi386Trace.__init__()=vtrace.platforms.linux.Linuxi386Trace-class.html#__init__,Method vtrace.platforms.posix.ElfMixin.__init__()=vtrace.platforms.posix.ElfMixin-class.html#__init__,Method vtrace.platforms.posix.PosixMixin.__init__()=vtrace.platforms.posix.PosixMixin-class.html#__init__,Method vtrace.platforms.posix.PtraceMixin.__init__()=vtrace.platforms.posix.PtraceMixin-class.html#__init__,Method vtrace.platforms.win32.Win32SymbolParser.__init__()=vtrace.platforms.win32.Win32SymbolParser-class.html#__init__,Method vtrace.platforms.win32.WindowsAmd64Trace.__init__()=vtrace.platforms.win32.WindowsAmd64Trace-class.html#__init__,Method vtrace.platforms.win32.WindowsMixin.__init__()=vtrace.platforms.win32.WindowsMixin-class.html#__init__,Method vtrace.platforms.win32.Windowsi386Trace.__init__()=vtrace.platforms.win32.Windowsi386Trace-class.html#__init__,Method vtrace.qt.RegColorDelegate.__init__()=vtrace.qt.RegColorDelegate-class.html#__init__,Method vtrace.qt.VQFileDescView.__init__()=vtrace.qt.VQFileDescView-class.html#__init__,Method vtrace.qt.VQMemoryMapView.__init__()=vtrace.qt.VQMemoryMapView-class.html#__init__,Method vtrace.qt.VQProcessListView.__init__()=vtrace.qt.VQProcessListView-class.html#__init__,Method vtrace.qt.VQProcessSelectDialog.__init__()=vtrace.qt.VQProcessSelectDialog-class.html#__init__,Method vtrace.qt.VQRegistersListView.__init__()=vtrace.qt.VQRegistersListView-class.html#__init__,Method vtrace.qt.VQRegistersView.__init__()=vtrace.qt.VQRegistersView-class.html#__init__,Method vtrace.qt.VQThreadsView.__init__()=vtrace.qt.VQThreadsView-class.html#__init__,Method vtrace.qt.VQTraceNotifier.__init__()=vtrace.qt.VQTraceNotifier-class.html#__init__,Method vtrace.qt.VQTraceToolBar.__init__()=vtrace.qt.VQTraceToolBar-class.html#__init__,Method vtrace.rmi.RemoteTrace.__init__()=vtrace.rmi.RemoteTrace-class.html#__init__,Method vtrace.snapshot.TraceSnapshot.__init__()=vtrace.snapshot.TraceSnapshot-class.html#__init__,Method vtrace.tools.iathook.IatHook.__init__()=vtrace.tools.iathook.IatHook-class.html#__init__,Method vtrace.tools.win32alloc.ReturnBreak.__init__()=vtrace.tools.win32alloc.ReturnBreak-class.html#__init__,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__,Method vtrace.tools.win32heap.FreeListCorruption.__init__()=vtrace.tools.win32heap.FreeListCorruption-class.html#__init__,Method vtrace.tools.win32heap.HeapCorruptionException.__init__()=vtrace.tools.win32heap.HeapCorruptionException-class.html#__init__,Method vtrace.tools.win32heap.Win32Chunk.__init__()=vtrace.tools.win32heap.Win32Chunk-class.html#__init__,Method vtrace.tools.win32heap.Win32Heap.__init__()=vtrace.tools.win32heap.Win32Heap-class.html#__init__,Method vtrace.tools.win32heap.Win32Segment.__init__()=vtrace.tools.win32heap.Win32Segment-class.html#__init__,Method vtrace.util.TraceManager.__init__()=vtrace.util.TraceManager-class.html#__init__,Method vtrace.watchpoints.PageWatchpoint.__init__()=vtrace.watchpoints.PageWatchpoint-class.html#__init__,Method vtrace.watchpoints.Watchpoint.__init__()=vtrace.watchpoints.Watchpoint-class.html#__init__,Method vwidget.RefView.__init__()=vwidget.RefView-class.html#__init__,Method vwidget.SpaceView.__init__()=vwidget.SpaceView-class.html#__init__,Method vwidget.VWidget.__init__()=vwidget.VWidget-class.html#__init__,Method vwidget.cluster.ClusterServerView.__init__()=vwidget.cluster.ClusterServerView-class.html#__init__,Method vwidget.config.ConfigDialog.__init__()=vwidget.config.ConfigDialog-class.html#__init__,Method vwidget.layout.LayoutManager.__init__()=vwidget.layout.LayoutManager-class.html#__init__,Method vwidget.memview.MemoryView.__init__()=vwidget.memview.MemoryView-class.html#__init__,Method vwidget.memview.MemoryWindow.__init__()=vwidget.memview.MemoryWindow-class.html#__init__,Method vwidget.memview.VaTag.__init__()=vwidget.memview.VaTag-class.html#__init__,Method vwidget.menubuilder.FieldAdder.__init__()=vwidget.menubuilder.FieldAdder-class.html#__init__,Method vwidget.menubuilder.Menu.__init__()=vwidget.menubuilder.Menu-class.html#__init__,Method vwidget.menubuilder.MenuBar.__init__()=vwidget.menubuilder.MenuBar-class.html#__init__,Method vwidget.pydialog.PyDialog.__init__()=vwidget.pydialog.PyDialog-class.html#__init__,Method vwidget.pydialog.ScriptThread.__init__()=vwidget.pydialog.ScriptThread-class.html#__init__,Method vwidget.views.GladeView.__init__()=vwidget.views.GladeView-class.html#__init__,Method vwidget.views.VTextTag.__init__()=vwidget.views.VTextTag-class.html#__init__,Method vwidget.views.VTextView.__init__()=vwidget.views.VTextView-class.html#__init__,Method vwidget.views.VTreeView.__init__()=vwidget.views.VTreeView-class.html#__init__,Method vwidget.views.VView.__init__()=vwidget.views.VView-class.html#__init__,Method vwidget.vwvstruct.SelectNamespaceDialog.__init__()=vwidget.vwvstruct.SelectNamespaceDialog-class.html#__init__,Method vwidget.vwvstruct.SelectStructureDialog.__init__()=vwidget.vwvstruct.SelectStructureDialog-class.html#__init__,Method vwidget.vwvstruct.VStructBrowser.__init__()=vwidget.vwvstruct.VStructBrowser-class.html#__init__,Method vwidget.vwvstruct.VStructBuilderView.__init__()=vwidget.vwvstruct.VStructBuilderView-class.html#__init__,Method vwidget.vwvstruct.VStructNamespaceSelector.__init__()=vwidget.vwvstruct.VStructNamespaceSelector-class.html#__init__,Method vwidget.vwvstruct.VStructView.__init__()=vwidget.vwvstruct.VStructView-class.html#__init__,Method vwidget.vwvtrace.FileDescView.__init__()=vwidget.vwvtrace.FileDescView-class.html#__init__,Method vwidget.vwvtrace.MemoryMapView.__init__()=vwidget.vwvtrace.MemoryMapView-class.html#__init__,Method vwidget.vwvtrace.ProcessListView.__init__()=vwidget.vwvtrace.ProcessListView-class.html#__init__,Method vwidget.vwvtrace.SelectProcessDialog.__init__()=vwidget.vwvtrace.SelectProcessDialog-class.html#__init__,Method vwidget.vwvtrace.TraceToolBar.__init__()=vwidget.vwvtrace.TraceToolBar-class.html#__init__,Method vwidget.vwvtrace.VtraceView.__init__()=vwidget.vwvtrace.VtraceView-class.html#__init__,Method vwidget.windows.MainWindow.__init__()=vwidget.windows.MainWindow-class.html#__init__,Method vwidget.windows.VWindow.__init__()=vwidget.windows.VWindow-class.html#__init__"><a title="Elf.Elf.__init__
+Elf.Elf32Dynamic.__init__
+Elf.Elf32Pheader.__init__
+Elf.Elf32Reloc.__init__
+Elf.Elf32Reloca.__init__
+Elf.Elf32Section.__init__
+Elf.Elf32Symbol.__init__
+Elf.Elf64Dynamic.__init__
+Elf.Elf64Pheader.__init__
+Elf.Elf64Reloc.__init__
+Elf.Elf64Reloca.__init__
+Elf.Elf64Section.__init__
+Elf.Elf64Symbol.__init__
+Elf.ElfDynamic.__init__
+Elf.ElfPheader.__init__
+Elf.ElfReloc.__init__
+Elf.ElfSection.__init__
+Elf.ElfSymbol.__init__
+envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__
+vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__
+visgraph.cli.GraphCli.__init__
+visgraph.dbcore.DbGraphStore.__init__
+visgraph.dbcore.DbSubGraph.__init__
+visgraph.exc.DuplicateNode.__init__
+visgraph.exc.EdgeNonExistant.__init__
+visgraph.exc.NodeNonExistant.__init__
+visgraph.graphcore.Graph.__init__
+visgraph.graphcore.HierarchicalGraph.__init__
+visgraph.layouts.GraphLayout.__init__
+visgraph.layouts.dynadag.DynadagLayout.__init__
+visgraph.renderers.GraphRenderer.__init__
+visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__
+visgraph.renderers.qgraphtree.NodeColumn.__init__
+visgraph.renderers.qgraphtree.QGraphNode.__init__
+visgraph.renderers.qgraphtree.QGraphTreeView.__init__
+visgraph.renderers.svgrend.SvgGraphRenderer.__init__
+vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__
+vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__
+vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-7', '__init__', 'link-7');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-name">e_amd64</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Class envi.archs.amd64.regs.Amd64RegisterContext=envi.archs.amd64.regs.Amd64RegisterContext-class.html"><a title="envi.archs.amd64.regs.Amd64RegisterContext" class="py-name" href="#" onclick="return doclink('link-8', 'Amd64RegisterContext', 'link-8');">Amd64RegisterContext</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="Elf.Elf.__init__
+Elf.Elf32Dynamic.__init__
+Elf.Elf32Pheader.__init__
+Elf.Elf32Reloc.__init__
+Elf.Elf32Reloca.__init__
+Elf.Elf32Section.__init__
+Elf.Elf32Symbol.__init__
+Elf.Elf64Dynamic.__init__
+Elf.Elf64Pheader.__init__
+Elf.Elf64Reloc.__init__
+Elf.Elf64Reloca.__init__
+Elf.Elf64Section.__init__
+Elf.Elf64Symbol.__init__
+Elf.ElfDynamic.__init__
+Elf.ElfPheader.__init__
+Elf.ElfReloc.__init__
+Elf.ElfSection.__init__
+Elf.ElfSymbol.__init__
+envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__
+vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__
+visgraph.cli.GraphCli.__init__
+visgraph.dbcore.DbGraphStore.__init__
+visgraph.dbcore.DbSubGraph.__init__
+visgraph.exc.DuplicateNode.__init__
+visgraph.exc.EdgeNonExistant.__init__
+visgraph.exc.NodeNonExistant.__init__
+visgraph.graphcore.Graph.__init__
+visgraph.graphcore.HierarchicalGraph.__init__
+visgraph.layouts.GraphLayout.__init__
+visgraph.layouts.dynadag.DynadagLayout.__init__
+visgraph.renderers.GraphRenderer.__init__
+visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__
+visgraph.renderers.qgraphtree.NodeColumn.__init__
+visgraph.renderers.qgraphtree.QGraphNode.__init__
+visgraph.renderers.qgraphtree.QGraphTreeView.__init__
+visgraph.renderers.svgrend.SvgGraphRenderer.__init__
+vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__
+vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__
+vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-9', '__init__', 'link-7');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">        <tt class="py-name">vt_i386</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Class vtrace.archs.i386.i386WatchMixin=vtrace.archs.i386.i386WatchMixin-class.html"><a title="vtrace.archs.i386.i386WatchMixin" class="py-name" href="#" onclick="return doclink('link-10', 'i386WatchMixin', 'link-10');">i386WatchMixin</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="Elf.Elf.__init__
+Elf.Elf32Dynamic.__init__
+Elf.Elf32Pheader.__init__
+Elf.Elf32Reloc.__init__
+Elf.Elf32Reloca.__init__
+Elf.Elf32Section.__init__
+Elf.Elf32Symbol.__init__
+Elf.Elf64Dynamic.__init__
+Elf.Elf64Pheader.__init__
+Elf.Elf64Reloc.__init__
+Elf.Elf64Reloca.__init__
+Elf.Elf64Section.__init__
+Elf.Elf64Symbol.__init__
+Elf.ElfDynamic.__init__
+Elf.ElfPheader.__init__
+Elf.ElfReloc.__init__
+Elf.ElfSection.__init__
+Elf.ElfSymbol.__init__
+envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__
+vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__
+visgraph.cli.GraphCli.__init__
+visgraph.dbcore.DbGraphStore.__init__
+visgraph.dbcore.DbSubGraph.__init__
+visgraph.exc.DuplicateNode.__init__
+visgraph.exc.EdgeNonExistant.__init__
+visgraph.exc.NodeNonExistant.__init__
+visgraph.graphcore.Graph.__init__
+visgraph.graphcore.HierarchicalGraph.__init__
+visgraph.layouts.GraphLayout.__init__
+visgraph.layouts.dynadag.DynadagLayout.__init__
+visgraph.renderers.GraphRenderer.__init__
+visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__
+visgraph.renderers.qgraphtree.NodeColumn.__init__
+visgraph.renderers.qgraphtree.QGraphNode.__init__
+visgraph.renderers.qgraphtree.QGraphTreeView.__init__
+visgraph.renderers.svgrend.SvgGraphRenderer.__init__
+vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__
+vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__
+vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-11', '__init__', 'link-7');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Method visgraph.graphcore.Graph.setMeta()=visgraph.graphcore.Graph-class.html#setMeta,Method vtrace.Trace.setMeta()=vtrace.Trace-class.html#setMeta,Method vtrace.TraceGroup.setMeta()=vtrace.TraceGroup-class.html#setMeta,Method vtrace.util.TraceManager.setMeta()=vtrace.util.TraceManager-class.html#setMeta"><a title="visgraph.graphcore.Graph.setMeta
+vtrace.Trace.setMeta
+vtrace.TraceGroup.setMeta
+vtrace.util.TraceManager.setMeta" class="py-name" href="#" onclick="return doclink('link-12', 'setMeta', 'link-12');">setMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">'Architecture'</tt><tt class="py-op">,</tt><tt class="py-string">'amd64'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Mixin.archGetStackTrace"></a><div id="Amd64Mixin.archGetStackTrace-def"><a name="L24"></a><tt class="py-lineno">24</tt> <a class="py-toggle" href="#" id="Amd64Mixin.archGetStackTrace-toggle" onclick="return toggle('Amd64Mixin.archGetStackTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.amd64.Amd64Mixin-class.html#archGetStackTrace">archGetStackTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Mixin.archGetStackTrace-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="Amd64Mixin.archGetStackTrace-expanded"><a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method vtrace.Trace.requireAttached()=vtrace.Trace-class.html#requireAttached"><a title="vtrace.Trace.requireAttached" class="py-name" href="#" onclick="return doclink('link-13', 'requireAttached', 'link-13');">requireAttached</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-name">current</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">        <tt class="py-name">sanity</tt> <tt class="py-op">=</tt> <tt class="py-number">1000</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">frames</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt id="link-14" class="py-name" targets="Variable vtrace.platforms.linux.user_regs_amd64.rbp=vtrace.platforms.linux.user_regs_amd64-class.html#rbp,Variable vtrace.platforms.win32.CONTEXTx64.rbp=vtrace.platforms.win32.CONTEXTx64-class.html#rbp"><a title="vtrace.platforms.linux.user_regs_amd64.rbp
+vtrace.platforms.win32.CONTEXTx64.rbp" class="py-name" href="#" onclick="return doclink('link-14', 'rbp', 'link-14');">rbp</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method envi.registers.RegisterContext.getRegisterByName()=envi.registers.RegisterContext-class.html#getRegisterByName"><a title="envi.registers.RegisterContext.getRegisterByName" class="py-name" href="#" onclick="return doclink('link-15', 'getRegisterByName', 'link-15');">getRegisterByName</a></tt><tt class="py-op">(</tt><tt class="py-string">"rbp"</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt id="link-16" class="py-name" targets="Variable vtrace.platforms.linux.user_regs_amd64.rip=vtrace.platforms.linux.user_regs_amd64-class.html#rip,Variable vtrace.platforms.win32.CONTEXTx64.rip=vtrace.platforms.win32.CONTEXTx64-class.html#rip"><a title="vtrace.platforms.linux.user_regs_amd64.rip
+vtrace.platforms.win32.CONTEXTx64.rip" class="py-name" href="#" onclick="return doclink('link-16', 'rip', 'link-16');">rip</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name"><a title="envi.registers.RegisterContext.getRegisterByName" class="py-name" href="#" onclick="return doclink('link-17', 'getRegisterByName', 'link-15');">getRegisterByName</a></tt><tt class="py-op">(</tt><tt class="py-string">"rip"</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-name">frames</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method vqt.tree.VQTreeItem.append()=vqt.tree.VQTreeItem-class.html#append,Method vqt.tree.VQTreeModel.append()=vqt.tree.VQTreeModel-class.html#append"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-18', 'append', 'link-18');">append</a></tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt id="link-19" class="py-name"><a title="vtrace.platforms.linux.user_regs_amd64.rip
+vtrace.platforms.win32.CONTEXTx64.rip" class="py-name" href="#" onclick="return doclink('link-19', 'rip', 'link-16');">rip</a></tt><tt class="py-op">,</tt><tt id="link-20" class="py-name"><a title="vtrace.platforms.linux.user_regs_amd64.rbp
+vtrace.platforms.win32.CONTEXTx64.rbp" class="py-name" href="#" onclick="return doclink('link-20', 'rbp', 'link-14');">rbp</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-keyword">while</tt> <tt id="link-21" class="py-name"><a title="vtrace.platforms.linux.user_regs_amd64.rbp
+vtrace.platforms.win32.CONTEXTx64.rbp" class="py-name" href="#" onclick="return doclink('link-21', 'rbp', 'link-14');">rbp</a></tt> <tt class="py-op">!=</tt> <tt class="py-number">0</tt> <tt class="py-keyword">and</tt> <tt class="py-name">current</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">sanity</tt><tt class="py-op">:</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">                <tt id="link-22" class="py-name"><a title="vtrace.platforms.linux.user_regs_amd64.rbp
+vtrace.platforms.win32.CONTEXTx64.rbp" class="py-name" href="#" onclick="return doclink('link-22', 'rbp', 'link-14');">rbp</a></tt><tt class="py-op">,</tt><tt id="link-23" class="py-name"><a title="vtrace.platforms.linux.user_regs_amd64.rip
+vtrace.platforms.win32.CONTEXTx64.rip" class="py-name" href="#" onclick="return doclink('link-23', 'rip', 'link-16');">rip</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method envi.memory.IMemory.readMemoryFormat()=envi.memory.IMemory-class.html#readMemoryFormat"><a title="envi.memory.IMemory.readMemoryFormat" class="py-name" href="#" onclick="return doclink('link-24', 'readMemoryFormat', 'link-24');">readMemoryFormat</a></tt><tt class="py-op">(</tt><tt id="link-25" class="py-name"><a title="vtrace.platforms.linux.user_regs_amd64.rbp
+vtrace.platforms.win32.CONTEXTx64.rbp" class="py-name" href="#" onclick="return doclink('link-25', 'rbp', 'link-14');">rbp</a></tt><tt class="py-op">,</tt> <tt class="py-string">"&lt;QQ"</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt><tt class="py-op">:</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">                <tt class="py-keyword">break</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">            <tt class="py-name">frames</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-26', 'append', 'link-18');">append</a></tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt id="link-27" class="py-name"><a title="vtrace.platforms.linux.user_regs_amd64.rip
+vtrace.platforms.win32.CONTEXTx64.rip" class="py-name" href="#" onclick="return doclink('link-27', 'rip', 'link-16');">rip</a></tt><tt class="py-op">,</tt><tt id="link-28" class="py-name"><a title="vtrace.platforms.linux.user_regs_amd64.rbp
+vtrace.platforms.win32.CONTEXTx64.rbp" class="py-name" href="#" onclick="return doclink('link-28', 'rbp', 'link-14');">rbp</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">            <tt class="py-name">current</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">frames</tt> </tt>
+</div></div><a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:28 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

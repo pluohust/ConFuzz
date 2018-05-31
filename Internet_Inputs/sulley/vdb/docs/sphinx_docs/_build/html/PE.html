@@ -1,0 +1,615 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PE Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pe-package">
+<h1>PE Package<a class="headerlink" href="#pe-package" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The documentation for PE isn&#8217;t quite finished yet! If you want to contribute (or have ideas for better documentation), feel free to <a class="reference external" href="https://github.com/Fitblip/vdb-fork">send me a pull request</a> or <a class="reference external" href="https://github.com/Fitblip">email me</a>.</p>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-PE" title="PE"><tt class="xref py py-mod docutils literal"><span class="pre">PE</span></tt></a> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-PE"></span><dl class="class">
+<dt id="PE.PE">
+<em class="property">class </em><tt class="descclassname">PE.</tt><tt class="descname">PE</tt><big>(</big><em>fd</em>, <em>inmem=False</em><big>)</big><a class="reference internal" href="_modules/PE.html#PE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>The PE object is what gets returned after asking for a PE from any
+of the ways possible</p>
+<p><a class="reference internal" href="#PE.peFromBytes" title="PE.peFromBytes"><tt class="xref py py-class docutils literal"><span class="pre">PE.peFromBytes</span></tt></a>, <a class="reference internal" href="#PE.peFromFileName" title="PE.peFromFileName"><tt class="xref py py-class docutils literal"><span class="pre">PE.peFromFileName</span></tt></a>, or 
+<a class="reference internal" href="#PE.peFromMemoryObject" title="PE.peFromMemoryObject"><tt class="xref py py-class docutils literal"><span class="pre">PE.peFromMemoryObject</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fd</strong> (<em>file descriptor</em>) &#8211; A file descriptor open with &#8216;rb&#8217; (read binary)</li>
+<li><strong>inmem</strong> &#8211; Whether our PE is actually loaded into memory, or a real file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">an instance of itself. Duh.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="PE.PE.checkRva">
+<tt class="descname">checkRva</tt><big>(</big><em>rva</em>, <em>size=None</em><big>)</big><a class="reference internal" href="_modules/PE.html#PE.checkRva"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.checkRva" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make sure an RVA falls inside the valid mapped range
+for the file.  (also make sure it&#8217;s not 0...)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getDllName">
+<tt class="descname">getDllName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getDllName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getDllName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the &#8220;dll name&#8221; from the Name field of the IMAGE_EXPORT_DIRECTORY
+if one is present.  If not, return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">dll name</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getExportName">
+<tt class="descname">getExportName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getExportName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getExportName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the name of this file acording to it&#8217;s export entry.
+(if there are no exports, return None)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getExports">
+<tt class="descname">getExports</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getExports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getExports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of exports in this PE.  The list contains
+tuples in the format; (rva, ord, name).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of export tuples</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getForwarders">
+<tt class="descname">getForwarders</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getForwarders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getForwarders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of forwarders in this PE.  The list contains
+tuples in the format; (rva, name, forwardname).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of forwarders</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getImports">
+<tt class="descname">getImports</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getImports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getImports" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of import tuples for this PE.  The tuples
+are in the format (rva, libname, funcname).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of import tuples</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getPdataEntries">
+<tt class="descname">getPdataEntries</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getPdataEntries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getPdataEntries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse out the PE&#8217;s .pdata section bytes.</p>
+<p>No parameters, just uses <a class="reference internal" href="#PE.PE.getSectionByName" title="PE.PE.getSectionByName"><tt class="xref py py-class docutils literal"><span class="pre">PE.getSectionByName</span></tt></a> to get and parse .pdata 
+entries.</p>
+<p>If the section doesn&#8217;t exist, returns an empty tuple.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of items found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getRelocations">
+<tt class="descname">getRelocations</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getRelocations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getRelocations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of RVA base-relocations in this PE.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getResourceDef">
+<tt class="descname">getResourceDef</tt><big>(</big><em>rtype</em>, <em>name_id</em><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getResourceDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getResourceDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the (rva, size, codepage) tuple for the specified
+resource type/id combination.  Returns None if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getResources">
+<tt class="descname">getResources</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getResources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getResources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the (rtype, nameid, (rva, size, codepage)) tuples for each
+resource in the PE.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getSectionByName">
+<tt class="descname">getSectionByName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getSectionByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getSectionByName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the structure based off it&#8217;s name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> (<em>string</em>) &#8211; A file descriptor open with &#8216;rb&#8217; (read binary)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a vstruct header section</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="vstruct.defs.html#vstruct.defs.pe.IMAGE_SECTION_HEADER" title="vstruct.defs.pe.IMAGE_SECTION_HEADER"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.pe.IMAGE_SECTION_HEADER</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getSections">
+<tt class="descname">getSections</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getSections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getSections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of sections in this PE in VStruct format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of sections</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.getVS_VERSIONINFO">
+<tt class="descname">getVS_VERSIONINFO</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#PE.getVS_VERSIONINFO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.getVS_VERSIONINFO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a VS_VERSIONINFO object for this PE.
+(returns None if version resource is not found)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.readResource">
+<tt class="descname">readResource</tt><big>(</big><em>rtype</em>, <em>name_id</em><big>)</big><a class="reference internal" href="_modules/PE.html#PE.readResource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.readResource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the bytes which define the specified resource.  Returns
+None if not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.PE.rvaToOffset">
+<tt class="descname">rvaToOffset</tt><big>(</big><em>rva</em><big>)</big><a class="reference internal" href="_modules/PE.html#PE.rvaToOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.PE.rvaToOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolve relative-virtual-address =&gt; offset for PE sections. Given a RVA, 
+returns an offset from the current location.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rva</strong> (<em>long</em>) &#8211; Relative Virtual Address to resolve</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Pointer to data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">long</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="PE.peFromBytes">
+<tt class="descclassname">PE.</tt><tt class="descname">peFromBytes</tt><big>(</big><em>fbytes</em><big>)</big><a class="reference internal" href="_modules/PE.html#peFromBytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.peFromBytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a PE class for a string of bytes. Basically just passes 
+your bytes into a StringIO() and hands that off to <a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fbytes</strong> (<em>str.</em>) &#8211; The bytestring for our PE.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a> instance of the specified PE.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="PE.peFromFileName">
+<tt class="descclassname">PE.</tt><tt class="descname">peFromFileName</tt><big>(</big><em>fname</em><big>)</big><a class="reference internal" href="_modules/PE.html#peFromFileName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.peFromFileName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a PE class for a specified file path. Makes sure to open 
+the file in &#8220;rb&#8221; mode to read binary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str.</em>) &#8211; The filename of our PE.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a> instance of the specified PE.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="PE.peFromMemoryObject">
+<tt class="descclassname">PE.</tt><tt class="descname">peFromMemoryObject</tt><big>(</big><em>memobj</em>, <em>baseaddr</em><big>)</big><a class="reference internal" href="_modules/PE.html#peFromMemoryObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.peFromMemoryObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a PE class for a string of bytes. Basically just passes 
+your bytes into a StringIO() and hands that off to <a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a></p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Import vtrace and PE</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">vtrace</span><span class="o">,</span> <span class="nn">PE</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Initilize our vtrace.Trace object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trace</span> <span class="o">=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trace</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;C:\Path\To\Program</span><span class="se">\b</span><span class="s">lah.exe&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Get our library bases</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">libBase</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Get the first address of our first entry (not realistic)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">base</span> <span class="o">=</span> <span class="n">libBase</span><span class="o">.</span><span class="n">items</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Create our PE.PE()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">peFromMemoryObject</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>memobj</strong> (<a class="reference internal" href="vtrace.html#vtrace.Trace" title="vtrace.Trace"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.Trace</span></tt></a>) &#8211; Our memory object (trace object)</li>
+<li><strong>baseaddr</strong> (<em>long</em>) &#8211; Base address for our PE</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a> instance of the specified PE (with inmem=True).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.MemObjFile">
+<em class="property">class </em><tt class="descclassname">PE.</tt><tt class="descname">MemObjFile</tt><big>(</big><em>memobj</em>, <em>baseaddr</em><big>)</big><a class="reference internal" href="_modules/PE.html#MemObjFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.MemObjFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper class to act as a file object, mainly used by <a class="reference internal" href="#PE.peFromMemoryObject" title="PE.peFromMemoryObject"><tt class="xref py py-class docutils literal"><span class="pre">PE.peFromMemoryObject</span></tt></a>. 
+The seek() function sets the current virtual address.</p>
+<p>Implements seek(),read() and write() functions for <a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a> to read</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>memobj</strong> (<a class="reference internal" href="vtrace.html#vtrace.Trace" title="vtrace.Trace"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.Trace</span></tt></a>) &#8211; Our memory object (trace object)</li>
+<li><strong>baseaddr</strong> (<em>long</em>) &#8211; Base address for our PE</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.ResourceDirectory">
+<em class="property">class </em><tt class="descclassname">PE.</tt><tt class="descname">ResourceDirectory</tt><a class="reference internal" href="_modules/PE.html#ResourceDirectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.ResourceDirectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resources are sorted into a hierarchy which begins with
+&#8220;type&#8221; and then &#8220;name/id&#8221; which still points to another
+directory entry which has 1 child (id 1033) with data.</p>
+<dl class="method">
+<dt id="PE.ResourceDirectory.getResourceDef">
+<tt class="descname">getResourceDef</tt><big>(</big><em>restype</em>, <em>name_id</em><big>)</big><a class="reference internal" href="_modules/PE.html#ResourceDirectory.getResourceDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.ResourceDirectory.getResourceDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>This should <em>only</em> be called on the root node!</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.VS_VERSIONINFO">
+<em class="property">class </em><tt class="descclassname">PE.</tt><tt class="descname">VS_VERSIONINFO</tt><big>(</big><em>bytes</em><big>)</big><a class="reference internal" href="_modules/PE.html#VS_VERSIONINFO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.VS_VERSIONINFO" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple (read-only) VS_VERSIONINFO parser</p>
+<dl class="method">
+<dt id="PE.VS_VERSIONINFO.getVersionItems">
+<tt class="descname">getVersionItems</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#VS_VERSIONINFO.getVersionItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.VS_VERSIONINFO.getVersionItems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return dictionary style key,val tuples for the version keys
+in this VS_VERSIONINFO structure.</p>
+<p>Example: for vskey,vsdata in vs.getVersionItems(): print vskey,vsdata</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.VS_VERSIONINFO.getVersionKeys">
+<tt class="descname">getVersionKeys</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE.html#VS_VERSIONINFO.getVersionKeys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.VS_VERSIONINFO.getVersionKeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the keys in this VS_VERSIONINFO struct.</p>
+<p>Example: for keyname in vs.getVersionKeys(): print keyname</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PE.VS_VERSIONINFO.getVersionValue">
+<tt class="descname">getVersionValue</tt><big>(</big><em>key</em>, <em>default=None</em><big>)</big><a class="reference internal" href="_modules/PE.html#VS_VERSIONINFO.getVersionValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.VS_VERSIONINFO.getVersionValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a key from the VS_VERSIONINFO data.</p>
+<p>Example: vs.getVersionValue(&#8216;FileVersion&#8217;)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-PE.carve">
+<span id="carve-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">carve</span></tt> Module<a class="headerlink" href="#module-PE.carve" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="PE.carve.CarvedPE">
+<em class="property">class </em><tt class="descclassname">PE.carve.</tt><tt class="descname">CarvedPE</tt><big>(</big><em>fbytes</em>, <em>offset</em>, <em>xkey</em><big>)</big><a class="reference internal" href="_modules/PE/carve.html#CarvedPE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.carve.CarvedPE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PE.PE" title="PE.PE"><tt class="xref py py-class docutils literal"><span class="pre">PE.PE</span></tt></a></p>
+<dl class="method">
+<dt id="PE.carve.CarvedPE.getFileSize">
+<tt class="descname">getFileSize</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE/carve.html#CarvedPE.getFileSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.carve.CarvedPE.getFileSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PE.carve.CarvedPE.readAtOffset">
+<tt class="descname">readAtOffset</tt><big>(</big><em>offset</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/PE/carve.html#CarvedPE.readAtOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.carve.CarvedPE.readAtOffset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="PE.carve.carve">
+<tt class="descclassname">PE.carve.</tt><tt class="descname">carve</tt><big>(</big><em>pbytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/PE/carve.html#carve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.carve.carve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of (offset, size, xor) tuples of embedded PEs</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="PE.carve.xorbytes">
+<tt class="descclassname">PE.carve.</tt><tt class="descname">xorbytes</tt><big>(</big><em>data</em>, <em>key</em><big>)</big><a class="reference internal" href="_modules/PE/carve.html#xorbytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.carve.xorbytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="PE.carve.xorstatic">
+<tt class="descclassname">PE.carve.</tt><tt class="descname">xorstatic</tt><big>(</big><em>data</em>, <em>i</em><big>)</big><a class="reference internal" href="_modules/PE/carve.html#xorstatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.carve.xorstatic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-PE.cofflib">
+<span id="cofflib-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">cofflib</span></tt> Module<a class="headerlink" href="#module-PE.cofflib" title="Permalink to this headline">¶</a></h2>
+<p>Some utilities for dealing with COFF .LIB files</p>
+<dl class="class">
+<dt id="PE.cofflib.IMAGE_ARCHIVE">
+<em class="property">class </em><tt class="descclassname">PE.cofflib.</tt><tt class="descname">IMAGE_ARCHIVE</tt><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vstruct.html#vstruct.VStruct" title="vstruct.VStruct"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.VStruct</span></tt></a></p>
+<dl class="method">
+<dt id="PE.cofflib.IMAGE_ARCHIVE.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>bytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_COFF">
+<em class="property">class </em><tt class="descclassname">PE.cofflib.</tt><tt class="descname">IMAGE_ARCHIVE_COFF</tt><big>(</big><em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_COFF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_COFF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PE.cofflib.IMAGE_ARCHIVE_MEMBER" title="PE.cofflib.IMAGE_ARCHIVE_MEMBER"><tt class="xref py py-class docutils literal"><span class="pre">PE.cofflib.IMAGE_ARCHIVE_MEMBER</span></tt></a></p>
+<dl class="method">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_COFF.pcb_FileHeader">
+<tt class="descname">pcb_FileHeader</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_COFF.pcb_FileHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_COFF.pcb_FileHeader" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_IMPORT">
+<em class="property">class </em><tt class="descclassname">PE.cofflib.</tt><tt class="descname">IMAGE_ARCHIVE_IMPORT</tt><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_IMPORT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_IMPORT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PE.cofflib.IMAGE_ARCHIVE_MEMBER" title="PE.cofflib.IMAGE_ARCHIVE_MEMBER"><tt class="xref py py-class docutils literal"><span class="pre">PE.cofflib.IMAGE_ARCHIVE_MEMBER</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_LINKER1">
+<em class="property">class </em><tt class="descclassname">PE.cofflib.</tt><tt class="descname">IMAGE_ARCHIVE_LINKER1</tt><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_LINKER1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_LINKER1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PE.cofflib.IMAGE_ARCHIVE_MEMBER" title="PE.cofflib.IMAGE_ARCHIVE_MEMBER"><tt class="xref py py-class docutils literal"><span class="pre">PE.cofflib.IMAGE_ARCHIVE_MEMBER</span></tt></a></p>
+<dl class="method">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_LINKER1.pcb_NumberOfSymbols">
+<tt class="descname">pcb_NumberOfSymbols</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_LINKER1.pcb_NumberOfSymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_LINKER1.pcb_NumberOfSymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_LINKER2">
+<em class="property">class </em><tt class="descclassname">PE.cofflib.</tt><tt class="descname">IMAGE_ARCHIVE_LINKER2</tt><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_LINKER2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_LINKER2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PE.cofflib.IMAGE_ARCHIVE_MEMBER" title="PE.cofflib.IMAGE_ARCHIVE_MEMBER"><tt class="xref py py-class docutils literal"><span class="pre">PE.cofflib.IMAGE_ARCHIVE_MEMBER</span></tt></a></p>
+<dl class="method">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_LINKER2.pcb_NumberOfMembers">
+<tt class="descname">pcb_NumberOfMembers</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_LINKER2.pcb_NumberOfMembers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_LINKER2.pcb_NumberOfMembers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_LINKER2.pcb_NumberOfSymbols">
+<tt class="descname">pcb_NumberOfSymbols</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_LINKER2.pcb_NumberOfSymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_LINKER2.pcb_NumberOfSymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_MEMBER">
+<em class="property">class </em><tt class="descclassname">PE.cofflib.</tt><tt class="descname">IMAGE_ARCHIVE_MEMBER</tt><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_MEMBER"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_MEMBER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vstruct.html#vstruct.VStruct" title="vstruct.VStruct"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.VStruct</span></tt></a></p>
+<dl class="method">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_MEMBER.vsParse">
+<tt class="descname">vsParse</tt><big>(</big><em>bytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_MEMBER.vsParse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_MEMBER.vsParse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.cofflib.IMAGE_ARCHIVE_MEMBER_HEADER">
+<em class="property">class </em><tt class="descclassname">PE.cofflib.</tt><tt class="descname">IMAGE_ARCHIVE_MEMBER_HEADER</tt><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_ARCHIVE_MEMBER_HEADER"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_ARCHIVE_MEMBER_HEADER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vstruct.html#vstruct.VStruct" title="vstruct.VStruct"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.VStruct</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="PE.cofflib.IMAGE_COFF_SYMBOL">
+<em class="property">class </em><tt class="descclassname">PE.cofflib.</tt><tt class="descname">IMAGE_COFF_SYMBOL</tt><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_COFF_SYMBOL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_COFF_SYMBOL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vstruct.html#vstruct.VStruct" title="vstruct.VStruct"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.VStruct</span></tt></a></p>
+<dl class="method">
+<dt id="PE.cofflib.IMAGE_COFF_SYMBOL.pcb_NumberOfAuxSymbols">
+<tt class="descname">pcb_NumberOfAuxSymbols</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#IMAGE_COFF_SYMBOL.pcb_NumberOfAuxSymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.IMAGE_COFF_SYMBOL.pcb_NumberOfAuxSymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="PE.cofflib.foo">
+<tt class="descclassname">PE.cofflib.</tt><tt class="descname">foo</tt><big>(</big><em>a</em>, <em>b</em>, <em>idx</em><big>)</big><a class="reference internal" href="_modules/PE/cofflib.html#foo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#PE.cofflib.foo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-PE.petool">
+<span id="petool-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">petool</span></tt> Module<a class="headerlink" href="#module-PE.petool" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PE.ordlookup.html">ordlookup Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="PE.ordlookup.html#id1"><tt class="docutils literal"><span class="pre">ordlookup</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PE.ordlookup.html#printord-module"><tt class="docutils literal"><span class="pre">printord</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PE.ordlookup.html#module-PE.ordlookup.ws2_32"><tt class="docutils literal"><span class="pre">ws2_32</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PE Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">PE</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-PE.carve"><tt class="docutils literal"><span class="pre">carve</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-PE.cofflib"><tt class="docutils literal"><span class="pre">cofflib</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-PE.petool"><tt class="docutils literal"><span class="pre">petool</span></tt> Module</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/PE.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

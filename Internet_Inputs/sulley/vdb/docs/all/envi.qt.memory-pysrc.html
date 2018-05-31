@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>envi.qt.memory</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="envi-module.html">Package&nbsp;envi</a> ::
+        <a href="envi.qt-module.html">Package&nbsp;qt</a> ::
+        Module&nbsp;memory
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="envi.qt.memory-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="envi.qt.memory-module.html">Module envi.qt.memory</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">re</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">collections</tt> <tt class="py-keyword">import</tt> <tt class="py-name">deque</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">PyQt4</tt> <tt class="py-keyword">import</tt> <tt class="py-name">QtCore</tt><tt class="py-op">,</tt> <tt class="py-name">QtGui</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package envi=envi-module.html"><a title="envi" class="py-name" href="#" onclick="return doclink('link-0', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package envi.memcanvas=envi.memcanvas-module.html,Module envi.qt.memcanvas=envi.qt.memcanvas-module.html"><a title="envi.memcanvas
+envi.qt.memcanvas" class="py-name" href="#" onclick="return doclink('link-1', 'memcanvas', 'link-1');">memcanvas</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_memcanvas</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-2" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-2', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Package envi.qt=envi.qt-module.html,Package vdb.qt=vdb.qt-module.html,Module vtrace.qt=vtrace.qt-module.html"><a title="envi.qt
+vdb.qt
+vtrace.qt" class="py-name" href="#" onclick="return doclink('link-3', 'qt', 'link-3');">qt</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name"><a title="envi.memcanvas
+envi.qt.memcanvas" class="py-name" href="#" onclick="return doclink('link-4', 'memcanvas', 'link-1');">memcanvas</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_memcanvas_qt</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-5" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-5', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name"><a title="envi.memcanvas
+envi.qt.memcanvas" class="py-name" href="#" onclick="return doclink('link-6', 'memcanvas', 'link-1');">memcanvas</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Package envi.memcanvas.renderers=envi.memcanvas.renderers-module.html,Module vdb.renderers=vdb.renderers-module.html,Package visgraph.renderers=visgraph.renderers-module.html"><a title="envi.memcanvas.renderers
+vdb.renderers
+visgraph.renderers" class="py-name" href="#" onclick="return doclink('link-7', 'renderers', 'link-7');">renderers</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_render</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-8" class="py-name" targets="Package vqt=vqt-module.html"><a title="vqt" class="py-name" href="#" onclick="return doclink('link-8', 'vqt', 'link-8');">vqt</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Module vqt.colors=vqt.colors-module.html"><a title="vqt.colors" class="py-name" href="#" onclick="return doclink('link-9', 'colors', 'link-9');">colors</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vq_colors</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-10" class="py-name"><a title="vqt" class="py-name" href="#" onclick="return doclink('link-10', 'vqt', 'link-8');">vqt</a></tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Module vqt.menubuilder=vqt.menubuilder-module.html,Module vwidget.menubuilder=vwidget.menubuilder-module.html"><a title="vqt.menubuilder
+vwidget.menubuilder" class="py-name" href="#" onclick="return doclink('link-11', 'menubuilder', 'link-11');">menubuilder</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vqt_menu</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-12" class="py-name"><a title="vqt" class="py-name" href="#" onclick="return doclink('link-12', 'vqt', 'link-8');">vqt</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Function envi.pyzip.main()=envi.pyzip-module.html#main,Function visgraph.cli.main()=visgraph.cli-module.html#main,Module vqt.main=vqt.main-module.html,Function vqt.main.main()=vqt.main-module.html#main,Function vtrace.envitools.main()=vtrace.envitools-module.html#main,Module vwidget.main=vwidget.main-module.html,Function vwidget.main.main()=vwidget.main-module.html#main"><a title="envi.pyzip.main
+visgraph.cli.main
+vqt.main
+vqt.main.main
+vtrace.envitools.main
+vwidget.main
+vwidget.main.main" class="py-name" href="#" onclick="return doclink('link-13', 'main', 'link-13');">main</a></tt> <tt class="py-keyword">import</tt> <tt id="link-14" class="py-name" targets="Function vqt.main.idlethread()=vqt.main-module.html#idlethread,Function vwidget.main.idlethread()=vwidget.main-module.html#idlethread"><a title="vqt.main.idlethread
+vwidget.main.idlethread" class="py-name" href="#" onclick="return doclink('link-14', 'idlethread', 'link-14');">idlethread</a></tt><tt class="py-op">,</tt> <tt id="link-15" class="py-name" targets="Function vqt.main.idlethreadsync()=vqt.main-module.html#idlethreadsync,Function vwidget.main.idlethreadsync()=vwidget.main-module.html#idlethreadsync"><a title="vqt.main.idlethreadsync
+vwidget.main.idlethreadsync" class="py-name" href="#" onclick="return doclink('link-15', 'idlethreadsync', 'link-15');">idlethreadsync</a></tt> </tt>
+<a name="VQMemoryWindow"></a><div id="VQMemoryWindow-def"><a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt> <a class="py-toggle" href="#" id="VQMemoryWindow-toggle" onclick="return toggle('VQMemoryWindow');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html">VQMemoryWindow</a><tt class="py-op">(</tt><tt class="py-base-class">QtGui</tt><tt class="py-op">.</tt><tt class="py-base-class">QWidget</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="VQMemoryWindow-expanded"><a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line">    <tt class="py-name">__canvas_class__</tt> <tt class="py-op">=</tt> <tt class="py-name">e_memcanvas_qt</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Class envi.qt.memcanvas.VQMemoryCanvas=envi.qt.memcanvas.VQMemoryCanvas-class.html"><a title="envi.qt.memcanvas.VQMemoryCanvas" class="py-name" href="#" onclick="return doclink('link-16', 'VQMemoryCanvas', 'link-16');">VQMemoryCanvas</a></tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow.__init__"></a><div id="VQMemoryWindow.__init__-def"><a name="L19"></a><tt class="py-lineno"> 19</tt> <a class="py-toggle" href="#" id="VQMemoryWindow.__init__-toggle" onclick="return toggle('VQMemoryWindow.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">memobj</tt><tt class="py-op">,</tt> <tt class="py-param">syms</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">parent</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow.__init__-expanded"><a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line">        <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QWidget</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Method Elf.Elf.__init__()=Elf.Elf-class.html#__init__,Method Elf.Elf32Dynamic.__init__()=Elf.Elf32Dynamic-class.html#__init__,Method Elf.Elf32Pheader.__init__()=Elf.Elf32Pheader-class.html#__init__,Method Elf.Elf32Reloc.__init__()=Elf.Elf32Reloc-class.html#__init__,Method Elf.Elf32Reloca.__init__()=Elf.Elf32Reloca-class.html#__init__,Method Elf.Elf32Section.__init__()=Elf.Elf32Section-class.html#__init__,Method Elf.Elf32Symbol.__init__()=Elf.Elf32Symbol-class.html#__init__,Method Elf.Elf64Dynamic.__init__()=Elf.Elf64Dynamic-class.html#__init__,Method Elf.Elf64Pheader.__init__()=Elf.Elf64Pheader-class.html#__init__,Method Elf.Elf64Reloc.__init__()=Elf.Elf64Reloc-class.html#__init__,Method Elf.Elf64Reloca.__init__()=Elf.Elf64Reloca-class.html#__init__,Method Elf.Elf64Section.__init__()=Elf.Elf64Section-class.html#__init__,Method Elf.Elf64Symbol.__init__()=Elf.Elf64Symbol-class.html#__init__,Method Elf.ElfDynamic.__init__()=Elf.ElfDynamic-class.html#__init__,Method Elf.ElfPheader.__init__()=Elf.ElfPheader-class.html#__init__,Method Elf.ElfReloc.__init__()=Elf.ElfReloc-class.html#__init__,Method Elf.ElfSection.__init__()=Elf.ElfSection-class.html#__init__,Method Elf.ElfSymbol.__init__()=Elf.ElfSymbol-class.html#__init__,Method envi.ArchitectureModule.__init__()=envi.ArchitectureModule-class.html#__init__,Method envi.EmuException.__init__()=envi.EmuException-class.html#__init__,Method envi.Emulator.__init__()=envi.Emulator-class.html#__init__,Method envi.InvalidInstruction.__init__()=envi.InvalidInstruction-class.html#__init__,Method envi.MapOverlapException.__init__()=envi.MapOverlapException-class.html#__init__,Method envi.Opcode.__init__()=envi.Opcode-class.html#__init__,Method envi.SegmentationViolation.__init__()=envi.SegmentationViolation-class.html#__init__,Method envi.UnsupportedInstruction.__init__()=envi.UnsupportedInstruction-class.html#__init__,Method envi.archs.amd64.Amd64Emulator.__init__()=envi.archs.amd64.Amd64Emulator-class.html#__init__,Method envi.archs.amd64.Amd64Module.__init__()=envi.archs.amd64.Amd64Module-class.html#__init__,Method envi.archs.amd64.disasm.Amd64Disasm.__init__()=envi.archs.amd64.disasm.Amd64Disasm-class.html#__init__,Method envi.archs.amd64.disasm.Amd64RipRelOper.__init__()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#__init__,Method envi.archs.amd64.regs.Amd64RegisterContext.__init__()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#__init__,Method envi.archs.arm.ArmModule.__init__()=envi.archs.arm.ArmModule-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOper.__init__()=envi.archs.arm.armdisasm.ArmImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegListOper.__init__()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#__init__,Method envi.archs.arm.disasm.ArmDisasm.__init__()=envi.archs.arm.disasm.ArmDisasm-class.html#__init__,Method envi.archs.arm.emu.ArmEmulator.__init__()=envi.archs.arm.emu.ArmEmulator-class.html#__init__,Method envi.archs.arm.emu.CoProcEmulator.__init__()=envi.archs.arm.emu.CoProcEmulator-class.html#__init__,Method envi.archs.arm.regs.ArmRegisterContext.__init__()=envi.archs.arm.regs.ArmRegisterContext-class.html#__init__,Method envi.archs.arm.thumb.simpleops.__init__()=envi.archs.arm.thumb.simpleops-class.html#__init__,Method envi.archs.arm.thumbdisasm.simpleops.__init__()=envi.archs.arm.thumbdisasm.simpleops-class.html#__init__,Method envi.archs.i386.disasm.i386Disasm.__init__()=envi.archs.i386.disasm.i386Disasm-class.html#__init__,Method envi.archs.i386.disasm.i386ImmMemOper.__init__()=envi.archs.i386.disasm.i386ImmMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386ImmOper.__init__()=envi.archs.i386.disasm.i386ImmOper-class.html#__init__,Method envi.archs.i386.disasm.i386PcRelOper.__init__()=envi.archs.i386.disasm.i386PcRelOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegMemOper.__init__()=envi.archs.i386.disasm.i386RegMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegOper.__init__()=envi.archs.i386.disasm.i386RegOper-class.html#__init__,Method envi.archs.i386.disasm.i386SibOper.__init__()=envi.archs.i386.disasm.i386SibOper-class.html#__init__,Method envi.archs.i386.emu.BFastCall.__init__()=envi.archs.i386.emu.BFastCall-class.html#__init__,Method envi.archs.i386.emu.FastCall.__init__()=envi.archs.i386.emu.FastCall-class.html#__init__,Method envi.archs.i386.emu.IntelEmulator.__init__()=envi.archs.i386.emu.IntelEmulator-class.html#__init__,Method envi.archs.i386.emu.MsFastCall.__init__()=envi.archs.i386.emu.MsFastCall-class.html#__init__,Method envi.archs.i386.i386Module.__init__()=envi.archs.i386.i386Module-class.html#__init__,Method envi.archs.i386.regs.i386RegisterContext.__init__()=envi.archs.i386.regs.i386RegisterContext-class.html#__init__,Method envi.archs.z80.disasm.z80Disasm.__init__()=envi.archs.z80.disasm.z80Disasm-class.html#__init__,Method envi.archs.z80.disasm.z80ImmOper.__init__()=envi.archs.z80.disasm.z80ImmOper-class.html#__init__,Method envi.archs.z80.disasm.z80RegMem.__init__()=envi.archs.z80.disasm.z80RegMem-class.html#__init__,Method envi.archs.z80.disasm.z80RegOper.__init__()=envi.archs.z80.disasm.z80RegOper-class.html#__init__,Method envi.archs.z80.regs.z80RegisterContext.__init__()=envi.archs.z80.regs.z80RegisterContext-class.html#__init__,Method envi.arm.ArmModule.__init__()=envi.arm.ArmModule-class.html#__init__,Method envi.arm.ArmOpcode.__init__()=envi.arm.ArmOpcode-class.html#__init__,Method envi.arm.ArmOperand.__init__()=envi.arm.ArmOperand-class.html#__init__,Method envi.bintree.BinaryTree.__init__()=envi.bintree.BinaryTree-class.html#__init__,Method envi.bytesig.SignatureTree.__init__()=envi.bytesig.SignatureTree-class.html#__init__,Method envi.cli.CliExtMeth.__init__()=envi.cli.CliExtMeth-class.html#__init__,Method envi.cli.EnviCli.__init__()=envi.cli.EnviCli-class.html#__init__,Method envi.codeflow.CodeFlowContext.__init__()=envi.codeflow.CodeFlowContext-class.html#__init__,Method envi.config.EnviConfig.__init__()=envi.config.EnviConfig-class.html#__init__,Method envi.expression.ExpressionLocals.__init__()=envi.expression.ExpressionLocals-class.html#__init__,Method envi.expression.MemoryExpressionLocals.__init__()=envi.expression.MemoryExpressionLocals-class.html#__init__,Method envi.memcanvas.MemoryCanvas.__init__()=envi.memcanvas.MemoryCanvas-class.html#__init__,Method envi.memcanvas.StringMemoryCanvas.__init__()=envi.memcanvas.StringMemoryCanvas-class.html#__init__,Method envi.memcanvas.renderers.ByteRend.__init__()=envi.memcanvas.renderers.ByteRend-class.html#__init__,Method envi.memory.IMemory.__init__()=envi.memory.IMemory-class.html#__init__,Method envi.memory.MemoryFile.__init__()=envi.memory.MemoryFile-class.html#__init__,Method envi.memory.MemoryObject.__init__()=envi.memory.MemoryObject-class.html#__init__,Method envi.pagelookup.MapLookup.__init__()=envi.pagelookup.MapLookup-class.html#__init__,Method envi.pagelookup.PageLookup.__init__()=envi.pagelookup.PageLookup-class.html#__init__,Method envi.qt.VQMemoryMapView.__init__()=envi.qt.VQMemoryMapView-class.html#__init__,Method envi.qt.memcanvas.VQMemoryCanvas.__init__()=envi.qt.memcanvas.VQMemoryCanvas-class.html#__init__,Method envi.qt.memory.VQMemoryWindow.__init__()=envi.qt.memory.VQMemoryWindow-class.html#__init__,Method envi.registers.RegisterContext.__init__()=envi.registers.RegisterContext-class.html#__init__,Method envi.resolver.FileSymbol.__init__()=envi.resolver.FileSymbol-class.html#__init__,Method envi.resolver.Symbol.__init__()=envi.resolver.Symbol-class.html#__init__,Method envi.resolver.SymbolResolver.__init__()=envi.resolver.SymbolResolver-class.html#__init__,Method envi.util.CopyOnWrite.__init__()=envi.util.CopyOnWrite-class.html#__init__,Method vdb.ScriptThread.__init__()=vdb.ScriptThread-class.html#__init__,Method vdb.Vdb.__init__()=vdb.Vdb-class.html#__init__,Method vdb.VdbLookup.__init__()=vdb.VdbLookup-class.html#__init__,Method vdb.VdbTrace.__init__()=vdb.VdbTrace-class.html#__init__,Method vdb.extensions.gdbstub.GdbStubNotifier.__init__()=vdb.extensions.gdbstub.GdbStubNotifier-class.html#__init__,Method vdb.gui.VdbFileDescWindow.__init__()=vdb.gui.VdbFileDescWindow-class.html#__init__,Method vdb.gui.VdbGui.__init__()=vdb.gui.VdbGui-class.html#__init__,Method vdb.gui.VdbMainWindow.__init__()=vdb.gui.VdbMainWindow-class.html#__init__,Method vdb.gui.VdbMemoryMapWindow.__init__()=vdb.gui.VdbMemoryMapWindow-class.html#__init__,Method vdb.gui.VdbMemoryView.__init__()=vdb.gui.VdbMemoryView-class.html#__init__,Method vdb.gui.VdbMemoryWindow.__init__()=vdb.gui.VdbMemoryWindow-class.html#__init__,Method vdb.gui.VdbRegisterWindow.__init__()=vdb.gui.VdbRegisterWindow-class.html#__init__,Method vdb.gui.VdbViewWindow.__init__()=vdb.gui.VdbViewWindow-class.html#__init__,Method vdb.gui.VdbWindow.__init__()=vdb.gui.VdbWindow-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapRenderer.__init__()=vdb.gui.extensions.windows.VdbHeapRenderer-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapWindow.__init__()=vdb.gui.extensions.windows.VdbHeapWindow-class.html#__init__,Method vdb.gui.extensions.windows.Win32HeapWindow.__init__()=vdb.gui.extensions.windows.Win32HeapWindow-class.html#__init__,Method vdb.qt.windows.VdbMemoryWindow.__init__()=vdb.qt.windows.VdbMemoryWindow-class.html#__init__,Method vdb.qt.windows.VdbWindow.__init__()=vdb.qt.windows.VdbWindow-class.html#__init__,Method vdb.recon.ReconBreak.__init__()=vdb.recon.ReconBreak-class.html#__init__,Method vdb.recon.sniper.SniperArgValueBreak.__init__()=vdb.recon.sniper.SniperArgValueBreak-class.html#__init__,Method vdb.recon.sniper.SniperDynArgBreak.__init__()=vdb.recon.sniper.SniperDynArgBreak-class.html#__init__,Method vdb.renderers.DerefRenderer.__init__()=vdb.renderers.DerefRenderer-class.html#__init__,Method vdb.renderers.OpcodeRenderer.__init__()=vdb.renderers.OpcodeRenderer-class.html#__init__,Method vdb.renderers.SymbolRenderer.__init__()=vdb.renderers.SymbolRenderer-class.html#__init__,Method vdb.stalker.StalkerBlockBreak.__init__()=vdb.stalker.StalkerBlockBreak-class.html#__init__,Method vdb.stalker.StalkerBreak.__init__()=vdb.stalker.StalkerBreak-class.html#__init__,Method vdb.stalker.StalkerCodeFlow.__init__()=vdb.stalker.StalkerCodeFlow-class.html#__init__,Method vdb.stalker.StalkerDynBreak.__init__()=vdb.stalker.StalkerDynBreak-class.html#__init__,Method visgraph.cli.GraphCli.__init__()=visgraph.cli.GraphCli-class.html#__init__,Method visgraph.dbcore.DbGraphStore.__init__()=visgraph.dbcore.DbGraphStore-class.html#__init__,Method visgraph.dbcore.DbSubGraph.__init__()=visgraph.dbcore.DbSubGraph-class.html#__init__,Method visgraph.exc.DuplicateNode.__init__()=visgraph.exc.DuplicateNode-class.html#__init__,Method visgraph.exc.EdgeNonExistant.__init__()=visgraph.exc.EdgeNonExistant-class.html#__init__,Method visgraph.exc.NodeNonExistant.__init__()=visgraph.exc.NodeNonExistant-class.html#__init__,Method visgraph.graphcore.Graph.__init__()=visgraph.graphcore.Graph-class.html#__init__,Method visgraph.graphcore.HierarchicalGraph.__init__()=visgraph.graphcore.HierarchicalGraph-class.html#__init__,Method visgraph.layouts.GraphLayout.__init__()=visgraph.layouts.GraphLayout-class.html#__init__,Method visgraph.layouts.dynadag.DynadagLayout.__init__()=visgraph.layouts.dynadag.DynadagLayout-class.html#__init__,Method visgraph.renderers.GraphRenderer.__init__()=visgraph.renderers.GraphRenderer-class.html#__init__,Method visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__()=visgraph.renderers.gtkrend.GtkVisGraphOverview-class.html#__init__,Method visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__()=visgraph.renderers.gtkrend.GtkVisGraphRenderer-class.html#__init__,Method visgraph.renderers.qgraphtree.NodeColumn.__init__()=visgraph.renderers.qgraphtree.NodeColumn-class.html#__init__,Method visgraph.renderers.qgraphtree.QGraphNode.__init__()=visgraph.renderers.qgraphtree.QGraphNode-class.html#__init__,Method visgraph.renderers.qgraphtree.QGraphTreeView.__init__()=visgraph.renderers.qgraphtree.QGraphTreeView-class.html#__init__,Method visgraph.renderers.svgrend.SvgGraphRenderer.__init__()=visgraph.renderers.svgrend.SvgGraphRenderer-class.html#__init__,Method vqt.application.VQDockWidget.__init__()=vqt.application.VQDockWidget-class.html#__init__,Method vqt.application.VQMainCmdWindow.__init__()=vqt.application.VQMainCmdWindow-class.html#__init__,Method vqt.basics.ACT.__init__()=vqt.basics.ACT-class.html#__init__,Method vqt.basics.HBox.__init__()=vqt.basics.HBox-class.html#__init__,Method vqt.basics.VBox.__init__()=vqt.basics.VBox-class.html#__init__,Method vqt.cli.VQCli.__init__()=vqt.cli.VQCli-class.html#__init__,Method vqt.main.VQApplication.__init__()=vqt.main.VQApplication-class.html#__init__,Method vqt.menubuilder.ActionCall.__init__()=vqt.menubuilder.ActionCall-class.html#__init__,Method vqt.menubuilder.FieldAdder.__init__()=vqt.menubuilder.FieldAdder-class.html#__init__,Method vqt.menubuilder.VQMenu.__init__()=vqt.menubuilder.VQMenu-class.html#__init__,Method vqt.menubuilder.VQMenuBar.__init__()=vqt.menubuilder.VQMenuBar-class.html#__init__,Method vqt.qpython.ScriptThread.__init__()=vqt.qpython.ScriptThread-class.html#__init__,Method vqt.qpython.VQPythonView.__init__()=vqt.qpython.VQPythonView-class.html#__init__,Method vqt.tree.VQTreeItem.__init__()=vqt.tree.VQTreeItem-class.html#__init__,Method vqt.tree.VQTreeModel.__init__()=vqt.tree.VQTreeModel-class.html#__init__,Method vqt.tree.VQTreeSorter.__init__()=vqt.tree.VQTreeSorter-class.html#__init__,Method vqt.tree.VQTreeView.__init__()=vqt.tree.VQTreeView-class.html#__init__,Method vtrace.AccessViolation.__init__()=vtrace.AccessViolation-class.html#__init__,Method vtrace.Trace.__init__()=vtrace.Trace-class.html#__init__,Method vtrace.TraceGroup.__init__()=vtrace.TraceGroup-class.html#__init__,Method vtrace.VtraceExpressionLocals.__init__()=vtrace.VtraceExpressionLocals-class.html#__init__,Method vtrace.archs.amd64.Amd64Mixin.__init__()=vtrace.archs.amd64.Amd64Mixin-class.html#__init__,Method vtrace.archs.arm.ArmMixin.__init__()=vtrace.archs.arm.ArmMixin-class.html#__init__,Method vtrace.archs.i386.i386Mixin.__init__()=vtrace.archs.i386.i386Mixin-class.html#__init__,Method vtrace.archs.i386.i386WatchMixin.__init__()=vtrace.archs.i386.i386WatchMixin-class.html#__init__,Method vtrace.breakpoints.Breakpoint.__init__()=vtrace.breakpoints.Breakpoint-class.html#__init__,Method vtrace.breakpoints.CallBreak.__init__()=vtrace.breakpoints.CallBreak-class.html#__init__,Method vtrace.envitools.TraceEmulator.__init__()=vtrace.envitools.TraceEmulator-class.html#__init__,Method vtrace.notifiers.DistributedNotifier.__init__()=vtrace.notifiers.DistributedNotifier-class.html#__init__,Method vtrace.notifiers.Notifier.__init__()=vtrace.notifiers.Notifier-class.html#__init__,Method vtrace.platforms.android.AndroidArmTrace.__init__()=vtrace.platforms.android.AndroidArmTrace-class.html#__init__,Method vtrace.platforms.base.TracerBase.__init__()=vtrace.platforms.base.TracerBase-class.html#__init__,Method vtrace.platforms.base.TracerThread.__init__()=vtrace.platforms.base.TracerThread-class.html#__init__,Method vtrace.platforms.darwin.DarwinAmd64Trace.__init__()=vtrace.platforms.darwin.DarwinAmd64Trace-class.html#__init__,Method vtrace.platforms.darwin.DarwinMixin.__init__()=vtrace.platforms.darwin.DarwinMixin-class.html#__init__,Method vtrace.platforms.darwin.Darwini386Trace.__init__()=vtrace.platforms.darwin.Darwini386Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__()=vtrace.platforms.freebsd.FreeBSDAmd64Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDMixin.__init__()=vtrace.platforms.freebsd.FreeBSDMixin-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDi386Trace.__init__()=vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin.__init__()=vtrace.platforms.gdbstub.GdbStubMixin-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin_old.__init__()=vtrace.platforms.gdbstub.GdbStubMixin_old-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubTrace.__init__()=vtrace.platforms.gdbstub.GdbStubTrace-class.html#__init__,Method vtrace.platforms.gdbstub.KeBugCheckBreak.__init__()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#__init__,Method vtrace.platforms.linux.LinuxAmd64Trace.__init__()=vtrace.platforms.linux.LinuxAmd64Trace-class.html#__init__,Method vtrace.platforms.linux.LinuxMixin.__init__()=vtrace.platforms.linux.LinuxMixin-class.html#__init__,Method vtrace.platforms.linux.Linuxi386Trace.__init__()=vtrace.platforms.linux.Linuxi386Trace-class.html#__init__,Method vtrace.platforms.posix.ElfMixin.__init__()=vtrace.platforms.posix.ElfMixin-class.html#__init__,Method vtrace.platforms.posix.PosixMixin.__init__()=vtrace.platforms.posix.PosixMixin-class.html#__init__,Method vtrace.platforms.posix.PtraceMixin.__init__()=vtrace.platforms.posix.PtraceMixin-class.html#__init__,Method vtrace.platforms.win32.Win32SymbolParser.__init__()=vtrace.platforms.win32.Win32SymbolParser-class.html#__init__,Method vtrace.platforms.win32.WindowsAmd64Trace.__init__()=vtrace.platforms.win32.WindowsAmd64Trace-class.html#__init__,Method vtrace.platforms.win32.WindowsMixin.__init__()=vtrace.platforms.win32.WindowsMixin-class.html#__init__,Method vtrace.platforms.win32.Windowsi386Trace.__init__()=vtrace.platforms.win32.Windowsi386Trace-class.html#__init__,Method vtrace.qt.RegColorDelegate.__init__()=vtrace.qt.RegColorDelegate-class.html#__init__,Method vtrace.qt.VQFileDescView.__init__()=vtrace.qt.VQFileDescView-class.html#__init__,Method vtrace.qt.VQMemoryMapView.__init__()=vtrace.qt.VQMemoryMapView-class.html#__init__,Method vtrace.qt.VQProcessListView.__init__()=vtrace.qt.VQProcessListView-class.html#__init__,Method vtrace.qt.VQProcessSelectDialog.__init__()=vtrace.qt.VQProcessSelectDialog-class.html#__init__,Method vtrace.qt.VQRegistersListView.__init__()=vtrace.qt.VQRegistersListView-class.html#__init__,Method vtrace.qt.VQRegistersView.__init__()=vtrace.qt.VQRegistersView-class.html#__init__,Method vtrace.qt.VQThreadsView.__init__()=vtrace.qt.VQThreadsView-class.html#__init__,Method vtrace.qt.VQTraceNotifier.__init__()=vtrace.qt.VQTraceNotifier-class.html#__init__,Method vtrace.qt.VQTraceToolBar.__init__()=vtrace.qt.VQTraceToolBar-class.html#__init__,Method vtrace.rmi.RemoteTrace.__init__()=vtrace.rmi.RemoteTrace-class.html#__init__,Method vtrace.snapshot.TraceSnapshot.__init__()=vtrace.snapshot.TraceSnapshot-class.html#__init__,Method vtrace.tools.iathook.IatHook.__init__()=vtrace.tools.iathook.IatHook-class.html#__init__,Method vtrace.tools.win32alloc.ReturnBreak.__init__()=vtrace.tools.win32alloc.ReturnBreak-class.html#__init__,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__,Method vtrace.tools.win32heap.FreeListCorruption.__init__()=vtrace.tools.win32heap.FreeListCorruption-class.html#__init__,Method vtrace.tools.win32heap.HeapCorruptionException.__init__()=vtrace.tools.win32heap.HeapCorruptionException-class.html#__init__,Method vtrace.tools.win32heap.Win32Chunk.__init__()=vtrace.tools.win32heap.Win32Chunk-class.html#__init__,Method vtrace.tools.win32heap.Win32Heap.__init__()=vtrace.tools.win32heap.Win32Heap-class.html#__init__,Method vtrace.tools.win32heap.Win32Segment.__init__()=vtrace.tools.win32heap.Win32Segment-class.html#__init__,Method vtrace.util.TraceManager.__init__()=vtrace.util.TraceManager-class.html#__init__,Method vtrace.watchpoints.PageWatchpoint.__init__()=vtrace.watchpoints.PageWatchpoint-class.html#__init__,Method vtrace.watchpoints.Watchpoint.__init__()=vtrace.watchpoints.Watchpoint-class.html#__init__,Method vwidget.RefView.__init__()=vwidget.RefView-class.html#__init__,Method vwidget.SpaceView.__init__()=vwidget.SpaceView-class.html#__init__,Method vwidget.VWidget.__init__()=vwidget.VWidget-class.html#__init__,Method vwidget.cluster.ClusterServerView.__init__()=vwidget.cluster.ClusterServerView-class.html#__init__,Method vwidget.config.ConfigDialog.__init__()=vwidget.config.ConfigDialog-class.html#__init__,Method vwidget.layout.LayoutManager.__init__()=vwidget.layout.LayoutManager-class.html#__init__,Method vwidget.memview.MemoryView.__init__()=vwidget.memview.MemoryView-class.html#__init__,Method vwidget.memview.MemoryWindow.__init__()=vwidget.memview.MemoryWindow-class.html#__init__,Method vwidget.memview.VaTag.__init__()=vwidget.memview.VaTag-class.html#__init__,Method vwidget.menubuilder.FieldAdder.__init__()=vwidget.menubuilder.FieldAdder-class.html#__init__,Method vwidget.menubuilder.Menu.__init__()=vwidget.menubuilder.Menu-class.html#__init__,Method vwidget.menubuilder.MenuBar.__init__()=vwidget.menubuilder.MenuBar-class.html#__init__,Method vwidget.pydialog.PyDialog.__init__()=vwidget.pydialog.PyDialog-class.html#__init__,Method vwidget.pydialog.ScriptThread.__init__()=vwidget.pydialog.ScriptThread-class.html#__init__,Method vwidget.views.GladeView.__init__()=vwidget.views.GladeView-class.html#__init__,Method vwidget.views.VTextTag.__init__()=vwidget.views.VTextTag-class.html#__init__,Method vwidget.views.VTextView.__init__()=vwidget.views.VTextView-class.html#__init__,Method vwidget.views.VTreeView.__init__()=vwidget.views.VTreeView-class.html#__init__,Method vwidget.views.VView.__init__()=vwidget.views.VView-class.html#__init__,Method vwidget.vwvstruct.SelectNamespaceDialog.__init__()=vwidget.vwvstruct.SelectNamespaceDialog-class.html#__init__,Method vwidget.vwvstruct.SelectStructureDialog.__init__()=vwidget.vwvstruct.SelectStructureDialog-class.html#__init__,Method vwidget.vwvstruct.VStructBrowser.__init__()=vwidget.vwvstruct.VStructBrowser-class.html#__init__,Method vwidget.vwvstruct.VStructBuilderView.__init__()=vwidget.vwvstruct.VStructBuilderView-class.html#__init__,Method vwidget.vwvstruct.VStructNamespaceSelector.__init__()=vwidget.vwvstruct.VStructNamespaceSelector-class.html#__init__,Method vwidget.vwvstruct.VStructView.__init__()=vwidget.vwvstruct.VStructView-class.html#__init__,Method vwidget.vwvtrace.FileDescView.__init__()=vwidget.vwvtrace.FileDescView-class.html#__init__,Method vwidget.vwvtrace.MemoryMapView.__init__()=vwidget.vwvtrace.MemoryMapView-class.html#__init__,Method vwidget.vwvtrace.ProcessListView.__init__()=vwidget.vwvtrace.ProcessListView-class.html#__init__,Method vwidget.vwvtrace.SelectProcessDialog.__init__()=vwidget.vwvtrace.SelectProcessDialog-class.html#__init__,Method vwidget.vwvtrace.TraceToolBar.__init__()=vwidget.vwvtrace.TraceToolBar-class.html#__init__,Method vwidget.vwvtrace.VtraceView.__init__()=vwidget.vwvtrace.VtraceView-class.html#__init__,Method vwidget.windows.MainWindow.__init__()=vwidget.windows.MainWindow-class.html#__init__,Method vwidget.windows.VWindow.__init__()=vwidget.windows.VWindow-class.html#__init__"><a title="Elf.Elf.__init__
+Elf.Elf32Dynamic.__init__
+Elf.Elf32Pheader.__init__
+Elf.Elf32Reloc.__init__
+Elf.Elf32Reloca.__init__
+Elf.Elf32Section.__init__
+Elf.Elf32Symbol.__init__
+Elf.Elf64Dynamic.__init__
+Elf.Elf64Pheader.__init__
+Elf.Elf64Reloc.__init__
+Elf.Elf64Reloca.__init__
+Elf.Elf64Section.__init__
+Elf.Elf64Symbol.__init__
+Elf.ElfDynamic.__init__
+Elf.ElfPheader.__init__
+Elf.ElfReloc.__init__
+Elf.ElfSection.__init__
+Elf.ElfSymbol.__init__
+envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__
+vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__
+visgraph.cli.GraphCli.__init__
+visgraph.dbcore.DbGraphStore.__init__
+visgraph.dbcore.DbSubGraph.__init__
+visgraph.exc.DuplicateNode.__init__
+visgraph.exc.EdgeNonExistant.__init__
+visgraph.exc.NodeNonExistant.__init__
+visgraph.graphcore.Graph.__init__
+visgraph.graphcore.HierarchicalGraph.__init__
+visgraph.layouts.GraphLayout.__init__
+visgraph.layouts.dynadag.DynadagLayout.__init__
+visgraph.renderers.GraphRenderer.__init__
+visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__
+visgraph.renderers.qgraphtree.NodeColumn.__init__
+visgraph.renderers.qgraphtree.QGraphNode.__init__
+visgraph.renderers.qgraphtree.QGraphTreeView.__init__
+visgraph.renderers.svgrend.SvgGraphRenderer.__init__
+vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__
+vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__
+vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-17', '__init__', 'link-17');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-18" class="py-name" targets="Method vqt.tree.VQTreeModel.parent()=vqt.tree.VQTreeModel-class.html#parent"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-18', 'parent', 'link-18');">parent</a></tt><tt class="py-op">=</tt><tt id="link-19" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-19', 'parent', 'link-18');">parent</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_mem_obj</tt> <tt class="py-op">=</tt> <tt class="py-name">memobj</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">top_box</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QWidget</tt><tt class="py-op">(</tt><tt id="link-20" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-20', 'parent', 'link-18');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">        <tt class="py-name">hbox</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QHBoxLayout</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">top_box</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">        <tt class="py-name">hbox</tt><tt class="py-op">.</tt><tt class="py-name">setMargin</tt><tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">        <tt class="py-name">hbox</tt><tt class="py-op">.</tt><tt class="py-name">setSpacing</tt><tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">)</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hist_button</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QPushButton</tt><tt class="py-op">(</tt><tt class="py-string">'History'</tt><tt class="py-op">,</tt> <tt id="link-21" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-21', 'parent', 'link-18');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">top_box</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hist_button</tt><tt class="py-op">.</tt><tt class="py-name">clicked</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Method envi.qt.memory.VQMemoryWindow._histButtonClicked()=envi.qt.memory.VQMemoryWindow-class.html#_histButtonClicked"><a title="envi.qt.memory.VQMemoryWindow._histButtonClicked" class="py-name" href="#" onclick="return doclink('link-22', '_histButtonClicked', 'link-22');">_histButtonClicked</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">addr_entry</tt>  <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QLineEdit</tt><tt class="py-op">(</tt><tt id="link-23" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-23', 'parent', 'link-18');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">top_box</tt><tt class="py-op">)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">size_entry</tt>  <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QLineEdit</tt><tt class="py-op">(</tt><tt id="link-24" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-24', 'parent', 'link-18');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">top_box</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">size_entry</tt><tt class="py-op">.</tt><tt class="py-name">setText</tt><tt class="py-op">(</tt><tt class="py-string">'256'</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">rend_select</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QComboBox</tt><tt class="py-op">(</tt><tt id="link-25" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-25', 'parent', 'link-18');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">top_box</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt> <tt class="py-op">=</tt> <tt class="py-name">deque</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__canvas_class__</tt><tt class="py-op">(</tt><tt class="py-name">memobj</tt><tt class="py-op">,</tt> <tt class="py-name">syms</tt><tt class="py-op">=</tt><tt class="py-name">syms</tt><tt class="py-op">,</tt> <tt id="link-26" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-26', 'parent', 'link-18');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Method envi.qt.memcanvas.VQMemoryCanvas.vqAddHotKey()=envi.qt.memcanvas.VQMemoryCanvas-class.html#vqAddHotKey"><a title="envi.qt.memcanvas.VQMemoryCanvas.vqAddHotKey" class="py-name" href="#" onclick="return doclink('link-27', 'vqAddHotKey', 'link-27');">vqAddHotKey</a></tt><tt class="py-op">(</tt><tt class="py-name">e_memcanvas_qt</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Variable envi.qt.memcanvas.KEY_BACKSPACE=envi.qt.memcanvas-module.html#KEY_BACKSPACE"><a title="envi.qt.memcanvas.KEY_BACKSPACE" class="py-name" href="#" onclick="return doclink('link-28', 'KEY_BACKSPACE', 'link-28');">KEY_BACKSPACE</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method envi.qt.memory.VQMemoryWindow._hotkey_BS()=envi.qt.memory.VQMemoryWindow-class.html#_hotkey_BS"><a title="envi.qt.memory.VQMemoryWindow._hotkey_BS" class="py-name" href="#" onclick="return doclink('link-29', '_hotkey_BS', 'link-29');">_hotkey_BS</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Method envi.qt.memory.VQMemoryWindow.loadDefaultRenderers()=envi.qt.memory.VQMemoryWindow-class.html#loadDefaultRenderers,Method vdb.Vdb.loadDefaultRenderers()=vdb.Vdb-class.html#loadDefaultRenderers"><a title="envi.qt.memory.VQMemoryWindow.loadDefaultRenderers
+vdb.Vdb.loadDefaultRenderers" class="py-name" href="#" onclick="return doclink('link-30', 'loadDefaultRenderers', 'link-30');">loadDefaultRenderers</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Method envi.qt.memory.VQMemoryWindow.loadRendSelect()=envi.qt.memory.VQMemoryWindow-class.html#loadRendSelect"><a title="envi.qt.memory.VQMemoryWindow.loadRendSelect" class="py-name" href="#" onclick="return doclink('link-31', 'loadRendSelect', 'link-31');">loadRendSelect</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">addr_entry</tt><tt class="py-op">.</tt><tt class="py-name">returnPressed</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Method envi.qt.memory.VQMemoryWindow._renderMemory()=envi.qt.memory.VQMemoryWindow-class.html#_renderMemory"><a title="envi.qt.memory.VQMemoryWindow._renderMemory" class="py-name" href="#" onclick="return doclink('link-32', '_renderMemory', 'link-32');">_renderMemory</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">size_entry</tt><tt class="py-op">.</tt><tt class="py-name">returnPressed</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="envi.qt.memory.VQMemoryWindow._renderMemory" class="py-name" href="#" onclick="return doclink('link-33', '_renderMemory', 'link-32');">_renderMemory</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">rend_select</tt><tt class="py-op">,</tt> <tt class="py-name">QtCore</tt><tt class="py-op">.</tt><tt class="py-name">SIGNAL</tt><tt class="py-op">(</tt><tt class="py-string">'currentIndexChanged(QString)'</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="envi.qt.memory.VQMemoryWindow._renderMemory" class="py-name" href="#" onclick="return doclink('link-34', '_renderMemory', 'link-32');">_renderMemory</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-name">hbox</tt><tt class="py-op">.</tt><tt class="py-name">addWidget</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hist_button</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">        <tt class="py-name">hbox</tt><tt class="py-op">.</tt><tt class="py-name">addWidget</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">addr_entry</tt><tt class="py-op">)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-name">hbox</tt><tt class="py-op">.</tt><tt class="py-name">addWidget</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">size_entry</tt><tt class="py-op">)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-name">hbox</tt><tt class="py-op">.</tt><tt class="py-name">addWidget</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">rend_select</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-name">vbox</tt> <tt class="py-op">=</tt> <tt class="py-name">QtGui</tt><tt class="py-op">.</tt><tt class="py-name">QVBoxLayout</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-name">vbox</tt><tt class="py-op">.</tt><tt class="py-name">setMargin</tt><tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-name">vbox</tt><tt class="py-op">.</tt><tt class="py-name">setSpacing</tt><tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-name">vbox</tt><tt class="py-op">.</tt><tt class="py-name">addWidget</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">top_box</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-name">vbox</tt><tt class="py-op">.</tt><tt class="py-name">addWidget</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">,</tt> <tt class="py-name">stretch</tt><tt class="py-op">=</tt><tt class="py-number">100</tt><tt class="py-op">)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">top_box</tt><tt class="py-op">.</tt><tt class="py-name">setLayout</tt><tt class="py-op">(</tt><tt class="py-name">hbox</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setLayout</tt><tt class="py-op">(</tt><tt class="py-name">vbox</tt><tt class="py-op">)</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setWindowTitle</tt><tt class="py-op">(</tt><tt class="py-string">'Mem: None'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow._hotkey_BS"></a><div id="VQMemoryWindow._hotkey_BS-def"><a name="L65"></a><tt class="py-lineno"> 65</tt> <a class="py-toggle" href="#" id="VQMemoryWindow._hotkey_BS-toggle" onclick="return toggle('VQMemoryWindow._hotkey_BS');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#_hotkey_BS">_hotkey_BS</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">canv</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow._hotkey_BS-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow._hotkey_BS-expanded"><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;=</tt> <tt class="py-number">2</tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">            <tt class="py-name">hinfo</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt><tt class="py-op">.</tt><tt class="py-name">popleft</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">            <tt class="py-name">hinfo</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt><tt class="py-op">.</tt><tt class="py-name">popleft</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name" targets="Method envi.qt.memory.VQMemoryWindow._histSelected()=envi.qt.memory.VQMemoryWindow-class.html#_histSelected"><a title="envi.qt.memory.VQMemoryWindow._histSelected" class="py-name" href="#" onclick="return doclink('link-35', '_histSelected', 'link-35');">_histSelected</a></tt><tt class="py-op">(</tt> <tt class="py-name">hinfo</tt> <tt class="py-op">)</tt> </tt>
+</div><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow._histSelected"></a><div id="VQMemoryWindow._histSelected-def"><a name="L71"></a><tt class="py-lineno"> 71</tt> <a class="py-toggle" href="#" id="VQMemoryWindow._histSelected-toggle" onclick="return toggle('VQMemoryWindow._histSelected');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#_histSelected">_histSelected</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">hinfo</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow._histSelected-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow._histSelected-expanded"><a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-name">addrexpr</tt><tt class="py-op">,</tt> <tt class="py-name">sizeexpr</tt><tt class="py-op">,</tt> <tt class="py-name">rendname</tt> <tt class="py-op">=</tt> <tt class="py-name">hinfo</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">addr_entry</tt><tt class="py-op">.</tt><tt class="py-name">setText</tt><tt class="py-op">(</tt><tt class="py-name">addrexpr</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">size_entry</tt><tt class="py-op">.</tt><tt class="py-name">setText</tt><tt class="py-op">(</tt><tt class="py-name">sizeexpr</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.setRenderer()=envi.memcanvas.MemoryCanvas-class.html#setRenderer"><a title="envi.memcanvas.MemoryCanvas.setRenderer" class="py-name" href="#" onclick="return doclink('link-36', 'setRenderer', 'link-36');">setRenderer</a></tt><tt class="py-op">(</tt><tt class="py-name">rendname</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="envi.qt.memory.VQMemoryWindow._renderMemory" class="py-name" href="#" onclick="return doclink('link-37', '_renderMemory', 'link-32');">_renderMemory</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow._histButtonClicked"></a><div id="VQMemoryWindow._histButtonClicked-def"><a name="L78"></a><tt class="py-lineno"> 78</tt> <a class="py-toggle" href="#" id="VQMemoryWindow._histButtonClicked-toggle" onclick="return toggle('VQMemoryWindow._histButtonClicked');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#_histButtonClicked">_histButtonClicked</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow._histButtonClicked-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow._histButtonClicked-expanded"><a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-name">menu</tt> <tt class="py-op">=</tt> <tt class="py-name">vqt_menu</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name" targets="Class vqt.menubuilder.VQMenu=vqt.menubuilder.VQMenu-class.html"><a title="vqt.menubuilder.VQMenu" class="py-name" href="#" onclick="return doclink('link-38', 'VQMenu', 'link-38');">VQMenu</a></tt><tt class="py-op">(</tt><tt class="py-string">'context'</tt><tt class="py-op">,</tt> <tt id="link-39" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-39', 'parent', 'link-18');">parent</a></tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hist_button</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-name">menu</tt><tt class="py-op">.</tt><tt class="py-name">splitchar</tt> <tt class="py-op">=</tt> <tt class="py-string">'&amp;&amp;&amp;&amp;&amp;'</tt> <tt class="py-comment"># Disable splitting</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">hinfo</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt><tt class="py-op">:</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">            <tt class="py-name">addrexpr</tt><tt class="py-op">,</tt> <tt class="py-name">sizeexpr</tt><tt class="py-op">,</tt> <tt class="py-name">rendname</tt> <tt class="py-op">=</tt> <tt class="py-name">hinfo</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">            <tt class="py-name">addr</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_mem_obj</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method envi.cli.EnviCli.parseExpression()=envi.cli.EnviCli-class.html#parseExpression,Method vdb.Vdb.parseExpression()=vdb.Vdb-class.html#parseExpression,Method vtrace.Trace.parseExpression()=vtrace.Trace-class.html#parseExpression"><a title="envi.cli.EnviCli.parseExpression
+vdb.Vdb.parseExpression
+vtrace.Trace.parseExpression" class="py-name" href="#" onclick="return doclink('link-40', 'parseExpression', 'link-40');">parseExpression</a></tt><tt class="py-op">(</tt><tt class="py-name">addrexpr</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">            <tt class="py-name">menustr</tt> <tt class="py-op">=</tt> <tt class="py-string">'0x%.8x'</tt> <tt class="py-op">%</tt> <tt class="py-name">addr</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">            <tt id="link-41" class="py-name" targets="Method envi.expression.MemoryExpressionLocals.sym()=envi.expression.MemoryExpressionLocals-class.html#sym"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-41', 'sym', 'link-41');">sym</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_mem_obj</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name" targets="Method envi.resolver.SymbolResolver.getSymByAddr()=envi.resolver.SymbolResolver-class.html#getSymByAddr,Method vtrace.Trace.getSymByAddr()=vtrace.Trace-class.html#getSymByAddr"><a title="envi.resolver.SymbolResolver.getSymByAddr
+vtrace.Trace.getSymByAddr" class="py-name" href="#" onclick="return doclink('link-42', 'getSymByAddr', 'link-42');">getSymByAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">addr</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-43" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-43', 'sym', 'link-41');">sym</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">                <tt class="py-name">menustr</tt> <tt class="py-op">+=</tt> <tt class="py-string">' - %s'</tt> <tt class="py-op">%</tt> <tt id="link-44" class="py-name" targets="Method envi.Operand.repr()=envi.Operand-class.html#repr,Method envi.archs.amd64.disasm.Amd64RipRelOper.repr()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocOper.repr()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.repr()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmEndianOper.repr()=envi.archs.arm.armdisasm.ArmEndianOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.repr()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmImmOper.repr()=envi.archs.arm.armdisasm.ArmImmOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmOffsetOper.repr()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegListOper.repr()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.repr()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegOper.repr()=envi.archs.arm.armdisasm.ArmRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#repr,Method envi.archs.i386.disasm.i386ImmMemOper.repr()=envi.archs.i386.disasm.i386ImmMemOper-class.html#repr,Method envi.archs.i386.disasm.i386ImmOper.repr()=envi.archs.i386.disasm.i386ImmOper-class.html#repr,Method envi.archs.i386.disasm.i386PcRelOper.repr()=envi.archs.i386.disasm.i386PcRelOper-class.html#repr,Method envi.archs.i386.disasm.i386RegMemOper.repr()=envi.archs.i386.disasm.i386RegMemOper-class.html#repr,Method envi.archs.i386.disasm.i386RegOper.repr()=envi.archs.i386.disasm.i386RegOper-class.html#repr,Method envi.archs.i386.disasm.i386SibOper.repr()=envi.archs.i386.disasm.i386SibOper-class.html#repr,Method envi.archs.z80.disasm.z80ImmOper.repr()=envi.archs.z80.disasm.z80ImmOper-class.html#repr,Method envi.archs.z80.disasm.z80RegMem.repr()=envi.archs.z80.disasm.z80RegMem-class.html#repr"><a title="envi.Operand.repr
+envi.archs.amd64.disasm.Amd64RipRelOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOper.repr
+envi.archs.arm.armdisasm.ArmCoprocRegOper.repr
+envi.archs.arm.armdisasm.ArmEndianOper.repr
+envi.archs.arm.armdisasm.ArmImmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmImmOper.repr
+envi.archs.arm.armdisasm.ArmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr
+envi.archs.arm.armdisasm.ArmRegListOper.repr
+envi.archs.arm.armdisasm.ArmRegOffsetOper.repr
+envi.archs.arm.armdisasm.ArmRegOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr
+envi.archs.i386.disasm.i386ImmMemOper.repr
+envi.archs.i386.disasm.i386ImmOper.repr
+envi.archs.i386.disasm.i386PcRelOper.repr
+envi.archs.i386.disasm.i386RegMemOper.repr
+envi.archs.i386.disasm.i386RegOper.repr
+envi.archs.i386.disasm.i386SibOper.repr
+envi.archs.z80.disasm.z80ImmOper.repr
+envi.archs.z80.disasm.z80RegMem.repr" class="py-name" href="#" onclick="return doclink('link-44', 'repr', 'link-44');">repr</a></tt><tt class="py-op">(</tt><tt id="link-45" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-45', 'sym', 'link-41');">sym</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">            <tt class="py-name">menu</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name" targets="Method vqt.menubuilder.FieldAdder.addField()=vqt.menubuilder.FieldAdder-class.html#addField,Method vwidget.menubuilder.FieldAdder.addField()=vwidget.menubuilder.FieldAdder-class.html#addField"><a title="vqt.menubuilder.FieldAdder.addField
+vwidget.menubuilder.FieldAdder.addField" class="py-name" href="#" onclick="return doclink('link-46', 'addField', 'link-46');">addField</a></tt><tt class="py-op">(</tt><tt class="py-name">menustr</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="envi.qt.memory.VQMemoryWindow._histSelected" class="py-name" href="#" onclick="return doclink('link-47', '_histSelected', 'link-35');">_histSelected</a></tt><tt class="py-op">,</tt> <tt class="py-op">(</tt><tt class="py-name">hinfo</tt><tt class="py-op">,</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-name">menu</tt><tt class="py-op">.</tt><tt class="py-name">exec_</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mapToGlobal</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hist_button</tt><tt class="py-op">.</tt><tt class="py-name">pos</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> </tt>
+</div><a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow.vqMemNavSlot"></a><div id="VQMemoryWindow.vqMemNavSlot-def"><a name="L93"></a><tt class="py-lineno"> 93</tt> <a class="py-toggle" href="#" id="VQMemoryWindow.vqMemNavSlot-toggle" onclick="return toggle('VQMemoryWindow.vqMemNavSlot');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#vqMemNavSlot">vqMemNavSlot</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">expr</tt><tt class="py-op">,</tt> <tt class="py-param">sizeexpr</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow.vqMemNavSlot-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow.vqMemNavSlot-expanded"><a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-comment"># Used by nav event generators to make us render</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">addr_entry</tt><tt class="py-op">.</tt><tt class="py-name">setText</tt><tt class="py-op">(</tt><tt class="py-name">expr</tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">sizeexpr</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">size_entry</tt><tt class="py-op">.</tt><tt class="py-name">setText</tt><tt class="py-op">(</tt><tt class="py-name">sizeexpr</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="envi.qt.memory.VQMemoryWindow._renderMemory" class="py-name" href="#" onclick="return doclink('link-48', '_renderMemory', 'link-32');">_renderMemory</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow.loadRendSelect"></a><div id="VQMemoryWindow.loadRendSelect-def"><a name="L100"></a><tt class="py-lineno">100</tt> <a class="py-toggle" href="#" id="VQMemoryWindow.loadRendSelect-toggle" onclick="return toggle('VQMemoryWindow.loadRendSelect');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#loadRendSelect">loadRendSelect</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow.loadRendSelect-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow.loadRendSelect-expanded"><a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">rend_select</tt><tt class="py-op">.</tt><tt class="py-name">clear</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.getRendererNames()=envi.memcanvas.MemoryCanvas-class.html#getRendererNames"><a title="envi.memcanvas.MemoryCanvas.getRendererNames" class="py-name" href="#" onclick="return doclink('link-49', 'getRendererNames', 'link-49');">getRendererNames</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">rend_select</tt><tt class="py-op">.</tt><tt class="py-name">addItem</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow.loadDefaultRenderers"></a><div id="VQMemoryWindow.loadDefaultRenderers-def"><a name="L105"></a><tt class="py-lineno">105</tt> <a class="py-toggle" href="#" id="VQMemoryWindow.loadDefaultRenderers-toggle" onclick="return toggle('VQMemoryWindow.loadDefaultRenderers');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#loadDefaultRenderers">loadDefaultRenderers</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow.loadDefaultRenderers-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow.loadDefaultRenderers-expanded"><a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addRenderer()=envi.memcanvas.MemoryCanvas-class.html#addRenderer"><a title="envi.memcanvas.MemoryCanvas.addRenderer" class="py-name" href="#" onclick="return doclink('link-50', 'addRenderer', 'link-50');">addRenderer</a></tt><tt class="py-op">(</tt><tt class="py-string">"bytes"</tt><tt class="py-op">,</tt>    <tt class="py-name">e_render</tt><tt class="py-op">.</tt><tt id="link-51" class="py-name" targets="Class envi.memcanvas.renderers.ByteRend=envi.memcanvas.renderers.ByteRend-class.html"><a title="envi.memcanvas.renderers.ByteRend" class="py-name" href="#" onclick="return doclink('link-51', 'ByteRend', 'link-51');">ByteRend</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-52" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addRenderer" class="py-name" href="#" onclick="return doclink('link-52', 'addRenderer', 'link-50');">addRenderer</a></tt><tt class="py-op">(</tt><tt class="py-string">"u_int_16"</tt><tt class="py-op">,</tt> <tt class="py-name">e_render</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name" targets="Class envi.memcanvas.renderers.ShortRend=envi.memcanvas.renderers.ShortRend-class.html"><a title="envi.memcanvas.renderers.ShortRend" class="py-name" href="#" onclick="return doclink('link-53', 'ShortRend', 'link-53');">ShortRend</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addRenderer" class="py-name" href="#" onclick="return doclink('link-54', 'addRenderer', 'link-50');">addRenderer</a></tt><tt class="py-op">(</tt><tt class="py-string">"u_int_32"</tt><tt class="py-op">,</tt> <tt class="py-name">e_render</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Class envi.memcanvas.renderers.LongRend=envi.memcanvas.renderers.LongRend-class.html"><a title="envi.memcanvas.renderers.LongRend" class="py-name" href="#" onclick="return doclink('link-55', 'LongRend', 'link-55');">LongRend</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addRenderer" class="py-name" href="#" onclick="return doclink('link-56', 'addRenderer', 'link-50');">addRenderer</a></tt><tt class="py-op">(</tt><tt class="py-string">"u_int_64"</tt><tt class="py-op">,</tt> <tt class="py-name">e_render</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name" targets="Class envi.memcanvas.renderers.QuadRend=envi.memcanvas.renderers.QuadRend-class.html"><a title="envi.memcanvas.renderers.QuadRend" class="py-name" href="#" onclick="return doclink('link-57', 'QuadRend', 'link-57');">QuadRend</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow._getRenderVaSize"></a><div id="VQMemoryWindow._getRenderVaSize-def"><a name="L111"></a><tt class="py-lineno">111</tt> <a class="py-toggle" href="#" id="VQMemoryWindow._getRenderVaSize-toggle" onclick="return toggle('VQMemoryWindow._getRenderVaSize');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#_getRenderVaSize">_getRenderVaSize</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow._getRenderVaSize-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow._getRenderVaSize-expanded"><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-name">expr</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">addr_entry</tt><tt class="py-op">.</tt><tt class="py-name">text</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">        <tt class="py-name">sizeexpr</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">size_entry</tt><tt class="py-op">.</tt><tt class="py-name">text</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">expr</tt><tt class="py-op">:</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">sizeexpr</tt><tt class="py-op">:</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">            <tt class="py-name">addr</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_mem_obj</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="envi.cli.EnviCli.parseExpression
+vdb.Vdb.parseExpression
+vtrace.Trace.parseExpression" class="py-name" href="#" onclick="return doclink('link-58', 'parseExpression', 'link-40');">parseExpression</a></tt><tt class="py-op">(</tt><tt class="py-name">expr</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt id="link-59" class="py-name" targets="Variable vtrace.platforms.win32.DBG_EVENT_UNION.Exception=vtrace.platforms.win32.DBG_EVENT_UNION-class.html#Exception"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-59', 'Exception', 'link-59');">Exception</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addText()=envi.memcanvas.MemoryCanvas-class.html#addText,Method envi.memcanvas.StringMemoryCanvas.addText()=envi.memcanvas.StringMemoryCanvas-class.html#addText,Method envi.qt.memcanvas.VQMemoryCanvas.addText()=envi.qt.memcanvas.VQMemoryCanvas-class.html#addText,Method vwidget.memview.MemoryView.addText()=vwidget.memview.MemoryView-class.html#addText,Method vwidget.memview.ScrolledMemoryView.addText()=vwidget.memview.ScrolledMemoryView-class.html#addText"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-60', 'addText', 'link-60');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">'Invalid Address: %s (%s)'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">expr</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">            <tt class="py-name">size</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_mem_obj</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="envi.cli.EnviCli.parseExpression
+vdb.Vdb.parseExpression
+vtrace.Trace.parseExpression" class="py-name" href="#" onclick="return doclink('link-61', 'parseExpression', 'link-40');">parseExpression</a></tt><tt class="py-op">(</tt><tt class="py-name">sizeexpr</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt id="link-62" class="py-name"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-62', 'Exception', 'link-59');">Exception</a></tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText
+vwidget.memview.MemoryView.addText
+vwidget.memview.ScrolledMemoryView.addText" class="py-name" href="#" onclick="return doclink('link-63', 'addText', 'link-60');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">'Invalid Size: %s (%s)'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">expr</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">setWindowTitle</tt><tt class="py-op">(</tt><tt class="py-string">'Mem: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">expr</tt><tt class="py-op">)</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">addr</tt><tt class="py-op">,</tt> <tt class="py-name">size</tt> </tt>
+</div><a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">idlethread</tt> </tt>
+<a name="VQMemoryWindow._renderMemory"></a><div id="VQMemoryWindow._renderMemory-def"><a name="L138"></a><tt class="py-lineno">138</tt> <a class="py-toggle" href="#" id="VQMemoryWindow._renderMemory-toggle" onclick="return toggle('VQMemoryWindow._renderMemory');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#_renderMemory">_renderMemory</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow._renderMemory-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow._renderMemory-expanded"><a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name" targets="Method envi.qt.memory.VQMemoryWindow.clearText()=envi.qt.memory.VQMemoryWindow-class.html#clearText"><a title="envi.qt.memory.VQMemoryWindow.clearText" class="py-name" href="#" onclick="return doclink('link-64', 'clearText', 'link-64');">clearText</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">        <tt class="py-name">addr</tt><tt class="py-op">,</tt> <tt class="py-name">size</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name" targets="Method envi.qt.memory.VQMemoryWindow._getRenderVaSize()=envi.qt.memory.VQMemoryWindow-class.html#_getRenderVaSize"><a title="envi.qt.memory.VQMemoryWindow._getRenderVaSize" class="py-name" href="#" onclick="return doclink('link-65', '_getRenderVaSize', 'link-65');">_getRenderVaSize</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">addr</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt class="py-name">expr</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">addr_entry</tt><tt class="py-op">.</tt><tt class="py-name">text</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-name">rname</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">rend_select</tt><tt class="py-op">.</tt><tt class="py-name">currentText</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-name">sizeexpr</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">size_entry</tt><tt class="py-op">.</tt><tt class="py-name">text</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">        <tt class="py-name">mhist</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">expr</tt><tt class="py-op">,</tt> <tt class="py-name">sizeexpr</tt><tt class="py-op">,</tt> <tt class="py-name">rname</tt><tt class="py-op">)</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">mhist</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt><tt class="py-op">:</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt><tt class="py-op">.</tt><tt class="py-name">appendleft</tt><tt class="py-op">(</tt> <tt class="py-name">mhist</tt> <tt class="py-op">)</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">            <tt class="py-keyword">while</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">100</tt><tt class="py-op">:</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_history</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="envi.memcanvas.MemoryCanvas.setRenderer" class="py-name" href="#" onclick="return doclink('link-66', 'setRenderer', 'link-36');">setRenderer</a></tt><tt class="py-op">(</tt><tt class="py-name">rname</tt><tt class="py-op">)</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.renderMemory()=envi.memcanvas.MemoryCanvas-class.html#renderMemory,Method envi.qt.memcanvas.VQMemoryCanvas.renderMemory()=envi.qt.memcanvas.VQMemoryCanvas-class.html#renderMemory,Method vwidget.memview.MemoryView.renderMemory()=vwidget.memview.MemoryView-class.html#renderMemory"><a title="envi.memcanvas.MemoryCanvas.renderMemory
+envi.qt.memcanvas.VQMemoryCanvas.renderMemory
+vwidget.memview.MemoryView.renderMemory" class="py-name" href="#" onclick="return doclink('link-67', 'renderMemory', 'link-67');">renderMemory</a></tt><tt class="py-op">(</tt><tt class="py-name">addr</tt><tt class="py-op">,</tt> <tt class="py-name">size</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"> </tt>
+<a name="VQMemoryWindow.clearText"></a><div id="VQMemoryWindow.clearText-def"><a name="L159"></a><tt class="py-lineno">159</tt> <a class="py-toggle" href="#" id="VQMemoryWindow.clearText-toggle" onclick="return toggle('VQMemoryWindow.clearText');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.qt.memory.VQMemoryWindow-class.html#clearText">clearText</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VQMemoryWindow.clearText-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VQMemoryWindow.clearText-expanded"><a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">mem_canvas</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.clearCanvas()=envi.memcanvas.MemoryCanvas-class.html#clearCanvas,Method envi.qt.memcanvas.VQMemoryCanvas.clearCanvas()=envi.qt.memcanvas.VQMemoryCanvas-class.html#clearCanvas"><a title="envi.memcanvas.MemoryCanvas.clearCanvas
+envi.qt.memcanvas.VQMemoryCanvas.clearCanvas" class="py-name" href="#" onclick="return doclink('link-68', 'clearCanvas', 'link-68');">clearCanvas</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:27 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

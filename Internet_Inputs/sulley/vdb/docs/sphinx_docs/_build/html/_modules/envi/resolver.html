@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.resolver &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="envi" href="../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.resolver</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The API describing what it means to be an envi compliant</span>
+<span class="sd">symbol resolver.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">types</span>
+
+<div class="viewcode-block" id="Symbol"><a class="viewcode-back" href="../../envi.html#envi.resolver.Symbol">[docs]</a><span class="k">class</span> <span class="nc">Symbol</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Symbol</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">long</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__coerce__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">NoneType</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">t</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__long__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">long</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__int__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fname</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SymbolResolver"><a class="viewcode-back" href="../../envi.html#envi.resolver.SymbolResolver">[docs]</a><span class="k">class</span> <span class="nc">SymbolResolver</span><span class="p">:</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NOTE: Nothing should reach directly into a SymbolResolver!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">casesens</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widthmask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="n">width</span><span class="o">*</span><span class="mi">8</span><span class="p">))</span><span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">casesens</span> <span class="o">=</span> <span class="n">casesens</span>
+        <span class="c"># Lets use 4096 byte buckes for now</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bucketsize</span> <span class="o">=</span> <span class="mi">4096</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bucketmask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">widthmask</span> <span class="o">^</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bucketsize</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buckets</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symnames</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symaddrs</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="SymbolResolver.delSymbol"><a class="viewcode-back" href="../../envi.html#envi.resolver.SymbolResolver.delSymbol">[docs]</a>    <span class="k">def</span> <span class="nf">delSymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sym</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete a symbol from the resolver&#39;s namespace</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">symval</span> <span class="o">=</span> <span class="nb">long</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symaddrs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">symval</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="n">bbase</span> <span class="o">=</span> <span class="n">symval</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucketmask</span>
+        <span class="k">while</span> <span class="n">bbase</span> <span class="o">&lt;</span> <span class="n">symval</span><span class="p">:</span>
+            <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buckets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bbase</span><span class="p">)</span>
+            <span class="n">bucket</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+            <span class="n">bbase</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucketsize</span>
+
+        <span class="n">subres</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">sym</span><span class="o">.</span><span class="n">fname</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">subres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">symnames</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="c"># Potentially del it from the sub resolver&#39;s namespace</span>
+        <span class="k">if</span> <span class="n">subres</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">subres</span><span class="o">.</span><span class="n">delSymbol</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+
+        <span class="c"># Otherwise del it from our namespace</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">symname</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">casesens</span><span class="p">:</span>
+                <span class="n">symname</span> <span class="o">=</span> <span class="n">symname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">symnames</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">symname</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SymbolResolver.addSymbol"><a class="viewcode-back" href="../../envi.html#envi.resolver.SymbolResolver.addSymbol">[docs]</a>    <span class="k">def</span> <span class="nf">addSymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sym</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a symbol to the resolver.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># If the symbol has an fname, add it to the namespace</span>
+        <span class="c"># for the FileSymbol inside us rather than our namespace.</span>
+
+        <span class="n">symval</span> <span class="o">=</span> <span class="nb">long</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symaddrs</span><span class="p">[</span><span class="n">symval</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym</span>
+
+        <span class="n">bbase</span> <span class="o">=</span> <span class="n">symval</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucketmask</span>
+        <span class="k">while</span> <span class="n">bbase</span> <span class="o">&lt;</span> <span class="n">symval</span><span class="p">:</span>
+            <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buckets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bbase</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bucket</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">bucket</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buckets</span><span class="p">[</span><span class="n">bbase</span><span class="p">]</span> <span class="o">=</span> <span class="n">bucket</span>
+            <span class="n">bucket</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+            <span class="n">bbase</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucketsize</span>
+
+        <span class="n">subres</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">sym</span><span class="o">.</span><span class="n">fname</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">subres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">symnames</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sym</span><span class="o">.</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="c"># Potentially add it to the sub resolver&#39;s namespace</span>
+        <span class="k">if</span> <span class="n">subres</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">subres</span><span class="o">.</span><span class="n">addSymbol</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+
+        <span class="c"># Otherwise add it to our namespace</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">symname</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">casesens</span><span class="p">:</span>
+                <span class="n">symname</span> <span class="o">=</span> <span class="n">symname</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">symnames</span><span class="p">[</span><span class="n">symname</span><span class="p">]</span> <span class="o">=</span> <span class="n">sym</span>
+</div>
+<div class="viewcode-block" id="SymbolResolver.getSymByName"><a class="viewcode-back" href="../../envi.html#envi.resolver.SymbolResolver.getSymByName">[docs]</a>    <span class="k">def</span> <span class="nf">getSymByName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">casesens</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symnames</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SymbolResolver.getSymByAddr"><a class="viewcode-back" href="../../envi.html#envi.resolver.SymbolResolver.getSymByAddr">[docs]</a>    <span class="k">def</span> <span class="nf">getSymByAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a symbol object for the given virtual address.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">va</span> <span class="o">=</span> <span class="n">va</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">widthmask</span>
+        <span class="n">sym</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">symaddrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sym</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">exact</span><span class="p">:</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">va</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucketmask</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="mi">999999999</span>
+            <span class="k">while</span> <span class="n">sym</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buckets</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">bucket</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">bucket</span><span class="p">:</span>
+                        <span class="n">sva</span> <span class="o">=</span> <span class="nb">long</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">sva</span> <span class="o">&gt;</span> <span class="n">va</span><span class="p">:</span>
+                            <span class="k">continue</span>
+                        <span class="n">offset</span> <span class="o">=</span> <span class="n">va</span> <span class="o">-</span> <span class="n">sva</span>
+                        <span class="k">if</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">best</span><span class="p">:</span>
+                            <span class="n">best</span> <span class="o">=</span> <span class="n">offset</span>
+                            <span class="n">sym</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="c"># If we get more than 8k away, just get out...</span>
+                <span class="k">if</span> <span class="n">va</span> <span class="o">-</span> <span class="n">b</span> <span class="o">&gt;</span> <span class="mi">8192</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="c"># Move back to the previous bucket.</span>
+                <span class="n">b</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bucketsize</span>
+
+        <span class="c"># If we resolve a sub-resolver, see if he</span>
+        <span class="c"># has finer resolution than we do...</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sym</span><span class="p">,</span> <span class="n">SymbolResolver</span><span class="p">):</span>
+            <span class="n">ssym</span> <span class="o">=</span> <span class="n">sym</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="n">exact</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ssym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ssym</span>
+
+        <span class="k">return</span> <span class="n">sym</span>
+</div>
+<div class="viewcode-block" id="SymbolResolver.getSymList"><a class="viewcode-back" href="../../envi.html#envi.resolver.SymbolResolver.getSymList">[docs]</a>    <span class="k">def</span> <span class="nf">getSymList</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a list of the symbols which are contained in this resolver.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">symaddrs</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="SymbolResolver.getSymHint"><a class="viewcode-back" href="../../envi.html#envi.resolver.SymbolResolver.getSymHint">[docs]</a>    <span class="k">def</span> <span class="nf">getSymHint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">hidx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        May be used by symbol resolvers who know what type they are</span>
+<span class="sd">        resolving to store and retrieve &quot;hints&quot; with indexes.</span>
+
+<span class="sd">        Used specifically by opcode render methods to resolve</span>
+<span class="sd">        any memory dereference info for a given operand.</span>
+
+<span class="sd">        NOTE: These are mostly symbolic references to FRAME LOCAL</span>
+<span class="sd">              names....</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+<span class="c"># Some extension types</span>
+</div></div>
+<div class="viewcode-block" id="FunctionSymbol"><a class="viewcode-back" href="../../envi.html#envi.resolver.FunctionSymbol">[docs]</a><span class="k">class</span> <span class="nc">FunctionSymbol</span><span class="p">(</span><span class="n">Symbol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used to represent functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s">()&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SectionSymbol"><a class="viewcode-back" href="../../envi.html#envi.resolver.SectionSymbol">[docs]</a><span class="k">class</span> <span class="nc">SectionSymbol</span><span class="p">(</span><span class="n">Symbol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used for file sections/segments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">[</span><span class="si">%s</span><span class="s">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fname</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="FileSymbol"><a class="viewcode-back" href="../../envi.html#envi.resolver.FileSymbol">[docs]</a><span class="k">class</span> <span class="nc">FileSymbol</span><span class="p">(</span><span class="n">Symbol</span><span class="p">,</span><span class="n">SymbolResolver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A file symbol is both a symbol resolver of it&#39;s own, and</span>
+<span class="sd">    a symbol.</span>
+
+<span class="sd">    File symbols are used to do heirarchal symbol lookups and don&#39;t</span>
+<span class="sd">    actually add anything but the name to their lookup (it is assumed</span>
+<span class="sd">    that the parent Resolver of the FileSymbol takes care of addr lookups.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="n">SymbolResolver</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+        <span class="n">Symbol</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        File symbols may be dereferenced like python objects to resolve</span>
+<span class="sd">        symbols within them.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSymByName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> has no symbol </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Allow dictionary style access for mangled incompatible names...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSymByName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> has no symbol </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

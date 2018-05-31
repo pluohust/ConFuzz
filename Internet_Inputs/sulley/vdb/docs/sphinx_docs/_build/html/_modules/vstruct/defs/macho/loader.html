@@ -1,0 +1,535 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.defs.macho.loader &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="vstruct.defs.macho" href="../macho.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../vstruct.html" >vstruct</a> &raquo;</li>
+          <li><a href="../macho.html" accesskey="U">vstruct.defs.macho</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.defs.macho.loader</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+
+<span class="kn">from</span> <span class="nn">vstruct.primitives</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vstruct.defs.macho.const</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">vm_prot_t</span> <span class="o">=</span> <span class="n">v_uint32</span>
+<span class="n">cpu_type_t</span> <span class="o">=</span> <span class="n">v_uint32</span>
+<span class="n">cpu_subtype_t</span> <span class="o">=</span> <span class="n">v_uint32</span>
+<span class="n">lc_str</span> <span class="o">=</span> <span class="n">v_uint32</span>
+
+<div class="viewcode-block" id="mach_header"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.mach_header">[docs]</a><span class="k">class</span> <span class="nc">mach_header</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">magic</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># mach magic number identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cputype</span>    <span class="o">=</span> <span class="n">cpu_type_t</span><span class="p">()</span> <span class="c"># cpu specifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpusubtype</span> <span class="o">=</span> <span class="n">cpu_subtype_t</span><span class="p">()</span> <span class="c"># machine specifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filetype</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># type of file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncmds</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of load commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sizeofcmds</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the size of all the load commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># flags</span>
+
+<div class="viewcode-block" id="mach_header.vsParse"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.mach_header.vsParse">[docs]</a>    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c"># Over-ride this so we can do the parse, and make sure we</span>
+        <span class="c"># had the right endianness.</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">magic</span> <span class="o">==</span> <span class="n">MH_CIGAM</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vs_fmtbase</span> <span class="o">=</span> <span class="s">&#39;&gt;&#39;</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div></div>
+<div class="viewcode-block" id="mach_header_64"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.mach_header_64">[docs]</a><span class="k">class</span> <span class="nc">mach_header_64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">magic</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># mach magic number identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cputype</span>    <span class="o">=</span> <span class="n">cpu_type_t</span><span class="p">()</span> <span class="c"># cpu specifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpusubtype</span> <span class="o">=</span> <span class="n">cpu_subtype_t</span><span class="p">()</span> <span class="c"># machine specifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filetype</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># type of file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ncmds</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of load commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sizeofcmds</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the size of all the load commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># flags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># reserved</span>
+
+
+<span class="c"># FIXME all commands should subclass this one!</span></div>
+<div class="viewcode-block" id="load_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.load_command">[docs]</a><span class="k">class</span> <span class="nc">load_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># type of load command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># total size of command in bytes</span>
+</div>
+<div class="viewcode-block" id="segment_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.segment_command">[docs]</a><span class="k">class</span> <span class="nc">segment_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_SEGMENT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes sizeof section structs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segname</span>     <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> <span class="c"># segment name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vmaddr</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># memory address of this segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vmsize</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># memory size of this segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileoff</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset of this segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filesize</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># amount to map from the file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxprot</span>     <span class="o">=</span> <span class="n">vm_prot_t</span><span class="p">()</span> <span class="c"># maximum VM protection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initprot</span>    <span class="o">=</span> <span class="n">vm_prot_t</span><span class="p">()</span> <span class="c"># initial VM protection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsects</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of sections in segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># flags</span>
+</div>
+<div class="viewcode-block" id="segment_command_64"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.segment_command_64">[docs]</a><span class="k">class</span> <span class="nc">segment_command_64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_SEGMENT_64</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes sizeof section_64 structs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segname</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span> <span class="c"># segment name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vmaddr</span>      <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># memory address of this segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vmsize</span>      <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># memory size of this segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fileoff</span>     <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># file offset of this segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filesize</span>    <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># amount to map from the file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxprot</span>     <span class="o">=</span> <span class="n">vm_prot_t</span><span class="p">()</span> <span class="c"># maximum VM protection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initprot</span>    <span class="o">=</span> <span class="n">vm_prot_t</span><span class="p">()</span> <span class="c"># initial VM protection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsects</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of sections in segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># flags</span>
+
+</div>
+<div class="viewcode-block" id="section"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.section">[docs]</a><span class="k">class</span> <span class="nc">section</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sectname</span>     <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> <span class="c"># name of this section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segname</span>      <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> <span class="c"># segment this section goes in</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># memory address of this section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># size in bytes of this section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset of this section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">align</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># section alignment (power of 2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reloff</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset of relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nreloc</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># flags (section type and attributes)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved1</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># reserved (for offset or index)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved2</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># reserved (for count or sizeof)</span>
+
+</div>
+<div class="viewcode-block" id="section_64"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.section_64">[docs]</a><span class="k">class</span> <span class="nc">section_64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sectname</span>     <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> <span class="c"># name of this section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">segname</span>      <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> <span class="c"># segment this section goes in</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addr</span>         <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># memory address of this section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span>         <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># size in bytes of this section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset of this section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">align</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># section alignment (power of 2)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reloff</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset of relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nreloc</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># flags (section type and attributes)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved1</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># reserved (for offset or index)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved2</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># reserved (for count or sizeof)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved3</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># reserved</span>
+</div>
+<div class="viewcode-block" id="fvmlib_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.fvmlib_command">[docs]</a><span class="k">class</span> <span class="nc">fvmlib_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_IDFVMLIB or LC_LOADFVMLIB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes pathname string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>          <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># library&#39;s target pathname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minor_version</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># library&#39;s minor version number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_addr</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># library&#39;s header address</span>
+</div>
+<div class="viewcode-block" id="dylib_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.dylib_command">[docs]</a><span class="k">class</span> <span class="nc">dylib_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_ID_DYLIB, LC_LOAD_{,WEAK_}DYLIB, LC_REEXPORT_DYLIB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes pathname string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>                  <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># library&#39;s path name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span>             <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># library&#39;s build time stamp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_version</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># library&#39;s current version number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compatibility_version</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># library&#39;s compatibility vers number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">namedata</span>              <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="dylib_command.vsParse"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.dylib_command.vsParse">[docs]</a>    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c"># So we can grab the name data</span>
+        <span class="n">retoff</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+        <span class="c"># Grab the name from the inline data...</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">[</span> <span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">namedata</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">retoff</span>
+</div></div>
+<div class="viewcode-block" id="sub_framework_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.sub_framework_command">[docs]</a><span class="k">class</span> <span class="nc">sub_framework_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_SUB_FRAMEWORK</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes umbrella string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">umbrella</span> <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># the umbrella framework name</span>
+
+</div>
+<div class="viewcode-block" id="sub_client_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.sub_client_command">[docs]</a><span class="k">class</span> <span class="nc">sub_client_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_SUB_CLIENT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes client string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span>  <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># the client name</span>
+
+</div>
+<div class="viewcode-block" id="sub_umbrella_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.sub_umbrella_command">[docs]</a><span class="k">class</span> <span class="nc">sub_umbrella_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>          <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_SUB_UMBRELLA</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes sub_umbrella string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_umbrella</span> <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># the sub_umbrella framework name</span>
+
+</div>
+<div class="viewcode-block" id="sub_library_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.sub_library_command">[docs]</a><span class="k">class</span> <span class="nc">sub_library_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_SUB_LIBRARY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes sub_library string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sub_library</span> <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># the sub_library name</span>
+
+</div>
+<div class="viewcode-block" id="prebound_dylib_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.prebound_dylib_command">[docs]</a><span class="k">class</span> <span class="nc">prebound_dylib_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_PREBOUND_DYLIB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes strings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>           <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># library&#39;s path name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nmodules</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of modules in library</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linked_modules</span> <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># bit vector of linked modules</span>
+
+</div>
+<div class="viewcode-block" id="dylinker_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.dylinker_command">[docs]</a><span class="k">class</span> <span class="nc">dylinker_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_ID_DYLINKER or LC_LOAD_DYLINKER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes pathname string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>    <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># dynamic linker&#39;s path name</span>
+
+</div>
+<div class="viewcode-block" id="thread_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.thread_command">[docs]</a><span class="k">class</span> <span class="nc">thread_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_THREAD or LC_UNIXTHREAD</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># total size of this command</span>
+
+</div>
+<div class="viewcode-block" id="routines_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.routines_command">[docs]</a><span class="k">class</span> <span class="nc">routines_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>          <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_ROUTINES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># total size of this command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_address</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># address of initialization routine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_module</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into the module table that</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved1</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved2</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved3</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved4</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved5</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved6</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="routines_command_64"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.routines_command_64">[docs]</a><span class="k">class</span> <span class="nc">routines_command_64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>          <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_ROUTINES_64</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># total size of this command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_address</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># address of initialization routine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_module</span>  <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># index into the module table that</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved1</span>    <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved2</span>    <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved3</span>    <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved4</span>    <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved5</span>    <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reserved6</span>    <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="symtab_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.symtab_command">[docs]</a><span class="k">class</span> <span class="nc">symtab_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_SYMTAB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># sizeof(struct symtab_command)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symoff</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># symbol table offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nsyms</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of symbol table entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stroff</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># string table offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># string table size in bytes</span>
+</div>
+<div class="viewcode-block" id="dysymtab_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.dysymtab_command">[docs]</a><span class="k">class</span> <span class="nc">dysymtab_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_DYSYMTAB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># sizeof(struct dysymtab_command)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ilocalsym</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index to local symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nlocalsym</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of local symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iextdefsym</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index to externally defined symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextdefsym</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of externally defined symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iundefsym</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index to undefined symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nundefsym</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of undefined symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tocoff</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset to table of contents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ntoc</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of entries in table of contents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modtaboff</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset to module table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nmodtab</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of module table entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extrefsymoff</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># offset to referenced symbol table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextrefsyms</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of referenced symbol table entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indirectsymoff</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset to the indirect symbol table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nindirectsyms</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of indirect symbol table entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extreloff</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># offset to external relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextrel</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of external relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locreloff</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># offset to local relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nlocrel</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of local relocation entries</span>
+
+</div>
+<div class="viewcode-block" id="dylib_table_of_contents"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.dylib_table_of_contents">[docs]</a><span class="k">class</span> <span class="nc">dylib_table_of_contents</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">symbol_index</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the defined external symbol (index into the symbol table)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_index</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into the module table this symbol is defined in</span>
+
+</div>
+<div class="viewcode-block" id="dylib_module"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.dylib_module">[docs]</a><span class="k">class</span> <span class="nc">dylib_module</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_name</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the module name (index into string table)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iextdefsym</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into externally defined symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextdefsym</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of externally defined symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">irefsym</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into reference symbol table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrefsym</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of reference symbol table entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ilocalsym</span>             <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into symbols for local symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nlocalsym</span>             <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of local symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iextrel</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into external relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextrel</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of external relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iinit_iterm</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># low 16 bits are the index into the init section, high 16 bits are the index into the term section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ninit_nterm</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># low 16 bits are the number of init section entries, high 16 bits are the number of term section entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objc_module_info_addr</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the (__OBJC,__module_info) section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objc_module_info_size</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the (__OBJC,__module_info) section</span>
+
+</div>
+<div class="viewcode-block" id="dylib_module_64"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.dylib_module_64">[docs]</a><span class="k">class</span> <span class="nc">dylib_module_64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">module_name</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the module name (index into string table)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iextdefsym</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into externally defined symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextdefsym</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of externally defined symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">irefsym</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into reference symbol table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nrefsym</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of reference symbol table entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ilocalsym</span>             <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into symbols for local symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nlocalsym</span>             <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of local symbols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iextrel</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into external relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nextrel</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of external relocation entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iinit_iterm</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># low 16 bits are the index into the init section, high 16 bits are the index into the term section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ninit_nterm</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># low 16 bits are the number of init section entries, high 16 bits are the number of term section entries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objc_module_info_size</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the (__OBJC,__module_info) section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objc_module_info_addr</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span> <span class="c"># the (__OBJC,__module_info) section</span>
+
+</div>
+<div class="viewcode-block" id="dylib_reference"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.dylib_reference">[docs]</a><span class="k">class</span> <span class="nc">dylib_reference</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># flags to indicate the type of reference</span>
+
+</div>
+<div class="viewcode-block" id="twolevel_hints_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.twolevel_hints_command">[docs]</a><span class="k">class</span> <span class="nc">twolevel_hints_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_TWOLEVEL_HINTS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># sizeof(struct twolevel_hints_command)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># offset to the hint table</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nhints</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># number of hints in the hint table</span>
+
+</div>
+<div class="viewcode-block" id="twolevel_hint"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.twolevel_hint">[docs]</a><span class="k">class</span> <span class="nc">twolevel_hint</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">itoc</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># index into the table of contents</span>
+</div>
+<div class="viewcode-block" id="prebind_cksum_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.prebind_cksum_command">[docs]</a><span class="k">class</span> <span class="nc">prebind_cksum_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_PREBIND_CKSUM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># sizeof(struct prebind_cksum_command)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cksum</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># the check sum or zero</span>
+
+</div>
+<div class="viewcode-block" id="uuid_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.uuid_command">[docs]</a><span class="k">class</span> <span class="nc">uuid_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_UUID</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># sizeof(struct uuid_command)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span> <span class="c"># the 128-bit uuid</span>
+
+</div>
+<div class="viewcode-block" id="rpath_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.rpath_command">[docs]</a><span class="k">class</span> <span class="nc">rpath_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_RPATH</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span>    <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># path to add to run path</span>
+
+</div>
+<div class="viewcode-block" id="linkedit_data_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.linkedit_data_command">[docs]</a><span class="k">class</span> <span class="nc">linkedit_data_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_CODE_SIGNATURE or LC_SEGMENT_SPLIT_INFO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># sizeof(struct linkedit_data_command)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataoff</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset of data in __LINKEDIT segment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">datasize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file size of data in __LINKEDIT segment</span>
+
+</div>
+<div class="viewcode-block" id="encryption_info_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.encryption_info_command">[docs]</a><span class="k">class</span> <span class="nc">encryption_info_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_ENCRYPTION_INFO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># sizeof(struct encryption_info_command)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cryptoff</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file offset of encrypted range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cryptsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># file size of encrypted range</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cryptid</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># which enryption system, 0 means not-encrypted yet</span>
+
+</div>
+<div class="viewcode-block" id="symseg_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.symseg_command">[docs]</a><span class="k">class</span> <span class="nc">symseg_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_SYMSEG</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># sizeof(struct symseg_command)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># symbol segment offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># symbol segment size in bytes</span>
+
+</div>
+<div class="viewcode-block" id="ident_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.ident_command">[docs]</a><span class="k">class</span> <span class="nc">ident_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_IDENT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># strings that follow this command</span>
+</div>
+<div class="viewcode-block" id="fvmfile_command"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.fvmfile_command">[docs]</a><span class="k">class</span> <span class="nc">fvmfile_command</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmd</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># LC_FVMFILE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmdsize</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># includes pathname string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span>        <span class="o">=</span> <span class="n">lc_str</span><span class="p">()</span> <span class="c"># files pathname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header_addr</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># files virtual address</span>
+</div>
+<span class="n">command_classes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">LC_SEGMENT</span><span class="p">:</span>     <span class="n">segment_command</span><span class="p">,</span>
+    <span class="n">LC_SYMTAB</span><span class="p">:</span>      <span class="n">symtab_command</span><span class="p">,</span>
+    <span class="n">LC_LOAD_DYLIB</span><span class="p">:</span>  <span class="n">dylib_command</span><span class="p">,</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="getCommandClass"><a class="viewcode-back" href="../../../../vstruct.defs.macho.html#vstruct.defs.macho.loader.getCommandClass">[docs]</a><span class="k">def</span> <span class="nf">getCommandClass</span><span class="p">(</span><span class="n">cmdtype</span><span class="p">):</span>
+    <span class="n">cls</span> <span class="o">=</span> <span class="n">command_classes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cmdtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cls</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">cls</span>
+    <span class="k">return</span> <span class="n">load_command</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../vstruct.html" >vstruct</a> &raquo;</li>
+          <li><a href="../macho.html" >vstruct.defs.macho</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,309 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.snapshot &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vtrace" href="../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.snapshot</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">All the code related to vtrace process snapshots</span>
+<span class="sd">and TraceSnapshot classes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">cPickle</span> <span class="kn">as</span> <span class="nn">pickle</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.resolver</span> <span class="kn">as</span> <span class="nn">e_resolv</span>
+
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">vtrace.platforms.base</span> <span class="kn">as</span> <span class="nn">v_base</span>
+
+<div class="viewcode-block" id="TraceSnapshot"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot">[docs]</a><span class="k">class</span> <span class="nc">TraceSnapshot</span><span class="p">(</span>
+            <span class="n">vtrace</span><span class="o">.</span><span class="n">Trace</span><span class="p">,</span>
+            <span class="n">v_base</span><span class="o">.</span><span class="n">TracerBase</span><span class="p">,</span>
+        <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A tracer snapshot is similar to a traditional &quot;core file&quot; except that</span>
+<span class="sd">    you may also have memory only snapshots that are never written to disk.</span>
+
+<span class="sd">    TraceSnapshots allow you to take a picture of a process from a given point</span>
+<span class="sd">    in it&#39;s execution and manipulate/test from there or save it to disk for later</span>
+<span class="sd">    analysis...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapdict</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_snapcache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_snapdict</span> <span class="o">=</span> <span class="n">snapdict</span>
+
+        <span class="c"># a seperate parser for each version...</span>
+        <span class="k">if</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_version</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_threads</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;threads&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_regs</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;regs&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_maps</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;maps&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_mem</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;mem&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;meta&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_stacktrace</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;stacktrace&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_exe</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;exe&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_fds</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;fds&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">localvars</span> <span class="o">=</span> <span class="n">snapdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;vars&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR: Unknown snapshot version!&quot;</span><span class="p">)</span>
+
+        <span class="c"># In the ghetto!</span>
+        <span class="n">archname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">)</span>
+        <span class="n">envi</span><span class="o">.</span><span class="n">stealArchMethods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archname</span><span class="p">)</span>
+
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Trace</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">v_base</span><span class="o">.</span><span class="n">TracerBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c"># This will re-init meta... *sigh* set it back...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">snapdict</span><span class="p">[</span><span class="s">&#39;meta&#39;</span><span class="p">]</span>
+
+        <span class="c"># Steal the reg defs of the first thread</span>
+        <span class="n">rinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_regs</span><span class="o">.</span><span class="n">items</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegisterInfo</span><span class="p">(</span><span class="n">rinfo</span><span class="p">)</span>
+
+        <span class="c">#FIXME hard-coded page size!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_map_lookup</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="nb">map</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_maps</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">map</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">4096</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">s_map_lookup</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">map</span>
+
+        <span class="c"># Lets get some symbol resolvers created for our libraries</span>
+        <span class="c">#for fname in self.getNormalizedLibNames():</span>
+            <span class="c">#subres = e_resolv.FileSymbol(fname, </span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attached</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c"># So that we pickle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bplock</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="TraceSnapshot.saveToFd"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.saveToFd">[docs]</a>    <span class="k">def</span> <span class="nf">saveToFd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fd</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Save this snapshot to the given file like object</span>
+<span class="sd">        for later reloading...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s_snapdict</span><span class="p">,</span> <span class="n">fd</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.saveToFile"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.saveToFile">[docs]</a>    <span class="k">def</span> <span class="nf">saveToFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save a snapshot to file for later reading in...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;wb&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saveToFd</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.getMemoryMap"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.getMemoryMap">[docs]</a>    <span class="k">def</span> <span class="nf">getMemoryMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">addr</span> <span class="o">&amp;</span> <span class="mh">0xfffff000</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_map_lookup</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.platformGetFds"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.platformGetFds">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetFds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_fds</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.getExe"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.getExe">[docs]</a>    <span class="k">def</span> <span class="nf">getExe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_exe</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.getStackTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.getStackTrace">[docs]</a>    <span class="k">def</span> <span class="nf">getStackTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">)</span>
+        <span class="n">tr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_stacktrace</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tid</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tr</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR: Invalid thread id specified&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tr</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.platformGetRegCtx"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.platformGetRegCtx">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">thrid</span><span class="p">):</span>
+        <span class="n">rinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_regs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">thrid</span><span class="p">)</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">archGetRegCtx</span><span class="p">()</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">setRegisterInfo</span><span class="p">(</span><span class="n">rinfo</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ctx</span>
+        </div>
+<div class="viewcode-block" id="TraceSnapshot.platformGetMaps"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.platformGetMaps">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_maps</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.platformGetThreads"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.platformGetThreads">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_threads</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.platformReadMemory"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.platformReadMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformReadMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR: platformReadMemory says no map for 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">address</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">address</span> <span class="o">-</span> <span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c"># Base address</span>
+        <span class="n">mapbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_mem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mapbytes</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">PlatformException</span><span class="p">(</span><span class="s">&quot;ERROR: Memory map at 0x</span><span class="si">%.8x</span><span class="s"> is not backed!&quot;</span> <span class="o">%</span> <span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mapbytes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">PlatformException</span><span class="p">(</span><span class="s">&quot;ERROR: Memory Map at 0x</span><span class="si">%.8x</span><span class="s"> is backed by &#39;&#39;&quot;</span> <span class="o">%</span> <span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">mapbytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="n">size</span><span class="p">]</span>
+        <span class="n">rlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+        <span class="c"># We may have a cross-map read, just recurse for the rest</span>
+        <span class="k">if</span> <span class="n">rlen</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformReadMemory</span><span class="p">(</span><span class="n">address</span><span class="o">+</span><span class="n">rlen</span><span class="p">,</span> <span class="n">size</span><span class="o">-</span><span class="n">rlen</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.platformWriteMemory"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.platformWriteMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformWriteMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="nb">map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR: platformWriteMemory says no map for 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">address</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">address</span> <span class="o">-</span> <span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">mapbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_mem</span><span class="p">[</span><span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_mem</span><span class="p">[</span><span class="nb">map</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">mapbytes</span><span class="p">[:</span><span class="n">offset</span><span class="p">]</span> <span class="o">+</span> <span class="nb">bytes</span> <span class="o">+</span> <span class="n">mapbytes</span><span class="p">[</span><span class="n">offset</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">):]</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.platformDetach"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.platformDetach">[docs]</a>    <span class="k">def</span> <span class="nf">platformDetach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.platformParseBinary"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.platformParseBinary">[docs]</a>    <span class="k">def</span> <span class="nf">platformParseBinary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&#39;FIXME FAKE PLATFORM PARSE BINARY: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="c"># Over-ride register *caching* subsystem to store/retrieve</span>
+    <span class="c"># register information in pure dictionaries</span></div>
+<div class="viewcode-block" id="TraceSnapshot.cacheRegs"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.cacheRegs">[docs]</a>    <span class="k">def</span> <span class="nf">cacheRegs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="c"># FIXME regs in snapshots are broke...</span>
+</div>
+<div class="viewcode-block" id="TraceSnapshot.syncRegs"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.TraceSnapshot.syncRegs">[docs]</a>    <span class="k">def</span> <span class="nf">syncRegs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div></div>
+<div class="viewcode-block" id="loadSnapshot"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.loadSnapshot">[docs]</a><span class="k">def</span> <span class="nf">loadSnapshot</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Load a vtrace process snapshot from a file</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">sfile</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span>
+    <span class="n">snapdict</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">sfile</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">TraceSnapshot</span><span class="p">(</span><span class="n">snapdict</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="takeSnapshot"><a class="viewcode-back" href="../../vtrace.html#vtrace.snapshot.takeSnapshot">[docs]</a><span class="k">def</span> <span class="nf">takeSnapshot</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take a snapshot of the process from the current state and return</span>
+<span class="sd">    a reference to a tracer which wraps a &quot;snapshot&quot; or &quot;core file&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sd</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">orig_thread</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">)</span>
+
+    <span class="n">regs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">stacktrace</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">thrid</span><span class="p">,</span><span class="n">tdata</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getRegisterContext</span><span class="p">(</span><span class="n">thrid</span><span class="p">)</span>
+        <span class="n">reginfo</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">getRegisterInfo</span><span class="p">()</span>
+        <span class="n">regs</span><span class="p">[</span><span class="n">thrid</span><span class="p">]</span> <span class="o">=</span> <span class="n">reginfo</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">stacktrace</span><span class="p">[</span><span class="n">thrid</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStackTrace</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;WARNING: Failed to get stack trace for thread 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">thrid</span>
+
+    <span class="n">mem</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">maps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">base</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perms</span><span class="p">,</span><span class="n">fname</span> <span class="ow">in</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMaps</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mem</span><span class="p">[</span><span class="n">base</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+            <span class="n">maps</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">base</span><span class="p">,</span><span class="n">size</span><span class="p">,</span><span class="n">perms</span><span class="p">,</span><span class="n">fname</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;WARNING: Can&#39;t snapshot memmap at 0x</span><span class="si">%.8x</span><span class="s"> (</span><span class="si">%s</span><span class="s">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c"># If the contents here change, change the version...</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;version&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;threads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;regs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">regs</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;maps&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">maps</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;mem&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mem</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;meta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;stacktrace&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stacktrace</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;exe&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getExe</span><span class="p">()</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;fds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getFds</span><span class="p">()</span>
+    <span class="n">sd</span><span class="p">[</span><span class="s">&#39;vars&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">localvars</span>
+
+    <span class="k">return</span> <span class="n">TraceSnapshot</span><span class="p">(</span><span class="n">snapdict</span><span class="o">=</span><span class="n">sd</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

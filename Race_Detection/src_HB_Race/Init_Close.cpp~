@@ -1,0 +1,60 @@
+#include "Init_Close.h"
+
+extern map<UINT32, ThreadVecTime> AllThread;
+extern size_t MaxSum;
+extern int ThreadNum;
+extern bool monitorendflag;
+
+extern ofstream ConBOFOut;
+extern ofstream FreeOut;
+extern ofstream DoubleFreeOut;
+
+extern ofstream RaceOut;
+
+extern map<ADDRINT, ResultInf> Result_ConBOF;
+extern map<ADDRINT, ResultInf> Result_ConDF;
+extern map<ADDRINT, ResultInf> Result_ConUAF;
+
+extern set<string> Simple_ConBOF;
+extern set<string> Simple_ConDF;
+extern set<string> Simple_ConUAF;
+
+void InitFileOutput()
+{
+    char filename[50];
+
+    sprintf(filename,"%dConBOFOut.out", getpid());
+    ConBOFOut.open(filename);
+    ConBOFOut.setf(ios::showbase);
+    
+    sprintf(filename,"%dFreeOut.out", getpid());
+    FreeOut.open(filename);
+    FreeOut.setf(ios::showbase);
+    
+    sprintf(filename,"%dDoubleFreeOut.out", getpid());
+    DoubleFreeOut.open(filename);
+    DoubleFreeOut.setf(ios::showbase);
+    
+    sprintf(filename,"%dRaceOut.out", getpid());
+    RaceOut.open(filename);
+    RaceOut.setf(ios::showbase);
+}
+
+void CloseFileOutput()
+{
+    ConBOFOut.close();
+    FreeOut.close();
+    DoubleFreeOut.close();
+}
+
+int Usage()
+{
+    cerr << "This is the invocation pintool" << endl;
+    cerr << endl << KNOB_BASE::StringKnobSummary() << endl;
+    return -1;
+}
+
+VOID Fini(INT32 code, VOID *v)
+{
+    monitorendflag=true;
+}

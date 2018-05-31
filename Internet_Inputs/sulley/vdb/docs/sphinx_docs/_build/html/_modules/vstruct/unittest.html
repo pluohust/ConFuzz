@@ -1,0 +1,203 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.unittest &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vstruct" href="../vstruct.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vstruct.html" accesskey="U">vstruct</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.unittest</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+
+<span class="kn">from</span> <span class="nn">cStringIO</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+<span class="kn">from</span> <span class="nn">vstruct.primitives</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">hexstr</span><span class="p">):</span>
+<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../vstruct.html#vstruct.unittest.test">[docs]</a>    <span class="n">vshex</span> <span class="o">=</span> <span class="n">vs</span><span class="o">.</span><span class="n">vsEmit</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">vshex</span> <span class="o">!=</span> <span class="n">hexstr</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;FAIL&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;PASS!&#39;</span>
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span></div>
+<span class="n">v</span><span class="o">.</span><span class="n">uint8</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint16</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint24</span> <span class="o">=</span> <span class="n">v_uint24</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint32</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint64</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">vbytes</span> <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="n">vbytes</span><span class="o">=</span><span class="s">&#39;ABCD&#39;</span><span class="p">)</span>
+
+<span class="n">test</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="s">&#39;01020003000004000000050000000000000041424344&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+
+<span class="n">v</span><span class="o">.</span><span class="n">uint8</span> <span class="o">=</span> <span class="mi">99</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint16</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint24</span> <span class="o">=</span> <span class="mi">101</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint32</span> <span class="o">=</span> <span class="mi">102</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint64</span> <span class="o">=</span> <span class="mi">103</span>
+<span class="n">v</span><span class="o">.</span><span class="n">vbytes</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\x00\x00\x00\x00</span><span class="s">&#39;</span>
+
+<span class="n">test</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="s">&#39;63640065000066000000670000000000000000000000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+
+<span class="c"># =================================================================</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span>
+<span class="n">v</span><span class="o">.</span><span class="n">_vs_field_align</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint8</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">(</span><span class="mh">0x42</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint16</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">(</span><span class="mh">0x4243</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint24</span> <span class="o">=</span> <span class="n">v_uint24</span><span class="p">(</span><span class="mh">0x424344</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint32</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">(</span><span class="mh">0x42434445</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">uint64</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">(</span><span class="mh">0x4243444546474849</span><span class="p">,</span> <span class="n">bigend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="n">test</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">&#39;420042430000424344000000424344454243444546474849&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+
+<span class="c"># ===============================================================</span>
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span>
+<span class="n">v</span><span class="o">.</span><span class="n">strfield</span> <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">unifield</span> <span class="o">=</span> <span class="n">v_wstr</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="n">v</span><span class="o">.</span><span class="n">strfield</span> <span class="o">=</span> <span class="s">&#39;wootwoot!&#39;</span>
+<span class="n">v</span><span class="o">.</span><span class="n">unifield</span> <span class="o">=</span> <span class="s">&#39;bazbaz&#39;</span>
+
+<span class="n">test</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">&#39;776f6f74776f6f7421000000000000000000000000000000000000000000620061007a00620061007a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+<span class="n">v</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="s">&#39;B&#39;</span><span class="o">*</span><span class="mi">90</span><span class="p">)</span>
+
+<span class="c"># ===============================================================</span>
+<span class="k">def</span> <span class="nf">updatelen</span><span class="p">(</span><span class="n">vs</span><span class="p">):</span>
+<div class="viewcode-block" id="updatelen"><a class="viewcode-back" href="../../vstruct.html#vstruct.unittest.updatelen">[docs]</a>    <span class="n">vs</span><span class="o">.</span><span class="n">vsGetField</span><span class="p">(</span><span class="s">&#39;strfield&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">vsSetLength</span><span class="p">(</span><span class="n">vs</span><span class="o">.</span><span class="n">lenfield</span><span class="p">)</span>
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span></div>
+<span class="n">v</span><span class="o">.</span><span class="n">lenfield</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">(</span><span class="mh">0x30</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">strfield</span> <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">vsAddParseCallback</span><span class="p">(</span><span class="s">&#39;lenfield&#39;</span><span class="p">,</span> <span class="n">updatelen</span><span class="p">)</span>
+
+<span class="n">v</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x01</span><span class="s">&#39;</span> <span class="o">+</span> <span class="s">&#39;A&#39;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">test</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">&#39;0141&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+
+<span class="c"># ==============================================================</span>
+
+<span class="k">class</span> <span class="nc">woot</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+<div class="viewcode-block" id="woot"><a class="viewcode-back" href="../../vstruct.html#vstruct.unittest.woot">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lenfield</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strfield</span> <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mh">0x20</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pcb_lenfield</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="woot.pcb_lenfield"><a class="viewcode-back" href="../../vstruct.html#vstruct.unittest.woot.pcb_lenfield">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">vsGetField</span><span class="p">(</span><span class="s">&#39;strfield&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">vsSetLength</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lenfield</span><span class="p">)</span>
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">woot</span><span class="p">()</span></div></div>
+<span class="n">v</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x01</span><span class="s">&#39;</span> <span class="o">+</span> <span class="s">&#39;A&#39;</span><span class="o">*</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">test</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">&#39;0141&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+<span class="c"># ==============================================================</span>
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">woot</span><span class="p">()</span>
+<span class="n">sio</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x01</span><span class="s">&#39;</span> <span class="o">+</span> <span class="s">&#39;A&#39;</span> <span class="o">*</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">vsParseFd</span><span class="p">(</span><span class="n">sio</span><span class="p">)</span>
+<span class="n">test</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">&#39;0141&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+
+<span class="c"># ==============================================================</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">woot</span><span class="p">()</span>
+<span class="n">v</span><span class="o">.</span><span class="n">vsInsertField</span><span class="p">(</span><span class="s">&#39;ifield&#39;</span><span class="p">,</span> <span class="n">v_uint8</span><span class="p">(),</span> <span class="s">&#39;strfield&#39;</span><span class="p">)</span>
+<span class="n">v</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x01</span><span class="s">BA&#39;</span><span class="p">)</span>
+<span class="n">test</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s">&#39;014241&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">v</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vstruct.html" >vstruct</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

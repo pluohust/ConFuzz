@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.archs.arm.disasm &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="envi.archs.arm" href="../arm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../arm.html" accesskey="U">envi.archs.arm</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.archs.arm.disasm</h1><div class="highlight"><pre>
+<span class="c">#import sys</span>
+<span class="c">#import struct</span>
+<span class="c">#import traceback</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="c">#import envi.bits as e_bits</span>
+<span class="c">#from envi.bits import binary</span>
+
+<span class="kn">from</span> <span class="nn">envi.archs.arm.const</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">envi.archs.arm.armdisasm</span> <span class="kn">import</span> <span class="n">ArmStdDisasm</span>
+<span class="kn">from</span> <span class="nn">envi.archs.arm.thumbdisasm</span> <span class="kn">import</span> <span class="n">ArmThumbDisasm</span>
+<span class="kn">from</span> <span class="nn">envi.archs.arm.regs</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># Universal opcode things:</span>
+<span class="c"># len</span>
+<span class="c"># mode</span>
+
+<span class="c">#FIXME: TODO</span>
+<span class="c"># FIXME ldm sp, { pc } seems to not get marked NOFALL</span>
+<span class="c"># FIXME ldm sp, { pc } should probably be marked IF_RET too...</span>
+<span class="c"># FIXME b lr / bx lr should be marked IF_RET as well!</span>
+<span class="c"># FIXME encoding for swi instruction ( &lt;4 cond&gt; 1111 &lt;24 bytes immediate&gt; ) is totally horked (it&#39;s in p_uncond)</span>
+<span class="c"># FIXME some arm opcode values are ENC &lt;&lt; and some are ENC and some are etc..</span>
+<span class="c">#       (make all be ENC_FOO &lt;&lt; 16 + &lt;their index&gt;</span>
+
+<span class="c"># FIXME the following things dont decode correctly</span>
+<span class="c"># 5346544e    cmppl   r6, #1308622848</span>
+
+<span class="c">#</span>
+<span class="c"># Possible future extensions: </span>
+<span class="c">#   * VectorPointFloat subsystem (coproc 10+11)</span>
+<span class="c">#   * Debug subsystem (coproc 14)</span>
+<span class="c">#   * other &#39;default&#39; coprocs we can handle and add value?</span>
+
+
+<span class="c">####################################################################</span>
+<span class="c"># Parsers for the multiply family of instruction encodings</span>
+
+<div class="viewcode-block" id="ArmDisasm"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.disasm.ArmDisasm">[docs]</a><span class="k">class</span> <span class="nc">ArmDisasm</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jzl_enabled</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dis_regctx</span> <span class="o">=</span> <span class="n">ArmRegisterContext</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disasm</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disasms</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">ArmStdDisasm</span><span class="p">(),</span>
+            <span class="n">ArmThumbDisasm</span><span class="p">(),</span>
+            <span class="n">ArmJazDisasm</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loclookup</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="n">MODE_ARM</span><span class="p">)</span>
+        
+<div class="viewcode-block" id="ArmDisasm.setMode"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.disasm.ArmDisasm.setMode">[docs]</a>    <span class="k">def</span> <span class="nf">setMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode_num</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disasm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disasms</span><span class="p">[</span><span class="n">mode_num</span><span class="p">]</span>
+    </div>
+<div class="viewcode-block" id="ArmDisasm.disasm"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.disasm.ArmDisasm.disasm">[docs]</a>    <span class="k">def</span> <span class="nf">disasm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">trackMode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="c"># hack to make sure parsing odd addresses kicks to thumb</span>
+        <span class="k">if</span> <span class="n">va</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span> <span class="n">MODE_THUMB</span> <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span> <span class="n">MODE_ARM</span> <span class="p">)</span>
+
+        <span class="n">op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disasm</span><span class="o">.</span><span class="n">disasm</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">trackMode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">op</span>
+        </div></div>
+<div class="viewcode-block" id="ArmJazDisasm"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.disasm.ArmJazDisasm">[docs]</a><span class="k">class</span> <span class="nc">ArmJazDisasm</span><span class="p">:</span>
+<div class="viewcode-block" id="ArmJazDisasm.disasm"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.disasm.ArmJazDisasm.disasm">[docs]</a>    <span class="k">def</span> <span class="nf">disasm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">trackMode</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Jaz Not Supported Yet!&#39;</span><span class="p">)</span>
+    </div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../arm.html" >envi.archs.arm</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

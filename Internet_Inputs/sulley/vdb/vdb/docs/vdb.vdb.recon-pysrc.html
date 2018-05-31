@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vdb.vdb.recon</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vdb.vdb-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Package&nbsp;vdb ::
+        <a href="vdb.vdb-module.html">Package&nbsp;vdb</a> ::
+        Package&nbsp;recon
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vdb.vdb.recon-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vdb.vdb.recon-module.html">Package vdb.vdb.recon</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">The recon subsystem for monitoring well known library</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">calls and identifying dangerous calling mechanisms.</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">NOTE: This subsystem pretty much assumes some intel-like</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">conventions...</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">Recon Format Chars:</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-docstring">    A - A NULL terminated ascii string</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-docstring">    W - A NULL terminated utf-16le string</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-docstring">    P - A platform width pointer</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">    I - An integer (32 bits for now...)</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt class="py-name">breakpoints</tt> <tt class="py-keyword">as</tt> <tt class="py-name">vt_breakpoints</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="reprargs"></a><div id="reprargs-def"><a name="L17"></a><tt class="py-lineno"> 17</tt> <a class="py-toggle" href="#" id="reprargs-toggle" onclick="return toggle('reprargs');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.vdb.recon-module.html#reprargs">reprargs</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">,</tt> <tt class="py-param">fmt</tt><tt class="py-op">,</tt> <tt class="py-param">args</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="reprargs-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="reprargs-expanded"><a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">    <tt class="py-name">r</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">i</tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">fmt</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line">        <tt class="py-name">fchr</tt> <tt class="py-op">=</tt> <tt class="py-name">fmt</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">        <tt class="py-name">arg</tt>  <tt class="py-op">=</tt> <tt class="py-name">args</tt><tt class="py-op">[</tt><tt class="py-name">i</tt><tt class="py-op">]</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">fchr</tt> <tt class="py-op">==</tt> <tt class="py-string">'P'</tt><tt class="py-op">:</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">            <tt class="py-name">sym</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getSymByAddr</tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">sym</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">                <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">sym</tt><tt class="py-op">)</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">                <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-string">'0x%.8x'</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">fchr</tt> <tt class="py-op">==</tt> <tt class="py-string">'I'</tt><tt class="py-op">:</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">            <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">fchr</tt> <tt class="py-op">==</tt> <tt class="py-string">'U'</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">arg</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">                <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-string">'NULL'</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">            <tt class="py-keyword">elif</tt> <tt class="py-keyword">not</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">isValidPointer</tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">                <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-string">'0x%.8x'</tt> <tt class="py-op">%</tt> <tt class="py-name">arg</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">                <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">readMemory</tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">,</tt> <tt class="py-number">260</tt><tt class="py-op">*</tt><tt class="py-number">2</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">                <tt class="py-name">ubuf</tt> <tt class="py-op">=</tt> <tt class="py-name">buf</tt><tt class="py-op">.</tt><tt class="py-name">decode</tt><tt class="py-op">(</tt><tt class="py-string">'utf-16le'</tt><tt class="py-op">,</tt><tt class="py-string">'ignore'</tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">                <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">ubuf</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'\x00'</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">                 </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">fchr</tt> <tt class="py-op">==</tt> <tt class="py-string">'S'</tt><tt class="py-op">:</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">arg</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line">                <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-string">'NULL'</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">            <tt class="py-keyword">elif</tt> <tt class="py-keyword">not</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">isValidPointer</tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">                <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-string">'0x%.8x'</tt> <tt class="py-op">%</tt> <tt class="py-name">arg</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">                <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">readMemory</tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">,</tt> <tt class="py-number">260</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">                <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">buf</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">'\x00'</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">fchr</tt> <tt class="py-op">==</tt> <tt class="py-string">'C'</tt><tt class="py-op">:</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">            <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">chr</tt><tt class="py-op">(</tt> <tt class="py-name">arg</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xff</tt> <tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">fchr</tt> <tt class="py-op">==</tt> <tt class="py-string">'X'</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">            <tt class="py-name">rstr</tt> <tt class="py-op">=</tt> <tt class="py-string">'0x%.8x'</tt> <tt class="py-op">%</tt> <tt class="py-name">arg</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'Unknown Recon Format: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">fchr</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-name">r</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">rstr</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">r</tt> </tt>
+</div><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="ReconBreak"></a><div id="ReconBreak-def"><a name="L71"></a><tt class="py-lineno"> 71</tt> <a class="py-toggle" href="#" id="ReconBreak-toggle" onclick="return toggle('ReconBreak');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vdb.vdb.recon.ReconBreak-class.html">ReconBreak</a><tt class="py-op">(</tt><tt class="py-base-class">vt_breakpoints</tt><tt class="py-op">.</tt><tt class="py-base-class">Breakpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ReconBreak-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ReconBreak-expanded"><a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="ReconBreak.__init__"></a><div id="ReconBreak.__init__-def"><a name="L74"></a><tt class="py-lineno"> 74</tt> <a class="py-toggle" href="#" id="ReconBreak.__init__-toggle" onclick="return toggle('ReconBreak.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.vdb.recon.ReconBreak-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">symname</tt><tt class="py-op">,</tt> <tt class="py-param">reconfmt</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ReconBreak.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ReconBreak.__init__-expanded"><a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-name">vt_breakpoints</tt><tt class="py-op">.</tt><tt class="py-name">Breakpoint</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Method vdb.vdb.ScriptThread.__init__()=vdb.vdb.ScriptThread-class.html#__init__,Method vdb.vdb.Vdb.__init__()=vdb.vdb.Vdb-class.html#__init__,Method vdb.vdb.VdbLookup.__init__()=vdb.vdb.VdbLookup-class.html#__init__,Method vdb.vdb.VdbTrace.__init__()=vdb.vdb.VdbTrace-class.html#__init__,Method vdb.vdb.extensions.gdbstub.GdbStubNotifier.__init__()=vdb.vdb.extensions.gdbstub.GdbStubNotifier-class.html#__init__,Method vdb.vdb.gui.VdbFileDescWindow.__init__()=vdb.vdb.gui.VdbFileDescWindow-class.html#__init__,Method vdb.vdb.gui.VdbGui.__init__()=vdb.vdb.gui.VdbGui-class.html#__init__,Method vdb.vdb.gui.VdbMainWindow.__init__()=vdb.vdb.gui.VdbMainWindow-class.html#__init__,Method vdb.vdb.gui.VdbMemoryMapWindow.__init__()=vdb.vdb.gui.VdbMemoryMapWindow-class.html#__init__,Method vdb.vdb.gui.VdbMemoryView.__init__()=vdb.vdb.gui.VdbMemoryView-class.html#__init__,Method vdb.vdb.gui.VdbMemoryWindow.__init__()=vdb.vdb.gui.VdbMemoryWindow-class.html#__init__,Method vdb.vdb.gui.VdbRegisterWindow.__init__()=vdb.vdb.gui.VdbRegisterWindow-class.html#__init__,Method vdb.vdb.gui.VdbViewWindow.__init__()=vdb.vdb.gui.VdbViewWindow-class.html#__init__,Method vdb.vdb.gui.VdbWindow.__init__()=vdb.vdb.gui.VdbWindow-class.html#__init__,Method vdb.vdb.gui.extensions.windows.VdbHeapRenderer.__init__()=vdb.vdb.gui.extensions.windows.VdbHeapRenderer-class.html#__init__,Method vdb.vdb.gui.extensions.windows.VdbHeapWindow.__init__()=vdb.vdb.gui.extensions.windows.VdbHeapWindow-class.html#__init__,Method vdb.vdb.gui.extensions.windows.Win32HeapWindow.__init__()=vdb.vdb.gui.extensions.windows.Win32HeapWindow-class.html#__init__,Method vdb.vdb.qt.windows.VdbMemoryWindow.__init__()=vdb.vdb.qt.windows.VdbMemoryWindow-class.html#__init__,Method vdb.vdb.qt.windows.VdbWindow.__init__()=vdb.vdb.qt.windows.VdbWindow-class.html#__init__,Method vdb.vdb.recon.ReconBreak.__init__()=vdb.vdb.recon.ReconBreak-class.html#__init__,Method vdb.vdb.recon.sniper.SniperArgValueBreak.__init__()=vdb.vdb.recon.sniper.SniperArgValueBreak-class.html#__init__,Method vdb.vdb.recon.sniper.SniperDynArgBreak.__init__()=vdb.vdb.recon.sniper.SniperDynArgBreak-class.html#__init__,Method vdb.vdb.renderers.DerefRenderer.__init__()=vdb.vdb.renderers.DerefRenderer-class.html#__init__,Method vdb.vdb.renderers.OpcodeRenderer.__init__()=vdb.vdb.renderers.OpcodeRenderer-class.html#__init__,Method vdb.vdb.renderers.SymbolRenderer.__init__()=vdb.vdb.renderers.SymbolRenderer-class.html#__init__,Method vdb.vdb.stalker.StalkerBlockBreak.__init__()=vdb.vdb.stalker.StalkerBlockBreak-class.html#__init__,Method vdb.vdb.stalker.StalkerBreak.__init__()=vdb.vdb.stalker.StalkerBreak-class.html#__init__,Method vdb.vdb.stalker.StalkerCodeFlow.__init__()=vdb.vdb.stalker.StalkerCodeFlow-class.html#__init__,Method vdb.vdb.stalker.StalkerDynBreak.__init__()=vdb.vdb.stalker.StalkerDynBreak-class.html#__init__"><a title="vdb.vdb.ScriptThread.__init__
+vdb.vdb.Vdb.__init__
+vdb.vdb.VdbLookup.__init__
+vdb.vdb.VdbTrace.__init__
+vdb.vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.vdb.gui.VdbFileDescWindow.__init__
+vdb.vdb.gui.VdbGui.__init__
+vdb.vdb.gui.VdbMainWindow.__init__
+vdb.vdb.gui.VdbMemoryMapWindow.__init__
+vdb.vdb.gui.VdbMemoryView.__init__
+vdb.vdb.gui.VdbMemoryWindow.__init__
+vdb.vdb.gui.VdbRegisterWindow.__init__
+vdb.vdb.gui.VdbViewWindow.__init__
+vdb.vdb.gui.VdbWindow.__init__
+vdb.vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.vdb.qt.windows.VdbWindow.__init__
+vdb.vdb.recon.ReconBreak.__init__
+vdb.vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.vdb.renderers.DerefRenderer.__init__
+vdb.vdb.renderers.OpcodeRenderer.__init__
+vdb.vdb.renderers.SymbolRenderer.__init__
+vdb.vdb.stalker.StalkerBlockBreak.__init__
+vdb.vdb.stalker.StalkerBreak.__init__
+vdb.vdb.stalker.StalkerCodeFlow.__init__
+vdb.vdb.stalker.StalkerDynBreak.__init__" class="py-name" href="#" onclick="return doclink('link-0', '__init__', 'link-0');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">expression</tt><tt class="py-op">=</tt><tt class="py-name">symname</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fastbreak</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> <tt class="py-comment"># We are a fast-break, don't notify the trace</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_symname</tt> <tt class="py-op">=</tt> <tt class="py-name">symname</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reconfmt</tt> <tt class="py-op">=</tt> <tt class="py-name">reconfmt</tt> </tt>
+</div><a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"> </tt>
+<a name="ReconBreak.getName"></a><div id="ReconBreak.getName-def"><a name="L80"></a><tt class="py-lineno"> 80</tt> <a class="py-toggle" href="#" id="ReconBreak.getName-toggle" onclick="return toggle('ReconBreak.getName');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.vdb.recon.ReconBreak-class.html#getName">getName</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ReconBreak.getName-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ReconBreak.getName-expanded"><a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">'%s(%s)'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_symname</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reconfmt</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"> </tt>
+<a name="ReconBreak.notify"></a><div id="ReconBreak.notify-def"><a name="L83"></a><tt class="py-lineno"> 83</tt> <a class="py-toggle" href="#" id="ReconBreak.notify-toggle" onclick="return toggle('ReconBreak.notify');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.vdb.recon.ReconBreak-class.html#notify">notify</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ReconBreak.notify-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ReconBreak.notify-expanded"><a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">thid</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'ThreadId'</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-name">stackptr</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getStackCounter</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-name">rawargs</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">readMemoryFormat</tt><tt class="py-op">(</tt><tt class="py-name">stackptr</tt><tt class="py-op">,</tt> <tt class="py-string">'&lt;%dP'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reconfmt</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-name">savedeip</tt> <tt class="py-op">=</tt> <tt class="py-name">rawargs</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-name">args</tt> <tt class="py-op">=</tt> <tt class="py-name">rawargs</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">:</tt><tt class="py-op">]</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-name">recon_hits</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'recon_hits'</tt><tt class="py-op">)</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-name">argrep</tt> <tt class="py-op">=</tt> <tt id="link-1" class="py-name" targets="Function vdb.vdb.recon.reprargs()=vdb.vdb.recon-module.html#reprargs"><a title="vdb.vdb.recon.reprargs" class="py-name" href="#" onclick="return doclink('link-1', 'reprargs', 'link-1');">reprargs</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_reconfmt</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt><tt class="py-op">)</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-name">recon_hits</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">thid</tt><tt class="py-op">,</tt> <tt class="py-name">savedeip</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_symname</tt><tt class="py-op">,</tt> <tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-name">argrep</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'recon_quiet'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">            <tt class="py-name">argstr</tt> <tt class="py-op">=</tt> <tt class="py-string">'(%s)'</tt> <tt class="py-op">%</tt> <tt class="py-string">', '</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">argrep</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">'RECON: %.4d 0x%.8x %s%s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">thid</tt><tt class="py-op">,</tt> <tt class="py-name">savedeip</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_symname</tt><tt class="py-op">,</tt> <tt class="py-name">argstr</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"> </tt>
+<a name="addReconBreak"></a><div id="addReconBreak-def"><a name="L100"></a><tt class="py-lineno">100</tt> <a class="py-toggle" href="#" id="addReconBreak-toggle" onclick="return toggle('addReconBreak');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.vdb.recon-module.html#addReconBreak">addReconBreak</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">,</tt> <tt class="py-param">symname</tt><tt class="py-op">,</tt> <tt class="py-param">reconfmt</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="addReconBreak-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="addReconBreak-expanded"><a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'recon_hits'</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">setMeta</tt><tt class="py-op">(</tt><tt class="py-string">'recon_hits'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt class="py-name">bp</tt> <tt class="py-op">=</tt> <tt id="link-2" class="py-name" targets="Class vdb.vdb.recon.ReconBreak=vdb.vdb.recon.ReconBreak-class.html"><a title="vdb.vdb.recon.ReconBreak" class="py-name" href="#" onclick="return doclink('link-2', 'ReconBreak', 'link-2');">ReconBreak</a></tt><tt class="py-op">(</tt><tt class="py-name">symname</tt><tt class="py-op">,</tt> <tt class="py-name">reconfmt</tt><tt class="py-op">)</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">    <tt class="py-name">bpid</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">addBreakpoint</tt><tt class="py-op">(</tt><tt class="py-name">bp</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">bpid</tt> </tt>
+</div><a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"> </tt>
+<a name="clearReconHits"></a><div id="clearReconHits-def"><a name="L107"></a><tt class="py-lineno">107</tt> <a class="py-toggle" href="#" id="clearReconHits-toggle" onclick="return toggle('clearReconHits');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.vdb.recon-module.html#clearReconHits">clearReconHits</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="clearReconHits-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="clearReconHits-expanded"><a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-docstring">    Clear the current list of recon hits.</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">    <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">setMeta</tt><tt class="py-op">(</tt><tt class="py-string">'recon_hits'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"> </tt>
+<a name="getReconHits"></a><div id="getReconHits-def"><a name="L113"></a><tt class="py-lineno">113</tt> <a class="py-toggle" href="#" id="getReconHits-toggle" onclick="return toggle('getReconHits');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.vdb.recon-module.html#getReconHits">getReconHits</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getReconHits-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getReconHits-expanded"><a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-docstring">    Get the list of recon "hits" entries.  Each hit entry is a tuple</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"><tt class="py-docstring">    of (threadid, savedeip, symname, argtup, argreprtup).</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'recon_hits'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vdb.vdb-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 16:58:58 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,1962 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="envi-package">
+<h1>envi Package<a class="headerlink" href="#envi-package" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The documentation for envi hasn&#8217;t been touched yet! If you want to contribute (or have ideas for better documentation), feel free to <a class="reference external" href="https://github.com/Fitblip/vdb-fork">send me a pull request</a> or <a class="reference external" href="https://github.com/Fitblip">email me</a>.</p>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-envi" title="envi"><tt class="xref py py-mod docutils literal"><span class="pre">envi</span></tt></a> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-envi"></span><p>The Envi framework allows architecutre abstraction through
+the use of the ArchitectureModule, Opcode, Operand, and
+Emulator objects.</p>
+<dl class="exception">
+<dt id="envi.ArchNotImplemented">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">ArchNotImplemented</tt><a class="reference internal" href="_modules/envi.html#ArchNotImplemented"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ArchNotImplemented" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EnviException" title="envi.EnviException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EnviException</span></tt></a></p>
+<p>Raised by various Envi components when the architecture
+does not implement that envi component.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.ArchitectureModule">
+<em class="property">class </em><tt class="descclassname">envi.</tt><tt class="descname">ArchitectureModule</tt><big>(</big><em>archname</em>, <em>maxinst=32</em><big>)</big><a class="reference internal" href="_modules/envi.html#ArchitectureModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ArchitectureModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>An architecture module implementes methods to deal
+with the creation of envi objects for the specified
+architecture.</p>
+<dl class="method">
+<dt id="envi.ArchitectureModule.archGetBreakInstr">
+<tt class="descname">archGetBreakInstr</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#ArchitectureModule.archGetBreakInstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ArchitectureModule.archGetBreakInstr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a python string of the byte sequence which corresponds to
+a breakpoint (if present) for this architecture.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.ArchitectureModule.archGetRegCtx">
+<tt class="descname">archGetRegCtx</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#ArchitectureModule.archGetRegCtx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ArchitectureModule.archGetRegCtx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an initialized register context object for the architecture.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.ArchitectureModule.getEmulator">
+<tt class="descname">getEmulator</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#ArchitectureModule.getEmulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ArchitectureModule.getEmulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a default instance of an emulator for the given arch.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.ArchitectureModule.getPointerSize">
+<tt class="descname">getPointerSize</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#ArchitectureModule.getPointerSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ArchitectureModule.getPointerSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the size of a pointer in memory on this architecture.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.ArchitectureModule.makeOpcode">
+<tt class="descname">makeOpcode</tt><big>(</big><em>bytes</em>, <em>offset=0</em>, <em>va=0</em><big>)</big><a class="reference internal" href="_modules/envi.html#ArchitectureModule.makeOpcode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ArchitectureModule.makeOpcode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new opcode from the specified bytes (beginning
+at the specified offset)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.ArchitectureModule.pointerString">
+<tt class="descname">pointerString</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi.html#ArchitectureModule.pointerString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ArchitectureModule.pointerString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string representation for a pointer on this arch</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.BreakpointHit">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">BreakpointHit</tt><big>(</big><em>emu</em>, <em>msg=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#BreakpointHit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.BreakpointHit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EmuException" title="envi.EmuException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EmuException</span></tt></a></p>
+<p>Raised by an emulator when you execute a breakpoint instruction</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.CallingConvention">
+<em class="property">class </em><tt class="descclassname">envi.</tt><tt class="descname">CallingConvention</tt><a class="reference internal" href="_modules/envi.html#CallingConvention"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.CallingConvention" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implement calling conventions for your arch.</p>
+<dl class="method">
+<dt id="envi.CallingConvention.getCallArgs">
+<tt class="descname">getCallArgs</tt><big>(</big><em>emu</em>, <em>count</em><big>)</big><a class="reference internal" href="_modules/envi.html#CallingConvention.getCallArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.CallingConvention.getCallArgs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.CallingConvention.getSymbolikArgs">
+<tt class="descname">getSymbolikArgs</tt><big>(</big><em>emu</em>, <em>argv</em><big>)</big><a class="reference internal" href="_modules/envi.html#CallingConvention.getSymbolikArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.CallingConvention.getSymbolikArgs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.CallingConvention.setReturnValue">
+<tt class="descname">setReturnValue</tt><big>(</big><em>emu</em>, <em>value</em>, <em>ccinfo=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#CallingConvention.setReturnValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.CallingConvention.setReturnValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.CallingConvention.setSymbolikReturn">
+<tt class="descname">setSymbolikReturn</tt><big>(</big><em>emu</em>, <em>sym</em>, <em>argv</em><big>)</big><a class="reference internal" href="_modules/envi.html#CallingConvention.setSymbolikReturn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.CallingConvention.setSymbolikReturn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.DerefOper">
+<em class="property">class </em><tt class="descclassname">envi.</tt><tt class="descname">DerefOper</tt><a class="reference internal" href="_modules/envi.html#DerefOper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.DerefOper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.Operand" title="envi.Operand"><tt class="xref py py-class docutils literal"><span class="pre">envi.Operand</span></tt></a></p>
+<dl class="method">
+<dt id="envi.DerefOper.isDeref">
+<tt class="descname">isDeref</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#DerefOper.isDeref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.DerefOper.isDeref" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.DivideByZero">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">DivideByZero</tt><big>(</big><em>emu</em>, <em>msg=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#DivideByZero"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.DivideByZero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EmuException" title="envi.EmuException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EmuException</span></tt></a></p>
+<p>Raised by an Emulator when a divide/mod has
+a 0 divisor...</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.EmuException">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">EmuException</tt><big>(</big><em>emu</em>, <em>msg=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#EmuException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.EmuException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EnviException" title="envi.EnviException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EnviException</span></tt></a></p>
+<p>A parent for all emulation exceptions so catching
+them can be easy.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.Emulator">
+<em class="property">class </em><tt class="descclassname">envi.</tt><tt class="descname">Emulator</tt><big>(</big><em>archmod=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.registers.RegisterContext" title="envi.registers.RegisterContext"><tt class="xref py py-class docutils literal"><span class="pre">envi.registers.RegisterContext</span></tt></a>, <a class="reference internal" href="#envi.memory.MemoryObject" title="envi.memory.MemoryObject"><tt class="xref py py-class docutils literal"><span class="pre">envi.memory.MemoryObject</span></tt></a></p>
+<p>The Emulator class is mostly &#8220;Abstract&#8221; in the java
+Interface sense.  The emulator should be able to
+be extended for the architecutures which are included
+in the envi framework.  You <em>must</em> mix in
+an instance of your architecture abstraction module.</p>
+<p>(NOTE: Most users will just use an arch mod and call getEmulator())</p>
+<p>The intention is for &#8220;light weight&#8221; emulation to be
+implemented mostly for user-space emulation of 
+protected mode execution.</p>
+<dl class="method">
+<dt id="envi.Emulator.addCallingConvention">
+<tt class="descname">addCallingConvention</tt><big>(</big><em>name</em>, <em>obj</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.addCallingConvention"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.addCallingConvention" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.executeOpcode">
+<tt class="descname">executeOpcode</tt><big>(</big><em>opobj</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.executeOpcode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.executeOpcode" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the core method for the</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getArchModule">
+<tt class="descname">getArchModule</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getArchModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getArchModule" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getCallArgs">
+<tt class="descname">getCallArgs</tt><big>(</big><em>count</em>, <em>cc</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getCallArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getCallArgs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emulator implementors can implement this method to allow
+analysis modules a platform/architecture independant way
+to get stack/reg/whatever args.</p>
+<p>Usage: getCallArgs(3, &#8220;stdcall&#8221;) -&gt; (0, 32, 0xf00)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getCallingConvention">
+<tt class="descname">getCallingConvention</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getCallingConvention"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getCallingConvention" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getCallingConventions">
+<tt class="descname">getCallingConventions</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getCallingConventions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getCallingConventions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getEmuSnap">
+<tt class="descname">getEmuSnap</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getEmuSnap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getEmuSnap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the data needed to &#8220;snapshot&#8221; this emulator.  For most
+archs, this method will be enough (it takes the memory object,
+and register values with it)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getOperAddr">
+<tt class="descname">getOperAddr</tt><big>(</big><em>op</em>, <em>idx</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getOperAddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getOperAddr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the address that an operand which deref&#8217;s memory
+would read from on getOperValue().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getOperValue">
+<tt class="descname">getOperValue</tt><big>(</big><em>op</em>, <em>idx</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getOperValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getOperValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value for the operand at index idx for
+the given opcode reading memory and register states if necissary.</p>
+<p>In partially-defined emulation, this may return None</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getSegmentIndex">
+<tt class="descname">getSegmentIndex</tt><big>(</big><em>op</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getSegmentIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getSegmentIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>default</em> segmentation is none (most arch&#8217;s will over-ride).
+This method may be implemented to return a segment index based on either
+emulator state or properties of the particular instruction in question.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.getSegmentInfo">
+<tt class="descname">getSegmentInfo</tt><big>(</big><em>op</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.getSegmentInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.getSegmentInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.hasCallingConvention">
+<tt class="descname">hasCallingConvention</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.hasCallingConvention"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.hasCallingConvention" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.run">
+<tt class="descname">run</tt><big>(</big><em>stepcount=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the emulator until &#8220;something&#8221; happens.
+(breakpoint, segv, syscall, etc...)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.setEmuSnap">
+<tt class="descname">setEmuSnap</tt><big>(</big><em>snap</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.setEmuSnap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.setEmuSnap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.setOperValue">
+<tt class="descname">setOperValue</tt><big>(</big><em>op</em>, <em>idx</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.setOperValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.setOperValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of the target operand at index idx from
+opcode op.
+(obviously OM_IMMEDIATE <em>cannot</em> be set)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.setReturnValue">
+<tt class="descname">setReturnValue</tt><big>(</big><em>value</em>, <em>cc</em>, <em>argc=0</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.setReturnValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.setReturnValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emulator implementors can implement this method to allow
+analysis modules a platform/architecture independant way
+to set a function return value. (this should also take
+care of any argument cleanup or other return time tasks
+for the calling convention)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.setSegmentInfo">
+<tt class="descname">setSegmentInfo</tt><big>(</big><em>idx</em>, <em>base</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.setSegmentInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.setSegmentInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a base and size for a given segment index.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Emulator.stepi">
+<tt class="descname">stepi</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Emulator.stepi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Emulator.stepi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.EnviException">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">EnviException</tt><a class="reference internal" href="_modules/envi.html#EnviException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.EnviException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.ImmedOper">
+<em class="property">class </em><tt class="descclassname">envi.</tt><tt class="descname">ImmedOper</tt><a class="reference internal" href="_modules/envi.html#ImmedOper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ImmedOper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.Operand" title="envi.Operand"><tt class="xref py py-class docutils literal"><span class="pre">envi.Operand</span></tt></a></p>
+<dl class="method">
+<dt id="envi.ImmedOper.isImmed">
+<tt class="descname">isImmed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#ImmedOper.isImmed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.ImmedOper.isImmed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.InvalidInstruction">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">InvalidInstruction</tt><big>(</big><em>bytes=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#InvalidInstruction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.InvalidInstruction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EnviException" title="envi.EnviException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EnviException</span></tt></a></p>
+<p>Raised by opcode parsers when the specified
+bytes do not represent a valid opcode</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.MapOverlapException">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">MapOverlapException</tt><big>(</big><em>map1</em>, <em>map2</em><big>)</big><a class="reference internal" href="_modules/envi.html#MapOverlapException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.MapOverlapException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EnviException" title="envi.EnviException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EnviException</span></tt></a></p>
+<p>Raised when adding a memory map to a MemoryObject which overlaps
+with another already existing map.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.Opcode">
+<em class="property">class </em><tt class="descclassname">envi.</tt><tt class="descname">Opcode</tt><big>(</big><em>va</em>, <em>opcode</em>, <em>mnem</em>, <em>prefixes</em>, <em>size</em>, <em>operands</em>, <em>iflags=0</em><big>)</big><a class="reference internal" href="_modules/envi.html#Opcode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Opcode" title="Permalink to this definition">¶</a></dt>
+<dd><p>A universal representation for an opcode</p>
+<dl class="method">
+<dt id="envi.Opcode.getBranches">
+<tt class="descname">getBranches</tt><big>(</big><em>emu=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#Opcode.getBranches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Opcode.getBranches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of tuples.  Each tuple contains the target VA of the
+branch, and a possible set of flags showing what type of branch it is.</p>
+<p>See the BR_FOO types for all the supported envi branch flags....
+Example: for bva,bflags in op.getBranches():</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Opcode.getOperValue">
+<tt class="descname">getOperValue</tt><big>(</big><em>idx</em>, <em>emu=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#Opcode.getOperValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Opcode.getOperValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Opcode.getOperands">
+<tt class="descname">getOperands</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Opcode.getOperands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Opcode.getOperands" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Opcode.getPrefixName">
+<tt class="descname">getPrefixName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Opcode.getPrefixName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Opcode.getPrefixName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the prefixes associated with the specified
+architecture specific prefix bitmask.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="envi.Opcode.prefix_names">
+<tt class="descname">prefix_names</tt><em class="property"> = []</em><a class="headerlink" href="#envi.Opcode.prefix_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.Opcode.render">
+<tt class="descname">render</tt><big>(</big><em>mcanv</em><big>)</big><a class="reference internal" href="_modules/envi.html#Opcode.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Opcode.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render this opcode to the memory canvas passed in.  This is used for both
+simple printing AND more complex representations.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.Operand">
+<em class="property">class </em><tt class="descclassname">envi.</tt><tt class="descname">Operand</tt><a class="reference internal" href="_modules/envi.html#Operand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Thses are the expected methods needed by any implemented operand object
+attached to an envi Opcode.  This does <em>not</em> have a constructor of it&#8217;s
+pwn on purpose to cut down on memory use and constructor CPU cost.</p>
+<dl class="method">
+<dt id="envi.Operand.getOperAddr">
+<tt class="descname">getOperAddr</tt><big>(</big><em>op</em>, <em>emu</em><big>)</big><a class="reference internal" href="_modules/envi.html#Operand.getOperAddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand.getOperAddr" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the operand is a &#8220;dereference&#8221; operand, this method should use the
+specified op/emu to resolve the address of the dereference.</p>
+<dl class="docutils">
+<dt>NOTE: This API may be passed a None emu and should return what it can</dt>
+<dd>(or None if it can&#8217;t be resolved)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Operand.getOperValue">
+<tt class="descname">getOperValue</tt><big>(</big><em>op</em>, <em>emu=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#Operand.getOperValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand.getOperValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the current value for the operand.  If needed, use
+the given emulator/workspace/trace to resolve things like
+memory and registers.</p>
+<dl class="docutils">
+<dt>NOTE: This API may be passed a None emu and should return what it can</dt>
+<dd>(or None if it can&#8217;t be resolved)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Operand.isDeref">
+<tt class="descname">isDeref</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Operand.isDeref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand.isDeref" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the given operand will dereference memory, this method must return True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Operand.isImmed">
+<tt class="descname">isImmed</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Operand.isImmed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand.isImmed" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the given operand represents an immediate value, this must return True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Operand.isReg">
+<tt class="descname">isReg</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#Operand.isReg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand.isReg" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the given operand represents a register value, this must return True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Operand.render">
+<tt class="descname">render</tt><big>(</big><em>mcanv</em>, <em>op</em>, <em>idx</em><big>)</big><a class="reference internal" href="_modules/envi.html#Operand.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used by the opcode class when rendering to a memory canvas.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Operand.repr">
+<tt class="descname">repr</tt><big>(</big><em>op</em><big>)</big><a class="reference internal" href="_modules/envi.html#Operand.repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand.repr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used by the Opcode class to get a humon readable string for this operand.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.Operand.setOperValue">
+<tt class="descname">setOperValue</tt><big>(</big><em>op</em>, <em>emu</em>, <em>val</em><big>)</big><a class="reference internal" href="_modules/envi.html#Operand.setOperValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.Operand.setOperValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current value for the operand.  If needed, use
+the given emulator/workspace/trace to assign things like
+memory and registers.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.PDEException">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">PDEException</tt><big>(</big><em>emu</em>, <em>msg=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#PDEException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.PDEException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EmuException" title="envi.EmuException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EmuException</span></tt></a></p>
+<p>This exception is used in partially defined emulation to signal where
+execution flow becomes un-known due to undefined values.  This is considered
+un-recoverable.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.PDEUndefinedFlag">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">PDEUndefinedFlag</tt><big>(</big><em>emu</em>, <em>msg=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#PDEUndefinedFlag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.PDEUndefinedFlag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EmuException" title="envi.EmuException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EmuException</span></tt></a></p>
+<p>This exception is raised when a conditional operation is dependant on
+a flag state that is unknown.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.RegisterOper">
+<em class="property">class </em><tt class="descclassname">envi.</tt><tt class="descname">RegisterOper</tt><a class="reference internal" href="_modules/envi.html#RegisterOper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.RegisterOper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.Operand" title="envi.Operand"><tt class="xref py py-class docutils literal"><span class="pre">envi.Operand</span></tt></a></p>
+<dl class="method">
+<dt id="envi.RegisterOper.isReg">
+<tt class="descname">isReg</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#RegisterOper.isReg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.RegisterOper.isReg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.SegmentationViolation">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">SegmentationViolation</tt><big>(</big><em>va</em>, <em>msg=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#SegmentationViolation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.SegmentationViolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EnviException" title="envi.EnviException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EnviException</span></tt></a></p>
+<p>Raised by an Emulator extension when you
+bad-touch memory. (Likely from memobj).</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.UnknownCallingConvention">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">UnknownCallingConvention</tt><big>(</big><em>emu</em>, <em>msg=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#UnknownCallingConvention"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.UnknownCallingConvention" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EmuException" title="envi.EmuException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EmuException</span></tt></a></p>
+<p>Raised when the getCallArgs() or setReturnValue() methods
+are given an unknown calling convention type.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="envi.UnsupportedInstruction">
+<em class="property">exception </em><tt class="descclassname">envi.</tt><tt class="descname">UnsupportedInstruction</tt><big>(</big><em>emu</em>, <em>op</em><big>)</big><a class="reference internal" href="_modules/envi.html#UnsupportedInstruction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.UnsupportedInstruction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.EmuException" title="envi.EmuException"><tt class="xref py py-class docutils literal"><span class="pre">envi.EmuException</span></tt></a></p>
+<p>Raised by emulators when the given instruction
+is not implemented by the emulator.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.getArchModule">
+<tt class="descclassname">envi.</tt><tt class="descname">getArchModule</tt><big>(</big><em>name=None</em><big>)</big><a class="reference internal" href="_modules/envi.html#getArchModule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.getArchModule" title="Permalink to this definition">¶</a></dt>
+<dd><p>return an Envi architecture module instance for the following
+architecture name.</p>
+<p>Current architectures include:</p>
+<p>i386 - Intel i386
+amd64 - The new 64bit AMD spec.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.getCurrentArch">
+<tt class="descclassname">envi.</tt><tt class="descname">getCurrentArch</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi.html#getCurrentArch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.getCurrentArch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an envi normalized name for the current arch.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.stealArchMethods">
+<tt class="descclassname">envi.</tt><tt class="descname">stealArchMethods</tt><big>(</big><em>obj</em>, <em>archname</em><big>)</big><a class="reference internal" href="_modules/envi.html#stealArchMethods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.stealArchMethods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used by objects which are expected to inherit from an
+architecture module but don&#8217;t know which one until runtime!</p>
+</dd></dl>
+
+</div>
+<div class="section" id="arm-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">arm</span></tt> Module<a class="headerlink" href="#arm-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-envi.bintree">
+<span id="bintree-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">bintree</span></tt> Module<a class="headerlink" href="#module-envi.bintree" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="envi.bintree.BinaryTree">
+<em class="property">class </em><tt class="descclassname">envi.bintree.</tt><tt class="descname">BinaryTree</tt><a class="reference internal" href="_modules/envi/bintree.html#BinaryTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bintree.BinaryTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple binary search tree capable of using integers
+or string representations of binary integers as inputs.</p>
+<p>NOTE: the lookup routines assume once a node is found which
+has nodeinfo, we have matched.  It does <em>not</em> need to walk
+the rest of the values...</p>
+<dl class="method">
+<dt id="envi.bintree.BinaryTree.addBinstr">
+<tt class="descname">addBinstr</tt><big>(</big><em>binstr</em>, <em>nodeinfo</em><big>)</big><a class="reference internal" href="_modules/envi/bintree.html#BinaryTree.addBinstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bintree.BinaryTree.addBinstr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.bintree.BinaryTree.addInt">
+<tt class="descname">addInt</tt><big>(</big><em>intval</em>, <em>width</em>, <em>nodeinfo</em><big>)</big><a class="reference internal" href="_modules/envi/bintree.html#BinaryTree.addInt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bintree.BinaryTree.addInt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.bintree.BinaryTree.getBinstr">
+<tt class="descname">getBinstr</tt><big>(</big><em>binstr</em><big>)</big><a class="reference internal" href="_modules/envi/bintree.html#BinaryTree.getBinstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bintree.BinaryTree.getBinstr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.bintree.BinaryTree.getInt">
+<tt class="descname">getInt</tt><big>(</big><em>intval</em>, <em>width</em><big>)</big><a class="reference internal" href="_modules/envi/bintree.html#BinaryTree.getInt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bintree.BinaryTree.getInt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an element back out of the tree.</p>
+<p>width is in bits...</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-envi.bits">
+<span id="bits-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">bits</span></tt> Module<a class="headerlink" href="#module-envi.bits" title="Permalink to this headline">¶</a></h2>
+<p>A file full of bit twidling helpers</p>
+<dl class="function">
+<dt id="envi.bits.binary">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">binary</tt><big>(</big><em>binstr</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#binary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.binary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode a binary string of 1/0&#8217;s into a python number</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.binbytes">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">binbytes</tt><big>(</big><em>binstr</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#binbytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.binbytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decode a binary string of 1/0&#8217;s into a python binary
+string.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.binrepr">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">binrepr</tt><big>(</big><em>intval</em>, <em>bitwidth=None</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#binrepr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.binrepr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string of one&#8217;s and zero&#8217;s for the given value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.buildbytes">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">buildbytes</tt><big>(</big><em>value</em>, <em>size</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#buildbytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.buildbytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.byteswap">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">byteswap</tt><big>(</big><em>value</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#byteswap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.byteswap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.hex">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">hex</tt><big>(</big><em>value</em>, <em>size=None</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#hex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.hex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.intwidth">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">intwidth</tt><big>(</big><em>val</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#intwidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.intwidth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.is_aux_carry">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">is_aux_carry</tt><big>(</big><em>src</em>, <em>dst</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#is_aux_carry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.is_aux_carry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.is_parity">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">is_parity</tt><big>(</big><em>val</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#is_parity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.is_parity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.is_parity_byte">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">is_parity_byte</tt><big>(</big><em>bval</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#is_parity_byte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.is_parity_byte" title="Permalink to this definition">¶</a></dt>
+<dd><p>An &#8220;optimized&#8221; parity checker that looks up the index.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.is_signed">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">is_signed</tt><big>(</big><em>value</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#is_signed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.is_signed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.is_signed_overflow">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">is_signed_overflow</tt><big>(</big><em>value</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#is_signed_overflow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.is_signed_overflow" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.is_unsigned_carry">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">is_unsigned_carry</tt><big>(</big><em>value</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#is_unsigned_carry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.is_unsigned_carry" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.lsb">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">lsb</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#lsb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.lsb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.msb">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">msb</tt><big>(</big><em>value</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#msb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.msb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.parsebits">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">parsebits</tt><big>(</big><em>bytes</em>, <em>offset</em>, <em>bitoff</em>, <em>bitsize</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#parsebits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.parsebits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse bitsize bits from the bit offset bitoff beginning
+at offset bytes.</p>
+<p>Example:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.parsebytes">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">parsebytes</tt><big>(</big><em>bytes</em>, <em>offset</em>, <em>size</em>, <em>sign=False</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#parsebytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.parsebytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mostly for pulling immediates out of strings...</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.sign_extend">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">sign_extend</tt><big>(</big><em>value</em>, <em>cursize</em>, <em>newsize</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#sign_extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.sign_extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a value and extend it&#8217;s size filling
+in the space with the value of the high 
+order bit.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.signed">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">signed</tt><big>(</big><em>value</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#signed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.signed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a value signed based on it&#8217;s size.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.slowparsebytes">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">slowparsebytes</tt><big>(</big><em>bytes</em>, <em>offset</em>, <em>size</em>, <em>sign=False</em>, <em>bigend=False</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#slowparsebytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.slowparsebytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.bits.unsigned">
+<tt class="descclassname">envi.bits.</tt><tt class="descname">unsigned</tt><big>(</big><em>value</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/bits.html#unsigned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bits.unsigned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a value unsigned based on it&#8217;s size.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-envi.bytesig">
+<span id="bytesig-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">bytesig</span></tt> Module<a class="headerlink" href="#module-envi.bytesig" title="Permalink to this headline">¶</a></h2>
+<p>A byte and mask based decision engine for creating byte
+sequences (and potential comparison masks) for general purpose
+signature matching.</p>
+<p>Currently used by vivisect function entry sig db and others.</p>
+<dl class="class">
+<dt id="envi.bytesig.SignatureTree">
+<em class="property">class </em><tt class="descclassname">envi.bytesig.</tt><tt class="descname">SignatureTree</tt><a class="reference internal" href="_modules/envi/bytesig.html#SignatureTree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bytesig.SignatureTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>A byte based decision tree which uses all the RAMs but is
+really fast....</p>
+<p>Signatures consist of a byte sequence and an optional mask
+sequence.  If present each mask byte is used to logical and
+the byte being compared before comparison.  This allows the
+creation of signatures which have parts of the sig generalized.</p>
+<p>FIXME allow sigs to have a reliability rating
+FIXME allow sig nodes to store depth and truncate the tree early (and then mask the rest)</p>
+<dl class="method">
+<dt id="envi.bytesig.SignatureTree.addSignature">
+<tt class="descname">addSignature</tt><big>(</big><em>bytes</em>, <em>masks=None</em>, <em>val=None</em><big>)</big><a class="reference internal" href="_modules/envi/bytesig.html#SignatureTree.addSignature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bytesig.SignatureTree.addSignature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a signature to the search tree.  If masks goes unspecified, it will be
+assumed to be all ones (xff * len(bytes)).</p>
+<p>Additionally, you may specify &#8220;val&#8221; as the object to get back with
+getSignature().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.bytesig.SignatureTree.getSignature">
+<tt class="descname">getSignature</tt><big>(</big><em>bytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/envi/bytesig.html#SignatureTree.getSignature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bytesig.SignatureTree.getSignature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.bytesig.SignatureTree.isSignature">
+<tt class="descname">isSignature</tt><big>(</big><em>bytes</em>, <em>offset=0</em><big>)</big><a class="reference internal" href="_modules/envi/bytesig.html#SignatureTree.isSignature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.bytesig.SignatureTree.isSignature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-envi.cli">
+<span id="cli-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">cli</span></tt> Module<a class="headerlink" href="#module-envi.cli" title="Permalink to this headline">¶</a></h2>
+<p>Unified CLI code for things like vivisect and vdb.</p>
+<dl class="class">
+<dt id="envi.cli.CliExtMeth">
+<em class="property">class </em><tt class="descclassname">envi.cli.</tt><tt class="descname">CliExtMeth</tt><big>(</big><em>cli</em>, <em>func</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#CliExtMeth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.CliExtMeth" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used to work around the difference
+between functions and bound methods for extended
+command modules</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.cli.EnviCli">
+<em class="property">class </em><tt class="descclassname">envi.cli.</tt><tt class="descname">EnviCli</tt><big>(</big><em>memobj</em>, <em>config=None</em>, <em>symobj=None</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">cmd.Cmd</span></tt></p>
+<dl class="method">
+<dt id="envi.cli.EnviCli.cmdloop">
+<tt class="descname">cmdloop</tt><big>(</big><em>intro=None</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.cmdloop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.cmdloop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.doAlias">
+<tt class="descname">doAlias</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.doAlias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.doAlias" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_EOF">
+<tt class="descname">do_EOF</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_EOF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_EOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_alias">
+<tt class="descname">do_alias</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_alias"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_alias" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an alias to the command line interpreter&#8217;s aliases dictionary</p>
+<p>Usage: alias &lt;alias_word&gt; rest of the alias command
+To delete an alias:
+Usage: alias &lt;alias_word&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_binstr">
+<tt class="descname">do_binstr</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_binstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_binstr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a binary representation of the given value expression
+(padded to optional width in bits)</p>
+<p>Usage: binstr &lt;val_expr&gt; [&lt;bitwidth_expr&gt;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_config">
+<tt class="descname">do_config</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show or edit a config option from the command line</p>
+<p>Usage: config [-S section] [option=value]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_eval">
+<tt class="descname">do_eval</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate an expression on the CLI to show it&#8217;s value.</p>
+<p>Usage: eval (ecx+edx)/2</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_maps">
+<tt class="descname">do_maps</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_maps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_maps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display either a list of all the memory maps or the memory map
+details for the given address expression.</p>
+<p>Usage: maps [addr_expression]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_mem">
+<tt class="descname">do_mem</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_mem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_mem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show some memory (with optional formatting and size)</p>
+<p>Usage: mem [-F &lt;format&gt;] &lt;addr expression&gt; [size]</p>
+<p>NOTE: use -F ? for a list of the formats</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_memcmp">
+<tt class="descname">do_memcmp</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_memcmp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_memcmp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare memory at the given locations.  Outputs a set of
+differences showing bytes at their given offsets....</p>
+<p>Usage: memcmp &lt;addr_expr1&gt; &lt;addr_expr2&gt; &lt;size_expr&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_memdump">
+<tt class="descname">do_memdump</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_memdump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_memdump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump memory out to a file.</p>
+<p>Usage: memdump &lt;addr_expression&gt; &lt;size_expression&gt; &lt;filename&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_python">
+<tt class="descname">do_python</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_python"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_python" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start an interactive python interpreter. The namespace of the
+interpreter is updated with expression nicities.  You may also
+specify a line of python code as an argument to be exec&#8217;d without
+beginning an interactive python interpreter on the controlling
+terminal.</p>
+<p>Usage: python [pycode]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_quit">
+<tt class="descname">do_quit</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_quit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quit</p>
+<p>Usage: quit</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_script">
+<tt class="descname">do_script</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a python file.</p>
+<p>The script file is arbitrary python code which is run with the
+full compliment of expression extensions mapped in as locals.</p>
+<dl class="docutils">
+<dt>NOTE: additional command line arguments may be passed in and will</dt>
+<dd>appear as the list &#8220;argv&#8221; in the script namespace!  (They will
+all be strings)</dd>
+</dl>
+<p>Usage: script &lt;scriptfile&gt; [&lt;argv[0]&gt;, ...]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.do_search">
+<tt class="descname">do_search</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.do_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.do_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search memory for patterns.</p>
+<p>Usage: search [options] &lt;pattern&gt;
+-e Encode the pattern with a codec (ie utf-16le, hex, etc)
+-E The specified pattern is an expression (search for numeric values)
+-r The specified pattern is a regular expression
+-R &lt;baseexpr:sizeexpr&gt; Search a specific range only.
+-X The specified pattern is in hex (ie.  414141424242 is AAABBB)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.getExpressionLocals">
+<tt class="descname">getExpressionLocals</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.getExpressionLocals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.getExpressionLocals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Over-ride this to have things like the eval command
+and the python command use more locals than the sybolic
+defaults.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.get_names">
+<tt class="descname">get_names</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.get_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.get_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.onecmd">
+<tt class="descname">onecmd</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.onecmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.onecmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.parseExpression">
+<tt class="descname">parseExpression</tt><big>(</big><em>expr</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.parseExpression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.parseExpression" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.registerCmdExtension">
+<tt class="descname">registerCmdExtension</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.registerCmdExtension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.registerCmdExtension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.reprPointer">
+<tt class="descname">reprPointer</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.reprPointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.reprPointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do your best to create a humon readable name for the
+value of this pointer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.setCanvas">
+<tt class="descname">setCanvas</tt><big>(</big><em>canvas</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.setCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.setCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a new canvas for the CLI and add all the current renderers
+to the new one.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.vprint">
+<tt class="descname">vprint</tt><big>(</big><em>msg</em>, <em>addnl=True</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.vprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.vprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print output to the CLI&#8217;s output handler.  This allows routines to
+print to the terminal or the GUI depending on which mode we&#8217;re in.</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>vprint(&#8216;hi mom!&#8217;)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviCli.write">
+<tt class="descname">write</tt><big>(</big><em>data</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviCli.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviCli.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.cli.EnviMutableCli">
+<em class="property">class </em><tt class="descclassname">envi.cli.</tt><tt class="descname">EnviMutableCli</tt><big>(</big><em>memobj</em>, <em>config=None</em>, <em>symobj=None</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviMutableCli"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviMutableCli" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.cli.EnviCli" title="envi.cli.EnviCli"><tt class="xref py py-class docutils literal"><span class="pre">envi.cli.EnviCli</span></tt></a></p>
+<p>Cli extensions which require a mutable memory object
+(emulator/trace) rather than a static one (viv workspace)</p>
+<dl class="method">
+<dt id="envi.cli.EnviMutableCli.do_memcpy">
+<tt class="descname">do_memcpy</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviMutableCli.do_memcpy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviMutableCli.do_memcpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy memory from one location to another...</p>
+<p>Usage: memcpy &lt;dest_expr&gt; &lt;src_expr&gt; &lt;size_expr&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviMutableCli.do_memprotect">
+<tt class="descname">do_memprotect</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviMutableCli.do_memprotect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviMutableCli.do_memprotect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the memory permissions of a given page/map.</p>
+<p>Usage: memprotect [options] &lt;addr_expr&gt; &lt;perms&gt;
+-S &lt;size&gt; Specify the size of the region to change (default == whole memory map)
+&lt;perms&gt; = &#8220;rwx&#8221; string &#8220;rw&#8221;, &#8220;rx&#8221; &#8220;rwx&#8221; etc...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.cli.EnviMutableCli.do_writemem">
+<tt class="descname">do_writemem</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#EnviMutableCli.do_writemem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.EnviMutableCli.do_writemem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Over-write some memory in the target address space.
+Usage: writemem [options] &lt;addr expression&gt; &lt;string&gt;
+-X    The specified string is in hex (ie 414141 = AAA)
+-U    The specified string needs to be unicode in mem (AAA -&gt; 410041004100)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.cli.columnstr">
+<tt class="descclassname">envi.cli.</tt><tt class="descname">columnstr</tt><big>(</big><em>slist</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#columnstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.columnstr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.cli.splitargs">
+<tt class="descclassname">envi.cli.</tt><tt class="descname">splitargs</tt><big>(</big><em>cmdline</em><big>)</big><a class="reference internal" href="_modules/envi/cli.html#splitargs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.cli.splitargs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-envi.codeflow">
+<span id="codeflow-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">codeflow</span></tt> Module<a class="headerlink" href="#module-envi.codeflow" title="Permalink to this headline">¶</a></h2>
+<p>A module to contain code flow analysis for envi opcode objects...</p>
+<dl class="class">
+<dt id="envi.codeflow.CodeFlowContext">
+<em class="property">class </em><tt class="descclassname">envi.codeflow.</tt><tt class="descname">CodeFlowContext</tt><big>(</big><em>mem</em><big>)</big><a class="reference internal" href="_modules/envi/codeflow.html#CodeFlowContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.codeflow.CodeFlowContext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A CodeFlowContext is used for code-flow (not linear) based disassembly
+for an envi MemoryObject (which is responsible for knowing the implementation
+of parseOpcode().  The CodeFlowContext will optionally notify several callback
+handlers for different events which occur during disassembly:</p>
+<dl class="docutils">
+<dt>self._cb_opcode(va, op, branches) - called for every newly parsed opcode</dt>
+<dd>NOTE: _cb_opcode must return the desired branches for continued flow</dd>
+</dl>
+<p>self._cb_function(fva, metadict) - called once for every function</p>
+<p>self._cb_branchtable(tabva, destva) - called for switch tables</p>
+<dl class="method">
+<dt id="envi.codeflow.CodeFlowContext.addCodeFlow">
+<tt class="descname">addCodeFlow</tt><big>(</big><em>va</em>, <em>persist=False</em>, <em>exptable=True</em><big>)</big><a class="reference internal" href="_modules/envi/codeflow.html#CodeFlowContext.addCodeFlow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.codeflow.CodeFlowContext.addCodeFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do code flow disassembly from the specified address.  Returnes a list
+of the procedural branch targets discovered during code flow...</p>
+<p>Set persist=True to store &#8216;opdone&#8217; and never disassemble the same thing twice
+Set exptable=True to expand branch tables in this phase</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.codeflow.CodeFlowContext.addEntryPoint">
+<tt class="descname">addEntryPoint</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/codeflow.html#CodeFlowContext.addEntryPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.codeflow.CodeFlowContext.addEntryPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyze the given procedure entry point and flow downward
+to find all subsequent code blocks and procedure edges.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.codeflow.CodeFlowContext.addFunctionDef">
+<tt class="descname">addFunctionDef</tt><big>(</big><em>fva</em>, <em>calls_from</em><big>)</big><a class="reference internal" href="_modules/envi/codeflow.html#CodeFlowContext.addFunctionDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.codeflow.CodeFlowContext.addFunctionDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a priori knowledge of a function to the code flow
+stuff...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.codeflow.CodeFlowContext.getCallsFrom">
+<tt class="descname">getCallsFrom</tt><big>(</big><em>fva</em><big>)</big><a class="reference internal" href="_modules/envi/codeflow.html#CodeFlowContext.getCallsFrom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.codeflow.CodeFlowContext.getCallsFrom" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-envi.config">
+<span id="config-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">config</span></tt> Module<a class="headerlink" href="#module-envi.config" title="Permalink to this headline">¶</a></h2>
+<p>Unified config object for all vtoys.</p>
+<dl class="class">
+<dt id="envi.config.EnviConfig">
+<em class="property">class </em><tt class="descclassname">envi.config.</tt><tt class="descname">EnviConfig</tt><big>(</big><em>filename=None</em>, <em>defaults=None</em><big>)</big><a class="reference internal" href="_modules/envi/config.html#EnviConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.config.EnviConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">ConfigParser.ConfigParser</span></tt></p>
+<dl class="method">
+<dt id="envi.config.EnviConfig.readstr">
+<tt class="descname">readstr</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/envi/config.html#EnviConfig.readstr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.config.EnviConfig.readstr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.config.EnviConfig.remove_option">
+<tt class="descname">remove_option</tt><big>(</big><em>sec</em>, <em>opt</em><big>)</big><a class="reference internal" href="_modules/envi/config.html#EnviConfig.remove_option"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.config.EnviConfig.remove_option" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.config.EnviConfig.set">
+<tt class="descname">set</tt><big>(</big><em>sec</em>, <em>opt</em>, <em>val</em><big>)</big><a class="reference internal" href="_modules/envi/config.html#EnviConfig.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.config.EnviConfig.set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.config.EnviConfig.syncFile">
+<tt class="descname">syncFile</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/config.html#EnviConfig.syncFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.config.EnviConfig.syncFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.config.gethomedir">
+<tt class="descclassname">envi.config.</tt><tt class="descname">gethomedir</tt><big>(</big><em>*paths</em><big>)</big><a class="reference internal" href="_modules/envi/config.html#gethomedir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.config.gethomedir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.config.getusername">
+<tt class="descclassname">envi.config.</tt><tt class="descname">getusername</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/config.html#getusername"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.config.getusername" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-envi.expression">
+<span id="expression-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">expression</span></tt> Module<a class="headerlink" href="#module-envi.expression" title="Permalink to this headline">¶</a></h2>
+<p>Unified expression helpers.</p>
+<dl class="class">
+<dt id="envi.expression.ExpressionLocals">
+<em class="property">class </em><tt class="descclassname">envi.expression.</tt><tt class="descname">ExpressionLocals</tt><big>(</big><em>symobj=None</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#ExpressionLocals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.ExpressionLocals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></p>
+<p>An object to act as the locals dictionary for the evaluation
+of envi expressions.  You may pass in an envi.resolver.SymbolResolver
+object to automagically use symbols in your expressions.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.expression.MemoryExpressionLocals">
+<em class="property">class </em><tt class="descclassname">envi.expression.</tt><tt class="descname">MemoryExpressionLocals</tt><big>(</big><em>memobj</em>, <em>symobj=None</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#MemoryExpressionLocals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.MemoryExpressionLocals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.expression.ExpressionLocals" title="envi.expression.ExpressionLocals"><tt class="xref py py-class docutils literal"><span class="pre">envi.expression.ExpressionLocals</span></tt></a></p>
+<dl class="method">
+<dt id="envi.expression.MemoryExpressionLocals.ispoi">
+<tt class="descname">ispoi</tt><big>(</big><em>addr</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#MemoryExpressionLocals.ispoi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.MemoryExpressionLocals.ispoi" title="Permalink to this definition">¶</a></dt>
+<dd><p>The expression ispoi(value) returns True if the specified value
+is a valid pointer.  Otherwise, False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.expression.MemoryExpressionLocals.mapbase">
+<tt class="descname">mapbase</tt><big>(</big><em>address</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#MemoryExpressionLocals.mapbase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.MemoryExpressionLocals.mapbase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The expression mapbase(address) returns the base address of the
+memory mapped area containing &#8220;address&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.expression.MemoryExpressionLocals.maplen">
+<tt class="descname">maplen</tt><big>(</big><em>address</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#MemoryExpressionLocals.maplen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.MemoryExpressionLocals.maplen" title="Permalink to this definition">¶</a></dt>
+<dd><p>The expression maplen(address) returns the length of the
+memory mapped area containing &#8220;address&#8221;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.expression.MemoryExpressionLocals.mem">
+<tt class="descname">mem</tt><big>(</big><em>addr</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#MemoryExpressionLocals.mem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.MemoryExpressionLocals.mem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read and return memory.</p>
+<p>Example: mem(ecx, 20)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.expression.MemoryExpressionLocals.poi">
+<tt class="descname">poi</tt><big>(</big><em>address</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#MemoryExpressionLocals.poi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.MemoryExpressionLocals.poi" title="Permalink to this definition">¶</a></dt>
+<dd><p>When expression contains &#8220;poi(addr)&#8221; this will return
+the address pointed to by addr.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.expression.MemoryExpressionLocals.sym">
+<tt class="descname">sym</tt><big>(</big><em>symstr</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#MemoryExpressionLocals.sym"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.MemoryExpressionLocals.sym" title="Permalink to this definition">¶</a></dt>
+<dd><p>An easy to use utility for symbols which have un-pythonic names.</p>
+<p>Example x = sym(&#8216;kernel32.??2&#64;$$FYAPAXI&#64;Z&#8217;)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.expression.evaluate">
+<tt class="descclassname">envi.expression.</tt><tt class="descname">evaluate</tt><big>(</big><em>pycode</em>, <em>locals</em><big>)</big><a class="reference internal" href="_modules/envi/expression.html#evaluate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.expression.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-envi.memory">
+<span id="memory-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">memory</span></tt> Module<a class="headerlink" href="#module-envi.memory" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="envi.memory.IMemory">
+<em class="property">class </em><tt class="descclassname">envi.memory.</tt><tt class="descname">IMemory</tt><big>(</big><em>archmod=None</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the interface spec (and a few helper utils)
+for the unified memory object interface.</p>
+<p>NOTE: If your actual underlying memory format is such
+that over-riding anything (like isValidPointer!) can
+be faster than the default implementation, DO IT!</p>
+<dl class="method">
+<dt id="envi.memory.IMemory.addMemoryMap">
+<tt class="descname">addMemoryMap</tt><big>(</big><em>mapva</em>, <em>perms</em>, <em>fname</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.addMemoryMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.addMemoryMap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.allocateMemory">
+<tt class="descname">allocateMemory</tt><big>(</big><em>size</em>, <em>perms=7</em>, <em>suggestaddr=0</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.allocateMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.allocateMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.findOpcode">
+<tt class="descname">findOpcode</tt><big>(</big><em>opcode=None</em>, <em>loc=None</em>, <em>size=1000</em>, <em>verbose=False</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.findOpcode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.findOpcode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts at the current EIP (self.getProgramCounter()), and 
+searches each instruction for the instruction requested.</p>
+<p>Returns the address of the first found opcode, than returns.</p>
+<p>Example:
+# Find the first &#8216;popad&#8217; opcode</p>
+<blockquote>
+<div>In [1]: popad_loc = trace.findOpcode(opcode=&#8221;popad&#8221;,verbose=True)
+[+] 0x1020cd0L pushad
+[+] 0x1020cd1L mov esi,0x0101a000
+[+] 0x1020cd6L lea edi,dword [esi - 102400]
+[+] 0x1020cdcL push edi
+[+] 0x1020cddL or ebp,0xffffffff
+&#8211;SNIP&#8211;
+[+] 0x1020e49L push edi
+[+] 0x1020e4aL call ebp
+[+] 0x1020e4cL pop eax
+[+] 0x1020e4dL popad
+Location - 0x01020E4D</div></blockquote>
+<dl class="docutils">
+<dt># Using popad&#8217;s location, search for the next &#8216;jmp&#8217;</dt>
+<dd>In [2]: jmp = trace.findOpcode(loc=popad_loc.va, opcode=&#8221;jmp&#8221;, verbose=True)
+[+] 0x1020e4dL popad
+[+] 0x1020e4eL lea eax,dword [esp - 128]
+[+] 0x1020e52L push 0
+[+] 0x1020e54L cmp esp,eax
+[+] 0x1020e56L jnz 0x01020e52
+[+] 0x1020e58L sub esp,0xffffff80
+[+] 0x1020e5bL jmp 0x01012475
+Location - 0x01020E5B</dd>
+</dl>
+<p># Or you can do it simply</p>
+<p>#TODO Extend to take in expressions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.getMemoryMap">
+<tt class="descname">getMemoryMap</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.getMemoryMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.getMemoryMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a tuple of mapva,size,perms,filename for the memory
+map which contains the specified address (or None).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.getMemoryMaps">
+<tt class="descname">getMemoryMaps</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.getMemoryMaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.getMemoryMaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.getPointerSize">
+<tt class="descname">getPointerSize</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.getPointerSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.getPointerSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.getSegmentInfo">
+<tt class="descname">getSegmentInfo</tt><big>(</big><em>id</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.getSegmentInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.getSegmentInfo" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.isExecutable">
+<tt class="descname">isExecutable</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.isExecutable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.isExecutable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.isReadable">
+<tt class="descname">isReadable</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.isReadable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.isReadable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.isShared">
+<tt class="descname">isShared</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.isShared"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.isShared" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.isValidPointer">
+<tt class="descname">isValidPointer</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.isValidPointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.isValidPointer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.isWriteable">
+<tt class="descname">isWriteable</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.isWriteable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.isWriteable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.parseOpcode">
+<tt class="descname">parseOpcode</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.parseOpcode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.parseOpcode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse an opcode from the specified virtual address.</p>
+<p>Example: op = m.parseOpcode(0x7c773803)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.probeMemory">
+<tt class="descname">probeMemory</tt><big>(</big><em>va</em>, <em>size</em>, <em>perm</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.probeMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.probeMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check to be sure that the given virtual address and size
+is contained within one memory map, and check that the
+perms are contained within the permission bits
+for the memory map. (MM_READ | MM_WRITE | MM_EXEC | ...)</p>
+<p>Example probeMemory(0x41414141, 20, envi.memory.MM_WRITE)
+(check if the memory for 20 bytes at 0x41414141 is writable)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.protectMemory">
+<tt class="descname">protectMemory</tt><big>(</big><em>va</em>, <em>size</em>, <em>perms</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.protectMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.protectMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the protections for the given memory map. On most platforms
+the va/size <em>must</em> exactly match an existing memory map.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.readMemValue">
+<tt class="descname">readMemValue</tt><big>(</big><em>addr</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.readMemValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.readMemValue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.readMemory">
+<tt class="descname">readMemory</tt><big>(</big><em>va</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.readMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.readMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read memory from the specified virtual address for size bytes
+and return it as a python string.</p>
+<p>Example: mem.readMemory(0x41414141, 20) -&gt; &#8220;A...&#8221;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.readMemoryFormat">
+<tt class="descname">readMemoryFormat</tt><big>(</big><em>va</em>, <em>fmt</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.readMemoryFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.readMemoryFormat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.searchMemory">
+<tt class="descname">searchMemory</tt><big>(</big><em>needle</em>, <em>regex=False</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.searchMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.searchMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>A quick cheater way to searchMemoryRange() for each
+of the current memory maps.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.searchMemoryRange">
+<tt class="descname">searchMemoryRange</tt><big>(</big><em>needle</em>, <em>address</em>, <em>size</em>, <em>regex=False</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.searchMemoryRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.searchMemoryRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search the specified memory range (address -&gt; size)
+for the string needle.   Return a list of addresses
+where the match occurs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.writeMemory">
+<tt class="descname">writeMemory</tt><big>(</big><em>va</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.writeMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.writeMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the given bytes to the specified virtual address.</p>
+<p>Example: mem.writeMemory(0x41414141, &#8220;VISI&#8221;)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.IMemory.writeMemoryFormat">
+<tt class="descname">writeMemoryFormat</tt><big>(</big><em>va</em>, <em>fmt</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#IMemory.writeMemoryFormat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.IMemory.writeMemoryFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a python format sequence of variables out to memory after
+serializing using struct pack...</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>trace.writeMemoryFormat(va, &#8216;&lt;PBB&#8217;, 10, 30, 99)</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.memory.MemoryFile">
+<em class="property">class </em><tt class="descclassname">envi.memory.</tt><tt class="descname">MemoryFile</tt><big>(</big><em>memobj</em>, <em>baseaddr</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A file like object to wrap around a memory object.</p>
+<dl class="method">
+<dt id="envi.memory.MemoryFile.read">
+<tt class="descname">read</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryFile.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryFile.read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryFile.seek">
+<tt class="descname">seek</tt><big>(</big><em>offset</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryFile.seek"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryFile.seek" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryFile.write">
+<tt class="descname">write</tt><big>(</big><em>bytes</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryFile.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryFile.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.memory.MemoryObject">
+<em class="property">class </em><tt class="descclassname">envi.memory.</tt><tt class="descname">MemoryObject</tt><big>(</big><em>archmod=None</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.memory.IMemory" title="envi.memory.IMemory"><tt class="xref py py-class docutils literal"><span class="pre">envi.memory.IMemory</span></tt></a></p>
+<dl class="method">
+<dt id="envi.memory.MemoryObject.addMemoryMap">
+<tt class="descname">addMemoryMap</tt><big>(</big><em>va</em>, <em>perms</em>, <em>fname</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject.addMemoryMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject.addMemoryMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a memory map to this object...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryObject.getByteDef">
+<tt class="descname">getByteDef</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject.getByteDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject.getByteDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>An optimized routine which returns the existing
+segment bytes sequence without creating a new
+string object <em>AND</em> an offset of va into the 
+buffer.  Used internally for optimized memory
+handling.  Returns (offset, bytes)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryObject.getMemoryMap">
+<tt class="descname">getMemoryMap</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject.getMemoryMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject.getMemoryMap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the va,size,perms,fname tuple for this memory map</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryObject.getMemoryMaps">
+<tt class="descname">getMemoryMaps</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject.getMemoryMaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject.getMemoryMaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryObject.getMemorySnap">
+<tt class="descname">getMemorySnap</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject.getMemorySnap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject.getMemorySnap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a memory snapshot which may be restored later.</p>
+<p>Example: snap = mem.getMemorySnap()</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryObject.readMemory">
+<tt class="descname">readMemory</tt><big>(</big><em>va</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject.readMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject.readMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryObject.setMemorySnap">
+<tt class="descname">setMemorySnap</tt><big>(</big><em>snap</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject.setMemorySnap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject.setMemorySnap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore a previously saved memory snapshot.</p>
+<p>Example: mem.setMemorySnap(snap)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memory.MemoryObject.writeMemory">
+<tt class="descname">writeMemory</tt><big>(</big><em>va</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#MemoryObject.writeMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.MemoryObject.writeMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.memory.getPermName">
+<tt class="descclassname">envi.memory.</tt><tt class="descname">getPermName</tt><big>(</big><em>perm</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#getPermName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.getPermName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the human readable name for a <em>single</em> memory
+perm enumeration value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.memory.memdiff">
+<tt class="descclassname">envi.memory.</tt><tt class="descname">memdiff</tt><big>(</big><em>bytes1</em>, <em>bytes2</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#memdiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.memdiff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of (offset, size) tuples showing any memory
+differences between the given bytes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.memory.parsePerms">
+<tt class="descclassname">envi.memory.</tt><tt class="descname">parsePerms</tt><big>(</big><em>pstr</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#parsePerms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.parsePerms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.memory.reprPerms">
+<tt class="descclassname">envi.memory.</tt><tt class="descname">reprPerms</tt><big>(</big><em>mask</em><big>)</big><a class="reference internal" href="_modules/envi/memory.html#reprPerms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memory.reprPerms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-envi.pagelookup">
+<span id="pagelookup-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">pagelookup</span></tt> Module<a class="headerlink" href="#module-envi.pagelookup" title="Permalink to this headline">¶</a></h2>
+<p>A home for the page lookup construct.  Basically it is a
+python object which implements a similar lookup mechanism
+to the i386 page table lookups...</p>
+<dl class="class">
+<dt id="envi.pagelookup.MapLookup">
+<em class="property">class </em><tt class="descclassname">envi.pagelookup.</tt><tt class="descname">MapLookup</tt><a class="reference internal" href="_modules/envi/pagelookup.html#MapLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pagelookup.MapLookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>A specialized lookup object for large densely populated ranges
+which are layed out in a sparse field space themselves...</p>
+<dl class="method">
+<dt id="envi.pagelookup.MapLookup.getMapLookup">
+<tt class="descname">getMapLookup</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/pagelookup.html#MapLookup.getMapLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pagelookup.MapLookup.getMapLookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.pagelookup.MapLookup.initMapLookup">
+<tt class="descname">initMapLookup</tt><big>(</big><em>va</em>, <em>size</em>, <em>obj=None</em><big>)</big><a class="reference internal" href="_modules/envi/pagelookup.html#MapLookup.initMapLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pagelookup.MapLookup.initMapLookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.pagelookup.MapLookup.setMapLookup">
+<tt class="descname">setMapLookup</tt><big>(</big><em>va</em>, <em>size</em>, <em>obj</em><big>)</big><a class="reference internal" href="_modules/envi/pagelookup.html#MapLookup.setMapLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pagelookup.MapLookup.setMapLookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.pagelookup.PageLookup">
+<em class="property">class </em><tt class="descclassname">envi.pagelookup.</tt><tt class="descname">PageLookup</tt><a class="reference internal" href="_modules/envi/pagelookup.html#PageLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pagelookup.PageLookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object capable of rapid lookups across a sparse address
+space which will also NOT eat <em>all</em> the RAMS like a straight
+dictionary full of millions of entries would.</p>
+<dl class="method">
+<dt id="envi.pagelookup.PageLookup.getPageLookup">
+<tt class="descname">getPageLookup</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/pagelookup.html#PageLookup.getPageLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pagelookup.PageLookup.getPageLookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.pagelookup.PageLookup.setPageLookup">
+<tt class="descname">setPageLookup</tt><big>(</big><em>va</em>, <em>size</em>, <em>obj</em><big>)</big><a class="reference internal" href="_modules/envi/pagelookup.html#PageLookup.setPageLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pagelookup.PageLookup.setPageLookup" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-envi.pyzip">
+<span id="pyzip-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">pyzip</span></tt> Module<a class="headerlink" href="#module-envi.pyzip" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="envi.pyzip.addSource">
+<tt class="descclassname">envi.pyzip.</tt><tt class="descname">addSource</tt><big>(</big><em>z</em>, <em>dname</em><big>)</big><a class="reference internal" href="_modules/envi/pyzip.html#addSource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pyzip.addSource" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.pyzip.callback">
+<tt class="descclassname">envi.pyzip.</tt><tt class="descname">callback</tt><big>(</big><em>z</em>, <em>dname</em>, <em>files</em><big>)</big><a class="reference internal" href="_modules/envi/pyzip.html#callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pyzip.callback" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="envi.pyzip.main">
+<tt class="descclassname">envi.pyzip.</tt><tt class="descname">main</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/pyzip.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.pyzip.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-envi.registers">
+<span id="registers-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">registers</span></tt> Module<a class="headerlink" href="#module-envi.registers" title="Permalink to this headline">¶</a></h2>
+<p>Similar to the memory subsystem, this is a unified way to
+access information about objects which contain registers</p>
+<dl class="exception">
+<dt id="envi.registers.InvalidRegisterName">
+<em class="property">exception </em><tt class="descclassname">envi.registers.</tt><tt class="descname">InvalidRegisterName</tt><a class="reference internal" href="_modules/envi/registers.html#InvalidRegisterName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.InvalidRegisterName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.registers.RegisterContext">
+<em class="property">class </em><tt class="descclassname">envi.registers.</tt><tt class="descname">RegisterContext</tt><big>(</big><em>regdef=()</em>, <em>metas=()</em>, <em>pcindex=None</em>, <em>spindex=None</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="envi.registers.RegisterContext.addMetaRegister">
+<tt class="descname">addMetaRegister</tt><big>(</big><em>name</em>, <em>idx</em>, <em>offset</em>, <em>width</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.addMetaRegister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.addMetaRegister" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meta registers are registers which are really just directly
+addressable parts of already existing registers (eax -&gt; al).</p>
+<p>To add a meta register, you give the name, the idx of the <em>real</em>
+register, the width of the meta reg, and it&#8217;s left shifted (in bits)
+offset into the real register value.  The RegisterContext will take
+care of accesses after that.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getMetaRegInfo">
+<tt class="descname">getMetaRegInfo</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getMetaRegInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getMetaRegInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the appropriate realreg, shift, mask info
+for the specified metareg idx (or None if it&#8217;s not
+meta).</p>
+<dl class="docutils">
+<dt>Example:</dt>
+<dd>real_reg, lshift, mask = r.getMetaRegInfo(x)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getProgramCounter">
+<tt class="descname">getProgramCounter</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getProgramCounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getProgramCounter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the value of the program counter for this register
+context.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegDef">
+<tt class="descname">getRegDef</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegDef" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegister">
+<tt class="descname">getRegister</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegister" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current value of the specified register index.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisterByName">
+<tt class="descname">getRegisterByName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisterByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisterByName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisterIndex">
+<tt class="descname">getRegisterIndex</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisterIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisterIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a register index by name.
+(faster to use the index multiple times)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisterInfo">
+<tt class="descname">getRegisterInfo</tt><big>(</big><em>meta=False</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisterInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisterInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an object which can be stored off, and restored
+to re-initialize a register context.  (much like snapshot
+but it takes the definitions with it)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisterName">
+<tt class="descname">getRegisterName</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisterName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisterName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisterNameIndexes">
+<tt class="descname">getRegisterNameIndexes</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisterNameIndexes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisterNameIndexes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all the &#8220;real&#8221; (non meta) registers and their indexes.</p>
+<p>Example: for regname, regidx in x.getRegisterNameIndexes():</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisterNames">
+<tt class="descname">getRegisterNames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisterNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisterNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisterSnap">
+<tt class="descname">getRegisterSnap</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisterSnap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisterSnap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this to bulk save off the register state.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisterWidth">
+<tt class="descname">getRegisterWidth</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisterWidth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisterWidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the width of the register which lives at the specified
+index (width is always in bits).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getRegisters">
+<tt class="descname">getRegisters</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getRegisters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getRegisters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the <em>real</em> registers from this context as a dictionary of name
+value pairs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.getStackCounter">
+<tt class="descname">getStackCounter</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.getStackCounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.getStackCounter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.isDirty">
+<tt class="descname">isDirty</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.isDirty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.isDirty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if registers in this context have been modififed
+since their import.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.isMetaRegister">
+<tt class="descname">isMetaRegister</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.isMetaRegister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.isMetaRegister" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.loadRegDef">
+<tt class="descname">loadRegDef</tt><big>(</big><em>regdef</em>, <em>defval=0</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.loadRegDef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.loadRegDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a register definition.  A register definition consists
+of a list of tuples with the following format:
+(regname, regwidth)</p>
+<p>NOTE: All widths in envi RegisterContexts are in bits.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.loadRegMetas">
+<tt class="descname">loadRegMetas</tt><big>(</big><em>metas</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.loadRegMetas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.loadRegMetas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a set of defined &#8220;meta&#8221; registers for this architecture.  Meta
+registers are defined as registers who exist as a subset of the bits
+in some other &#8220;real&#8221; register. The argument metas is a list of tuples
+with the following format:
+(regname, reg_shift_offset, reg_width)
+The given example is for the AX register in the i386 subsystem
+regname: &#8220;ax&#8221;
+reg_shift_offset: 0
+reg_width: 16</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.reprRegister">
+<tt class="descname">reprRegister</tt><big>(</big><em>idx</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.reprRegister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.reprRegister" title="Permalink to this definition">¶</a></dt>
+<dd><p>This may be used to allow a register context to provide
+extended repr (flags breakouts, etc) info about a register.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setIsDirty">
+<tt class="descname">setIsDirty</tt><big>(</big><em>bool</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setIsDirty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setIsDirty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setProgramCounter">
+<tt class="descname">setProgramCounter</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setProgramCounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setProgramCounter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of the program counter for this register
+contex.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setRegister">
+<tt class="descname">setRegister</tt><big>(</big><em>index</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setRegister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setRegister" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a register value by index.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setRegisterByName">
+<tt class="descname">setRegisterByName</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setRegisterByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setRegisterByName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setRegisterIndexes">
+<tt class="descname">setRegisterIndexes</tt><big>(</big><em>pcindex</em>, <em>spindex</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setRegisterIndexes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setRegisterIndexes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setRegisterInfo">
+<tt class="descname">setRegisterInfo</tt><big>(</big><em>info</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setRegisterInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setRegisterInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import the exported data from</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setRegisterSnap">
+<tt class="descname">setRegisterSnap</tt><big>(</big><em>snap</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setRegisterSnap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setRegisterSnap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this to bulk restore the register state.</p>
+<dl class="docutils">
+<dt>NOTE: This may only be used under the assumption that the</dt>
+<dd>RegisterContext has been initialized the same way
+(like context switches in tracers, or emulaction snaps)</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setRegisters">
+<tt class="descname">setRegisters</tt><big>(</big><em>regdict</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setRegisters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setRegisters" title="Permalink to this definition">¶</a></dt>
+<dd><p>For any name value pairs in the specified dictionary, set the current
+register values in this context.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.registers.RegisterContext.setStackCounter">
+<tt class="descname">setStackCounter</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#RegisterContext.setStackCounter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.RegisterContext.setStackCounter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.registers.addLocalEnums">
+<tt class="descclassname">envi.registers.</tt><tt class="descname">addLocalEnums</tt><big>(</big><em>l</em>, <em>regdef</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#addLocalEnums"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.addLocalEnums" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a dictionary (or module locals) with REG_FOO index
+values for all the base registers defined in regdef.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="envi.registers.addLocalMetas">
+<tt class="descclassname">envi.registers.</tt><tt class="descname">addLocalMetas</tt><big>(</big><em>l</em>, <em>metas</em><big>)</big><a class="reference internal" href="_modules/envi/registers.html#addLocalMetas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.registers.addLocalMetas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update a dictionary (or module locals) with REG_FOO index
+values for all meta registers defined in metas.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-envi.resolver">
+<span id="resolver-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">resolver</span></tt> Module<a class="headerlink" href="#module-envi.resolver" title="Permalink to this headline">¶</a></h2>
+<p>The API describing what it means to be an envi compliant
+symbol resolver.</p>
+<dl class="class">
+<dt id="envi.resolver.FileSymbol">
+<em class="property">class </em><tt class="descclassname">envi.resolver.</tt><tt class="descname">FileSymbol</tt><big>(</big><em>fname</em>, <em>base</em>, <em>size</em>, <em>width=4</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#FileSymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.FileSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.resolver.Symbol" title="envi.resolver.Symbol"><tt class="xref py py-class docutils literal"><span class="pre">envi.resolver.Symbol</span></tt></a>, <a class="reference internal" href="#envi.resolver.SymbolResolver" title="envi.resolver.SymbolResolver"><tt class="xref py py-class docutils literal"><span class="pre">envi.resolver.SymbolResolver</span></tt></a></p>
+<p>A file symbol is both a symbol resolver of it&#8217;s own, and
+a symbol.</p>
+<p>File symbols are used to do heirarchal symbol lookups and don&#8217;t
+actually add anything but the name to their lookup (it is assumed
+that the parent Resolver of the FileSymbol takes care of addr lookups.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.resolver.FunctionSymbol">
+<em class="property">class </em><tt class="descclassname">envi.resolver.</tt><tt class="descname">FunctionSymbol</tt><big>(</big><em>name</em>, <em>value</em>, <em>size=0</em>, <em>fname=None</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#FunctionSymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.FunctionSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.resolver.Symbol" title="envi.resolver.Symbol"><tt class="xref py py-class docutils literal"><span class="pre">envi.resolver.Symbol</span></tt></a></p>
+<p>Used to represent functions.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.resolver.SectionSymbol">
+<em class="property">class </em><tt class="descclassname">envi.resolver.</tt><tt class="descname">SectionSymbol</tt><big>(</big><em>name</em>, <em>value</em>, <em>size=0</em>, <em>fname=None</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#SectionSymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.SectionSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.resolver.Symbol" title="envi.resolver.Symbol"><tt class="xref py py-class docutils literal"><span class="pre">envi.resolver.Symbol</span></tt></a></p>
+<p>Used for file sections/segments.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.resolver.Symbol">
+<em class="property">class </em><tt class="descclassname">envi.resolver.</tt><tt class="descname">Symbol</tt><big>(</big><em>name</em>, <em>value</em>, <em>size=0</em>, <em>fname=None</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#Symbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.Symbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="envi.resolver.SymbolResolver">
+<em class="property">class </em><tt class="descclassname">envi.resolver.</tt><tt class="descname">SymbolResolver</tt><big>(</big><em>width=4</em>, <em>casesens=True</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#SymbolResolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.SymbolResolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOTE: Nothing should reach directly into a SymbolResolver!</p>
+<dl class="method">
+<dt id="envi.resolver.SymbolResolver.addSymbol">
+<tt class="descname">addSymbol</tt><big>(</big><em>sym</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#SymbolResolver.addSymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.SymbolResolver.addSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a symbol to the resolver.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.resolver.SymbolResolver.delSymbol">
+<tt class="descname">delSymbol</tt><big>(</big><em>sym</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#SymbolResolver.delSymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.SymbolResolver.delSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a symbol from the resolver&#8217;s namespace</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.resolver.SymbolResolver.getSymByAddr">
+<tt class="descname">getSymByAddr</tt><big>(</big><em>va</em>, <em>exact=True</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#SymbolResolver.getSymByAddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.SymbolResolver.getSymByAddr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a symbol object for the given virtual address.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.resolver.SymbolResolver.getSymByName">
+<tt class="descname">getSymByName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#SymbolResolver.getSymByName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.SymbolResolver.getSymByName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.resolver.SymbolResolver.getSymHint">
+<tt class="descname">getSymHint</tt><big>(</big><em>va</em>, <em>hidx</em><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#SymbolResolver.getSymHint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.SymbolResolver.getSymHint" title="Permalink to this definition">¶</a></dt>
+<dd><p>May be used by symbol resolvers who know what type they are
+resolving to store and retrieve &#8220;hints&#8221; with indexes.</p>
+<p>Used specifically by opcode render methods to resolve
+any memory dereference info for a given operand.</p>
+<dl class="docutils">
+<dt>NOTE: These are mostly symbolic references to FRAME LOCAL</dt>
+<dd>names....</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.resolver.SymbolResolver.getSymList">
+<tt class="descname">getSymList</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/resolver.html#SymbolResolver.getSymList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.resolver.SymbolResolver.getSymList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the symbols which are contained in this resolver.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-envi.threads">
+<span id="threads-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">threads</span></tt> Module<a class="headerlink" href="#module-envi.threads" title="Permalink to this headline">¶</a></h2>
+<p>A couple useful thread related toys...</p>
+<dl class="function">
+<dt id="envi.threads.firethread">
+<tt class="descclassname">envi.threads.</tt><tt class="descname">firethread</tt><big>(</big><em>func</em><big>)</big><a class="reference internal" href="_modules/envi/threads.html#firethread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.threads.firethread" title="Permalink to this definition">¶</a></dt>
+<dd><p>A decorator which fires a thread to do the given call.</p>
+<p>NOTE: This means these methods may not return anything
+and callers may not expect sync behavior!</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-envi.util">
+<span id="util-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">util</span></tt> Module<a class="headerlink" href="#module-envi.util" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="envi.util.CopyOnWrite">
+<em class="property">class </em><tt class="descclassname">envi.util.</tt><tt class="descname">CopyOnWrite</tt><big>(</big><em>memobj</em><big>)</big><a class="reference internal" href="_modules/envi/util.html#CopyOnWrite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.util.CopyOnWrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>A memory object wrapper you can use to do copy-on-write memory
+use and be able to simply reset it.</p>
+<dl class="method">
+<dt id="envi.util.CopyOnWrite.readMemory">
+<tt class="descname">readMemory</tt><big>(</big><em>va</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/util.html#CopyOnWrite.readMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.util.CopyOnWrite.readMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.util.CopyOnWrite.reset">
+<tt class="descname">reset</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/util.html#CopyOnWrite.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.util.CopyOnWrite.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Throw away the current writes and be fresh...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.util.CopyOnWrite.writeMemory">
+<tt class="descname">writeMemory</tt><big>(</big><em>va</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/envi/util.html#CopyOnWrite.writeMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.util.CopyOnWrite.writeMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="envi.archs.html">archs Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="envi.archs.html#id1"><tt class="docutils literal"><span class="pre">archs</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="envi.archs.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="envi.archs.amd64.html">amd64 Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.amd64.html#id1"><tt class="docutils literal"><span class="pre">amd64</span></tt> Package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.amd64.html#module-envi.archs.amd64.disasm"><tt class="docutils literal"><span class="pre">disasm</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.amd64.html#module-envi.archs.amd64.regs"><tt class="docutils literal"><span class="pre">regs</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="envi.archs.arm.html">arm Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.arm.html#id1"><tt class="docutils literal"><span class="pre">arm</span></tt> Package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.arm.html#module-envi.archs.arm.armdisasm"><tt class="docutils literal"><span class="pre">armdisasm</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.arm.html#module-envi.archs.arm.const"><tt class="docutils literal"><span class="pre">const</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.arm.html#module-envi.archs.arm.disasm"><tt class="docutils literal"><span class="pre">disasm</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.arm.html#module-envi.archs.arm.emu"><tt class="docutils literal"><span class="pre">emu</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.arm.html#module-envi.archs.arm.regs"><tt class="docutils literal"><span class="pre">regs</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.arm.html#thumb-module"><tt class="docutils literal"><span class="pre">thumb</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.arm.html#module-envi.archs.arm.thumbdisasm"><tt class="docutils literal"><span class="pre">thumbdisasm</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="envi.archs.i386.html">i386 Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.i386.html#id1"><tt class="docutils literal"><span class="pre">i386</span></tt> Package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.i386.html#module-envi.archs.i386.disasm"><tt class="docutils literal"><span class="pre">disasm</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.i386.html#module-envi.archs.i386.emu"><tt class="docutils literal"><span class="pre">emu</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.i386.html#module-envi.archs.i386.opcode86"><tt class="docutils literal"><span class="pre">opcode86</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.i386.html#module-envi.archs.i386.regs"><tt class="docutils literal"><span class="pre">regs</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="envi.archs.z80.html">z80 Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.z80.html#id1"><tt class="docutils literal"><span class="pre">z80</span></tt> Package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.z80.html#module-envi.archs.z80.const"><tt class="docutils literal"><span class="pre">const</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.z80.html#disasm-module"><tt class="docutils literal"><span class="pre">disasm</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.z80.html#module-envi.archs.z80.regs"><tt class="docutils literal"><span class="pre">regs</span></tt> Module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="envi.archs.z80.html#z80opcode-module"><tt class="docutils literal"><span class="pre">z80opcode</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="envi.memcanvas.html">memcanvas Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="envi.memcanvas.html#id1"><tt class="docutils literal"><span class="pre">memcanvas</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="envi.memcanvas.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="envi.memcanvas.renderers.html">renderers Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="envi.memcanvas.renderers.html#id1"><tt class="docutils literal"><span class="pre">renderers</span></tt> Package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="envi.qt.html">qt Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="envi.qt.html#id1"><tt class="docutils literal"><span class="pre">qt</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="envi.qt.html#module-envi.qt.html"><tt class="docutils literal"><span class="pre">html</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="envi.qt.html#module-envi.qt.memcanvas"><tt class="docutils literal"><span class="pre">memcanvas</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="envi.qt.html#module-envi.qt.memory"><tt class="docutils literal"><span class="pre">memory</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">envi Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">envi</span></tt> Package</a></li>
+<li><a class="reference internal" href="#arm-module"><tt class="docutils literal"><span class="pre">arm</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.bintree"><tt class="docutils literal"><span class="pre">bintree</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.bits"><tt class="docutils literal"><span class="pre">bits</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.bytesig"><tt class="docutils literal"><span class="pre">bytesig</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.cli"><tt class="docutils literal"><span class="pre">cli</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.codeflow"><tt class="docutils literal"><span class="pre">codeflow</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.config"><tt class="docutils literal"><span class="pre">config</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.expression"><tt class="docutils literal"><span class="pre">expression</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.memory"><tt class="docutils literal"><span class="pre">memory</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.pagelookup"><tt class="docutils literal"><span class="pre">pagelookup</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.pyzip"><tt class="docutils literal"><span class="pre">pyzip</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.registers"><tt class="docutils literal"><span class="pre">registers</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.resolver"><tt class="docutils literal"><span class="pre">resolver</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.threads"><tt class="docutils literal"><span class="pre">threads</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-envi.util"><tt class="docutils literal"><span class="pre">util</span></tt> Module</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/envi.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

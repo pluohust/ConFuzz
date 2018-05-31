@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.snapshot.TraceSnapshot</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        <a href="vtrace.snapshot-module.html">Module&nbsp;snapshot</a> ::
+        Class&nbsp;TraceSnapshot
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.snapshot.TraceSnapshot-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class TraceSnapshot</h1><p class="nomargin-top"><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+           <a href="envi.memory.IMemory-class.html">envi.memory.IMemory</a> --+    
+                                 |    
+<a href="envi.registers.RegisterContext-class.html">envi.registers.RegisterContext</a> --+    
+                                 |    
+  <a href="envi.resolver.SymbolResolver-class.html">envi.resolver.SymbolResolver</a> --+    
+                                 |    
+                        object --+    
+                                 |    
+                             <a href="vtrace.Trace-class.html">Trace</a> --+
+                                     |
+                    object --+       |
+                             |       |
+            <a href="vtrace.notifiers.Notifier-class.html">notifiers.Notifier</a> --+   |
+                                 |   |
+         <a href="vtrace.platforms.base.TracerBase-class.html">platforms.base.TracerBase</a> --+
+                                     |
+                                    <strong class="uidshort">TraceSnapshot</strong>
+</pre>
+
+<hr />
+<p>A tracer snapshot is similar to a traditional &quot;core file&quot; 
+  except that you may also have memory only snapshots that are never 
+  written to disk.</p>
+  <p>TraceSnapshots allow you to take a picture of a process from a given 
+  point in it's execution and manipulate/test from there or save it to disk
+  for later analysis...</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">snapdict</span>)</span><br />
+      Hand in a register definition which consists of a list of 
+      (&lt;name&gt;, &lt;width&gt;) tuples.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="saveToFd"></a><span class="summary-sig-name">saveToFd</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">fd</span>)</span><br />
+      Save this snapshot to the given file like object for later 
+      reloading...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.saveToFd">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="saveToFile"></a><span class="summary-sig-name">saveToFile</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">filename</span>)</span><br />
+      Save a snapshot to file for later reading in...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.saveToFile">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#getMemoryMap" class="summary-sig-name">getMemoryMap</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addr</span>)</span><br />
+      Return a tuple of mapva,size,perms,filename for the memory map which 
+      contains the specified address (or None).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.getMemoryMap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#platformGetFds" class="summary-sig-name">platformGetFds</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return what getFds() wants for this particular platform</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformGetFds">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#getExe" class="summary-sig-name">getExe</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the full path to the main executable for this *attached* Trace</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.getExe">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#getStackTrace" class="summary-sig-name">getStackTrace</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns a list of (instruction pointer, stack frame) tuples.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.getStackTrace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#platformGetRegCtx" class="summary-sig-name">platformGetRegCtx</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">thrid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformGetRegCtx">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#platformGetMaps" class="summary-sig-name">platformGetMaps</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of the memory maps where each element has the following
+      structure: (address, length, perms, file=&quot;&quot;) NOTE: By 
+      Default this list is available as Trace.maps because the default 
+      implementation attempts to populate them on every break/stop/etc...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformGetMaps">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#platformGetThreads" class="summary-sig-name">platformGetThreads</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a dictionary of &lt;threadid&gt;:&lt;tinfo&gt; pairs where 
+      tinfo is either the stack top, or the teb for win32</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformGetThreads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#platformReadMemory" class="summary-sig-name">platformReadMemory</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>,
+        <span class="summary-sig-arg">size</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformReadMemory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#platformWriteMemory" class="summary-sig-name">platformWriteMemory</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>,
+        <span class="summary-sig-arg">bytes</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformWriteMemory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#platformDetach" class="summary-sig-name">platformDetach</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Actually perform the detach for this type</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformDetach">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.snapshot.TraceSnapshot-class.html#platformParseBinary" class="summary-sig-name">platformParseBinary</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
+      Platforms must parse the given binary file and load any symbols into 
+      the internal SymbolResolver using self.addSymbol()</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformParseBinary">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="cacheRegs"></a><span class="summary-sig-name">cacheRegs</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">threadid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.cacheRegs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="syncRegs"></a><span class="summary-sig-name">syncRegs</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.syncRegs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.Trace-class.html">Trace</a></code></b>:
+      <code><a href="vtrace.Trace-class.html#addBreakByAddr">addBreakByAddr</a></code>,
+      <code><a href="vtrace.Trace-class.html#addBreakByExpr">addBreakByExpr</a></code>,
+      <code><a href="vtrace.Trace-class.html#addBreakpoint">addBreakpoint</a></code>,
+      <code><a href="vtrace.Trace-class.html#addIgnoreSignal">addIgnoreSignal</a></code>,
+      <code><a href="vtrace.Trace-class.html#allocateMemory">allocateMemory</a></code>,
+      <code><a href="vtrace.Trace-class.html#attach">attach</a></code>,
+      <code><a href="vtrace.Trace-class.html#buildNewTrace">buildNewTrace</a></code>,
+      <code><a href="vtrace.Trace-class.html#call">call</a></code>,
+      <code><a href="vtrace.Trace-class.html#delIgnoreSignal">delIgnoreSignal</a></code>,
+      <code><a href="vtrace.Trace-class.html#deregisterNotifier">deregisterNotifier</a></code>,
+      <code><a href="vtrace.Trace-class.html#detach">detach</a></code>,
+      <code><a href="vtrace.Trace-class.html#disableAutoContinue">disableAutoContinue</a></code>,
+      <code><a href="vtrace.Trace-class.html#enableAutoContinue">enableAutoContinue</a></code>,
+      <code><a href="vtrace.Trace-class.html#execute">execute</a></code>,
+      <code><a href="vtrace.Trace-class.html#getAutoContinueList">getAutoContinueList</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpoint">getBreakpoint</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpointByAddr">getBreakpointByAddr</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpointCode">getBreakpointCode</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpointEnabled">getBreakpointEnabled</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpoints">getBreakpoints</a></code>,
+      <code><a href="vtrace.Trace-class.html#getCurrentBreakpoint">getCurrentBreakpoint</a></code>,
+      <code><a href="vtrace.Trace-class.html#getCurrentSignal">getCurrentSignal</a></code>,
+      <code><a href="vtrace.Trace-class.html#getCurrentThread">getCurrentThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#getFds">getFds</a></code>,
+      <code><a href="vtrace.Trace-class.html#getMemoryFault">getMemoryFault</a></code>,
+      <code><a href="vtrace.Trace-class.html#getMemoryMaps">getMemoryMaps</a></code>,
+      <code><a href="vtrace.Trace-class.html#getMeta">getMeta</a></code>,
+      <code><a href="vtrace.Trace-class.html#getMode">getMode</a></code>,
+      <code><a href="vtrace.Trace-class.html#getNormalizedLibNames">getNormalizedLibNames</a></code>,
+      <code><a href="vtrace.Trace-class.html#getNotifiers">getNotifiers</a></code>,
+      <code><a href="vtrace.Trace-class.html#getPid">getPid</a></code>,
+      <code><a href="vtrace.Trace-class.html#getRegister">getRegister</a></code>,
+      <code><a href="vtrace.Trace-class.html#getRegisterContext">getRegisterContext</a></code>,
+      <code><a href="vtrace.Trace-class.html#getStruct">getStruct</a></code>,
+      <code><a href="vtrace.Trace-class.html#getStructNames">getStructNames</a></code>,
+      <code><a href="vtrace.Trace-class.html#getSymByAddr">getSymByAddr</a></code>,
+      <code><a href="vtrace.Trace-class.html#getSymByName">getSymByName</a></code>,
+      <code><a href="vtrace.Trace-class.html#getSymsForFile">getSymsForFile</a></code>,
+      <code><a href="vtrace.Trace-class.html#getThreads">getThreads</a></code>,
+      <code><a href="vtrace.Trace-class.html#getVariable">getVariable</a></code>,
+      <code><a href="vtrace.Trace-class.html#getVariables">getVariables</a></code>,
+      <code><a href="vtrace.Trace-class.html#hasMeta">hasMeta</a></code>,
+      <code><a href="vtrace.Trace-class.html#hex">hex</a></code>,
+      <code><a href="vtrace.Trace-class.html#injectThread">injectThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#injectso">injectso</a></code>,
+      <code><a href="vtrace.Trace-class.html#isAttached">isAttached</a></code>,
+      <code><a href="vtrace.Trace-class.html#isRemote">isRemote</a></code>,
+      <code><a href="vtrace.Trace-class.html#isRunning">isRunning</a></code>,
+      <code><a href="vtrace.Trace-class.html#isThreadSuspended">isThreadSuspended</a></code>,
+      <code><a href="vtrace.Trace-class.html#joinThread">joinThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#kill">kill</a></code>,
+      <code><a href="vtrace.Trace-class.html#parseExpression">parseExpression</a></code>,
+      <code><a href="vtrace.Trace-class.html#protectMemory">protectMemory</a></code>,
+      <code><a href="vtrace.Trace-class.html#ps">ps</a></code>,
+      <code><a href="vtrace.Trace-class.html#readMemory">readMemory</a></code>,
+      <code><a href="vtrace.Trace-class.html#registerNotifier">registerNotifier</a></code>,
+      <code><a href="vtrace.Trace-class.html#release">release</a></code>,
+      <code><a href="vtrace.Trace-class.html#removeBreakpoint">removeBreakpoint</a></code>,
+      <code><a href="vtrace.Trace-class.html#requireAttached">requireAttached</a></code>,
+      <code><a href="vtrace.Trace-class.html#requireNotExited">requireNotExited</a></code>,
+      <code><a href="vtrace.Trace-class.html#requireNotRunning">requireNotRunning</a></code>,
+      <code><a href="vtrace.Trace-class.html#resumeThread">resumeThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#run">run</a></code>,
+      <code><a href="vtrace.Trace-class.html#runAgain">runAgain</a></code>,
+      <code><a href="vtrace.Trace-class.html#searchMemory">searchMemory</a></code>,
+      <code><a href="vtrace.Trace-class.html#searchMemoryRange">searchMemoryRange</a></code>,
+      <code><a href="vtrace.Trace-class.html#searchSymbols">searchSymbols</a></code>,
+      <code><a href="vtrace.Trace-class.html#selectThread">selectThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#sendBreak">sendBreak</a></code>,
+      <code><a href="vtrace.Trace-class.html#setBreakpointCode">setBreakpointCode</a></code>,
+      <code><a href="vtrace.Trace-class.html#setBreakpointEnabled">setBreakpointEnabled</a></code>,
+      <code><a href="vtrace.Trace-class.html#setCurrentSignal">setCurrentSignal</a></code>,
+      <code><a href="vtrace.Trace-class.html#setMeta">setMeta</a></code>,
+      <code><a href="vtrace.Trace-class.html#setMode">setMode</a></code>,
+      <code><a href="vtrace.Trace-class.html#setRegister">setRegister</a></code>,
+      <code><a href="vtrace.Trace-class.html#setVariable">setVariable</a></code>,
+      <code><a href="vtrace.Trace-class.html#stepi">stepi</a></code>,
+      <code><a href="vtrace.Trace-class.html#suspendThread">suspendThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#writeMemory">writeMemory</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="envi.memory.IMemory-class.html">envi.memory.IMemory</a></code></b>:
+      <code><a href="envi.memory.IMemory-class.html#addMemoryMap">addMemoryMap</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#getPointerSize">getPointerSize</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#getSegmentInfo">getSegmentInfo</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isExecutable">isExecutable</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isReadable">isReadable</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isShared">isShared</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isValidPointer">isValidPointer</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isWriteable">isWriteable</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#parseOpcode">parseOpcode</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#probeMemory">probeMemory</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#readMemValue">readMemValue</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#readMemoryFormat">readMemoryFormat</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#writeMemoryFormat">writeMemoryFormat</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="envi.registers.RegisterContext-class.html">envi.registers.RegisterContext</a></code></b>:
+      <code><a href="envi.registers.RegisterContext-class.html#addMetaRegister">addMetaRegister</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getMetaRegInfo">getMetaRegInfo</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getProgramCounter">getProgramCounter</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegDef">getRegDef</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterByName">getRegisterByName</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterIndex">getRegisterIndex</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterInfo">getRegisterInfo</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterName">getRegisterName</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterNameIndexes">getRegisterNameIndexes</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterNames">getRegisterNames</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterSnap">getRegisterSnap</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterWidth">getRegisterWidth</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisters">getRegisters</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getStackCounter">getStackCounter</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#isDirty">isDirty</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#isMetaRegister">isMetaRegister</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#loadRegDef">loadRegDef</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#loadRegMetas">loadRegMetas</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#reprRegister">reprRegister</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setIsDirty">setIsDirty</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setProgramCounter">setProgramCounter</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisterByName">setRegisterByName</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisterIndexes">setRegisterIndexes</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisterInfo">setRegisterInfo</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisterSnap">setRegisterSnap</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisters">setRegisters</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setStackCounter">setStackCounter</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="envi.registers.RegisterContext-class.html">envi.registers.RegisterContext</a></code></b> (private):
+      <code><a href="envi.registers.RegisterContext-class.html#_rctx_Export" onclick="show_private();">_rctx_Export</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#_rctx_Import" onclick="show_private();">_rctx_Import</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#_xlateToMetaReg" onclick="show_private();">_xlateToMetaReg</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#_xlateToNativeReg" onclick="show_private();">_xlateToNativeReg</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="envi.resolver.SymbolResolver-class.html">envi.resolver.SymbolResolver</a></code></b>:
+      <code><a href="envi.resolver.SymbolResolver-class.html#addSymbol">addSymbol</a></code>,
+      <code><a href="envi.resolver.SymbolResolver-class.html#delSymbol">delSymbol</a></code>,
+      <code><a href="envi.resolver.SymbolResolver-class.html#getSymHint">getSymHint</a></code>,
+      <code><a href="envi.resolver.SymbolResolver-class.html#getSymList">getSymList</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.platforms.base.TracerBase-class.html">platforms.base.TracerBase</a></code></b>:
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#__del__">__del__</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#__repr__">__repr__</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#addLibraryBase">addLibraryBase</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#archAddWatchpoint">archAddWatchpoint</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#archCheckWatchpoints">archCheckWatchpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#archGetRegCtx">archGetRegCtx</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#archGetStackTrace">archGetStackTrace</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#archRemWatchpoint">archRemWatchpoint</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#checkBreakpoints">checkBreakpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#checkPageWatchpoints">checkPageWatchpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#checkWatchpoints">checkWatchpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#delLibraryBase">delLibraryBase</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#doStepLoop">doStepLoop</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#fireNotifiers">fireNotifiers</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#fireTracerThread">fireTracerThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#getResolverForFile">getResolverForFile</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#initMode">initMode</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#nextBpId">nextBpId</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#normFileName">normFileName</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#notify">notify</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformAllocateMemory">platformAllocateMemory</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformAttach">platformAttach</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformCall">platformCall</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformContinue">platformContinue</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformExec">platformExec</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformGetMemFault">platformGetMemFault</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformGetSignal">platformGetSignal</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformInjectSo">platformInjectSo</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformInjectThread">platformInjectThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformKill">platformKill</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformOpenFile">platformOpenFile</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformProcessEvent">platformProcessEvent</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformProtectMemory">platformProtectMemory</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformPs">platformPs</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformRelease">platformRelease</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformResumeThread">platformResumeThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformSelectThread">platformSelectThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformSetRegCtx">platformSetRegCtx</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformSetSignal">platformSetSignal</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformStepi">platformStepi</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformSuspendThread">platformSuspendThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformWait">platformWait</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#shouldRunAgain">shouldRunAgain</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#steploop">steploop</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#wait">wait</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.platforms.base.TracerBase-class.html">platforms.base.TracerBase</a></code></b> (private):
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_activateBreak" onclick="show_private();">_activateBreak</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_cacheRegs" onclick="show_private();">_cacheRegs</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_checkForBreak" onclick="show_private();">_checkForBreak</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_cleanupBreakpoints" onclick="show_private();">_cleanupBreakpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_cleanupResources" onclick="show_private();">_cleanupResources</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_doRun" onclick="show_private();">_doRun</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_doWait" onclick="show_private();">_doWait</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_findLibraryMaps" onclick="show_private();">_findLibraryMaps</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireBreakpoint" onclick="show_private();">_fireBreakpoint</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireExit" onclick="show_private();">_fireExit</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireExitThread" onclick="show_private();">_fireExitThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireSignal" onclick="show_private();">_fireSignal</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireStep" onclick="show_private();">_fireStep</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_justAttached" onclick="show_private();">_justAttached</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_loadBinary" onclick="show_private();">_loadBinary</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_loadBinaryNorm" onclick="show_private();">_loadBinaryNorm</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_simpleCreateThreads" onclick="show_private();">_simpleCreateThreads</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_syncRegs" onclick="show_private();">_syncRegs</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_tellThreadExit" onclick="show_private();">_tellThreadExit</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_throwdownBreaks" onclick="show_private();">_throwdownBreaks</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.notifiers.Notifier-class.html">notifiers.Notifier</a></code></b>:
+      <code><a href="vtrace.notifiers.Notifier-class.html#handleEvent">handleEvent</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">snapdict</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Hand in a register definition which consists of a list of 
+  (&lt;name&gt;, &lt;width&gt;) tuples.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMemoryMap"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMemoryMap</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.getMemoryMap">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a tuple of mapva,size,perms,filename for the memory map which 
+  contains the specified address (or None).</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.memory.IMemory-class.html#getMemoryMap">envi.memory.IMemory.getMemoryMap</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformGetFds"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformGetFds</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformGetFds">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return what getFds() wants for this particular platform</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformGetFds">platforms.base.TracerBase.platformGetFds</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getExe"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getExe</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.getExe">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the full path to the main executable for this *attached* Trace</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#getExe">platforms.base.TracerBase.getExe</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getStackTrace"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getStackTrace</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.getStackTrace">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns a list of (instruction pointer, stack frame) tuples. If stack 
+  tracing results in an error, the error entry will be (-1,-1).  Otherwise 
+  most platforms end up with 0,0 as the top stack frame</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#getStackTrace">platforms.base.TracerBase.getStackTrace</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformGetRegCtx"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformGetRegCtx</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">thrid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformGetRegCtx">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformGetRegCtx">platforms.base.TracerBase.platformGetRegCtx</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformGetMaps"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformGetMaps</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformGetMaps">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a list of the memory maps where each element has the following 
+  structure: (address, length, perms, file=&quot;&quot;) NOTE: By Default 
+  this list is available as Trace.maps because the default implementation 
+  attempts to populate them on every break/stop/etc...</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformGetMaps">platforms.base.TracerBase.platformGetMaps</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformGetThreads"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformGetThreads</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformGetThreads">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a dictionary of &lt;threadid&gt;:&lt;tinfo&gt; pairs where 
+  tinfo is either the stack top, or the teb for win32</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformGetThreads">platforms.base.TracerBase.platformGetThreads</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformReadMemory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformReadMemory</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>,
+        <span class="sig-arg">size</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformReadMemory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformReadMemory">platforms.base.TracerBase.platformReadMemory</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformWriteMemory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformWriteMemory</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>,
+        <span class="sig-arg">bytes</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformWriteMemory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformWriteMemory">platforms.base.TracerBase.platformWriteMemory</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformDetach"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformDetach</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformDetach">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Actually perform the detach for this type</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformDetach">platforms.base.TracerBase.platformDetach</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformParseBinary"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformParseBinary</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.snapshot-pysrc.html#TraceSnapshot.platformParseBinary">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Platforms must parse the given binary file and load any symbols into 
+  the internal SymbolResolver using self.addSymbol()</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformParseBinary">platforms.base.TracerBase.platformParseBinary</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:15 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

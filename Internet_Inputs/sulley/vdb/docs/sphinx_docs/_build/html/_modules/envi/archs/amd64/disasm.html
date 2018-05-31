@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.archs.amd64.disasm &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="envi.archs.amd64" href="../amd64.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../amd64.html" accesskey="U">envi.archs.amd64</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.archs.amd64.disasm</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+<span class="kn">import</span> <span class="nn">envi.archs.i386</span> <span class="kn">as</span> <span class="nn">e_i386</span>
+<span class="kn">import</span> <span class="nn">envi.archs.i386.opcode86</span> <span class="kn">as</span> <span class="nn">opcode86</span>
+
+<span class="kn">from</span> <span class="nn">envi.archs.amd64.regs</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># Pre generate these for fast lookup. Because our REX prefixes have the same relative</span>
+<span class="c"># bit relationship to eachother, we can cheat a little...</span>
+<span class="n">amd64_prefixes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">i386_prefixes</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x40</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x10</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x41</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x11</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x42</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x12</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x43</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x13</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x44</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x14</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x45</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x15</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x46</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x16</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x47</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x17</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x48</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x18</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x49</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x19</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x4a</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1a</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x4b</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1b</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x4c</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1c</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x4d</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1d</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x4e</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1e</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">amd64_prefixes</span><span class="p">[</span><span class="mh">0x4f</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x1f</span> <span class="o">&lt;&lt;</span> <span class="mi">16</span><span class="p">)</span>
+
+<span class="c"># NOTE: some notes from the intel manual...</span>
+<span class="c"># REX.W overrides 66, but alternate registers (via REX.B etc..) can have 66 to be 16 bit..</span>
+<span class="c"># REX.R only modifies reg for GPR/SSE(SIMD)/ctrl/debug addressing modes.</span>
+<span class="c"># REX.X only modifies the SIB index value</span>
+<span class="c"># REX.B modifies modrm r/m field, or SIB base (if SIB present), or opcode reg.</span>
+<span class="c"># We inherit all the regular intel prefixes...</span>
+<span class="n">PREFIX_REX</span>   <span class="o">=</span> <span class="mh">0x100000</span> <span class="c"># Shows that the rex prefix is present</span>
+<span class="n">PREFIX_REX_B</span> <span class="o">=</span> <span class="mh">0x010000</span> <span class="c"># Bit 0 in REX prefix (0x41) means ModR/M r/m field, SIB base, or opcode reg</span>
+<span class="n">PREFIX_REX_X</span> <span class="o">=</span> <span class="mh">0x020000</span> <span class="c"># Bit 1 in REX prefix (0x42) means SIB index extension</span>
+<span class="n">PREFIX_REX_R</span> <span class="o">=</span> <span class="mh">0x040000</span> <span class="c"># Bit 2 in REX prefix (0x44) means ModR/M reg extention</span>
+<span class="n">PREFIX_REX_W</span> <span class="o">=</span> <span class="mh">0x080000</span> <span class="c"># Bit 3 in REX prefix (0x48) means 64 bit operand</span>
+
+<span class="n">REX_BUMP</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">MODE_16</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">MODE_32</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">MODE_64</span> <span class="o">=</span> <span class="mi">2</span>
+
+<div class="viewcode-block" id="Amd64RipRelOper"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64RipRelOper">[docs]</a><span class="k">class</span> <span class="nc">Amd64RipRelOper</span><span class="p">(</span><span class="n">envi</span><span class="o">.</span><span class="n">DerefOper</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imm</span><span class="p">,</span> <span class="n">tsize</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imm</span> <span class="o">=</span> <span class="n">imm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tsize</span> <span class="o">=</span> <span class="n">tsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_deref</span> <span class="o">=</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="Amd64RipRelOper.getOperValue"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64RipRelOper.getOperValue">[docs]</a>    <span class="k">def</span> <span class="nf">getOperValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">emu</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_deref</span> <span class="o">==</span> <span class="bp">False</span><span class="p">:</span> <span class="c"># Special lea behavior</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getOperAddr</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">emu</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">emu</span><span class="o">.</span><span class="n">readMemValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getOperAddr</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">emu</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsize</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Amd64RipRelOper.setOperValue"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64RipRelOper.setOperValue">[docs]</a>    <span class="k">def</span> <span class="nf">setOperValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">emu</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="n">emu</span><span class="o">.</span><span class="n">writeMemValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getOperAddr</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">emu</span><span class="p">),</span> <span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tsize</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Amd64RipRelOper.getOperAddr"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64RipRelOper.getOperAddr">[docs]</a>    <span class="k">def</span> <span class="nf">getOperAddr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">emu</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">op</span><span class="o">.</span><span class="n">va</span> <span class="o">+</span> <span class="n">op</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">imm</span>
+</div>
+<div class="viewcode-block" id="Amd64RipRelOper.isDeref"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64RipRelOper.isDeref">[docs]</a>    <span class="k">def</span> <span class="nf">isDeref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># The disassembler may reach in and set this (if lea...)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_deref</span>
+</div>
+<div class="viewcode-block" id="Amd64RipRelOper.render"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64RipRelOper.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcanv</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">destva</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">va</span> <span class="o">+</span> <span class="n">op</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">imm</span>
+        <span class="n">sym</span> <span class="o">=</span> <span class="n">mcanv</span><span class="o">.</span><span class="n">syms</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="n">destva</span><span class="p">)</span>
+
+        <span class="n">mcanv</span><span class="o">.</span><span class="n">addNameText</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">sizenames</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tsize</span><span class="p">])</span>
+        <span class="n">mcanv</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot; [&quot;</span><span class="p">)</span>
+        <span class="n">mcanv</span><span class="o">.</span><span class="n">addNameText</span><span class="p">(</span><span class="s">&quot;rip&quot;</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="s">&quot;registers&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imm</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mcanv</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot; + &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">mcanv</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;$</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">),</span> <span class="n">destva</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mcanv</span><span class="o">.</span><span class="n">addNameText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imm</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">imm</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">mcanv</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot; - &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">mcanv</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;$</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">),</span> <span class="n">destva</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mcanv</span><span class="o">.</span><span class="n">addNameText</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imm</span><span class="p">)))</span>
+        <span class="n">mcanv</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;]&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Amd64RipRelOper.repr"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64RipRelOper.repr">[docs]</a>    <span class="k">def</span> <span class="nf">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;[rip + </span><span class="si">%d</span><span class="s">]&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">imm</span>
+</div></div>
+<div class="viewcode-block" id="Amd64Disasm"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm">[docs]</a><span class="k">class</span> <span class="nc">Amd64Disasm</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dis_prefixes</span> <span class="o">=</span> <span class="n">amd64_prefixes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dis_regctx</span> <span class="o">=</span> <span class="n">Amd64RegisterContext</span><span class="p">()</span>
+
+        <span class="c"># Over-ride these which are in use by the i386 version of the ASM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROFFSET_MMX</span>   <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">getRegOffset</span><span class="p">(</span><span class="n">amd64regs</span><span class="p">,</span> <span class="s">&quot;mm0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROFFSET_SIMD</span>  <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">getRegOffset</span><span class="p">(</span><span class="n">amd64regs</span><span class="p">,</span> <span class="s">&quot;xmm0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROFFSET_DEBUG</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">getRegOffset</span><span class="p">(</span><span class="n">amd64regs</span><span class="p">,</span> <span class="s">&quot;debug0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROFFSET_CTRL</span>  <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">getRegOffset</span><span class="p">(</span><span class="n">amd64regs</span><span class="p">,</span> <span class="s">&quot;ctrl0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROFFSET_TEST</span>  <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">getRegOffset</span><span class="p">(</span><span class="n">amd64regs</span><span class="p">,</span> <span class="s">&quot;test0&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROFFSET_SEG</span>   <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">getRegOffset</span><span class="p">(</span><span class="n">amd64regs</span><span class="p">,</span> <span class="s">&quot;es&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ROFFSET_FPU</span>   <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">getRegOffset</span><span class="p">(</span><span class="n">amd64regs</span><span class="p">,</span> <span class="s">&quot;st0&quot;</span><span class="p">)</span>
+
+    <span class="c"># NOTE: Technically, the REX must be the *last* prefix specified</span>
+
+    <span class="k">def</span> <span class="nf">_dis_calc_tsize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opertype</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use the oper type and prefixes to decide on the tsize for</span>
+<span class="sd">        the operand.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_32</span>
+
+        <span class="n">sizelist</span> <span class="o">=</span> <span class="n">opcode86</span><span class="o">.</span><span class="n">OPERSIZE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">opertype</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sizelist</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="s">&quot;OPERSIZE FAIL&quot;</span>
+
+        <span class="c"># NOTE: REX takes precedence over 66</span>
+        <span class="c"># (see section 2.2.1.2 in Intel 2a)</span>
+        <span class="k">if</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">PREFIX_REX_W</span><span class="p">:</span>
+
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_64</span>
+
+        <span class="k">elif</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">PREFIX_OP_SIZE</span><span class="p">:</span>
+
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_16</span>
+
+        <span class="k">return</span> <span class="n">sizelist</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Amd64Disasm.byteRegOffset"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.byteRegOffset">[docs]</a>    <span class="k">def</span> <span class="nf">byteRegOffset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="c"># NOTE: Override this because there is no AH etc in 64 bit mode</span>
+        <span class="k">return</span> <span class="n">val</span> <span class="o">+</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">RMETA_LOW8</span>
+</div>
+<div class="viewcode-block" id="Amd64Disasm.extended_parse_modrm"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.extended_parse_modrm">[docs]</a>    <span class="k">def</span> <span class="nf">extended_parse_modrm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">opersize</span><span class="p">,</span> <span class="n">regbase</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a tuple of (size, Operand)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="c"># FIXME this would be best to not parse_modrm twice.  tweak it.</span>
+        <span class="n">mod</span><span class="p">,</span><span class="n">reg</span><span class="p">,</span><span class="n">rm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parse_modrm</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">mod</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">rm</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">imm</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">parsebytes</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">size</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">size</span> <span class="o">+=</span> <span class="mi">4</span>
+            <span class="k">return</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">Amd64RipRelOper</span><span class="p">(</span><span class="n">imm</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">extended_parse_modrm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">opersize</span><span class="p">,</span> <span class="n">regbase</span><span class="p">)</span>
+
+    <span class="c"># NOTE: Override a bunch of the address modes to account for REX</span></div>
+<div class="viewcode-block" id="Amd64Disasm.ameth_0"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.ameth_0">[docs]</a>    <span class="k">def</span> <span class="nf">ameth_0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operflags</span><span class="p">,</span> <span class="n">operval</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">ameth_0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operflags</span><span class="p">,</span> <span class="n">operval</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="c"># If it has a builtin register, we need to check for bump prefix</span>
+        <span class="k">if</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">PREFIX_REX_B</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386RegOper</span><span class="p">):</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">reg</span> <span class="o">+=</span> <span class="n">REX_BUMP</span>
+        <span class="k">return</span> <span class="n">o</span>
+</div>
+<div class="viewcode-block" id="Amd64Disasm.ameth_g"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.ameth_g">[docs]</a>    <span class="k">def</span> <span class="nf">ameth_g</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="n">osize</span><span class="p">,</span> <span class="n">oper</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">ameth_g</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">oper</span><span class="o">.</span><span class="n">tsize</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">oper</span><span class="o">.</span><span class="n">reg</span> <span class="o">!=</span> <span class="n">REG_RIP</span><span class="p">:</span>
+            <span class="n">oper</span><span class="o">.</span><span class="n">reg</span> <span class="o">+=</span> <span class="n">RMETA_LOW32</span>
+        <span class="k">if</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">PREFIX_REX_R</span><span class="p">:</span>
+            <span class="n">oper</span><span class="o">.</span><span class="n">reg</span> <span class="o">+=</span> <span class="n">REX_BUMP</span>
+        <span class="k">return</span> <span class="n">osize</span><span class="p">,</span> <span class="n">oper</span>
+</div>
+<div class="viewcode-block" id="Amd64Disasm.ameth_c"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.ameth_c">[docs]</a>    <span class="k">def</span> <span class="nf">ameth_c</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="n">osize</span><span class="p">,</span> <span class="n">oper</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">ameth_c</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">PREFIX_REX_R</span><span class="p">:</span>
+            <span class="n">oper</span><span class="o">.</span><span class="n">reg</span> <span class="o">+=</span> <span class="n">REX_BUMP</span>
+        <span class="k">return</span> <span class="n">osize</span><span class="p">,</span><span class="n">oper</span>
+</div>
+<div class="viewcode-block" id="Amd64Disasm.ameth_d"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.ameth_d">[docs]</a>    <span class="k">def</span> <span class="nf">ameth_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="n">osize</span><span class="p">,</span> <span class="n">oper</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">ameth_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">PREFIX_REX_R</span><span class="p">:</span>
+            <span class="n">oper</span><span class="o">.</span><span class="n">reg</span> <span class="o">+=</span> <span class="n">REX_BUMP</span>
+        <span class="k">return</span> <span class="n">osize</span><span class="p">,</span><span class="n">oper</span>
+</div>
+<div class="viewcode-block" id="Amd64Disasm.ameth_v"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.ameth_v">[docs]</a>    <span class="k">def</span> <span class="nf">ameth_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="n">osize</span><span class="p">,</span> <span class="n">oper</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">ameth_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">PREFIX_REX_R</span><span class="p">:</span>
+            <span class="n">oper</span><span class="o">.</span><span class="n">reg</span> <span class="o">+=</span> <span class="n">REX_BUMP</span>
+        <span class="k">return</span> <span class="n">osize</span><span class="p">,</span><span class="n">oper</span>
+
+    <span class="c"># NOTE: The ones below are the only ones to which REX.X or REX.B can apply (besides ameth_0)</span></div>
+    <span class="k">def</span> <span class="nf">_dis_rex_exmodrm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oper</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="c"># REMEMBER: all extended mod RM reg fields come from the r/m part.  If it</span>
+        <span class="c">#           were actually just the reg part, it&#39;d be in one of the above</span>
+        <span class="c">#           addressing modes...</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="s">&quot;index&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">oper</span><span class="o">.</span><span class="n">tsize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">oper</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="n">RMETA_LOW32</span>
+            <span class="k">if</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">PREFIX_REX_X</span><span class="p">:</span>
+                <span class="n">oper</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="n">REX_BUMP</span>
+            <span class="c"># Adjust the size if needed</span>
+
+        <span class="c"># oper.reg will be r/m or SIB base</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="s">&quot;reg&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="c"># Adjust the size if needed</span>
+            <span class="k">if</span> <span class="n">oper</span><span class="o">.</span><span class="n">tsize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">oper</span><span class="o">.</span><span class="n">reg</span> <span class="o">+=</span> <span class="n">RMETA_LOW32</span>
+
+            <span class="k">if</span> <span class="n">prefixes</span> <span class="o">&amp;</span> <span class="n">PREFIX_REX_B</span><span class="p">:</span>
+                <span class="n">oper</span><span class="o">.</span><span class="n">reg</span> <span class="o">+=</span> <span class="n">REX_BUMP</span>
+
+<div class="viewcode-block" id="Amd64Disasm.ameth_e"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.ameth_e">[docs]</a>    <span class="k">def</span> <span class="nf">ameth_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="n">osize</span><span class="p">,</span> <span class="n">oper</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">ameth_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dis_rex_exmodrm</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">osize</span><span class="p">,</span> <span class="n">oper</span>
+</div>
+<div class="viewcode-block" id="Amd64Disasm.ameth_w"><a class="viewcode-back" href="../../../../envi.archs.amd64.html#envi.archs.amd64.disasm.Amd64Disasm.ameth_w">[docs]</a>    <span class="k">def</span> <span class="nf">ameth_w</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">):</span>
+        <span class="n">osize</span><span class="p">,</span> <span class="n">oper</span> <span class="o">=</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Disasm</span><span class="o">.</span><span class="n">ameth_w</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dis_rex_exmodrm</span><span class="p">(</span><span class="n">oper</span><span class="p">,</span> <span class="n">prefixes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">osize</span><span class="p">,</span><span class="n">oper</span>
+
+
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">Amd64Disasm</span><span class="p">()</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">va</span> <span class="o">=</span> <span class="mh">0x41414141</span>
+    <span class="k">while</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">disasm</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">va</span><span class="o">+</span><span class="n">offset</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s"> </span><span class="si">%s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">va</span><span class="o">+</span><span class="n">offset</span><span class="p">,</span> <span class="n">b</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">op</span><span class="p">)]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">16</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="n">op</span><span class="p">))</span>
+        <span class="n">offset</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../amd64.html" >envi.archs.amd64</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1198 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.archs.i386</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        <a href="vtrace.archs-module.html">Package&nbsp;archs</a> ::
+        Module&nbsp;i386
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.archs.i386-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vtrace.archs.i386-module.html">Module vtrace.archs.i386</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">x86 Support Module</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package vtrace=vtrace-module.html"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-0', 'vtrace', 'link-0');">vtrace</a></tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">struct</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">traceback</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">types</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-1', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module vtrace.breakpoints=vtrace.breakpoints-module.html"><a title="vtrace.breakpoints" class="py-name" href="#" onclick="return doclink('link-2', 'breakpoints', 'link-2');">breakpoints</a></tt> <tt class="py-keyword">as</tt> <tt id="link-3" class="py-name"><a title="vtrace.breakpoints" class="py-name" href="#" onclick="return doclink('link-3', 'breakpoints', 'link-2');">breakpoints</a></tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Package envi=envi-module.html"><a title="envi" class="py-name" href="#" onclick="return doclink('link-4', 'envi', 'link-4');">envi</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Package envi.archs=envi.archs-module.html,Package vtrace.archs=vtrace.archs-module.html"><a title="envi.archs
+vtrace.archs" class="py-name" href="#" onclick="return doclink('link-5', 'archs', 'link-5');">archs</a></tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Package envi.archs.i386=envi.archs.i386-module.html,Module vdb.extensions.i386=vdb.extensions.i386-module.html,Module vtrace.archs.i386=vtrace.archs.i386-module.html"><a title="envi.archs.i386
+vdb.extensions.i386
+vtrace.archs.i386" class="py-name" href="#" onclick="return doclink('link-6', 'i386', 'link-6');">i386</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_i386</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"># Pre-populating these saves a little processing</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"># time (important in tight watchpoint loops)</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt id="link-7" class="py-name" targets="Variable vtrace.archs.i386.drnames=vtrace.archs.i386-module.html#drnames"><a title="vtrace.archs.i386.drnames" class="py-name" href="#" onclick="return doclink('link-7', 'drnames', 'link-7');">drnames</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-string">"debug%d"</tt> <tt class="py-op">%</tt> <tt id="link-8" class="py-name" targets="Variable vtrace.archs.i386.d=vtrace.archs.i386-module.html#d"><a title="vtrace.archs.i386.d" class="py-name" href="#" onclick="return doclink('link-8', 'd', 'link-8');">d</a></tt> <tt class="py-keyword">for</tt> <tt id="link-9" class="py-name"><a title="vtrace.archs.i386.d" class="py-name" href="#" onclick="return doclink('link-9', 'd', 'link-8');">d</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">8</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt id="link-10" class="py-name" targets="Variable vtrace.archs.i386.dbg_status=vtrace.archs.i386-module.html#dbg_status"><a title="vtrace.archs.i386.dbg_status" class="py-name" href="#" onclick="return doclink('link-10', 'dbg_status', 'link-10');">dbg_status</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"debug6"</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt id="link-11" class="py-name" targets="Variable vtrace.archs.i386.dbg_ctrl=vtrace.archs.i386-module.html#dbg_ctrl"><a title="vtrace.archs.i386.dbg_ctrl" class="py-name" href="#" onclick="return doclink('link-11', 'dbg_ctrl', 'link-11');">dbg_ctrl</a></tt> <tt class="py-op">=</tt> <tt class="py-string">"debug7"</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt id="link-12" class="py-name" targets="Variable vtrace.archs.i386.dbg_execute=vtrace.archs.i386-module.html#dbg_execute"><a title="vtrace.archs.i386.dbg_execute" class="py-name" href="#" onclick="return doclink('link-12', 'dbg_execute', 'link-12');">dbg_execute</a></tt>    <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt id="link-13" class="py-name" targets="Variable vtrace.archs.i386.dbg_write=vtrace.archs.i386-module.html#dbg_write"><a title="vtrace.archs.i386.dbg_write" class="py-name" href="#" onclick="return doclink('link-13', 'dbg_write', 'link-13');">dbg_write</a></tt>      <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt id="link-14" class="py-name" targets="Variable vtrace.archs.i386.dbg_read_write=vtrace.archs.i386-module.html#dbg_read_write"><a title="vtrace.archs.i386.dbg_read_write" class="py-name" href="#" onclick="return doclink('link-14', 'dbg_read_write', 'link-14');">dbg_read_write</a></tt> <tt class="py-op">=</tt> <tt class="py-number">3</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt id="link-15" class="py-name" targets="Variable vtrace.archs.i386.dbg_types=vtrace.archs.i386-module.html#dbg_types"><a title="vtrace.archs.i386.dbg_types" class="py-name" href="#" onclick="return doclink('link-15', 'dbg_types', 'link-15');">dbg_types</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">    <tt class="py-string">"x"</tt><tt class="py-op">:</tt><tt id="link-16" class="py-name"><a title="vtrace.archs.i386.dbg_execute" class="py-name" href="#" onclick="return doclink('link-16', 'dbg_execute', 'link-12');">dbg_execute</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">    <tt class="py-string">"w"</tt><tt class="py-op">:</tt><tt id="link-17" class="py-name"><a title="vtrace.archs.i386.dbg_write" class="py-name" href="#" onclick="return doclink('link-17', 'dbg_write', 'link-13');">dbg_write</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">    <tt class="py-string">"rw"</tt><tt class="py-op">:</tt><tt id="link-18" class="py-name"><a title="vtrace.archs.i386.dbg_read_write" class="py-name" href="#" onclick="return doclink('link-18', 'dbg_read_write', 'link-14');">dbg_read_write</a></tt><tt class="py-op">,</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-op">}</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"> </tt>
+<a name="i386WatchMixin"></a><div id="i386WatchMixin-def"><a name="L30"></a><tt class="py-lineno"> 30</tt> <a class="py-toggle" href="#" id="i386WatchMixin-toggle" onclick="return toggle('i386WatchMixin');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.archs.i386.i386WatchMixin-class.html">i386WatchMixin</a><tt class="py-op">:</tt> </tt>
+</div><div id="i386WatchMixin-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="i386WatchMixin-expanded"><a name="i386WatchMixin.__init__"></a><div id="i386WatchMixin.__init__-def"><a name="L31"></a><tt class="py-lineno"> 31</tt> <a class="py-toggle" href="#" id="i386WatchMixin.__init__-toggle" onclick="return toggle('i386WatchMixin.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.i386.i386WatchMixin-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386WatchMixin.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="i386WatchMixin.__init__-expanded"><a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt class="py-comment"># Which ones are in use / enabled.</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hwdebug</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-comment"># FIXME change this to storing debug0 index and using setRegister()</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="i386WatchMixin.archAddWatchpoint"></a><div id="i386WatchMixin.archAddWatchpoint-def"><a name="L36"></a><tt class="py-lineno"> 36</tt> <a class="py-toggle" href="#" id="i386WatchMixin.archAddWatchpoint-toggle" onclick="return toggle('i386WatchMixin.archAddWatchpoint');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.i386.i386WatchMixin-class.html#archAddWatchpoint">archAddWatchpoint</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">address</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">=</tt><tt class="py-number">4</tt><tt class="py-op">,</tt> <tt class="py-param">perms</tt><tt class="py-op">=</tt><tt class="py-string">"rw"</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386WatchMixin.archAddWatchpoint-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="i386WatchMixin.archAddWatchpoint-expanded"><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">idx</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-19" class="py-name" targets="Variable envi.archs.i386.disasm.i=envi.archs.i386.disasm-module.html#i,Variable envi.archs.i386.emu.i=envi.archs.i386.emu-module.html#i,Variable envi.archs.i386.i=envi.archs.i386-module.html#i,Variable envi.bits.i=envi.bits-module.html#i"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-19', 'i', 'link-19');">i</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hwdebug</tt><tt class="py-op">[</tt><tt id="link-20" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-20', 'i', 'link-19');">i</a></tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">                <tt class="py-name">idx</tt> <tt class="py-op">=</tt> <tt id="link-21" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-21', 'i', 'link-19');">i</a></tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">                <tt class="py-keyword">break</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">idx</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-22" class="py-name" targets="Variable vtrace.platforms.win32.DBG_EVENT_UNION.Exception=vtrace.platforms.win32.DBG_EVENT_UNION-class.html#Exception"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-22', 'Exception', 'link-22');">Exception</a></tt><tt class="py-op">(</tt><tt class="py-string">"ERROR: there...  are... 4... debug registers!"</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">pbits</tt> <tt class="py-op">=</tt> <tt id="link-23" class="py-name"><a title="vtrace.archs.i386.dbg_types" class="py-name" href="#" onclick="return doclink('link-23', 'dbg_types', 'link-15');">dbg_types</a></tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">perms</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">pbits</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-24" class="py-name"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-24', 'Exception', 'link-22');">Exception</a></tt><tt class="py-op">(</tt><tt class="py-string">"Unsupported watchpoint perms %s (x86 supports x,w,rw)"</tt> <tt class="py-op">%</tt> <tt class="py-name">perms</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">pbits</tt> <tt class="py-op">==</tt> <tt id="link-25" class="py-name"><a title="vtrace.archs.i386.dbg_execute" class="py-name" href="#" onclick="return doclink('link-25', 'dbg_execute', 'link-12');">dbg_execute</a></tt> <tt class="py-keyword">and</tt> <tt class="py-name">size</tt> <tt class="py-op">!=</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-26" class="py-name"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-26', 'Exception', 'link-22');">Exception</a></tt><tt class="py-op">(</tt><tt class="py-string">"Watchpoint for execute *must* be 1 byte long!"</tt><tt class="py-op">)</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">size</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">,</tt><tt class="py-number">2</tt><tt class="py-op">,</tt><tt class="py-number">4</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-27" class="py-name"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-27', 'Exception', 'link-22');">Exception</a></tt><tt class="py-op">(</tt><tt class="py-string">"Unsupported watchpoint size %d (x86 supports 1,2,4)"</tt> <tt class="py-op">%</tt> <tt class="py-name">size</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-name">ctrl</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hwdebug</tt><tt class="py-op">[</tt><tt class="py-name">idx</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">address</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-name">ctrl</tt> <tt class="py-op">|=</tt> <tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">*</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt>           <tt class="py-comment"># Enabled</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">mask</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">size</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">2</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-name">pbits</tt> <tt class="py-comment"># perms and size</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-name">ctrl</tt> <tt class="py-op">|=</tt> <tt class="py-op">(</tt><tt class="py-name">mask</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-op">(</tt><tt class="py-number">16</tt><tt class="py-op">+</tt><tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">*</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-comment">#ctrl |= 0x100 # Local exact (ignored by p6+ for read)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line"> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">tid</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Method vtrace.Trace.getThreads()=vtrace.Trace-class.html#getThreads"><a title="vtrace.Trace.getThreads" class="py-name" href="#" onclick="return doclink('link-28', 'getThreads', 'link-28');">getThreads</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">            <tt class="py-name">ctx</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method vtrace.Trace.getRegisterContext()=vtrace.Trace-class.html#getRegisterContext"><a title="vtrace.Trace.getRegisterContext" class="py-name" href="#" onclick="return doclink('link-29', 'getRegisterContext', 'link-29');">getRegisterContext</a></tt><tt class="py-op">(</tt><tt class="py-name">tid</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">            <tt class="py-name">ctrl_orig</tt> <tt class="py-op">=</tt> <tt class="py-name">ctx</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Method envi.archs.arm.emu.ArmEmulator.getRegister()=envi.archs.arm.emu.ArmEmulator-class.html#getRegister,Method envi.registers.RegisterContext.getRegister()=envi.registers.RegisterContext-class.html#getRegister,Method vtrace.Trace.getRegister()=vtrace.Trace-class.html#getRegister"><a title="envi.archs.arm.emu.ArmEmulator.getRegister
+envi.registers.RegisterContext.getRegister
+vtrace.Trace.getRegister" class="py-name" href="#" onclick="return doclink('link-30', 'getRegister', 'link-30');">getRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Variable envi.archs.amd64.REG_DEBUG7=envi.archs.amd64-module.html#REG_DEBUG7,Variable envi.archs.amd64.disasm.REG_DEBUG7=envi.archs.amd64.disasm-module.html#REG_DEBUG7,Variable envi.archs.amd64.regs.REG_DEBUG7=envi.archs.amd64.regs-module.html#REG_DEBUG7,Variable envi.archs.i386.REG_DEBUG7=envi.archs.i386-module.html#REG_DEBUG7,Variable envi.archs.i386.disasm.REG_DEBUG7=envi.archs.i386.disasm-module.html#REG_DEBUG7,Variable envi.archs.i386.emu.REG_DEBUG7=envi.archs.i386.emu-module.html#REG_DEBUG7,Variable envi.archs.i386.regs.REG_DEBUG7=envi.archs.i386.regs-module.html#REG_DEBUG7"><a title="envi.archs.amd64.REG_DEBUG7
+envi.archs.amd64.disasm.REG_DEBUG7
+envi.archs.amd64.regs.REG_DEBUG7
+envi.archs.i386.REG_DEBUG7
+envi.archs.i386.disasm.REG_DEBUG7
+envi.archs.i386.emu.REG_DEBUG7
+envi.archs.i386.regs.REG_DEBUG7" class="py-name" href="#" onclick="return doclink('link-31', 'REG_DEBUG7', 'link-31');">REG_DEBUG7</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">            <tt class="py-comment">#print "debug%d: %.8x debug7: %.8x" % (idx,address,ctrl|ctrl_orig)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt class="py-name">ctx</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Method envi.archs.amd64.regs.Amd64RegisterContext.setRegister()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#setRegister,Method envi.archs.arm.emu.ArmEmulator.setRegister()=envi.archs.arm.emu.ArmEmulator-class.html#setRegister,Method envi.registers.RegisterContext.setRegister()=envi.registers.RegisterContext-class.html#setRegister,Method vtrace.Trace.setRegister()=vtrace.Trace-class.html#setRegister"><a title="envi.archs.amd64.regs.Amd64RegisterContext.setRegister
+envi.archs.arm.emu.ArmEmulator.setRegister
+envi.registers.RegisterContext.setRegister
+vtrace.Trace.setRegister" class="py-name" href="#" onclick="return doclink('link-32', 'setRegister', 'link-32');">setRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="envi.archs.amd64.REG_DEBUG7
+envi.archs.amd64.disasm.REG_DEBUG7
+envi.archs.amd64.regs.REG_DEBUG7
+envi.archs.i386.REG_DEBUG7
+envi.archs.i386.disasm.REG_DEBUG7
+envi.archs.i386.emu.REG_DEBUG7
+envi.archs.i386.regs.REG_DEBUG7" class="py-name" href="#" onclick="return doclink('link-33', 'REG_DEBUG7', 'link-31');">REG_DEBUG7</a></tt><tt class="py-op">,</tt> <tt class="py-name">ctrl_orig</tt> <tt class="py-op">|</tt> <tt class="py-name">ctrl</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">            <tt class="py-name">ctx</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="envi.archs.amd64.regs.Amd64RegisterContext.setRegister
+envi.archs.arm.emu.ArmEmulator.setRegister
+envi.registers.RegisterContext.setRegister
+vtrace.Trace.setRegister" class="py-name" href="#" onclick="return doclink('link-34', 'setRegister', 'link-32');">setRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name" targets="Variable envi.archs.amd64.REG_DEBUG0=envi.archs.amd64-module.html#REG_DEBUG0,Variable envi.archs.amd64.disasm.REG_DEBUG0=envi.archs.amd64.disasm-module.html#REG_DEBUG0,Variable envi.archs.amd64.regs.REG_DEBUG0=envi.archs.amd64.regs-module.html#REG_DEBUG0,Variable envi.archs.i386.REG_DEBUG0=envi.archs.i386-module.html#REG_DEBUG0,Variable envi.archs.i386.disasm.REG_DEBUG0=envi.archs.i386.disasm-module.html#REG_DEBUG0,Variable envi.archs.i386.emu.REG_DEBUG0=envi.archs.i386.emu-module.html#REG_DEBUG0,Variable envi.archs.i386.regs.REG_DEBUG0=envi.archs.i386.regs-module.html#REG_DEBUG0"><a title="envi.archs.amd64.REG_DEBUG0
+envi.archs.amd64.disasm.REG_DEBUG0
+envi.archs.amd64.regs.REG_DEBUG0
+envi.archs.i386.REG_DEBUG0
+envi.archs.i386.disasm.REG_DEBUG0
+envi.archs.i386.emu.REG_DEBUG0
+envi.archs.i386.regs.REG_DEBUG0" class="py-name" href="#" onclick="return doclink('link-35', 'REG_DEBUG0', 'link-35');">REG_DEBUG0</a></tt> <tt class="py-op">+</tt> <tt class="py-name">idx</tt><tt class="py-op">,</tt> <tt class="py-name">address</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> </tt>
+</div><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="i386WatchMixin.archRemWatchpoint"></a><div id="i386WatchMixin.archRemWatchpoint-def"><a name="L74"></a><tt class="py-lineno"> 74</tt> <a class="py-toggle" href="#" id="i386WatchMixin.archRemWatchpoint-toggle" onclick="return toggle('i386WatchMixin.archRemWatchpoint');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.i386.i386WatchMixin-class.html#archRemWatchpoint">archRemWatchpoint</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">address</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386WatchMixin.archRemWatchpoint-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="i386WatchMixin.archRemWatchpoint-expanded"><a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-name">idx</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-36" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-36', 'i', 'link-19');">i</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hwdebug</tt><tt class="py-op">[</tt><tt id="link-37" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-37', 'i', 'link-19');">i</a></tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-name">address</tt><tt class="py-op">:</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                <tt class="py-name">idx</tt> <tt class="py-op">=</tt> <tt id="link-38" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-38', 'i', 'link-19');">i</a></tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">                <tt class="py-keyword">break</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">idx</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-39" class="py-name"><a title="vtrace.platforms.win32.DBG_EVENT_UNION.Exception" class="py-name" href="#" onclick="return doclink('link-39', 'Exception', 'link-22');">Exception</a></tt><tt class="py-op">(</tt><tt class="py-string">"Watchpoint not found at 0x%.8x"</tt> <tt class="py-op">%</tt> <tt class="py-name">address</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hwdebug</tt><tt class="py-op">[</tt><tt class="py-name">idx</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-name">ctrl_disable</tt> <tt class="py-op">=</tt> <tt class="py-op">~</tt><tt class="py-op">(</tt><tt class="py-number">1</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">*</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt><tt class="py-op">)</tt>      <tt class="py-comment"># we are not enabled</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-name">ctrl_disperm</tt> <tt class="py-op">=</tt> <tt class="py-op">~</tt><tt class="py-op">(</tt><tt class="py-number">0xf</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-op">(</tt><tt class="py-number">16</tt><tt class="py-op">+</tt><tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">*</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> <tt class="py-comment"># mask off the rwx stuff</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-name">ctrl_mask</tt> <tt class="py-op">=</tt> <tt class="py-name">ctrl_disable</tt> <tt class="py-op">&amp;</tt> <tt class="py-name">ctrl_disperm</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">tid</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="vtrace.Trace.getThreads" class="py-name" href="#" onclick="return doclink('link-40', 'getThreads', 'link-28');">getThreads</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">            <tt class="py-name">ctx</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="vtrace.Trace.getRegisterContext" class="py-name" href="#" onclick="return doclink('link-41', 'getRegisterContext', 'link-29');">getRegisterContext</a></tt><tt class="py-op">(</tt><tt class="py-name">tid</tt><tt class="py-op">)</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">            <tt class="py-name">ctrl</tt> <tt class="py-op">=</tt> <tt class="py-name">ctx</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="envi.archs.arm.emu.ArmEmulator.getRegister
+envi.registers.RegisterContext.getRegister
+vtrace.Trace.getRegister" class="py-name" href="#" onclick="return doclink('link-42', 'getRegister', 'link-30');">getRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="envi.archs.amd64.REG_DEBUG7
+envi.archs.amd64.disasm.REG_DEBUG7
+envi.archs.amd64.regs.REG_DEBUG7
+envi.archs.i386.REG_DEBUG7
+envi.archs.i386.disasm.REG_DEBUG7
+envi.archs.i386.emu.REG_DEBUG7
+envi.archs.i386.regs.REG_DEBUG7" class="py-name" href="#" onclick="return doclink('link-43', 'REG_DEBUG7', 'link-31');">REG_DEBUG7</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">            <tt class="py-name">ctrl</tt> <tt class="py-op">&amp;=</tt> <tt class="py-name">ctrl_mask</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">            <tt class="py-comment">#print "debug%d: %.8x debug7: %.8x" % (idx,address,ctrl|ctrl_orig)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">            <tt class="py-name">ctx</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="envi.archs.amd64.regs.Amd64RegisterContext.setRegister
+envi.archs.arm.emu.ArmEmulator.setRegister
+envi.registers.RegisterContext.setRegister
+vtrace.Trace.setRegister" class="py-name" href="#" onclick="return doclink('link-44', 'setRegister', 'link-32');">setRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="envi.archs.amd64.REG_DEBUG7
+envi.archs.amd64.disasm.REG_DEBUG7
+envi.archs.amd64.regs.REG_DEBUG7
+envi.archs.i386.REG_DEBUG7
+envi.archs.i386.disasm.REG_DEBUG7
+envi.archs.i386.emu.REG_DEBUG7
+envi.archs.i386.regs.REG_DEBUG7" class="py-name" href="#" onclick="return doclink('link-45', 'REG_DEBUG7', 'link-31');">REG_DEBUG7</a></tt><tt class="py-op">,</tt> <tt class="py-name">ctrl</tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">            <tt class="py-name">ctx</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="envi.archs.amd64.regs.Amd64RegisterContext.setRegister
+envi.archs.arm.emu.ArmEmulator.setRegister
+envi.registers.RegisterContext.setRegister
+vtrace.Trace.setRegister" class="py-name" href="#" onclick="return doclink('link-46', 'setRegister', 'link-32');">setRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="envi.archs.amd64.REG_DEBUG0
+envi.archs.amd64.disasm.REG_DEBUG0
+envi.archs.amd64.regs.REG_DEBUG0
+envi.archs.i386.REG_DEBUG0
+envi.archs.i386.disasm.REG_DEBUG0
+envi.archs.i386.emu.REG_DEBUG0
+envi.archs.i386.regs.REG_DEBUG0" class="py-name" href="#" onclick="return doclink('link-47', 'REG_DEBUG0', 'link-35');">REG_DEBUG0</a></tt> <tt class="py-op">+</tt> <tt class="py-name">idx</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> </tt>
+</div><a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"> </tt>
+<a name="i386WatchMixin.archCheckWatchpoints"></a><div id="i386WatchMixin.archCheckWatchpoints-def"><a name="L99"></a><tt class="py-lineno"> 99</tt> <a class="py-toggle" href="#" id="i386WatchMixin.archCheckWatchpoints-toggle" onclick="return toggle('i386WatchMixin.archCheckWatchpoints');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.i386.i386WatchMixin-class.html#archCheckWatchpoints">archCheckWatchpoints</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386WatchMixin.archCheckWatchpoints-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="i386WatchMixin.archCheckWatchpoints-expanded"><a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt id="link-48" class="py-name" targets="Module envi.archs.amd64.regs=envi.archs.amd64.regs-module.html,Module envi.archs.arm.regs=envi.archs.arm.regs-module.html,Variable envi.archs.i386.opcode86.regs=envi.archs.i386.opcode86-module.html#regs,Module envi.archs.i386.regs=envi.archs.i386.regs-module.html,Module envi.archs.z80.regs=envi.archs.z80.regs-module.html,Variable vtrace.platforms.linux.USER_i386.regs=vtrace.platforms.linux.USER_i386-class.html#regs"><a title="envi.archs.amd64.regs
+envi.archs.arm.regs
+envi.archs.i386.opcode86.regs
+envi.archs.i386.regs
+envi.archs.z80.regs
+vtrace.platforms.linux.USER_i386.regs" class="py-name" href="#" onclick="return doclink('link-48', 'regs', 'link-48');">regs</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method envi.registers.RegisterContext.getRegisters()=envi.registers.RegisterContext-class.html#getRegisters"><a title="envi.registers.RegisterContext.getRegisters" class="py-name" href="#" onclick="return doclink('link-49', 'getRegisters', 'link-49');">getRegisters</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-name">status</tt> <tt class="py-op">=</tt> <tt id="link-50" class="py-name"><a title="envi.archs.amd64.regs
+envi.archs.arm.regs
+envi.archs.i386.opcode86.regs
+envi.archs.i386.regs
+envi.archs.z80.regs
+vtrace.platforms.linux.USER_i386.regs" class="py-name" href="#" onclick="return doclink('link-50', 'regs', 'link-48');">regs</a></tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt id="link-51" class="py-name"><a title="vtrace.archs.i386.dbg_status" class="py-name" href="#" onclick="return doclink('link-51', 'dbg_status', 'link-10');">dbg_status</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-comment">#print "STATUS %.8x" % status</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">status</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt id="link-52" class="py-name" targets="Variable envi.archs.arm.armdisasm.x=envi.archs.arm.armdisasm-module.html#x,Variable envi.archs.arm.disasm.x=envi.archs.arm.disasm-module.html#x,Variable envi.archs.arm.emu.x=envi.archs.arm.emu-module.html#x,Variable envi.archs.arm.regs.x=envi.archs.arm.regs-module.html#x,Variable envi.archs.arm.thumbdisasm.x=envi.archs.arm.thumbdisasm-module.html#x,Variable envi.archs.arm.x=envi.archs.arm-module.html#x,Variable envi.archs.i386.disasm.x=envi.archs.i386.disasm-module.html#x,Variable envi.archs.i386.emu.x=envi.archs.i386.emu-module.html#x,Variable envi.archs.i386.x=envi.archs.i386-module.html#x,Variable vtrace.platforms.win32.x=vtrace.platforms.win32-module.html#x"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-52', 'x', 'link-52');">x</a></tt> <tt class="py-op">=</tt> <tt class="py-name">status</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0x0f</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt id="link-53" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-53', 'x', 'link-52');">x</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-54" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-54', 'i', 'link-19');">i</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">range</tt><tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt id="link-55" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-55', 'x', 'link-52');">x</a></tt> <tt class="py-op">&gt;&gt;</tt> <tt id="link-56" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-56', 'i', 'link-19');">i</a></tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">hwdebug</tt><tt class="py-op">[</tt><tt id="link-57" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-57', 'i', 'link-19');">i</a></tt><tt class="py-op">]</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+</div></div><a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"> </tt>
+<a name="i386Mixin"></a><div id="i386Mixin-def"><a name="L115"></a><tt class="py-lineno">115</tt> <a class="py-toggle" href="#" id="i386Mixin-toggle" onclick="return toggle('i386Mixin');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.archs.i386.i386Mixin-class.html">i386Mixin</a><tt class="py-op">(</tt><tt class="py-base-class">e_i386</tt><tt class="py-op">.</tt><tt class="py-base-class">i386Module</tt><tt class="py-op">,</tt> <tt class="py-base-class">e_i386</tt><tt class="py-op">.</tt><tt class="py-base-class">i386RegisterContext</tt><tt class="py-op">,</tt> <tt class="py-base-class">i386WatchMixin</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386Mixin-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="i386Mixin-expanded"><a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"> </tt>
+<a name="i386Mixin.__init__"></a><div id="i386Mixin.__init__-def"><a name="L117"></a><tt class="py-lineno">117</tt> <a class="py-toggle" href="#" id="i386Mixin.__init__-toggle" onclick="return toggle('i386Mixin.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.i386.i386Mixin-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386Mixin.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="i386Mixin.__init__-expanded"><a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-comment"># Mixin our i386 envi architecture module and register context</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name" targets="Class envi.archs.i386.i386Module=envi.archs.i386.i386Module-class.html"><a title="envi.archs.i386.i386Module" class="py-name" href="#" onclick="return doclink('link-58', 'i386Module', 'link-58');">i386Module</a></tt><tt class="py-op">.</tt><tt id="link-59" class="py-name" targets="Method Elf.Elf.__init__()=Elf.Elf-class.html#__init__,Method Elf.Elf32Dynamic.__init__()=Elf.Elf32Dynamic-class.html#__init__,Method Elf.Elf32Pheader.__init__()=Elf.Elf32Pheader-class.html#__init__,Method Elf.Elf32Reloc.__init__()=Elf.Elf32Reloc-class.html#__init__,Method Elf.Elf32Reloca.__init__()=Elf.Elf32Reloca-class.html#__init__,Method Elf.Elf32Section.__init__()=Elf.Elf32Section-class.html#__init__,Method Elf.Elf32Symbol.__init__()=Elf.Elf32Symbol-class.html#__init__,Method Elf.Elf64Dynamic.__init__()=Elf.Elf64Dynamic-class.html#__init__,Method Elf.Elf64Pheader.__init__()=Elf.Elf64Pheader-class.html#__init__,Method Elf.Elf64Reloc.__init__()=Elf.Elf64Reloc-class.html#__init__,Method Elf.Elf64Reloca.__init__()=Elf.Elf64Reloca-class.html#__init__,Method Elf.Elf64Section.__init__()=Elf.Elf64Section-class.html#__init__,Method Elf.Elf64Symbol.__init__()=Elf.Elf64Symbol-class.html#__init__,Method Elf.ElfDynamic.__init__()=Elf.ElfDynamic-class.html#__init__,Method Elf.ElfPheader.__init__()=Elf.ElfPheader-class.html#__init__,Method Elf.ElfReloc.__init__()=Elf.ElfReloc-class.html#__init__,Method Elf.ElfSection.__init__()=Elf.ElfSection-class.html#__init__,Method Elf.ElfSymbol.__init__()=Elf.ElfSymbol-class.html#__init__,Method envi.ArchitectureModule.__init__()=envi.ArchitectureModule-class.html#__init__,Method envi.EmuException.__init__()=envi.EmuException-class.html#__init__,Method envi.Emulator.__init__()=envi.Emulator-class.html#__init__,Method envi.InvalidInstruction.__init__()=envi.InvalidInstruction-class.html#__init__,Method envi.MapOverlapException.__init__()=envi.MapOverlapException-class.html#__init__,Method envi.Opcode.__init__()=envi.Opcode-class.html#__init__,Method envi.SegmentationViolation.__init__()=envi.SegmentationViolation-class.html#__init__,Method envi.UnsupportedInstruction.__init__()=envi.UnsupportedInstruction-class.html#__init__,Method envi.archs.amd64.Amd64Emulator.__init__()=envi.archs.amd64.Amd64Emulator-class.html#__init__,Method envi.archs.amd64.Amd64Module.__init__()=envi.archs.amd64.Amd64Module-class.html#__init__,Method envi.archs.amd64.disasm.Amd64Disasm.__init__()=envi.archs.amd64.disasm.Amd64Disasm-class.html#__init__,Method envi.archs.amd64.disasm.Amd64RipRelOper.__init__()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#__init__,Method envi.archs.amd64.regs.Amd64RegisterContext.__init__()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#__init__,Method envi.archs.arm.ArmModule.__init__()=envi.archs.arm.ArmModule-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOper.__init__()=envi.archs.arm.armdisasm.ArmImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegListOper.__init__()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#__init__,Method envi.archs.arm.disasm.ArmDisasm.__init__()=envi.archs.arm.disasm.ArmDisasm-class.html#__init__,Method envi.archs.arm.emu.ArmEmulator.__init__()=envi.archs.arm.emu.ArmEmulator-class.html#__init__,Method envi.archs.arm.emu.CoProcEmulator.__init__()=envi.archs.arm.emu.CoProcEmulator-class.html#__init__,Method envi.archs.arm.regs.ArmRegisterContext.__init__()=envi.archs.arm.regs.ArmRegisterContext-class.html#__init__,Method envi.archs.arm.thumb.simpleops.__init__()=envi.archs.arm.thumb.simpleops-class.html#__init__,Method envi.archs.arm.thumbdisasm.simpleops.__init__()=envi.archs.arm.thumbdisasm.simpleops-class.html#__init__,Method envi.archs.i386.disasm.i386Disasm.__init__()=envi.archs.i386.disasm.i386Disasm-class.html#__init__,Method envi.archs.i386.disasm.i386ImmMemOper.__init__()=envi.archs.i386.disasm.i386ImmMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386ImmOper.__init__()=envi.archs.i386.disasm.i386ImmOper-class.html#__init__,Method envi.archs.i386.disasm.i386PcRelOper.__init__()=envi.archs.i386.disasm.i386PcRelOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegMemOper.__init__()=envi.archs.i386.disasm.i386RegMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegOper.__init__()=envi.archs.i386.disasm.i386RegOper-class.html#__init__,Method envi.archs.i386.disasm.i386SibOper.__init__()=envi.archs.i386.disasm.i386SibOper-class.html#__init__,Method envi.archs.i386.emu.BFastCall.__init__()=envi.archs.i386.emu.BFastCall-class.html#__init__,Method envi.archs.i386.emu.FastCall.__init__()=envi.archs.i386.emu.FastCall-class.html#__init__,Method envi.archs.i386.emu.IntelEmulator.__init__()=envi.archs.i386.emu.IntelEmulator-class.html#__init__,Method envi.archs.i386.emu.MsFastCall.__init__()=envi.archs.i386.emu.MsFastCall-class.html#__init__,Method envi.archs.i386.i386Module.__init__()=envi.archs.i386.i386Module-class.html#__init__,Method envi.archs.i386.regs.i386RegisterContext.__init__()=envi.archs.i386.regs.i386RegisterContext-class.html#__init__,Method envi.archs.z80.disasm.z80Disasm.__init__()=envi.archs.z80.disasm.z80Disasm-class.html#__init__,Method envi.archs.z80.disasm.z80ImmOper.__init__()=envi.archs.z80.disasm.z80ImmOper-class.html#__init__,Method envi.archs.z80.disasm.z80RegMem.__init__()=envi.archs.z80.disasm.z80RegMem-class.html#__init__,Method envi.archs.z80.disasm.z80RegOper.__init__()=envi.archs.z80.disasm.z80RegOper-class.html#__init__,Method envi.archs.z80.regs.z80RegisterContext.__init__()=envi.archs.z80.regs.z80RegisterContext-class.html#__init__,Method envi.arm.ArmModule.__init__()=envi.arm.ArmModule-class.html#__init__,Method envi.arm.ArmOpcode.__init__()=envi.arm.ArmOpcode-class.html#__init__,Method envi.arm.ArmOperand.__init__()=envi.arm.ArmOperand-class.html#__init__,Method envi.bintree.BinaryTree.__init__()=envi.bintree.BinaryTree-class.html#__init__,Method envi.bytesig.SignatureTree.__init__()=envi.bytesig.SignatureTree-class.html#__init__,Method envi.cli.CliExtMeth.__init__()=envi.cli.CliExtMeth-class.html#__init__,Method envi.cli.EnviCli.__init__()=envi.cli.EnviCli-class.html#__init__,Method envi.codeflow.CodeFlowContext.__init__()=envi.codeflow.CodeFlowContext-class.html#__init__,Method envi.config.EnviConfig.__init__()=envi.config.EnviConfig-class.html#__init__,Method envi.expression.ExpressionLocals.__init__()=envi.expression.ExpressionLocals-class.html#__init__,Method envi.expression.MemoryExpressionLocals.__init__()=envi.expression.MemoryExpressionLocals-class.html#__init__,Method envi.memcanvas.MemoryCanvas.__init__()=envi.memcanvas.MemoryCanvas-class.html#__init__,Method envi.memcanvas.StringMemoryCanvas.__init__()=envi.memcanvas.StringMemoryCanvas-class.html#__init__,Method envi.memcanvas.renderers.ByteRend.__init__()=envi.memcanvas.renderers.ByteRend-class.html#__init__,Method envi.memory.IMemory.__init__()=envi.memory.IMemory-class.html#__init__,Method envi.memory.MemoryFile.__init__()=envi.memory.MemoryFile-class.html#__init__,Method envi.memory.MemoryObject.__init__()=envi.memory.MemoryObject-class.html#__init__,Method envi.pagelookup.MapLookup.__init__()=envi.pagelookup.MapLookup-class.html#__init__,Method envi.pagelookup.PageLookup.__init__()=envi.pagelookup.PageLookup-class.html#__init__,Method envi.qt.VQMemoryMapView.__init__()=envi.qt.VQMemoryMapView-class.html#__init__,Method envi.qt.memcanvas.VQMemoryCanvas.__init__()=envi.qt.memcanvas.VQMemoryCanvas-class.html#__init__,Method envi.qt.memory.VQMemoryWindow.__init__()=envi.qt.memory.VQMemoryWindow-class.html#__init__,Method envi.registers.RegisterContext.__init__()=envi.registers.RegisterContext-class.html#__init__,Method envi.resolver.FileSymbol.__init__()=envi.resolver.FileSymbol-class.html#__init__,Method envi.resolver.Symbol.__init__()=envi.resolver.Symbol-class.html#__init__,Method envi.resolver.SymbolResolver.__init__()=envi.resolver.SymbolResolver-class.html#__init__,Method envi.util.CopyOnWrite.__init__()=envi.util.CopyOnWrite-class.html#__init__,Method vdb.ScriptThread.__init__()=vdb.ScriptThread-class.html#__init__,Method vdb.Vdb.__init__()=vdb.Vdb-class.html#__init__,Method vdb.VdbLookup.__init__()=vdb.VdbLookup-class.html#__init__,Method vdb.VdbTrace.__init__()=vdb.VdbTrace-class.html#__init__,Method vdb.extensions.gdbstub.GdbStubNotifier.__init__()=vdb.extensions.gdbstub.GdbStubNotifier-class.html#__init__,Method vdb.gui.VdbFileDescWindow.__init__()=vdb.gui.VdbFileDescWindow-class.html#__init__,Method vdb.gui.VdbGui.__init__()=vdb.gui.VdbGui-class.html#__init__,Method vdb.gui.VdbMainWindow.__init__()=vdb.gui.VdbMainWindow-class.html#__init__,Method vdb.gui.VdbMemoryMapWindow.__init__()=vdb.gui.VdbMemoryMapWindow-class.html#__init__,Method vdb.gui.VdbMemoryView.__init__()=vdb.gui.VdbMemoryView-class.html#__init__,Method vdb.gui.VdbMemoryWindow.__init__()=vdb.gui.VdbMemoryWindow-class.html#__init__,Method vdb.gui.VdbRegisterWindow.__init__()=vdb.gui.VdbRegisterWindow-class.html#__init__,Method vdb.gui.VdbViewWindow.__init__()=vdb.gui.VdbViewWindow-class.html#__init__,Method vdb.gui.VdbWindow.__init__()=vdb.gui.VdbWindow-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapRenderer.__init__()=vdb.gui.extensions.windows.VdbHeapRenderer-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapWindow.__init__()=vdb.gui.extensions.windows.VdbHeapWindow-class.html#__init__,Method vdb.gui.extensions.windows.Win32HeapWindow.__init__()=vdb.gui.extensions.windows.Win32HeapWindow-class.html#__init__,Method vdb.qt.windows.VdbMemoryWindow.__init__()=vdb.qt.windows.VdbMemoryWindow-class.html#__init__,Method vdb.qt.windows.VdbWindow.__init__()=vdb.qt.windows.VdbWindow-class.html#__init__,Method vdb.recon.ReconBreak.__init__()=vdb.recon.ReconBreak-class.html#__init__,Method vdb.recon.sniper.SniperArgValueBreak.__init__()=vdb.recon.sniper.SniperArgValueBreak-class.html#__init__,Method vdb.recon.sniper.SniperDynArgBreak.__init__()=vdb.recon.sniper.SniperDynArgBreak-class.html#__init__,Method vdb.renderers.DerefRenderer.__init__()=vdb.renderers.DerefRenderer-class.html#__init__,Method vdb.renderers.OpcodeRenderer.__init__()=vdb.renderers.OpcodeRenderer-class.html#__init__,Method vdb.renderers.SymbolRenderer.__init__()=vdb.renderers.SymbolRenderer-class.html#__init__,Method vdb.stalker.StalkerBlockBreak.__init__()=vdb.stalker.StalkerBlockBreak-class.html#__init__,Method vdb.stalker.StalkerBreak.__init__()=vdb.stalker.StalkerBreak-class.html#__init__,Method vdb.stalker.StalkerCodeFlow.__init__()=vdb.stalker.StalkerCodeFlow-class.html#__init__,Method vdb.stalker.StalkerDynBreak.__init__()=vdb.stalker.StalkerDynBreak-class.html#__init__,Method visgraph.cli.GraphCli.__init__()=visgraph.cli.GraphCli-class.html#__init__,Method visgraph.dbcore.DbGraphStore.__init__()=visgraph.dbcore.DbGraphStore-class.html#__init__,Method visgraph.dbcore.DbSubGraph.__init__()=visgraph.dbcore.DbSubGraph-class.html#__init__,Method visgraph.exc.DuplicateNode.__init__()=visgraph.exc.DuplicateNode-class.html#__init__,Method visgraph.exc.EdgeNonExistant.__init__()=visgraph.exc.EdgeNonExistant-class.html#__init__,Method visgraph.exc.NodeNonExistant.__init__()=visgraph.exc.NodeNonExistant-class.html#__init__,Method visgraph.graphcore.Graph.__init__()=visgraph.graphcore.Graph-class.html#__init__,Method visgraph.graphcore.HierarchicalGraph.__init__()=visgraph.graphcore.HierarchicalGraph-class.html#__init__,Method visgraph.layouts.GraphLayout.__init__()=visgraph.layouts.GraphLayout-class.html#__init__,Method visgraph.layouts.dynadag.DynadagLayout.__init__()=visgraph.layouts.dynadag.DynadagLayout-class.html#__init__,Method visgraph.renderers.GraphRenderer.__init__()=visgraph.renderers.GraphRenderer-class.html#__init__,Method visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__()=visgraph.renderers.gtkrend.GtkVisGraphOverview-class.html#__init__,Method visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__()=visgraph.renderers.gtkrend.GtkVisGraphRenderer-class.html#__init__,Method visgraph.renderers.qgraphtree.NodeColumn.__init__()=visgraph.renderers.qgraphtree.NodeColumn-class.html#__init__,Method visgraph.renderers.qgraphtree.QGraphNode.__init__()=visgraph.renderers.qgraphtree.QGraphNode-class.html#__init__,Method visgraph.renderers.qgraphtree.QGraphTreeView.__init__()=visgraph.renderers.qgraphtree.QGraphTreeView-class.html#__init__,Method visgraph.renderers.svgrend.SvgGraphRenderer.__init__()=visgraph.renderers.svgrend.SvgGraphRenderer-class.html#__init__,Method vqt.application.VQDockWidget.__init__()=vqt.application.VQDockWidget-class.html#__init__,Method vqt.application.VQMainCmdWindow.__init__()=vqt.application.VQMainCmdWindow-class.html#__init__,Method vqt.basics.ACT.__init__()=vqt.basics.ACT-class.html#__init__,Method vqt.basics.HBox.__init__()=vqt.basics.HBox-class.html#__init__,Method vqt.basics.VBox.__init__()=vqt.basics.VBox-class.html#__init__,Method vqt.cli.VQCli.__init__()=vqt.cli.VQCli-class.html#__init__,Method vqt.main.VQApplication.__init__()=vqt.main.VQApplication-class.html#__init__,Method vqt.menubuilder.ActionCall.__init__()=vqt.menubuilder.ActionCall-class.html#__init__,Method vqt.menubuilder.FieldAdder.__init__()=vqt.menubuilder.FieldAdder-class.html#__init__,Method vqt.menubuilder.VQMenu.__init__()=vqt.menubuilder.VQMenu-class.html#__init__,Method vqt.menubuilder.VQMenuBar.__init__()=vqt.menubuilder.VQMenuBar-class.html#__init__,Method vqt.qpython.ScriptThread.__init__()=vqt.qpython.ScriptThread-class.html#__init__,Method vqt.qpython.VQPythonView.__init__()=vqt.qpython.VQPythonView-class.html#__init__,Method vqt.tree.VQTreeItem.__init__()=vqt.tree.VQTreeItem-class.html#__init__,Method vqt.tree.VQTreeModel.__init__()=vqt.tree.VQTreeModel-class.html#__init__,Method vqt.tree.VQTreeSorter.__init__()=vqt.tree.VQTreeSorter-class.html#__init__,Method vqt.tree.VQTreeView.__init__()=vqt.tree.VQTreeView-class.html#__init__,Method vtrace.AccessViolation.__init__()=vtrace.AccessViolation-class.html#__init__,Method vtrace.Trace.__init__()=vtrace.Trace-class.html#__init__,Method vtrace.TraceGroup.__init__()=vtrace.TraceGroup-class.html#__init__,Method vtrace.VtraceExpressionLocals.__init__()=vtrace.VtraceExpressionLocals-class.html#__init__,Method vtrace.archs.amd64.Amd64Mixin.__init__()=vtrace.archs.amd64.Amd64Mixin-class.html#__init__,Method vtrace.archs.arm.ArmMixin.__init__()=vtrace.archs.arm.ArmMixin-class.html#__init__,Method vtrace.archs.i386.i386Mixin.__init__()=vtrace.archs.i386.i386Mixin-class.html#__init__,Method vtrace.archs.i386.i386WatchMixin.__init__()=vtrace.archs.i386.i386WatchMixin-class.html#__init__,Method vtrace.breakpoints.Breakpoint.__init__()=vtrace.breakpoints.Breakpoint-class.html#__init__,Method vtrace.breakpoints.CallBreak.__init__()=vtrace.breakpoints.CallBreak-class.html#__init__,Method vtrace.envitools.TraceEmulator.__init__()=vtrace.envitools.TraceEmulator-class.html#__init__,Method vtrace.notifiers.DistributedNotifier.__init__()=vtrace.notifiers.DistributedNotifier-class.html#__init__,Method vtrace.notifiers.Notifier.__init__()=vtrace.notifiers.Notifier-class.html#__init__,Method vtrace.platforms.android.AndroidArmTrace.__init__()=vtrace.platforms.android.AndroidArmTrace-class.html#__init__,Method vtrace.platforms.base.TracerBase.__init__()=vtrace.platforms.base.TracerBase-class.html#__init__,Method vtrace.platforms.base.TracerThread.__init__()=vtrace.platforms.base.TracerThread-class.html#__init__,Method vtrace.platforms.darwin.DarwinAmd64Trace.__init__()=vtrace.platforms.darwin.DarwinAmd64Trace-class.html#__init__,Method vtrace.platforms.darwin.DarwinMixin.__init__()=vtrace.platforms.darwin.DarwinMixin-class.html#__init__,Method vtrace.platforms.darwin.Darwini386Trace.__init__()=vtrace.platforms.darwin.Darwini386Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__()=vtrace.platforms.freebsd.FreeBSDAmd64Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDMixin.__init__()=vtrace.platforms.freebsd.FreeBSDMixin-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDi386Trace.__init__()=vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin.__init__()=vtrace.platforms.gdbstub.GdbStubMixin-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin_old.__init__()=vtrace.platforms.gdbstub.GdbStubMixin_old-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubTrace.__init__()=vtrace.platforms.gdbstub.GdbStubTrace-class.html#__init__,Method vtrace.platforms.gdbstub.KeBugCheckBreak.__init__()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#__init__,Method vtrace.platforms.linux.LinuxAmd64Trace.__init__()=vtrace.platforms.linux.LinuxAmd64Trace-class.html#__init__,Method vtrace.platforms.linux.LinuxMixin.__init__()=vtrace.platforms.linux.LinuxMixin-class.html#__init__,Method vtrace.platforms.linux.Linuxi386Trace.__init__()=vtrace.platforms.linux.Linuxi386Trace-class.html#__init__,Method vtrace.platforms.posix.ElfMixin.__init__()=vtrace.platforms.posix.ElfMixin-class.html#__init__,Method vtrace.platforms.posix.PosixMixin.__init__()=vtrace.platforms.posix.PosixMixin-class.html#__init__,Method vtrace.platforms.posix.PtraceMixin.__init__()=vtrace.platforms.posix.PtraceMixin-class.html#__init__,Method vtrace.platforms.win32.Win32SymbolParser.__init__()=vtrace.platforms.win32.Win32SymbolParser-class.html#__init__,Method vtrace.platforms.win32.WindowsAmd64Trace.__init__()=vtrace.platforms.win32.WindowsAmd64Trace-class.html#__init__,Method vtrace.platforms.win32.WindowsMixin.__init__()=vtrace.platforms.win32.WindowsMixin-class.html#__init__,Method vtrace.platforms.win32.Windowsi386Trace.__init__()=vtrace.platforms.win32.Windowsi386Trace-class.html#__init__,Method vtrace.qt.RegColorDelegate.__init__()=vtrace.qt.RegColorDelegate-class.html#__init__,Method vtrace.qt.VQFileDescView.__init__()=vtrace.qt.VQFileDescView-class.html#__init__,Method vtrace.qt.VQMemoryMapView.__init__()=vtrace.qt.VQMemoryMapView-class.html#__init__,Method vtrace.qt.VQProcessListView.__init__()=vtrace.qt.VQProcessListView-class.html#__init__,Method vtrace.qt.VQProcessSelectDialog.__init__()=vtrace.qt.VQProcessSelectDialog-class.html#__init__,Method vtrace.qt.VQRegistersListView.__init__()=vtrace.qt.VQRegistersListView-class.html#__init__,Method vtrace.qt.VQRegistersView.__init__()=vtrace.qt.VQRegistersView-class.html#__init__,Method vtrace.qt.VQThreadsView.__init__()=vtrace.qt.VQThreadsView-class.html#__init__,Method vtrace.qt.VQTraceNotifier.__init__()=vtrace.qt.VQTraceNotifier-class.html#__init__,Method vtrace.qt.VQTraceToolBar.__init__()=vtrace.qt.VQTraceToolBar-class.html#__init__,Method vtrace.rmi.RemoteTrace.__init__()=vtrace.rmi.RemoteTrace-class.html#__init__,Method vtrace.snapshot.TraceSnapshot.__init__()=vtrace.snapshot.TraceSnapshot-class.html#__init__,Method vtrace.tools.iathook.IatHook.__init__()=vtrace.tools.iathook.IatHook-class.html#__init__,Method vtrace.tools.win32alloc.ReturnBreak.__init__()=vtrace.tools.win32alloc.ReturnBreak-class.html#__init__,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__,Method vtrace.tools.win32heap.FreeListCorruption.__init__()=vtrace.tools.win32heap.FreeListCorruption-class.html#__init__,Method vtrace.tools.win32heap.HeapCorruptionException.__init__()=vtrace.tools.win32heap.HeapCorruptionException-class.html#__init__,Method vtrace.tools.win32heap.Win32Chunk.__init__()=vtrace.tools.win32heap.Win32Chunk-class.html#__init__,Method vtrace.tools.win32heap.Win32Heap.__init__()=vtrace.tools.win32heap.Win32Heap-class.html#__init__,Method vtrace.tools.win32heap.Win32Segment.__init__()=vtrace.tools.win32heap.Win32Segment-class.html#__init__,Method vtrace.util.TraceManager.__init__()=vtrace.util.TraceManager-class.html#__init__,Method vtrace.watchpoints.PageWatchpoint.__init__()=vtrace.watchpoints.PageWatchpoint-class.html#__init__,Method vtrace.watchpoints.Watchpoint.__init__()=vtrace.watchpoints.Watchpoint-class.html#__init__,Method vwidget.RefView.__init__()=vwidget.RefView-class.html#__init__,Method vwidget.SpaceView.__init__()=vwidget.SpaceView-class.html#__init__,Method vwidget.VWidget.__init__()=vwidget.VWidget-class.html#__init__,Method vwidget.cluster.ClusterServerView.__init__()=vwidget.cluster.ClusterServerView-class.html#__init__,Method vwidget.config.ConfigDialog.__init__()=vwidget.config.ConfigDialog-class.html#__init__,Method vwidget.layout.LayoutManager.__init__()=vwidget.layout.LayoutManager-class.html#__init__,Method vwidget.memview.MemoryView.__init__()=vwidget.memview.MemoryView-class.html#__init__,Method vwidget.memview.MemoryWindow.__init__()=vwidget.memview.MemoryWindow-class.html#__init__,Method vwidget.memview.VaTag.__init__()=vwidget.memview.VaTag-class.html#__init__,Method vwidget.menubuilder.FieldAdder.__init__()=vwidget.menubuilder.FieldAdder-class.html#__init__,Method vwidget.menubuilder.Menu.__init__()=vwidget.menubuilder.Menu-class.html#__init__,Method vwidget.menubuilder.MenuBar.__init__()=vwidget.menubuilder.MenuBar-class.html#__init__,Method vwidget.pydialog.PyDialog.__init__()=vwidget.pydialog.PyDialog-class.html#__init__,Method vwidget.pydialog.ScriptThread.__init__()=vwidget.pydialog.ScriptThread-class.html#__init__,Method vwidget.views.GladeView.__init__()=vwidget.views.GladeView-class.html#__init__,Method vwidget.views.VTextTag.__init__()=vwidget.views.VTextTag-class.html#__init__,Method vwidget.views.VTextView.__init__()=vwidget.views.VTextView-class.html#__init__,Method vwidget.views.VTreeView.__init__()=vwidget.views.VTreeView-class.html#__init__,Method vwidget.views.VView.__init__()=vwidget.views.VView-class.html#__init__,Method vwidget.vwvstruct.SelectNamespaceDialog.__init__()=vwidget.vwvstruct.SelectNamespaceDialog-class.html#__init__,Method vwidget.vwvstruct.SelectStructureDialog.__init__()=vwidget.vwvstruct.SelectStructureDialog-class.html#__init__,Method vwidget.vwvstruct.VStructBrowser.__init__()=vwidget.vwvstruct.VStructBrowser-class.html#__init__,Method vwidget.vwvstruct.VStructBuilderView.__init__()=vwidget.vwvstruct.VStructBuilderView-class.html#__init__,Method vwidget.vwvstruct.VStructNamespaceSelector.__init__()=vwidget.vwvstruct.VStructNamespaceSelector-class.html#__init__,Method vwidget.vwvstruct.VStructView.__init__()=vwidget.vwvstruct.VStructView-class.html#__init__,Method vwidget.vwvtrace.FileDescView.__init__()=vwidget.vwvtrace.FileDescView-class.html#__init__,Method vwidget.vwvtrace.MemoryMapView.__init__()=vwidget.vwvtrace.MemoryMapView-class.html#__init__,Method vwidget.vwvtrace.ProcessListView.__init__()=vwidget.vwvtrace.ProcessListView-class.html#__init__,Method vwidget.vwvtrace.SelectProcessDialog.__init__()=vwidget.vwvtrace.SelectProcessDialog-class.html#__init__,Method vwidget.vwvtrace.TraceToolBar.__init__()=vwidget.vwvtrace.TraceToolBar-class.html#__init__,Method vwidget.vwvtrace.VtraceView.__init__()=vwidget.vwvtrace.VtraceView-class.html#__init__,Method vwidget.windows.MainWindow.__init__()=vwidget.windows.MainWindow-class.html#__init__,Method vwidget.windows.VWindow.__init__()=vwidget.windows.VWindow-class.html#__init__"><a title="Elf.Elf.__init__
+Elf.Elf32Dynamic.__init__
+Elf.Elf32Pheader.__init__
+Elf.Elf32Reloc.__init__
+Elf.Elf32Reloca.__init__
+Elf.Elf32Section.__init__
+Elf.Elf32Symbol.__init__
+Elf.Elf64Dynamic.__init__
+Elf.Elf64Pheader.__init__
+Elf.Elf64Reloc.__init__
+Elf.Elf64Reloca.__init__
+Elf.Elf64Section.__init__
+Elf.Elf64Symbol.__init__
+Elf.ElfDynamic.__init__
+Elf.ElfPheader.__init__
+Elf.ElfReloc.__init__
+Elf.ElfSection.__init__
+Elf.ElfSymbol.__init__
+envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__
+vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__
+visgraph.cli.GraphCli.__init__
+visgraph.dbcore.DbGraphStore.__init__
+visgraph.dbcore.DbSubGraph.__init__
+visgraph.exc.DuplicateNode.__init__
+visgraph.exc.EdgeNonExistant.__init__
+visgraph.exc.NodeNonExistant.__init__
+visgraph.graphcore.Graph.__init__
+visgraph.graphcore.HierarchicalGraph.__init__
+visgraph.layouts.GraphLayout.__init__
+visgraph.layouts.dynadag.DynadagLayout.__init__
+visgraph.renderers.GraphRenderer.__init__
+visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__
+visgraph.renderers.qgraphtree.NodeColumn.__init__
+visgraph.renderers.qgraphtree.QGraphNode.__init__
+visgraph.renderers.qgraphtree.QGraphTreeView.__init__
+visgraph.renderers.svgrend.SvgGraphRenderer.__init__
+vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__
+vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__
+vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-59', '__init__', 'link-59');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt class="py-comment"># FIXME tracer base should inherit from RegisterContext and we should</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-comment"># just have to load a register definition!</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Class envi.archs.i386.regs.i386RegisterContext=envi.archs.i386.regs.i386RegisterContext-class.html"><a title="envi.archs.i386.regs.i386RegisterContext" class="py-name" href="#" onclick="return doclink('link-60', 'i386RegisterContext', 'link-60');">i386RegisterContext</a></tt><tt class="py-op">.</tt><tt id="link-61" class="py-name"><a title="Elf.Elf.__init__
+Elf.Elf32Dynamic.__init__
+Elf.Elf32Pheader.__init__
+Elf.Elf32Reloc.__init__
+Elf.Elf32Reloca.__init__
+Elf.Elf32Section.__init__
+Elf.Elf32Symbol.__init__
+Elf.Elf64Dynamic.__init__
+Elf.Elf64Pheader.__init__
+Elf.Elf64Reloc.__init__
+Elf.Elf64Reloca.__init__
+Elf.Elf64Section.__init__
+Elf.Elf64Symbol.__init__
+Elf.ElfDynamic.__init__
+Elf.ElfPheader.__init__
+Elf.ElfReloc.__init__
+Elf.ElfSection.__init__
+Elf.ElfSymbol.__init__
+envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__
+vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__
+visgraph.cli.GraphCli.__init__
+visgraph.dbcore.DbGraphStore.__init__
+visgraph.dbcore.DbSubGraph.__init__
+visgraph.exc.DuplicateNode.__init__
+visgraph.exc.EdgeNonExistant.__init__
+visgraph.exc.NodeNonExistant.__init__
+visgraph.graphcore.Graph.__init__
+visgraph.graphcore.HierarchicalGraph.__init__
+visgraph.layouts.GraphLayout.__init__
+visgraph.layouts.dynadag.DynadagLayout.__init__
+visgraph.renderers.GraphRenderer.__init__
+visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__
+visgraph.renderers.qgraphtree.NodeColumn.__init__
+visgraph.renderers.qgraphtree.QGraphNode.__init__
+visgraph.renderers.qgraphtree.QGraphTreeView.__init__
+visgraph.renderers.svgrend.SvgGraphRenderer.__init__
+vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__
+vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__
+vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-61', '__init__', 'link-59');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt id="link-62" class="py-name" targets="Class vtrace.archs.i386.i386WatchMixin=vtrace.archs.i386.i386WatchMixin-class.html"><a title="vtrace.archs.i386.i386WatchMixin" class="py-name" href="#" onclick="return doclink('link-62', 'i386WatchMixin', 'link-62');">i386WatchMixin</a></tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="Elf.Elf.__init__
+Elf.Elf32Dynamic.__init__
+Elf.Elf32Pheader.__init__
+Elf.Elf32Reloc.__init__
+Elf.Elf32Reloca.__init__
+Elf.Elf32Section.__init__
+Elf.Elf32Symbol.__init__
+Elf.Elf64Dynamic.__init__
+Elf.Elf64Pheader.__init__
+Elf.Elf64Reloc.__init__
+Elf.Elf64Reloca.__init__
+Elf.Elf64Section.__init__
+Elf.Elf64Symbol.__init__
+Elf.ElfDynamic.__init__
+Elf.ElfPheader.__init__
+Elf.ElfReloc.__init__
+Elf.ElfSection.__init__
+Elf.ElfSymbol.__init__
+envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__
+vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__
+visgraph.cli.GraphCli.__init__
+visgraph.dbcore.DbGraphStore.__init__
+visgraph.dbcore.DbSubGraph.__init__
+visgraph.exc.DuplicateNode.__init__
+visgraph.exc.EdgeNonExistant.__init__
+visgraph.exc.NodeNonExistant.__init__
+visgraph.graphcore.Graph.__init__
+visgraph.graphcore.HierarchicalGraph.__init__
+visgraph.layouts.GraphLayout.__init__
+visgraph.layouts.dynadag.DynadagLayout.__init__
+visgraph.renderers.GraphRenderer.__init__
+visgraph.renderers.gtkrend.GtkVisGraphOverview.__init__
+visgraph.renderers.gtkrend.GtkVisGraphRenderer.__init__
+visgraph.renderers.qgraphtree.NodeColumn.__init__
+visgraph.renderers.qgraphtree.QGraphNode.__init__
+visgraph.renderers.qgraphtree.QGraphTreeView.__init__
+visgraph.renderers.svgrend.SvgGraphRenderer.__init__
+vqt.application.VQDockWidget.__init__
+vqt.application.VQMainCmdWindow.__init__
+vqt.basics.ACT.__init__
+vqt.basics.HBox.__init__
+vqt.basics.VBox.__init__
+vqt.cli.VQCli.__init__
+vqt.main.VQApplication.__init__
+vqt.menubuilder.ActionCall.__init__
+vqt.menubuilder.FieldAdder.__init__
+vqt.menubuilder.VQMenu.__init__
+vqt.menubuilder.VQMenuBar.__init__
+vqt.qpython.ScriptThread.__init__
+vqt.qpython.VQPythonView.__init__
+vqt.tree.VQTreeItem.__init__
+vqt.tree.VQTreeModel.__init__
+vqt.tree.VQTreeSorter.__init__
+vqt.tree.VQTreeView.__init__
+vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__
+vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-63', '__init__', 'link-59');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name" targets="Method visgraph.graphcore.Graph.setMeta()=visgraph.graphcore.Graph-class.html#setMeta,Method vtrace.Trace.setMeta()=vtrace.Trace-class.html#setMeta,Method vtrace.TraceGroup.setMeta()=vtrace.TraceGroup-class.html#setMeta,Method vtrace.util.TraceManager.setMeta()=vtrace.util.TraceManager-class.html#setMeta"><a title="visgraph.graphcore.Graph.setMeta
+vtrace.Trace.setMeta
+vtrace.TraceGroup.setMeta
+vtrace.util.TraceManager.setMeta" class="py-name" href="#" onclick="return doclink('link-64', 'setMeta', 'link-64');">setMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">'Architecture'</tt><tt class="py-op">,</tt> <tt class="py-string">'i386'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line"> </tt>
+<a name="i386Mixin.archGetStackTrace"></a><div id="i386Mixin.archGetStackTrace-def"><a name="L127"></a><tt class="py-lineno">127</tt> <a class="py-toggle" href="#" id="i386Mixin.archGetStackTrace-toggle" onclick="return toggle('i386Mixin.archGetStackTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.i386.i386Mixin-class.html#archGetStackTrace">archGetStackTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386Mixin.archGetStackTrace-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="i386Mixin.archGetStackTrace-expanded"><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-65" class="py-name" targets="Method vtrace.Trace.requireAttached()=vtrace.Trace-class.html#requireAttached"><a title="vtrace.Trace.requireAttached" class="py-name" href="#" onclick="return doclink('link-65', 'requireAttached', 'link-65');">requireAttached</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-name">current</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-name">sanity</tt> <tt class="py-op">=</tt> <tt class="py-number">1000</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-name">frames</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-comment">#FIXME make these by register index</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-comment">#FIXME make these GPREG stuff! (then both are the same)</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt id="link-66" class="py-name" targets="Variable vtrace.platforms.linux.user_regs_i386.ebp=vtrace.platforms.linux.user_regs_i386-class.html#ebp,Variable vtrace.platforms.win32.CONTEXTx86.ebp=vtrace.platforms.win32.CONTEXTx86-class.html#ebp"><a title="vtrace.platforms.linux.user_regs_i386.ebp
+vtrace.platforms.win32.CONTEXTx86.ebp" class="py-name" href="#" onclick="return doclink('link-66', 'ebp', 'link-66');">ebp</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-67" class="py-name" targets="Method envi.registers.RegisterContext.getRegisterByName()=envi.registers.RegisterContext-class.html#getRegisterByName"><a title="envi.registers.RegisterContext.getRegisterByName" class="py-name" href="#" onclick="return doclink('link-67', 'getRegisterByName', 'link-67');">getRegisterByName</a></tt><tt class="py-op">(</tt><tt class="py-string">"ebp"</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt id="link-68" class="py-name" targets="Variable vtrace.platforms.linux.user_regs_i386.eip=vtrace.platforms.linux.user_regs_i386-class.html#eip,Variable vtrace.platforms.win32.CONTEXTx86.eip=vtrace.platforms.win32.CONTEXTx86-class.html#eip"><a title="vtrace.platforms.linux.user_regs_i386.eip
+vtrace.platforms.win32.CONTEXTx86.eip" class="py-name" href="#" onclick="return doclink('link-68', 'eip', 'link-68');">eip</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="envi.registers.RegisterContext.getRegisterByName" class="py-name" href="#" onclick="return doclink('link-69', 'getRegisterByName', 'link-67');">getRegisterByName</a></tt><tt class="py-op">(</tt><tt class="py-string">"eip"</tt><tt class="py-op">)</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">        <tt class="py-name">frames</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name" targets="Method vqt.tree.VQTreeItem.append()=vqt.tree.VQTreeItem-class.html#append,Method vqt.tree.VQTreeModel.append()=vqt.tree.VQTreeModel-class.html#append"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-70', 'append', 'link-70');">append</a></tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt id="link-71" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.eip
+vtrace.platforms.win32.CONTEXTx86.eip" class="py-name" href="#" onclick="return doclink('link-71', 'eip', 'link-68');">eip</a></tt><tt class="py-op">,</tt><tt id="link-72" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.ebp
+vtrace.platforms.win32.CONTEXTx86.ebp" class="py-name" href="#" onclick="return doclink('link-72', 'ebp', 'link-66');">ebp</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-keyword">while</tt> <tt id="link-73" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.ebp
+vtrace.platforms.win32.CONTEXTx86.ebp" class="py-name" href="#" onclick="return doclink('link-73', 'ebp', 'link-66');">ebp</a></tt> <tt class="py-op">!=</tt> <tt class="py-number">0</tt> <tt class="py-keyword">and</tt> <tt class="py-name">current</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">sanity</tt><tt class="py-op">:</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">                <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-74" class="py-name" targets="Method envi.memory.IMemory.readMemory()=envi.memory.IMemory-class.html#readMemory,Method envi.memory.MemoryObject.readMemory()=envi.memory.MemoryObject-class.html#readMemory,Method envi.util.CopyOnWrite.readMemory()=envi.util.CopyOnWrite-class.html#readMemory,Method vtrace.Trace.readMemory()=vtrace.Trace-class.html#readMemory"><a title="envi.memory.IMemory.readMemory
+envi.memory.MemoryObject.readMemory
+envi.util.CopyOnWrite.readMemory
+vtrace.Trace.readMemory" class="py-name" href="#" onclick="return doclink('link-74', 'readMemory', 'link-74');">readMemory</a></tt><tt class="py-op">(</tt><tt id="link-75" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.ebp
+vtrace.platforms.win32.CONTEXTx86.ebp" class="py-name" href="#" onclick="return doclink('link-75', 'ebp', 'link-66');">ebp</a></tt><tt class="py-op">,</tt> <tt class="py-number">8</tt><tt class="py-op">)</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">                <tt id="link-76" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.ebp
+vtrace.platforms.win32.CONTEXTx86.ebp" class="py-name" href="#" onclick="return doclink('link-76', 'ebp', 'link-66');">ebp</a></tt><tt class="py-op">,</tt><tt id="link-77" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.eip
+vtrace.platforms.win32.CONTEXTx86.eip" class="py-name" href="#" onclick="return doclink('link-77', 'eip', 'link-68');">eip</a></tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-string">"&lt;LL"</tt><tt class="py-op">,</tt><tt class="py-name">buf</tt><tt class="py-op">)</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">                <tt class="py-name">frames</tt><tt class="py-op">.</tt><tt id="link-78" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-78', 'append', 'link-70');">append</a></tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt id="link-79" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.eip
+vtrace.platforms.win32.CONTEXTx86.eip" class="py-name" href="#" onclick="return doclink('link-79', 'eip', 'link-68');">eip</a></tt><tt class="py-op">,</tt><tt id="link-80" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.ebp
+vtrace.platforms.win32.CONTEXTx86.ebp" class="py-name" href="#" onclick="return doclink('link-80', 'ebp', 'link-66');">ebp</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">                <tt class="py-name">current</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt><tt class="py-op">:</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">                <tt class="py-keyword">break</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">frames</tt> </tt>
+</div><a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"> </tt>
+<a name="i386Mixin.platformCall"></a><div id="i386Mixin.platformCall-def"><a name="L150"></a><tt class="py-lineno">150</tt> <a class="py-toggle" href="#" id="i386Mixin.platformCall-toggle" onclick="return toggle('i386Mixin.platformCall');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.archs.i386.i386Mixin-class.html#platformCall">platformCall</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">address</tt><tt class="py-op">,</tt> <tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-param">convention</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="i386Mixin.platformCall-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="i386Mixin.platformCall-expanded"><a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">        <tt class="py-name">finalargs</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-name">saved_regs</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name"><a title="envi.registers.RegisterContext.getRegisters" class="py-name" href="#" onclick="return doclink('link-81', 'getRegisters', 'link-49');">getRegisters</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-name">sp</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-82" class="py-name" targets="Method envi.registers.RegisterContext.getStackCounter()=envi.registers.RegisterContext-class.html#getStackCounter"><a title="envi.registers.RegisterContext.getStackCounter" class="py-name" href="#" onclick="return doclink('link-82', 'getStackCounter', 'link-82');">getStackCounter</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-name">pc</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name" targets="Method envi.registers.RegisterContext.getProgramCounter()=envi.registers.RegisterContext-class.html#getProgramCounter"><a title="envi.registers.RegisterContext.getProgramCounter" class="py-name" href="#" onclick="return doclink('link-83', 'getProgramCounter', 'link-83');">getProgramCounter</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">arg</tt> <tt class="py-keyword">in</tt> <tt class="py-name">args</tt><tt class="py-op">:</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">type</tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">types</tt><tt class="py-op">.</tt><tt class="py-name">StringType</tt><tt class="py-op">:</tt> <tt class="py-comment"># Nicly map strings into mem</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">                <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-name">arg</tt><tt class="py-op">+</tt><tt class="py-string">"\x00\x00"</tt><tt class="py-op">+</tt><tt class="py-name">buf</tt>    <tt class="py-comment"># Pad with a null for convenience</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">                <tt class="py-name">finalargs</tt><tt class="py-op">.</tt><tt id="link-84" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-84', 'append', 'link-70');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">sp</tt> <tt class="py-op">-</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">buf</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">                <tt class="py-name">finalargs</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-85', 'append', 'link-70');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">arg</tt><tt class="py-op">)</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt class="py-name">m</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">buf</tt><tt class="py-op">)</tt> <tt class="py-op">%</tt> <tt class="py-number">4</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">m</tt><tt class="py-op">:</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">            <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-string">"\x00"</tt> <tt class="py-op">*</tt> <tt class="py-op">(</tt><tt class="py-number">4</tt><tt class="py-op">-</tt><tt class="py-name">m</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-name">buf</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">        <tt class="py-comment"># Args are </tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-comment">#finalargs.reverse()</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-string">"&lt;%dI"</tt> <tt class="py-op">%</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">finalargs</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-name">finalargs</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-name">buf</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">        <tt class="py-comment"># Saved EIP is target addr so when we hit the break...</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-name">buf</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">pack</tt><tt class="py-op">(</tt><tt class="py-string">"&lt;I"</tt><tt class="py-op">,</tt> <tt class="py-name">address</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-name">buf</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">        <tt class="py-comment"># Calc the new stack pointer</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt class="py-name">newsp</tt> <tt class="py-op">=</tt> <tt class="py-name">sp</tt><tt class="py-op">-</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">buf</tt><tt class="py-op">)</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-comment"># Write the stack buffer in</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-86" class="py-name" targets="Method envi.memory.IMemory.writeMemory()=envi.memory.IMemory-class.html#writeMemory,Method envi.memory.MemoryObject.writeMemory()=envi.memory.MemoryObject-class.html#writeMemory,Method envi.util.CopyOnWrite.writeMemory()=envi.util.CopyOnWrite-class.html#writeMemory,Method vtrace.Trace.writeMemory()=vtrace.Trace-class.html#writeMemory"><a title="envi.memory.IMemory.writeMemory
+envi.memory.MemoryObject.writeMemory
+envi.util.CopyOnWrite.writeMemory
+vtrace.Trace.writeMemory" class="py-name" href="#" onclick="return doclink('link-86', 'writeMemory', 'link-86');">writeMemory</a></tt><tt class="py-op">(</tt><tt class="py-name">newsp</tt><tt class="py-op">,</tt> <tt class="py-name">buf</tt><tt class="py-op">)</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">        <tt class="py-comment"># Setup the stack pointer</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-87" class="py-name" targets="Method envi.registers.RegisterContext.setStackCounter()=envi.registers.RegisterContext-class.html#setStackCounter"><a title="envi.registers.RegisterContext.setStackCounter" class="py-name" href="#" onclick="return doclink('link-87', 'setStackCounter', 'link-87');">setStackCounter</a></tt><tt class="py-op">(</tt><tt class="py-name">newsp</tt><tt class="py-op">)</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line">        <tt class="py-comment"># Setup the instruction pointer</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-88" class="py-name" targets="Method envi.registers.RegisterContext.setProgramCounter()=envi.registers.RegisterContext-class.html#setProgramCounter"><a title="envi.registers.RegisterContext.setProgramCounter" class="py-name" href="#" onclick="return doclink('link-88', 'setProgramCounter', 'link-88');">setProgramCounter</a></tt><tt class="py-op">(</tt><tt class="py-name">address</tt><tt class="py-op">)</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">        <tt class="py-comment"># Add the magical call-break</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">        <tt class="py-name">callbreak</tt> <tt class="py-op">=</tt> <tt id="link-89" class="py-name"><a title="vtrace.breakpoints" class="py-name" href="#" onclick="return doclink('link-89', 'breakpoints', 'link-2');">breakpoints</a></tt><tt class="py-op">.</tt><tt id="link-90" class="py-name" targets="Class vtrace.breakpoints.CallBreak=vtrace.breakpoints.CallBreak-class.html"><a title="vtrace.breakpoints.CallBreak" class="py-name" href="#" onclick="return doclink('link-90', 'CallBreak', 'link-90');">CallBreak</a></tt><tt class="py-op">(</tt><tt class="py-name">address</tt><tt class="py-op">,</tt> <tt class="py-name">saved_regs</tt><tt class="py-op">)</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-91" class="py-name" targets="Method vtrace.Trace.addBreakpoint()=vtrace.Trace-class.html#addBreakpoint"><a title="vtrace.Trace.addBreakpoint" class="py-name" href="#" onclick="return doclink('link-91', 'addBreakpoint', 'link-91');">addBreakpoint</a></tt><tt class="py-op">(</tt><tt class="py-name">callbreak</tt><tt class="py-op">)</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">        <tt class="py-comment"># Continue until the CallBreak has been hit</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt class="py-keyword">while</tt> <tt class="py-keyword">not</tt> <tt class="py-name">callbreak</tt><tt class="py-op">.</tt><tt class="py-name">endregs</tt><tt class="py-op">:</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-92" class="py-name" targets="Method envi.Emulator.run()=envi.Emulator-class.html#run,Method vdb.ScriptThread.run()=vdb.ScriptThread-class.html#run,Method vqt.qpython.ScriptThread.run()=vqt.qpython.ScriptThread-class.html#run,Method vtrace.Trace.run()=vtrace.Trace-class.html#run,Method vtrace.TraceGroup.run()=vtrace.TraceGroup-class.html#run,Method vtrace.platforms.base.TracerThread.run()=vtrace.platforms.base.TracerThread-class.html#run,Method vwidget.pydialog.ScriptThread.run()=vwidget.pydialog.ScriptThread-class.html#run"><a title="envi.Emulator.run
+vdb.ScriptThread.run
+vqt.qpython.ScriptThread.run
+vtrace.Trace.run
+vtrace.TraceGroup.run
+vtrace.platforms.base.TracerThread.run
+vwidget.pydialog.ScriptThread.run" class="py-name" href="#" onclick="return doclink('link-92', 'run', 'link-92');">run</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">callbreak</tt><tt class="py-op">.</tt><tt class="py-name">endregs</tt> </tt>
+</div></div><a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:29 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

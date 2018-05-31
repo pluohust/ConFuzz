@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>envi.memcanvas</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="envi-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="envi-module.html">Package&nbsp;envi</a> ::
+        Package&nbsp;memcanvas
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="envi.memcanvas-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="envi.memcanvas-module.html">Package envi.memcanvas</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">The envi.memcanvas module is the home of the base MemoryRenderer object and</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">MemoryCanvas objects.</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">traceback</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package envi=envi-module.html"><a title="envi" class="py-name" href="#" onclick="return doclink('link-0', 'envi', 'link-0');">envi</a></tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-1', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module envi.memory=envi.memory-module.html,Module envi.qt.memory=envi.qt.memory-module.html"><a title="envi.memory
+envi.qt.memory" class="py-name" href="#" onclick="return doclink('link-2', 'memory', 'link-2');">memory</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_mem</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-3', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module envi.resolver=envi.resolver-module.html"><a title="envi.resolver" class="py-name" href="#" onclick="return doclink('link-4', 'resolver', 'link-4');">resolver</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_resolv</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"> </tt>
+<a name="MemoryRenderer"></a><div id="MemoryRenderer-def"><a name="L13"></a><tt class="py-lineno"> 13</tt> <a class="py-toggle" href="#" id="MemoryRenderer-toggle" onclick="return toggle('MemoryRenderer');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.memcanvas.MemoryRenderer-class.html">MemoryRenderer</a><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryRenderer-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="MemoryRenderer-expanded"><a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-docstring">    A top level object for all memory renderers</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"> </tt>
+<a name="MemoryRenderer.rendSymbol"></a><div id="MemoryRenderer.rendSymbol-def"><a name="L18"></a><tt class="py-lineno"> 18</tt> <a class="py-toggle" href="#" id="MemoryRenderer.rendSymbol-toggle" onclick="return toggle('MemoryRenderer.rendSymbol');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryRenderer-class.html#rendSymbol">rendSymbol</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mcanv</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryRenderer.rendSymbol-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryRenderer.rendSymbol-expanded"><a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-docstring">        If there is a symbolic name for the current va, print it...</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">        <tt id="link-5" class="py-name" targets="Method envi.expression.MemoryExpressionLocals.sym()=envi.expression.MemoryExpressionLocals-class.html#sym"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-5', 'sym', 'link-5');">sym</a></tt> <tt class="py-op">=</tt> <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt class="py-name">syms</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method envi.resolver.SymbolResolver.getSymByAddr()=envi.resolver.SymbolResolver-class.html#getSymByAddr"><a title="envi.resolver.SymbolResolver.getSymByAddr" class="py-name" href="#" onclick="return doclink('link-6', 'getSymByAddr', 'link-6');">getSymByAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-7" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-7', 'sym', 'link-5');">sym</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addVaText()=envi.memcanvas.MemoryCanvas-class.html#addVaText"><a title="envi.memcanvas.MemoryCanvas.addVaText" class="py-name" href="#" onclick="return doclink('link-8', 'addVaText', 'link-8');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-string">"%s:\n"</tt> <tt class="py-op">%</tt> <tt id="link-9" class="py-name" targets="Method envi.Operand.repr()=envi.Operand-class.html#repr,Method envi.archs.amd64.disasm.Amd64RipRelOper.repr()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocOper.repr()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.repr()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmEndianOper.repr()=envi.archs.arm.armdisasm.ArmEndianOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.repr()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmImmOper.repr()=envi.archs.arm.armdisasm.ArmImmOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmOffsetOper.repr()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegListOper.repr()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.repr()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegOper.repr()=envi.archs.arm.armdisasm.ArmRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#repr,Method envi.archs.i386.disasm.i386ImmMemOper.repr()=envi.archs.i386.disasm.i386ImmMemOper-class.html#repr,Method envi.archs.i386.disasm.i386ImmOper.repr()=envi.archs.i386.disasm.i386ImmOper-class.html#repr,Method envi.archs.i386.disasm.i386PcRelOper.repr()=envi.archs.i386.disasm.i386PcRelOper-class.html#repr,Method envi.archs.i386.disasm.i386RegMemOper.repr()=envi.archs.i386.disasm.i386RegMemOper-class.html#repr,Method envi.archs.i386.disasm.i386RegOper.repr()=envi.archs.i386.disasm.i386RegOper-class.html#repr,Method envi.archs.i386.disasm.i386SibOper.repr()=envi.archs.i386.disasm.i386SibOper-class.html#repr,Method envi.archs.z80.disasm.z80ImmOper.repr()=envi.archs.z80.disasm.z80ImmOper-class.html#repr,Method envi.archs.z80.disasm.z80RegMem.repr()=envi.archs.z80.disasm.z80RegMem-class.html#repr"><a title="envi.Operand.repr
+envi.archs.amd64.disasm.Amd64RipRelOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOper.repr
+envi.archs.arm.armdisasm.ArmCoprocRegOper.repr
+envi.archs.arm.armdisasm.ArmEndianOper.repr
+envi.archs.arm.armdisasm.ArmImmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmImmOper.repr
+envi.archs.arm.armdisasm.ArmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr
+envi.archs.arm.armdisasm.ArmRegListOper.repr
+envi.archs.arm.armdisasm.ArmRegOffsetOper.repr
+envi.archs.arm.armdisasm.ArmRegOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr
+envi.archs.i386.disasm.i386ImmMemOper.repr
+envi.archs.i386.disasm.i386ImmOper.repr
+envi.archs.i386.disasm.i386PcRelOper.repr
+envi.archs.i386.disasm.i386RegMemOper.repr
+envi.archs.i386.disasm.i386RegOper.repr
+envi.archs.i386.disasm.i386SibOper.repr
+envi.archs.z80.disasm.z80ImmOper.repr
+envi.archs.z80.disasm.z80RegMem.repr" class="py-name" href="#" onclick="return doclink('link-9', 'repr', 'link-9');">repr</a></tt><tt class="py-op">(</tt><tt id="link-10" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-10', 'sym', 'link-5');">sym</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="MemoryRenderer.rendVa"></a><div id="MemoryRenderer.rendVa-def"><a name="L26"></a><tt class="py-lineno"> 26</tt> <a class="py-toggle" href="#" id="MemoryRenderer.rendVa-toggle" onclick="return toggle('MemoryRenderer.rendVa');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryRenderer-class.html#rendVa">rendVa</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mcanv</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryRenderer.rendVa-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryRenderer.rendVa-expanded"><a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">        <tt class="py-name">tag</tt> <tt class="py-op">=</tt> <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.getVaTag()=envi.memcanvas.MemoryCanvas-class.html#getVaTag,Method envi.qt.memcanvas.VQMemoryCanvas.getVaTag()=envi.qt.memcanvas.VQMemoryCanvas-class.html#getVaTag"><a title="envi.memcanvas.MemoryCanvas.getVaTag
+envi.qt.memcanvas.VQMemoryCanvas.getVaTag" class="py-name" href="#" onclick="return doclink('link-11', 'getVaTag', 'link-11');">getVaTag</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addText()=envi.memcanvas.MemoryCanvas-class.html#addText,Method envi.memcanvas.StringMemoryCanvas.addText()=envi.memcanvas.StringMemoryCanvas-class.html#addText,Method envi.qt.memcanvas.VQMemoryCanvas.addText()=envi.qt.memcanvas.VQMemoryCanvas-class.html#addText"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-12', 'addText', 'link-12');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"%.8x:"</tt> <tt class="py-op">%</tt> <tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-name">tag</tt><tt class="py-op">=</tt><tt class="py-name">tag</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"> </tt>
+<a name="MemoryRenderer.rendChars"></a><div id="MemoryRenderer.rendChars-def"><a name="L30"></a><tt class="py-lineno"> 30</tt> <a class="py-toggle" href="#" id="MemoryRenderer.rendChars-toggle" onclick="return toggle('MemoryRenderer.rendChars');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryRenderer-class.html#rendChars">rendChars</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mcanv</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryRenderer.rendChars-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryRenderer.rendChars-expanded"><a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">b</tt> <tt class="py-keyword">in</tt> <tt class="py-name">bytes</tt><tt class="py-op">:</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">            <tt class="py-name">val</tt> <tt class="py-op">=</tt> <tt class="py-name">ord</tt><tt class="py-op">(</tt><tt class="py-name">b</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">            <tt class="py-name">bstr</tt> <tt class="py-op">=</tt> <tt class="py-string">"%.2x"</tt> <tt class="py-op">%</tt> <tt class="py-name">val</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">val</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">0x20</tt> <tt class="py-keyword">or</tt> <tt class="py-name">val</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0x7e</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">                <tt class="py-name">b</tt> <tt class="py-op">=</tt> <tt class="py-string">"."</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addNameText()=envi.memcanvas.MemoryCanvas-class.html#addNameText"><a title="envi.memcanvas.MemoryCanvas.addNameText" class="py-name" href="#" onclick="return doclink('link-13', 'addNameText', 'link-13');">addNameText</a></tt><tt class="py-op">(</tt><tt class="py-name">b</tt><tt class="py-op">,</tt> <tt class="py-name">bstr</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"> </tt>
+<a name="MemoryRenderer.render"></a><div id="MemoryRenderer.render-def"><a name="L38"></a><tt class="py-lineno"> 38</tt> <a class="py-toggle" href="#" id="MemoryRenderer.render-toggle" onclick="return toggle('MemoryRenderer.render');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryRenderer-class.html#render">render</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mcanv</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryRenderer.render-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryRenderer.render-expanded"><a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">        Render one "unit" and return the size you ate.</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">        mcanv will be a MemoryCanvas extender and va</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">        is the virtual address you are expected to render.</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">"Implement render!"</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas"></a><div id="MemoryCanvas-def"><a name="L46"></a><tt class="py-lineno"> 46</tt> <a class="py-toggle" href="#" id="MemoryCanvas-toggle" onclick="return toggle('MemoryCanvas');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html">MemoryCanvas</a><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="MemoryCanvas-expanded"><a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">    A memory canvas is a place where the textual representation</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring">    of memory will be displayed. The methods implemented here show</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">    how a memory canvas which simply prints would be implemented.</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="MemoryCanvas.__init__"></a><div id="MemoryCanvas.__init__-def"><a name="L52"></a><tt class="py-lineno"> 52</tt> <a class="py-toggle" href="#" id="MemoryCanvas.__init__-toggle" onclick="return toggle('MemoryCanvas.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mem</tt><tt class="py-op">,</tt> <tt class="py-param">syms</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.__init__-expanded"><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">syms</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">            <tt class="py-name">syms</tt> <tt class="py-op">=</tt> <tt class="py-name">e_resolv</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Class envi.resolver.SymbolResolver=envi.resolver.SymbolResolver-class.html"><a title="envi.resolver.SymbolResolver" class="py-name" href="#" onclick="return doclink('link-14', 'SymbolResolver', 'link-14');">SymbolResolver</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method envi.expression.MemoryExpressionLocals.mem()=envi.expression.MemoryExpressionLocals-class.html#mem"><a title="envi.expression.MemoryExpressionLocals.mem" class="py-name" href="#" onclick="return doclink('link-15', 'mem', 'link-15');">mem</a></tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name"><a title="envi.expression.MemoryExpressionLocals.mem" class="py-name" href="#" onclick="return doclink('link-16', 'mem', 'link-15');">mem</a></tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">syms</tt> <tt class="py-op">=</tt> <tt class="py-name">syms</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">currend</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Package envi.memcanvas.renderers=envi.memcanvas.renderers-module.html"><a title="envi.memcanvas.renderers" class="py-name" href="#" onclick="return doclink('link-17', 'renderers', 'link-17');">renderers</a></tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_scrolled</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_navcallback</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-comment"># A few things for tracking renders.</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_beginva</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_endva</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.setScrolledCanvas"></a><div id="MemoryCanvas.setScrolledCanvas-def"><a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="MemoryCanvas.setScrolledCanvas-toggle" onclick="return toggle('MemoryCanvas.setScrolledCanvas');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#setScrolledCanvas">setScrolledCanvas</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">scroll</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.setScrolledCanvas-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.setScrolledCanvas-expanded"><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_scrolled</tt> <tt class="py-op">=</tt> <tt class="py-name">scroll</tt> </tt>
+</div><a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.write"></a><div id="MemoryCanvas.write-def"><a name="L70"></a><tt class="py-lineno"> 70</tt> <a class="py-toggle" href="#" id="MemoryCanvas.write-toggle" onclick="return toggle('MemoryCanvas.write');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#write">write</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">msg</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.write-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.write-expanded"><a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-comment"># So a canvas can act like simple standard out</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-18', 'addText', 'link-12');">addText</a></tt><tt class="py-op">(</tt><tt class="py-name">msg</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.setNavCallback"></a><div id="MemoryCanvas.setNavCallback-def"><a name="L74"></a><tt class="py-lineno"> 74</tt> <a class="py-toggle" href="#" id="MemoryCanvas.setNavCallback-toggle" onclick="return toggle('MemoryCanvas.setNavCallback');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#setNavCallback">setNavCallback</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">callback</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.setNavCallback-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.setNavCallback-expanded"><a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-docstring">'''</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"><tt class="py-docstring">        Set a navigation "callback" that will be called with</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"><tt class="py-docstring">        a memory expression as it's first argument anytime the</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"><tt class="py-docstring">        canvas recieves user input which desires nav...</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_navcallback</tt> <tt class="py-op">=</tt> <tt id="link-19" class="py-name" targets="Function envi.pyzip.callback()=envi.pyzip-module.html#callback"><a title="envi.pyzip.callback" class="py-name" href="#" onclick="return doclink('link-19', 'callback', 'link-19');">callback</a></tt> </tt>
+</div><a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.addRenderer"></a><div id="MemoryCanvas.addRenderer-def"><a name="L82"></a><tt class="py-lineno"> 82</tt> <a class="py-toggle" href="#" id="MemoryCanvas.addRenderer-toggle" onclick="return toggle('MemoryCanvas.addRenderer');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#addRenderer">addRenderer</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">rend</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.addRenderer-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.addRenderer-expanded"><a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="envi.memcanvas.renderers" class="py-name" href="#" onclick="return doclink('link-20', 'renderers', 'link-17');">renderers</a></tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">rend</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">currend</tt> <tt class="py-op">=</tt> <tt class="py-name">rend</tt> </tt>
+</div><a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.getRenderer"></a><div id="MemoryCanvas.getRenderer-def"><a name="L86"></a><tt class="py-lineno"> 86</tt> <a class="py-toggle" href="#" id="MemoryCanvas.getRenderer-toggle" onclick="return toggle('MemoryCanvas.getRenderer');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#getRenderer">getRenderer</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.getRenderer-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.getRenderer-expanded"><a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="envi.memcanvas.renderers" class="py-name" href="#" onclick="return doclink('link-21', 'renderers', 'link-17');">renderers</a></tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.getRendererNames"></a><div id="MemoryCanvas.getRendererNames-def"><a name="L89"></a><tt class="py-lineno"> 89</tt> <a class="py-toggle" href="#" id="MemoryCanvas.getRendererNames-toggle" onclick="return toggle('MemoryCanvas.getRendererNames');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#getRendererNames">getRendererNames</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.getRendererNames-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.getRendererNames-expanded"><a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name"><a title="envi.memcanvas.renderers" class="py-name" href="#" onclick="return doclink('link-22', 'renderers', 'link-17');">renderers</a></tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-name">ret</tt><tt class="py-op">.</tt><tt class="py-name">sort</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">ret</tt> </tt>
+</div><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.setRenderer"></a><div id="MemoryCanvas.setRenderer-def"><a name="L94"></a><tt class="py-lineno"> 94</tt> <a class="py-toggle" href="#" id="MemoryCanvas.setRenderer-toggle" onclick="return toggle('MemoryCanvas.setRenderer');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#setRenderer">setRenderer</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.setRenderer-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.setRenderer-expanded"><a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-name">rend</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="envi.memcanvas.renderers" class="py-name" href="#" onclick="return doclink('link-23', 'renderers', 'link-17');">renderers</a></tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">rend</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">"Unknown renderer: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">currend</tt> <tt class="py-op">=</tt> <tt class="py-name">rend</tt> </tt>
+</div><a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.getTag"></a><div id="MemoryCanvas.getTag-def"><a name="L100"></a><tt class="py-lineno">100</tt> <a class="py-toggle" href="#" id="MemoryCanvas.getTag-toggle" onclick="return toggle('MemoryCanvas.getTag');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#getTag">getTag</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">typename</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.getTag-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.getTag-expanded"><a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-docstring">        Retrieve a non-named tag (doesn't highlight or do</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"><tt class="py-docstring">        anything particularly special, but allows color</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-docstring">        by typename).</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.getNameTag"></a><div id="MemoryCanvas.getNameTag-def"><a name="L108"></a><tt class="py-lineno">108</tt> <a class="py-toggle" href="#" id="MemoryCanvas.getNameTag-toggle" onclick="return toggle('MemoryCanvas.getNameTag');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#getNameTag">getNameTag</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">typename</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.getNameTag-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.getNameTag-expanded"><a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-docstring">        Retrieve a "tag" object for a name.  "Name" tags will</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-docstring">        (if possible) be highlighted in the rendered interface</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> <tt class="py-comment"># No highlighting in plain text</tt> </tt>
+</div><a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.getVaTag"></a><div id="MemoryCanvas.getVaTag-def"><a name="L115"></a><tt class="py-lineno">115</tt> <a class="py-toggle" href="#" id="MemoryCanvas.getVaTag-toggle" onclick="return toggle('MemoryCanvas.getVaTag');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#getVaTag">getVaTag</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.getVaTag-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.getVaTag-expanded"><a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-docstring">        Retrieve a tag object suitable for showing that the text</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">        added with this tag should link through to the specified</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-docstring">        virtual address in the memory canvas.</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> <tt class="py-comment"># No linking in plain text</tt> </tt>
+</div><a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.addText"></a><div id="MemoryCanvas.addText-def"><a name="L123"></a><tt class="py-lineno">123</tt> <a class="py-toggle" href="#" id="MemoryCanvas.addText-toggle" onclick="return toggle('MemoryCanvas.addText');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#addText">addText</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">text</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.addText-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.addText-expanded"><a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"><tt class="py-docstring">        Add text to the canvas with a specified tag.</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"><tt class="py-docstring">        NOTE: Implementors should probably check _canv_scrolled to</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"><tt class="py-docstring">        decide if they should scroll to the end of the view...</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">stdout</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method envi.cli.EnviCli.write()=envi.cli.EnviCli-class.html#write,Method envi.memcanvas.MemoryCanvas.write()=envi.memcanvas.MemoryCanvas-class.html#write,Method envi.memory.MemoryFile.write()=envi.memory.MemoryFile-class.html#write"><a title="envi.cli.EnviCli.write
+envi.memcanvas.MemoryCanvas.write
+envi.memory.MemoryFile.write" class="py-name" href="#" onclick="return doclink('link-24', 'write', 'link-24');">write</a></tt><tt class="py-op">(</tt><tt class="py-name">text</tt><tt class="py-op">.</tt><tt class="py-name">encode</tt><tt class="py-op">(</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">stdout</tt><tt class="py-op">.</tt><tt class="py-name">encoding</tt><tt class="py-op">,</tt><tt class="py-string">'replace'</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.addNameText"></a><div id="MemoryCanvas.addNameText-def"><a name="L132"></a><tt class="py-lineno">132</tt> <a class="py-toggle" href="#" id="MemoryCanvas.addNameText-toggle" onclick="return toggle('MemoryCanvas.addNameText');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#addNameText">addNameText</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">text</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">typename</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.addNameText-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.addNameText-expanded"><a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">name</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">            <tt class="py-name">name</tt> <tt class="py-op">=</tt> <tt class="py-name">text</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-name">tag</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.getNameTag()=envi.memcanvas.MemoryCanvas-class.html#getNameTag,Method envi.qt.memcanvas.VQMemoryCanvas.getNameTag()=envi.qt.memcanvas.VQMemoryCanvas-class.html#getNameTag"><a title="envi.memcanvas.MemoryCanvas.getNameTag
+envi.qt.memcanvas.VQMemoryCanvas.getNameTag" class="py-name" href="#" onclick="return doclink('link-25', 'getNameTag', 'link-25');">getNameTag</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">typename</tt><tt class="py-op">=</tt><tt class="py-name">typename</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-26', 'addText', 'link-12');">addText</a></tt><tt class="py-op">(</tt><tt class="py-name">text</tt><tt class="py-op">,</tt> <tt class="py-name">tag</tt><tt class="py-op">=</tt><tt class="py-name">tag</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.addVaText"></a><div id="MemoryCanvas.addVaText-def"><a name="L138"></a><tt class="py-lineno">138</tt> <a class="py-toggle" href="#" id="MemoryCanvas.addVaText-toggle" onclick="return toggle('MemoryCanvas.addVaText');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#addVaText">addVaText</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">text</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.addVaText-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.addVaText-expanded"><a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-name">tag</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="envi.memcanvas.MemoryCanvas.getVaTag
+envi.qt.memcanvas.VQMemoryCanvas.getVaTag" class="py-name" href="#" onclick="return doclink('link-27', 'getVaTag', 'link-11');">getVaTag</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-28', 'addText', 'link-12');">addText</a></tt><tt class="py-op">(</tt><tt class="py-name">text</tt><tt class="py-op">,</tt> <tt class="py-name">tag</tt><tt class="py-op">=</tt><tt class="py-name">tag</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.render"></a><div id="MemoryCanvas.render-def"><a name="L142"></a><tt class="py-lineno">142</tt> <a class="py-toggle" href="#" id="MemoryCanvas.render-toggle" onclick="return toggle('MemoryCanvas.render');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#render">render</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">,</tt> <tt class="py-param">rend</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.render-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.render-expanded"><a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'Depricated!  use renderMemory!'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.clearCanvas"></a><div id="MemoryCanvas.clearCanvas-def"><a name="L145"></a><tt class="py-lineno">145</tt> <a class="py-toggle" href="#" id="MemoryCanvas.clearCanvas-toggle" onclick="return toggle('MemoryCanvas.clearCanvas');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#clearCanvas">clearCanvas</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.clearCanvas-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.clearCanvas-expanded"><a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._beginRenderMemory"></a><div id="MemoryCanvas._beginRenderMemory-def"><a name="L148"></a><tt class="py-lineno">148</tt> <a class="py-toggle" href="#" id="MemoryCanvas._beginRenderMemory-toggle" onclick="return toggle('MemoryCanvas._beginRenderMemory');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_beginRenderMemory">_beginRenderMemory</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">,</tt> <tt class="py-param">rend</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._beginRenderMemory-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._beginRenderMemory-expanded"><a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._endRenderMemory"></a><div id="MemoryCanvas._endRenderMemory-def"><a name="L151"></a><tt class="py-lineno">151</tt> <a class="py-toggle" href="#" id="MemoryCanvas._endRenderMemory-toggle" onclick="return toggle('MemoryCanvas._endRenderMemory');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_endRenderMemory">_endRenderMemory</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">,</tt> <tt class="py-param">rend</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._endRenderMemory-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._endRenderMemory-expanded"><a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._beginRenderVa"></a><div id="MemoryCanvas._beginRenderVa-def"><a name="L154"></a><tt class="py-lineno">154</tt> <a class="py-toggle" href="#" id="MemoryCanvas._beginRenderVa-toggle" onclick="return toggle('MemoryCanvas._beginRenderVa');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_beginRenderVa">_beginRenderVa</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._beginRenderVa-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._beginRenderVa-expanded"><a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._endRenderVa"></a><div id="MemoryCanvas._endRenderVa-def"><a name="L157"></a><tt class="py-lineno">157</tt> <a class="py-toggle" href="#" id="MemoryCanvas._endRenderVa-toggle" onclick="return toggle('MemoryCanvas._endRenderVa');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_endRenderVa">_endRenderVa</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._endRenderVa-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._endRenderVa-expanded"><a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._beginUpdateVas"></a><div id="MemoryCanvas._beginUpdateVas-def"><a name="L160"></a><tt class="py-lineno">160</tt> <a class="py-toggle" href="#" id="MemoryCanvas._beginUpdateVas-toggle" onclick="return toggle('MemoryCanvas._beginUpdateVas');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_beginUpdateVas">_beginUpdateVas</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">valist</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._beginUpdateVas-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._beginUpdateVas-expanded"><a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'Default canvas cant update!'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._endUpdateVas"></a><div id="MemoryCanvas._endUpdateVas-def"><a name="L163"></a><tt class="py-lineno">163</tt> <a class="py-toggle" href="#" id="MemoryCanvas._endUpdateVas-toggle" onclick="return toggle('MemoryCanvas._endUpdateVas');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_endUpdateVas">_endUpdateVas</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._endUpdateVas-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._endUpdateVas-expanded"><a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._beginRenderAppend"></a><div id="MemoryCanvas._beginRenderAppend-def"><a name="L166"></a><tt class="py-lineno">166</tt> <a class="py-toggle" href="#" id="MemoryCanvas._beginRenderAppend-toggle" onclick="return toggle('MemoryCanvas._beginRenderAppend');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_beginRenderAppend">_beginRenderAppend</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._beginRenderAppend-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._beginRenderAppend-expanded"><a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'Default canvas cant append!'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._endRenderAppend"></a><div id="MemoryCanvas._endRenderAppend-def"><a name="L169"></a><tt class="py-lineno">169</tt> <a class="py-toggle" href="#" id="MemoryCanvas._endRenderAppend-toggle" onclick="return toggle('MemoryCanvas._endRenderAppend');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_endRenderAppend">_endRenderAppend</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._endRenderAppend-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._endRenderAppend-expanded"><a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._beginRenderPrepend"></a><div id="MemoryCanvas._beginRenderPrepend-def"><a name="L172"></a><tt class="py-lineno">172</tt> <a class="py-toggle" href="#" id="MemoryCanvas._beginRenderPrepend-toggle" onclick="return toggle('MemoryCanvas._beginRenderPrepend');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_beginRenderPrepend">_beginRenderPrepend</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._beginRenderPrepend-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._beginRenderPrepend-expanded"><a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'Default canvas cant prepend!'</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._endRenderPrepend"></a><div id="MemoryCanvas._endRenderPrepend-def"><a name="L175"></a><tt class="py-lineno">175</tt> <a class="py-toggle" href="#" id="MemoryCanvas._endRenderPrepend-toggle" onclick="return toggle('MemoryCanvas._endRenderPrepend');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_endRenderPrepend">_endRenderPrepend</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._endRenderPrepend-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._endRenderPrepend-expanded"><a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas._isRendered"></a><div id="MemoryCanvas._isRendered-def"><a name="L178"></a><tt class="py-lineno">178</tt> <a class="py-toggle" href="#" id="MemoryCanvas._isRendered-toggle" onclick="return toggle('MemoryCanvas._isRendered');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#_isRendered">_isRendered</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">,</tt> <tt class="py-param">maxva</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas._isRendered-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas._isRendered-expanded"><a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">        <tt class="py-docstring">'''</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"><tt class="py-docstring">        Returns true if any part of the current render overlaps</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line"><tt class="py-docstring">        with the specified region.</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_beginva</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_endva</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line"> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">va</tt> <tt class="py-op">&gt;</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_endva</tt><tt class="py-op">:</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">maxva</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_beginva</tt><tt class="py-op">:</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.renderMemoryUpdate"></a><div id="MemoryCanvas.renderMemoryUpdate-def"><a name="L197"></a><tt class="py-lineno">197</tt> <a class="py-toggle" href="#" id="MemoryCanvas.renderMemoryUpdate-toggle" onclick="return toggle('MemoryCanvas.renderMemoryUpdate');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#renderMemoryUpdate">renderMemoryUpdate</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.renderMemoryUpdate-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.renderMemoryUpdate-expanded"><a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line"> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">        <tt class="py-name">maxva</tt> <tt class="py-op">=</tt> <tt class="py-name">va</tt> <tt class="py-op">+</tt> <tt class="py-name">size</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._isRendered()=envi.memcanvas.MemoryCanvas-class.html#_isRendered"><a title="envi.memcanvas.MemoryCanvas._isRendered" class="py-name" href="#" onclick="return doclink('link-29', '_isRendered', 'link-29');">_isRendered</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-name">maxva</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line"> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">        <tt class="py-comment"># Find the index of the first and last change</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">        <tt class="py-name">iend</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">        <tt class="py-name">ibegin</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-30" class="py-name" targets="Variable envi.archs.i386.disasm.i=envi.archs.i386.disasm-module.html#i,Variable envi.archs.i386.emu.i=envi.archs.i386.emu-module.html#i,Variable envi.archs.i386.i=envi.archs.i386-module.html#i,Variable envi.bits.i=envi.bits-module.html#i"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-30', 'i', 'link-30');">i</a></tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-name">rendva</tt><tt class="py-op">,</tt><tt class="py-name">rendsize</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">enumerate</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line"> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">ibegin</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt> <tt class="py-keyword">and</tt> <tt class="py-name">va</tt> <tt class="py-op">&lt;=</tt> <tt class="py-name">rendva</tt><tt class="py-op">:</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">                <tt class="py-name">ibegin</tt> <tt class="py-op">=</tt> <tt id="link-31" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-31', 'i', 'link-30');">i</a></tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line"> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">iend</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt> <tt class="py-keyword">and</tt> <tt class="py-name">maxva</tt> <tt class="py-op">&lt;=</tt> <tt class="py-name">rendva</tt><tt class="py-op">:</tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line">                <tt class="py-name">iend</tt> <tt class="py-op">=</tt> <tt id="link-32" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-32', 'i', 'link-30');">i</a></tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line"> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">ibegin</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt> <tt class="py-keyword">and</tt> <tt class="py-name">iend</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">                <tt class="py-keyword">break</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">        <tt class="py-name">saved_last</tt>  <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">[</tt><tt class="py-name">iend</tt><tt class="py-op">:</tt><tt class="py-op">]</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">        <tt class="py-name">saved_first</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">[</tt><tt class="py-op">:</tt><tt class="py-name">ibegin</tt><tt class="py-op">]</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line">        <tt class="py-name">updatedvas</tt>  <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">[</tt><tt class="py-name">ibegin</tt><tt class="py-op">:</tt><tt class="py-name">iend</tt><tt class="py-op">]</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">        <tt class="py-comment">#print 'IBEGIN',hex(ibegin)</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">        <tt class="py-comment">#print 'IEND',hex(iend)</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">        <tt class="py-comment">#print 'FIRST',repr([hex(va) for va in saved_first])</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">        <tt class="py-comment">#print 'UPDATED',repr([hex(va) for va in updatedvas])</tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">        <tt class="py-comment">#print 'LAST',repr([hex(va) for va in saved_last])</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line"> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">        <tt class="py-comment"># We must actually start rendering from the beginning</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">        <tt class="py-comment"># of the first updated VA index</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">        <tt class="py-name">startva</tt> <tt class="py-op">=</tt> <tt class="py-name">updatedvas</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">        <tt class="py-name">endva</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_endva</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">saved_last</tt><tt class="py-op">:</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">            <tt class="py-name">endva</tt> <tt class="py-op">=</tt> <tt class="py-name">saved_last</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line"> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">        <tt class="py-name">newrendvas</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line"> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._beginUpdateVas()=envi.memcanvas.MemoryCanvas-class.html#_beginUpdateVas,Method envi.qt.memcanvas.VQMemoryCanvas._beginUpdateVas()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_beginUpdateVas"><a title="envi.memcanvas.MemoryCanvas._beginUpdateVas
+envi.qt.memcanvas.VQMemoryCanvas._beginUpdateVas" class="py-name" href="#" onclick="return doclink('link-33', '_beginUpdateVas', 'link-33');">_beginUpdateVas</a></tt><tt class="py-op">(</tt><tt class="py-name">updatedvas</tt><tt class="py-op">)</tt> </tt>
+<a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line"> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">            <tt class="py-keyword">while</tt> <tt class="py-name">startva</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">endva</tt><tt class="py-op">:</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._beginRenderVa()=envi.memcanvas.MemoryCanvas-class.html#_beginRenderVa,Method envi.qt.memcanvas.VQMemoryCanvas._beginRenderVa()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_beginRenderVa"><a title="envi.memcanvas.MemoryCanvas._beginRenderVa
+envi.qt.memcanvas.VQMemoryCanvas._beginRenderVa" class="py-name" href="#" onclick="return doclink('link-34', '_beginRenderVa', 'link-34');">_beginRenderVa</a></tt><tt class="py-op">(</tt><tt class="py-name">startva</tt><tt class="py-op">)</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">                <tt class="py-name">rsize</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">currend</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name" targets="Method envi.Opcode.render()=envi.Opcode-class.html#render,Method envi.Operand.render()=envi.Operand-class.html#render,Method envi.archs.amd64.disasm.Amd64RipRelOper.render()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#render,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.render()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#render,Method envi.archs.arm.armdisasm.ArmImmOper.render()=envi.archs.arm.armdisasm.ArmImmOper-class.html#render,Method envi.archs.arm.armdisasm.ArmOffsetOper.render()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#render,Method envi.archs.arm.armdisasm.ArmOpcode.render()=envi.archs.arm.armdisasm.ArmOpcode-class.html#render,Method envi.archs.arm.armdisasm.ArmRegListOper.render()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#render,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.render()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#render,Method envi.archs.arm.armdisasm.ArmRegOper.render()=envi.archs.arm.armdisasm.ArmRegOper-class.html#render,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.render()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#render,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.render()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#render,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.render()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#render,Method envi.archs.i386.disasm.i386ImmMemOper.render()=envi.archs.i386.disasm.i386ImmMemOper-class.html#render,Method envi.archs.i386.disasm.i386ImmOper.render()=envi.archs.i386.disasm.i386ImmOper-class.html#render,Method envi.archs.i386.disasm.i386Opcode.render()=envi.archs.i386.disasm.i386Opcode-class.html#render,Method envi.archs.i386.disasm.i386PcRelOper.render()=envi.archs.i386.disasm.i386PcRelOper-class.html#render,Method envi.archs.i386.disasm.i386RegMemOper.render()=envi.archs.i386.disasm.i386RegMemOper-class.html#render,Method envi.archs.i386.disasm.i386RegOper.render()=envi.archs.i386.disasm.i386RegOper-class.html#render,Method envi.archs.i386.disasm.i386SibOper.render()=envi.archs.i386.disasm.i386SibOper-class.html#render,Method envi.memcanvas.MemoryCanvas.render()=envi.memcanvas.MemoryCanvas-class.html#render,Method envi.memcanvas.MemoryRenderer.render()=envi.memcanvas.MemoryRenderer-class.html#render,Method envi.memcanvas.renderers.ByteRend.render()=envi.memcanvas.renderers.ByteRend-class.html#render"><a title="envi.Opcode.render
+envi.Operand.render
+envi.archs.amd64.disasm.Amd64RipRelOper.render
+envi.archs.arm.armdisasm.ArmImmOffsetOper.render
+envi.archs.arm.armdisasm.ArmImmOper.render
+envi.archs.arm.armdisasm.ArmOffsetOper.render
+envi.archs.arm.armdisasm.ArmOpcode.render
+envi.archs.arm.armdisasm.ArmRegListOper.render
+envi.archs.arm.armdisasm.ArmRegOffsetOper.render
+envi.archs.arm.armdisasm.ArmRegOper.render
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.render
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.render
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.render
+envi.archs.i386.disasm.i386ImmMemOper.render
+envi.archs.i386.disasm.i386ImmOper.render
+envi.archs.i386.disasm.i386Opcode.render
+envi.archs.i386.disasm.i386PcRelOper.render
+envi.archs.i386.disasm.i386RegMemOper.render
+envi.archs.i386.disasm.i386RegOper.render
+envi.archs.i386.disasm.i386SibOper.render
+envi.memcanvas.MemoryCanvas.render
+envi.memcanvas.MemoryRenderer.render
+envi.memcanvas.renderers.ByteRend.render" class="py-name" href="#" onclick="return doclink('link-35', 'render', 'link-35');">render</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">startva</tt><tt class="py-op">)</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line">                <tt class="py-name">newrendvas</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">startva</tt><tt class="py-op">,</tt><tt class="py-name">rsize</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._endRenderVa()=envi.memcanvas.MemoryCanvas-class.html#_endRenderVa,Method envi.qt.memcanvas.VQMemoryCanvas._endRenderVa()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_endRenderVa"><a title="envi.memcanvas.MemoryCanvas._endRenderVa
+envi.qt.memcanvas.VQMemoryCanvas._endRenderVa" class="py-name" href="#" onclick="return doclink('link-36', '_endRenderVa', 'link-36');">_endRenderVa</a></tt><tt class="py-op">(</tt><tt class="py-name">startva</tt><tt class="py-op">)</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line">                <tt class="py-name">startva</tt> <tt class="py-op">+=</tt> <tt class="py-name">rsize</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">traceback</tt><tt class="py-op">.</tt><tt class="py-name">format_exc</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-37', 'addText', 'link-12');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"\nException At %s: %s\n"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-38" class="py-name" targets="Function envi.bits.hex()=envi.bits-module.html#hex"><a title="envi.bits.hex" class="py-name" href="#" onclick="return doclink('link-38', 'hex', 'link-38');">hex</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-name">s</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line"> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt> <tt class="py-op">=</tt> <tt class="py-name">saved_first</tt> <tt class="py-op">+</tt> <tt class="py-name">newrendvas</tt> <tt class="py-op">+</tt> <tt class="py-name">saved_last</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._endUpdateVas()=envi.memcanvas.MemoryCanvas-class.html#_endUpdateVas,Method envi.qt.memcanvas.VQMemoryCanvas._endUpdateVas()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_endUpdateVas"><a title="envi.memcanvas.MemoryCanvas._endUpdateVas
+envi.qt.memcanvas.VQMemoryCanvas._endUpdateVas" class="py-name" href="#" onclick="return doclink('link-39', '_endUpdateVas', 'link-39');">_endUpdateVas</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.renderMemoryPrepend"></a><div id="MemoryCanvas.renderMemoryPrepend-def"><a name="L253"></a><tt class="py-lineno">253</tt> <a class="py-toggle" href="#" id="MemoryCanvas.renderMemoryPrepend-toggle" onclick="return toggle('MemoryCanvas.renderMemoryPrepend');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#renderMemoryPrepend">renderMemoryPrepend</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.renderMemoryPrepend-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.renderMemoryPrepend-expanded"><a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">        <tt class="py-name">firstva</tt><tt class="py-op">,</tt> <tt class="py-name">firstsize</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line"> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">        <tt class="py-name">va</tt> <tt class="py-op">=</tt> <tt class="py-name">firstva</tt> <tt class="py-op">-</tt> <tt class="py-name">size</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line"> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._beginRenderPrepend()=envi.memcanvas.MemoryCanvas-class.html#_beginRenderPrepend,Method envi.qt.memcanvas.VQMemoryCanvas._beginRenderPrepend()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_beginRenderPrepend"><a title="envi.memcanvas.MemoryCanvas._beginRenderPrepend
+envi.qt.memcanvas.VQMemoryCanvas._beginRenderPrepend" class="py-name" href="#" onclick="return doclink('link-40', '_beginRenderPrepend', 'link-40');">_beginRenderPrepend</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line"> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">        <tt class="py-name">savedrendvas</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_beginva</tt> <tt class="py-op">=</tt> <tt class="py-name">va</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line"> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">        <tt class="py-name">rend</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">currend</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line"> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line"> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">            <tt class="py-keyword">while</tt> <tt class="py-name">va</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">firstva</tt><tt class="py-op">:</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="envi.memcanvas.MemoryCanvas._beginRenderVa
+envi.qt.memcanvas.VQMemoryCanvas._beginRenderVa" class="py-name" href="#" onclick="return doclink('link-41', '_beginRenderVa', 'link-34');">_beginRenderVa</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line">                <tt class="py-name">rsize</tt> <tt class="py-op">=</tt> <tt class="py-name">rend</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="envi.Opcode.render
+envi.Operand.render
+envi.archs.amd64.disasm.Amd64RipRelOper.render
+envi.archs.arm.armdisasm.ArmImmOffsetOper.render
+envi.archs.arm.armdisasm.ArmImmOper.render
+envi.archs.arm.armdisasm.ArmOffsetOper.render
+envi.archs.arm.armdisasm.ArmOpcode.render
+envi.archs.arm.armdisasm.ArmRegListOper.render
+envi.archs.arm.armdisasm.ArmRegOffsetOper.render
+envi.archs.arm.armdisasm.ArmRegOper.render
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.render
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.render
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.render
+envi.archs.i386.disasm.i386ImmMemOper.render
+envi.archs.i386.disasm.i386ImmOper.render
+envi.archs.i386.disasm.i386Opcode.render
+envi.archs.i386.disasm.i386PcRelOper.render
+envi.archs.i386.disasm.i386RegMemOper.render
+envi.archs.i386.disasm.i386RegOper.render
+envi.archs.i386.disasm.i386SibOper.render
+envi.memcanvas.MemoryCanvas.render
+envi.memcanvas.MemoryRenderer.render
+envi.memcanvas.renderers.ByteRend.render" class="py-name" href="#" onclick="return doclink('link-42', 'render', 'link-35');">render</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt><tt class="py-name">rsize</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="envi.memcanvas.MemoryCanvas._endRenderVa
+envi.qt.memcanvas.VQMemoryCanvas._endRenderVa" class="py-name" href="#" onclick="return doclink('link-43', '_endRenderVa', 'link-36');">_endRenderVa</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">                <tt class="py-name">va</tt> <tt class="py-op">+=</tt> <tt class="py-name">rsize</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line"> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">.</tt><tt class="py-name">extend</tt><tt class="py-op">(</tt><tt class="py-name">savedrendvas</tt><tt class="py-op">)</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line"> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">traceback</tt><tt class="py-op">.</tt><tt class="py-name">format_exc</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-44', 'addText', 'link-12');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"\nException At %s: %s\n"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-45" class="py-name"><a title="envi.bits.hex" class="py-name" href="#" onclick="return doclink('link-45', 'hex', 'link-38');">hex</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-name">s</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line"> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._endRenderPrepend()=envi.memcanvas.MemoryCanvas-class.html#_endRenderPrepend,Method envi.qt.memcanvas.VQMemoryCanvas._endRenderPrepend()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_endRenderPrepend"><a title="envi.memcanvas.MemoryCanvas._endRenderPrepend
+envi.qt.memcanvas.VQMemoryCanvas._endRenderPrepend" class="py-name" href="#" onclick="return doclink('link-46', '_endRenderPrepend', 'link-46');">_endRenderPrepend</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.renderMemoryAppend"></a><div id="MemoryCanvas.renderMemoryAppend-def"><a name="L283"></a><tt class="py-lineno">283</tt> <a class="py-toggle" href="#" id="MemoryCanvas.renderMemoryAppend-toggle" onclick="return toggle('MemoryCanvas.renderMemoryAppend');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#renderMemoryAppend">renderMemoryAppend</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.renderMemoryAppend-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.renderMemoryAppend-expanded"><a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">        <tt class="py-name">lastva</tt><tt class="py-op">,</tt> <tt class="py-name">lastsize</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">[</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line"> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line">        <tt class="py-name">va</tt> <tt class="py-op">=</tt> <tt class="py-name">lastva</tt> <tt class="py-op">+</tt> <tt class="py-name">lastsize</tt> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line"> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._beginRenderAppend()=envi.memcanvas.MemoryCanvas-class.html#_beginRenderAppend,Method envi.qt.memcanvas.VQMemoryCanvas._beginRenderAppend()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_beginRenderAppend"><a title="envi.memcanvas.MemoryCanvas._beginRenderAppend
+envi.qt.memcanvas.VQMemoryCanvas._beginRenderAppend" class="py-name" href="#" onclick="return doclink('link-47', '_beginRenderAppend', 'link-47');">_beginRenderAppend</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line"> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line">        <tt class="py-name">rend</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">currend</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line">            <tt class="py-name">maxva</tt> <tt class="py-op">=</tt> <tt class="py-name">va</tt> <tt class="py-op">+</tt> <tt class="py-name">size</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line">            <tt class="py-keyword">while</tt> <tt class="py-name">va</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">maxva</tt><tt class="py-op">:</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="envi.memcanvas.MemoryCanvas._beginRenderVa
+envi.qt.memcanvas.VQMemoryCanvas._beginRenderVa" class="py-name" href="#" onclick="return doclink('link-48', '_beginRenderVa', 'link-34');">_beginRenderVa</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">                <tt class="py-name">rsize</tt> <tt class="py-op">=</tt> <tt class="py-name">rend</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name"><a title="envi.Opcode.render
+envi.Operand.render
+envi.archs.amd64.disasm.Amd64RipRelOper.render
+envi.archs.arm.armdisasm.ArmImmOffsetOper.render
+envi.archs.arm.armdisasm.ArmImmOper.render
+envi.archs.arm.armdisasm.ArmOffsetOper.render
+envi.archs.arm.armdisasm.ArmOpcode.render
+envi.archs.arm.armdisasm.ArmRegListOper.render
+envi.archs.arm.armdisasm.ArmRegOffsetOper.render
+envi.archs.arm.armdisasm.ArmRegOper.render
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.render
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.render
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.render
+envi.archs.i386.disasm.i386ImmMemOper.render
+envi.archs.i386.disasm.i386ImmOper.render
+envi.archs.i386.disasm.i386Opcode.render
+envi.archs.i386.disasm.i386PcRelOper.render
+envi.archs.i386.disasm.i386RegMemOper.render
+envi.archs.i386.disasm.i386RegOper.render
+envi.archs.i386.disasm.i386SibOper.render
+envi.memcanvas.MemoryCanvas.render
+envi.memcanvas.MemoryRenderer.render
+envi.memcanvas.renderers.ByteRend.render" class="py-name" href="#" onclick="return doclink('link-49', 'render', 'link-35');">render</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt><tt class="py-name">rsize</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="envi.memcanvas.MemoryCanvas._endRenderVa
+envi.qt.memcanvas.VQMemoryCanvas._endRenderVa" class="py-name" href="#" onclick="return doclink('link-50', '_endRenderVa', 'link-36');">_endRenderVa</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line">                <tt class="py-name">va</tt> <tt class="py-op">+=</tt> <tt class="py-name">rsize</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line"> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_endva</tt> <tt class="py-op">=</tt> <tt class="py-name">maxva</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">            <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">traceback</tt><tt class="py-op">.</tt><tt class="py-name">format_exc</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-51" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-51', 'addText', 'link-12');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"\nException At %s: %s\n"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-52" class="py-name"><a title="envi.bits.hex" class="py-name" href="#" onclick="return doclink('link-52', 'hex', 'link-38');">hex</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-name">s</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line"> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._endRenderAppend()=envi.memcanvas.MemoryCanvas-class.html#_endRenderAppend,Method envi.qt.memcanvas.VQMemoryCanvas._endRenderAppend()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_endRenderAppend"><a title="envi.memcanvas.MemoryCanvas._endRenderAppend
+envi.qt.memcanvas.VQMemoryCanvas._endRenderAppend" class="py-name" href="#" onclick="return doclink('link-53', '_endRenderAppend', 'link-53');">_endRenderAppend</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line"> </tt>
+<a name="MemoryCanvas.renderMemory"></a><div id="MemoryCanvas.renderMemory-def"><a name="L308"></a><tt class="py-lineno">308</tt> <a class="py-toggle" href="#" id="MemoryCanvas.renderMemory-toggle" onclick="return toggle('MemoryCanvas.renderMemory');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.MemoryCanvas-class.html#renderMemory">renderMemory</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">va</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">,</tt> <tt class="py-param">rend</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryCanvas.renderMemory-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryCanvas.renderMemory-expanded"><a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line"> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">            <tt class="py-comment"># if this is not a "scrolled" canvas, clear it.</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_scrolled</tt><tt class="py-op">:</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.clearCanvas()=envi.memcanvas.MemoryCanvas-class.html#clearCanvas,Method envi.qt.memcanvas.VQMemoryCanvas.clearCanvas()=envi.qt.memcanvas.VQMemoryCanvas-class.html#clearCanvas"><a title="envi.memcanvas.MemoryCanvas.clearCanvas
+envi.qt.memcanvas.VQMemoryCanvas.clearCanvas" class="py-name" href="#" onclick="return doclink('link-54', 'clearCanvas', 'link-54');">clearCanvas</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line"> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">rend</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line">                <tt class="py-name">rend</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">currend</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line"> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">currend</tt> <tt class="py-op">=</tt> <tt class="py-name">rend</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line"> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line">            <tt class="py-comment"># Set our canvas render tracking variables.</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_beginva</tt> <tt class="py-op">=</tt> <tt class="py-name">va</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_endva</tt> <tt class="py-op">=</tt> <tt class="py-name">va</tt> <tt class="py-op">+</tt> <tt class="py-name">size</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line"> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line">            <tt class="py-comment"># A callback for "bulk" rendering (let the canvas cache...)</tt> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._beginRenderMemory()=envi.memcanvas.MemoryCanvas-class.html#_beginRenderMemory,Method envi.qt.memcanvas.VQMemoryCanvas._beginRenderMemory()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_beginRenderMemory"><a title="envi.memcanvas.MemoryCanvas._beginRenderMemory
+envi.qt.memcanvas.VQMemoryCanvas._beginRenderMemory" class="py-name" href="#" onclick="return doclink('link-55', '_beginRenderMemory', 'link-55');">_beginRenderMemory</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-name">size</tt><tt class="py-op">,</tt> <tt class="py-name">rend</tt><tt class="py-op">)</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line">                <tt class="py-name">maxva</tt> <tt class="py-op">=</tt> <tt class="py-name">va</tt> <tt class="py-op">+</tt> <tt class="py-name">size</tt> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line">                <tt class="py-keyword">while</tt> <tt class="py-name">va</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">maxva</tt><tt class="py-op">:</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="envi.memcanvas.MemoryCanvas._beginRenderVa
+envi.qt.memcanvas.VQMemoryCanvas._beginRenderVa" class="py-name" href="#" onclick="return doclink('link-56', '_beginRenderVa', 'link-34');">_beginRenderVa</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line">                    <tt class="py-name">rsize</tt> <tt class="py-op">=</tt> <tt class="py-name">rend</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="envi.Opcode.render
+envi.Operand.render
+envi.archs.amd64.disasm.Amd64RipRelOper.render
+envi.archs.arm.armdisasm.ArmImmOffsetOper.render
+envi.archs.arm.armdisasm.ArmImmOper.render
+envi.archs.arm.armdisasm.ArmOffsetOper.render
+envi.archs.arm.armdisasm.ArmOpcode.render
+envi.archs.arm.armdisasm.ArmRegListOper.render
+envi.archs.arm.armdisasm.ArmRegOffsetOper.render
+envi.archs.arm.armdisasm.ArmRegOper.render
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.render
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.render
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.render
+envi.archs.i386.disasm.i386ImmMemOper.render
+envi.archs.i386.disasm.i386ImmOper.render
+envi.archs.i386.disasm.i386Opcode.render
+envi.archs.i386.disasm.i386PcRelOper.render
+envi.archs.i386.disasm.i386RegMemOper.render
+envi.archs.i386.disasm.i386RegOper.render
+envi.archs.i386.disasm.i386SibOper.render
+envi.memcanvas.MemoryCanvas.render
+envi.memcanvas.MemoryRenderer.render
+envi.memcanvas.renderers.ByteRend.render" class="py-name" href="#" onclick="return doclink('link-57', 'render', 'link-35');">render</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_canv_rendvas</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt><tt class="py-name">rsize</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line">                    <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="envi.memcanvas.MemoryCanvas._endRenderVa
+envi.qt.memcanvas.VQMemoryCanvas._endRenderVa" class="py-name" href="#" onclick="return doclink('link-58', '_endRenderVa', 'link-36');">_endRenderVa</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line">                    <tt class="py-name">va</tt> <tt class="py-op">+=</tt> <tt class="py-name">rsize</tt> </tt>
+<a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line"> </tt>
+<a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line">                <tt class="py-name">s</tt> <tt class="py-op">=</tt> <tt class="py-name">traceback</tt><tt class="py-op">.</tt><tt class="py-name">format_exc</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-59" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-59', 'addText', 'link-12');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"\nException At %s: %s\n"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-60" class="py-name"><a title="envi.bits.hex" class="py-name" href="#" onclick="return doclink('link-60', 'hex', 'link-38');">hex</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-name">s</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line"> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">            <tt class="py-comment"># Canvas callback for render completion (or error...)</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-61" class="py-name" targets="Method envi.memcanvas.MemoryCanvas._endRenderMemory()=envi.memcanvas.MemoryCanvas-class.html#_endRenderMemory,Method envi.qt.memcanvas.VQMemoryCanvas._endRenderMemory()=envi.qt.memcanvas.VQMemoryCanvas-class.html#_endRenderMemory"><a title="envi.memcanvas.MemoryCanvas._endRenderMemory
+envi.qt.memcanvas.VQMemoryCanvas._endRenderMemory" class="py-name" href="#" onclick="return doclink('link-61', '_endRenderMemory', 'link-61');">_endRenderMemory</a></tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">,</tt> <tt class="py-name">size</tt><tt class="py-op">,</tt> <tt class="py-name">rend</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line"> </tt>
+<a name="StringMemoryCanvas"></a><div id="StringMemoryCanvas-def"><a name="L342"></a><tt class="py-lineno">342</tt> <a class="py-toggle" href="#" id="StringMemoryCanvas-toggle" onclick="return toggle('StringMemoryCanvas');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.memcanvas.StringMemoryCanvas-class.html">StringMemoryCanvas</a><tt class="py-op">(</tt><tt class="py-base-class">MemoryCanvas</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StringMemoryCanvas-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="StringMemoryCanvas-expanded"><a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line"> </tt>
+<a name="StringMemoryCanvas.__init__"></a><div id="StringMemoryCanvas.__init__-def"><a name="L344"></a><tt class="py-lineno">344</tt> <a class="py-toggle" href="#" id="StringMemoryCanvas.__init__-toggle" onclick="return toggle('StringMemoryCanvas.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.StringMemoryCanvas-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mem</tt><tt class="py-op">,</tt> <tt class="py-param">syms</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StringMemoryCanvas.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="StringMemoryCanvas.__init__-expanded"><a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line">        <tt id="link-62" class="py-name" targets="Class envi.memcanvas.MemoryCanvas=envi.memcanvas.MemoryCanvas-class.html"><a title="envi.memcanvas.MemoryCanvas" class="py-name" href="#" onclick="return doclink('link-62', 'MemoryCanvas', 'link-62');">MemoryCanvas</a></tt><tt class="py-op">.</tt><tt id="link-63" class="py-name" targets="Method envi.ArchitectureModule.__init__()=envi.ArchitectureModule-class.html#__init__,Method envi.EmuException.__init__()=envi.EmuException-class.html#__init__,Method envi.Emulator.__init__()=envi.Emulator-class.html#__init__,Method envi.InvalidInstruction.__init__()=envi.InvalidInstruction-class.html#__init__,Method envi.MapOverlapException.__init__()=envi.MapOverlapException-class.html#__init__,Method envi.Opcode.__init__()=envi.Opcode-class.html#__init__,Method envi.SegmentationViolation.__init__()=envi.SegmentationViolation-class.html#__init__,Method envi.UnsupportedInstruction.__init__()=envi.UnsupportedInstruction-class.html#__init__,Method envi.archs.amd64.Amd64Emulator.__init__()=envi.archs.amd64.Amd64Emulator-class.html#__init__,Method envi.archs.amd64.Amd64Module.__init__()=envi.archs.amd64.Amd64Module-class.html#__init__,Method envi.archs.amd64.disasm.Amd64Disasm.__init__()=envi.archs.amd64.disasm.Amd64Disasm-class.html#__init__,Method envi.archs.amd64.disasm.Amd64RipRelOper.__init__()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#__init__,Method envi.archs.amd64.regs.Amd64RegisterContext.__init__()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#__init__,Method envi.archs.arm.ArmModule.__init__()=envi.archs.arm.ArmModule-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOper.__init__()=envi.archs.arm.armdisasm.ArmImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegListOper.__init__()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#__init__,Method envi.archs.arm.disasm.ArmDisasm.__init__()=envi.archs.arm.disasm.ArmDisasm-class.html#__init__,Method envi.archs.arm.emu.ArmEmulator.__init__()=envi.archs.arm.emu.ArmEmulator-class.html#__init__,Method envi.archs.arm.emu.CoProcEmulator.__init__()=envi.archs.arm.emu.CoProcEmulator-class.html#__init__,Method envi.archs.arm.regs.ArmRegisterContext.__init__()=envi.archs.arm.regs.ArmRegisterContext-class.html#__init__,Method envi.archs.arm.thumb.simpleops.__init__()=envi.archs.arm.thumb.simpleops-class.html#__init__,Method envi.archs.arm.thumbdisasm.simpleops.__init__()=envi.archs.arm.thumbdisasm.simpleops-class.html#__init__,Method envi.archs.i386.disasm.i386Disasm.__init__()=envi.archs.i386.disasm.i386Disasm-class.html#__init__,Method envi.archs.i386.disasm.i386ImmMemOper.__init__()=envi.archs.i386.disasm.i386ImmMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386ImmOper.__init__()=envi.archs.i386.disasm.i386ImmOper-class.html#__init__,Method envi.archs.i386.disasm.i386PcRelOper.__init__()=envi.archs.i386.disasm.i386PcRelOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegMemOper.__init__()=envi.archs.i386.disasm.i386RegMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegOper.__init__()=envi.archs.i386.disasm.i386RegOper-class.html#__init__,Method envi.archs.i386.disasm.i386SibOper.__init__()=envi.archs.i386.disasm.i386SibOper-class.html#__init__,Method envi.archs.i386.emu.BFastCall.__init__()=envi.archs.i386.emu.BFastCall-class.html#__init__,Method envi.archs.i386.emu.FastCall.__init__()=envi.archs.i386.emu.FastCall-class.html#__init__,Method envi.archs.i386.emu.IntelEmulator.__init__()=envi.archs.i386.emu.IntelEmulator-class.html#__init__,Method envi.archs.i386.emu.MsFastCall.__init__()=envi.archs.i386.emu.MsFastCall-class.html#__init__,Method envi.archs.i386.i386Module.__init__()=envi.archs.i386.i386Module-class.html#__init__,Method envi.archs.i386.regs.i386RegisterContext.__init__()=envi.archs.i386.regs.i386RegisterContext-class.html#__init__,Method envi.archs.z80.disasm.z80Disasm.__init__()=envi.archs.z80.disasm.z80Disasm-class.html#__init__,Method envi.archs.z80.disasm.z80ImmOper.__init__()=envi.archs.z80.disasm.z80ImmOper-class.html#__init__,Method envi.archs.z80.disasm.z80RegMem.__init__()=envi.archs.z80.disasm.z80RegMem-class.html#__init__,Method envi.archs.z80.disasm.z80RegOper.__init__()=envi.archs.z80.disasm.z80RegOper-class.html#__init__,Method envi.archs.z80.regs.z80RegisterContext.__init__()=envi.archs.z80.regs.z80RegisterContext-class.html#__init__,Method envi.arm.ArmModule.__init__()=envi.arm.ArmModule-class.html#__init__,Method envi.arm.ArmOpcode.__init__()=envi.arm.ArmOpcode-class.html#__init__,Method envi.arm.ArmOperand.__init__()=envi.arm.ArmOperand-class.html#__init__,Method envi.bintree.BinaryTree.__init__()=envi.bintree.BinaryTree-class.html#__init__,Method envi.bytesig.SignatureTree.__init__()=envi.bytesig.SignatureTree-class.html#__init__,Method envi.cli.CliExtMeth.__init__()=envi.cli.CliExtMeth-class.html#__init__,Method envi.cli.EnviCli.__init__()=envi.cli.EnviCli-class.html#__init__,Method envi.codeflow.CodeFlowContext.__init__()=envi.codeflow.CodeFlowContext-class.html#__init__,Method envi.config.EnviConfig.__init__()=envi.config.EnviConfig-class.html#__init__,Method envi.expression.ExpressionLocals.__init__()=envi.expression.ExpressionLocals-class.html#__init__,Method envi.expression.MemoryExpressionLocals.__init__()=envi.expression.MemoryExpressionLocals-class.html#__init__,Method envi.memcanvas.MemoryCanvas.__init__()=envi.memcanvas.MemoryCanvas-class.html#__init__,Method envi.memcanvas.StringMemoryCanvas.__init__()=envi.memcanvas.StringMemoryCanvas-class.html#__init__,Method envi.memcanvas.renderers.ByteRend.__init__()=envi.memcanvas.renderers.ByteRend-class.html#__init__,Method envi.memory.IMemory.__init__()=envi.memory.IMemory-class.html#__init__,Method envi.memory.MemoryFile.__init__()=envi.memory.MemoryFile-class.html#__init__,Method envi.memory.MemoryObject.__init__()=envi.memory.MemoryObject-class.html#__init__,Method envi.pagelookup.MapLookup.__init__()=envi.pagelookup.MapLookup-class.html#__init__,Method envi.pagelookup.PageLookup.__init__()=envi.pagelookup.PageLookup-class.html#__init__,Method envi.qt.VQMemoryMapView.__init__()=envi.qt.VQMemoryMapView-class.html#__init__,Method envi.qt.memcanvas.VQMemoryCanvas.__init__()=envi.qt.memcanvas.VQMemoryCanvas-class.html#__init__,Method envi.qt.memory.VQMemoryWindow.__init__()=envi.qt.memory.VQMemoryWindow-class.html#__init__,Method envi.registers.RegisterContext.__init__()=envi.registers.RegisterContext-class.html#__init__,Method envi.resolver.FileSymbol.__init__()=envi.resolver.FileSymbol-class.html#__init__,Method envi.resolver.Symbol.__init__()=envi.resolver.Symbol-class.html#__init__,Method envi.resolver.SymbolResolver.__init__()=envi.resolver.SymbolResolver-class.html#__init__,Method envi.util.CopyOnWrite.__init__()=envi.util.CopyOnWrite-class.html#__init__"><a title="envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__" class="py-name" href="#" onclick="return doclink('link-63', '__init__', 'link-63');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt id="link-64" class="py-name"><a title="envi.expression.MemoryExpressionLocals.mem" class="py-name" href="#" onclick="return doclink('link-64', 'mem', 'link-15');">mem</a></tt><tt class="py-op">,</tt> <tt class="py-name">syms</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">strval</tt> <tt class="py-op">=</tt> <tt class="py-string">""</tt> </tt>
+</div><a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line"> </tt>
+<a name="StringMemoryCanvas.addText"></a><div id="StringMemoryCanvas.addText-def"><a name="L348"></a><tt class="py-lineno">348</tt> <a class="py-toggle" href="#" id="StringMemoryCanvas.addText-toggle" onclick="return toggle('StringMemoryCanvas.addText');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.StringMemoryCanvas-class.html#addText">addText</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">text</tt><tt class="py-op">,</tt> <tt class="py-param">tag</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StringMemoryCanvas.addText-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="StringMemoryCanvas.addText-expanded"><a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">strval</tt> <tt class="py-op">+=</tt> <tt class="py-name">text</tt> </tt>
+</div><a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line"> </tt>
+<a name="StringMemoryCanvas.__str__"></a><div id="StringMemoryCanvas.__str__-def"><a name="L351"></a><tt class="py-lineno">351</tt> <a class="py-toggle" href="#" id="StringMemoryCanvas.__str__-toggle" onclick="return toggle('StringMemoryCanvas.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.memcanvas.StringMemoryCanvas-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="StringMemoryCanvas.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="StringMemoryCanvas.__str__-expanded"><a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">strval</tt> </tt>
+</div></div><a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="envi-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:43:35 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

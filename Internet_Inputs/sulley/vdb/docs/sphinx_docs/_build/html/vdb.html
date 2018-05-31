@@ -1,0 +1,797 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>VDB Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="vdb-package">
+<h1>VDB Package<a class="headerlink" href="#vdb-package" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The documentation for VDB hasn&#8217;t been touched yet! If you want to contribute (or have ideas for better documentation), feel free to <a class="reference external" href="https://github.com/Fitblip/vdb-fork">send me a pull request</a> or <a class="reference external" href="https://github.com/Fitblip">email me</a>.</p>
+</div>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">VDB</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vdb"></span><dl class="class">
+<dt id="vdb.ScriptThread">
+<em class="property">class </em><tt class="descclassname">vdb.</tt><tt class="descname">ScriptThread</tt><big>(</big><em>cobj</em>, <em>locals</em><big>)</big><a class="reference internal" href="_modules/vdb.html#ScriptThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.ScriptThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">threading.Thread</span></tt></p>
+<dl class="method">
+<dt id="vdb.ScriptThread.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb.html#ScriptThread.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.ScriptThread.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.Vdb">
+<em class="property">class </em><tt class="descclassname">vdb.</tt><tt class="descname">Vdb</tt><big>(</big><em>trace=None</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="envi.html#envi.cli.EnviMutableCli" title="envi.cli.EnviMutableCli"><tt class="xref py py-class docutils literal"><span class="pre">envi.cli.EnviMutableCli</span></tt></a>, <a class="reference internal" href="vtrace.html#vtrace.notifiers.Notifier" title="vtrace.notifiers.Notifier"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.notifiers.Notifier</span></tt></a>, <a class="reference internal" href="vtrace.html#vtrace.util.TraceManager" title="vtrace.util.TraceManager"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.util.TraceManager</span></tt></a></p>
+<p>A VDB object is a debugger object which may be used to embed full
+debugger like functionality into a python application.  The
+Vdb object contains a CLI impelementation which extends envi.cli&gt;</p>
+<dl class="method">
+<dt id="vdb.Vdb.FIXME_do_remote">
+<tt class="descname">FIXME_do_remote</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.FIXME_do_remote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.FIXME_do_remote" title="Permalink to this definition">¶</a></dt>
+<dd><p>Act as a remote debugging client to the server running on
+the specified host/ip.</p>
+<p>Usage: remote &lt;host&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_EOF">
+<tt class="descname">do_EOF</tt><big>(</big><em>string</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_EOF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_EOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_alloc">
+<tt class="descname">do_alloc</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_alloc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_alloc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocate a chunk of memory in the target process.  It will be
+allocated with rwx permissions.</p>
+<p>Usage: alloc &lt;size expr&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_attach">
+<tt class="descname">do_attach</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_attach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_attach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attach to a process by PID or by process name.  In
+the event of more than one process by a given name,
+attach to the last (most recently created) one in
+the list.</p>
+<p>Usage: attach [&lt;pid&gt;,&lt;name&gt;]</p>
+<p>NOTE: This is <em>not</em> a regular expression.  The given
+string must be found as a substring of the process
+name...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_autocont">
+<tt class="descname">do_autocont</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_autocont"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_autocont" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manipulate the auto-continue behavior for the trace.  This
+will cause particular event types to automagically continue
+execution.</p>
+<p>Usage: autocont [event name]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_bestname">
+<tt class="descname">do_bestname</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_bestname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_bestname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the &#8220;best name&#8221; string for an address.</p>
+<p>Usage: bestname &lt;vtrace expression&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_bp">
+<tt class="descname">do_bp</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_bp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_bp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show, add,  and enable/disable breakpoints
+USAGE: bp [-d &lt;addr&gt;] [-a &lt;addr&gt;] [-o &lt;addr&gt;] [[-c pycode] &lt;address&gt; [vdb cmds]]
+-C - Clear All Breakpoints
+-c &#8220;py code&#8221; - Set the breakpoint code to the given python string
+-d &lt;id&gt; - Disable Breakpoint
+-e &lt;id&gt; - Enable Breakpoint
+-r &lt;id&gt; - Remove Breakpoint
+-o &lt;addr&gt; - Create a OneTimeBreak
+-L &lt;libname&gt; - Add bp&#8217;s to all functions in &lt;libname&gt;
+-F &lt;filename&gt; - Load bpcode from file
+-W perms:size - Set a hardware Watchpoint with perms/size (ie -W rw:4)
+-f - Make added breakpoints from this command into &#8220;fastbreaks&#8221;
+-S &lt;libname&gt;:&lt;regex&gt; - Add bp&#8217;s to all matching funcs in &lt;libname&gt;</p>
+<p>&lt;address&gt;... - Create Breakpoint</p>
+<dl class="docutils">
+<dt>[vdb cmds].. - (optional) vdb cli comand to run on BP hit (seperate</dt>
+<dd>multiple commands with ;; )</dd>
+<dt>NOTE: -c adds python code to the breakpoint.  The python code will</dt>
+<dd><p class="first">be run with the following objects mapped into it&#8217;s namespace
+automagically:</p>
+<blockquote class="last">
+<div>vtrace  - the vtrace package
+trace   - the tracer
+bp      - the breakpoint object</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_bpedit">
+<tt class="descname">do_bpedit</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_bpedit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_bpedit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Manipulcate the python code that will be run for a given
+breakpoint by ID.  (Also the way to view the code).</p>
+<p>Usage: bpedit &lt;id&gt; [&#8220;optionally new code&#8221;]</p>
+<p>NOTE: Your code must be surrounded by &#8220;s and may not
+contain any &#8220;s</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_bpfile">
+<tt class="descname">do_bpfile</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_bpfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_bpfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the python code for a breakpoint from the contents
+of a file.</p>
+<p>Usage: bpfile &lt;bpid&gt; &lt;filename&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_break">
+<tt class="descname">do_break</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_break"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_break" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send the break signal to the target tracer to stop
+it&#8217;s execution.</p>
+<p>Usage: break</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_bt">
+<tt class="descname">do_bt</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_bt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_bt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show a stack backtrace for the currently selected thread.</p>
+<p>Usage: bt</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_call">
+<tt class="descname">do_call</tt><big>(</big><em>string</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows a C-like syntax for calling functions inside
+the target process (from his context).
+Example: call printf(&#8220;yermom %d&#8221;, 10)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_detach">
+<tt class="descname">do_detach</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_detach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_detach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detach from the current tracer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_dis">
+<tt class="descname">do_dis</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_dis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_dis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print out the opcodes for a given address expression</p>
+<p>Usage: dis &lt;address expression&gt; [&lt;size expression&gt;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_dope">
+<tt class="descname">do_dope</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_dope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_dope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cli interface to the &#8220;stack doping&#8221; api inside recon.  <em>BETA</em></p>
+<p>(Basically, set all un-initialized stack memory to V&#8217;s to tease
+out uninitialized stack bugs)</p>
+<p>Usage: dope [ options ]
+-E  Enable automagic thread stack doping on all continue events
+-D  Disable automagic thread stack doping on all continue events
+-A  Dope all current thread stacks</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_exec">
+<tt class="descname">do_exec</tt><big>(</big><em>cmd</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_exec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_exec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a program with the given command line and
+attach to it.
+Usage: exec &lt;/some/where and some args&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_fds">
+<tt class="descname">do_fds</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_fds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_fds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show all the open Handles/FileDescriptors for the target process.
+The &#8220;typecode&#8221; shown in []&#8217;s is the vtrace typecode for that kind of
+fd/handle.</p>
+<p>Usage: fds</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_go">
+<tt class="descname">do_go</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_go" title="Permalink to this definition">¶</a></dt>
+<dd><p>Continue the target tracer.
+-I go icount linear instructions forward (step over style)
+-U go <em>out</em> of fcount frames (step out style)
+&lt;until addr&gt; go until explicit address</p>
+<p>Usage: go [-U &lt;fcount&gt; | -I &lt;icount&gt; | &lt;until addr expression&gt;]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_gui">
+<tt class="descname">do_gui</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_gui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_gui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to spawn the VDB gui.  Assuming GTK etc are all installed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_guid">
+<tt class="descname">do_guid</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_guid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_guid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse and display a Global Unique Identifier (GUID) from memory
+(eventually, use GUID db to lookup the name/meaning of the GUID).</p>
+<p>Usage: guid &lt;addr_exp&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_ignore">
+<tt class="descname">do_ignore</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_ignore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_ignore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add the specified signal id (exception id for windows) to the ignored
+signals list for the current trace.  This will make the smallest possible
+performance impact for that particular signal but will also not alert
+you that it has occured.</p>
+<p>Usage: ignore [options] [-c | &lt;sigcode&gt;...]
+-d - Remove the specified signal codes.
+-c - Include the <em>current</em> signal in the sigcode list
+-C - Clear the list of ignored signals</p>
+<dl class="docutils">
+<dt>Example: ignore -c # Ignore the currently posted signal</dt>
+<dd>ignore -d 0x80000001 # Remove 0x80000001 from the ignores</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_lm">
+<tt class="descname">do_lm</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_lm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_lm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the loaded libraries and their base addresses.</p>
+<p>Usage: lm [libname]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_memdiff">
+<tt class="descname">do_memdiff</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_memdiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_memdiff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save and compare snapshots of memory to enumerate changes.</p>
+<p>Usage: memdiff [options]
+-C             Clear all current memory diff snapshots.
+-A &lt;va:size&gt;   Add the given virtual address to the list.
+-M &lt;va&gt;        Add the entire memory map which contains VA to the list.
+-D             Compare currently tracked memory with the target process</p>
+<blockquote>
+<div>and show any differences.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_memload">
+<tt class="descname">do_memload</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_memload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_memload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a file into memory. (straight mapping, no parsing)</p>
+<p>Usage: memload &lt;filename&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_meta">
+<tt class="descname">do_meta</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the metadata for the current trace.</p>
+<p>Usage: meta</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_mode">
+<tt class="descname">do_mode</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set modes in the tracers...
+mode Foo=True/False</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_ps">
+<tt class="descname">do_ps</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_ps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_ps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the current process list.</p>
+<p>Usage: ps</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_quit">
+<tt class="descname">do_quit</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_quit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_quit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quit VDB</p>
+<p>use &#8220;quit force&#8221; to hard-force a quit regardless of everything.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_recon">
+<tt class="descname">do_recon</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_recon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_recon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cli front end to the vdb recon subsystem which allows runtime
+analysis of known API calls.</p>
+<p>Usage: recon [options]
+-A &lt;sym_expr&gt;:&lt;recon_fmt&gt; - Add a recon breakpoint with the given format
+-C - Clear the current list of recon breakpoint hits.
+-H - Print the current list of recon breakpoint hits.
+-Q - Toggle &#8220;quiet&#8221; mode which prints nothing on bp hits.
+-S &lt;sym_expr&gt;:&lt;argidx&gt; - Add a sniper break for arg index</p>
+<dl class="docutils">
+<dt>NOTE: A &#8220;recon format&#8221; is a special format sequence which tells the</dt>
+<dd>recon subsystem how to present the argument data for a given
+breakpoint hit.</dd>
+</dl>
+<p>Recon Format:
+C - A character
+I - A decimal integer
+P - A pointer (display symbol if possible)
+S - An ascii string (up to 260 chars)
+U - A unicode string (up to 260 chars)
+X - A hex number</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_reg">
+<tt class="descname">do_reg</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_reg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_reg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the current register values.  Additionally, you may specify
+name=&lt;expression&gt; to set a register</p>
+<p>Usage: reg [regname=vtrace_expression]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_restart">
+<tt class="descname">do_restart</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_restart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_restart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restart the current process.</p>
+<p>Usage: restart</p>
+<p>NOTE: This only works if the process was exec&#8217;d to begin
+with!</p>
+<p>TODO: Plumb options for persisting bp&#8217;s etc...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_resume">
+<tt class="descname">do_resume</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_resume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_resume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resume a thread.</p>
+<p>Usage: resume &lt;-A | &lt;tid&gt;[ &lt;tid&gt;...]&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_server">
+<tt class="descname">do_server</tt><big>(</big><em>port</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a vtrace server on the local box.  If the server
+is already running, show which processes are being remotely
+debugged.</p>
+<p>Usage: server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_signal">
+<tt class="descname">do_signal</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_signal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show the current pending signal/exception code.</p>
+<p>Usage: signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_snapshot">
+<tt class="descname">do_snapshot</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_snapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_snapshot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a process snapshot of the current (stopped) trace and
+save it to the specified file.</p>
+<p>Usage: snapshot &lt;filename&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_stalker">
+<tt class="descname">do_stalker</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_stalker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_stalker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cli front end to the VDB code coverage subsystem. FIXME MORE DOCS!</p>
+<p>Usage: stalker [options]
+-C                  - Cleanup stalker breaks and hit info
+-c                  - Clear the current hits (so you can make more ;)
+-E &lt;addr_expr&gt;      - Add the specified entry point for tracking
+-H                  - Show the current hits
+-L &lt;lib&gt;:&lt;regex&gt;    - Add stalker breaks to all matching library symbols
+-R                  - Reset all breakpoints to enabled and clear hit info</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_status">
+<tt class="descname">do_status</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print out the status of the debugger / trace...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_stepi">
+<tt class="descname">do_stepi</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_stepi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_stepi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single step the target tracer.
+Usage: stepi [ options ]</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-A <var>&lt;addr&gt;</var></span></kbd></td>
+<td><ul class="first last simple">
+<li>Step to &lt;addr&gt;</li>
+</ul>
+</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-B</span></kbd></td>
+<td><ul class="first last simple">
+<li>Step past the next branch instruction</li>
+</ul>
+</td></tr>
+</tbody>
+</table>
+<p>-C &lt;count&gt; - Step &lt;count&gt; instructions
+-R         - Step to return from this function
+-V         - Show operand values during single step (verbose!)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_struct">
+<tt class="descname">do_struct</tt><big>(</big><em>args</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_struct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_struct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Break out a strcuture from memory.  You may use the command
+&#8220;vstruct&#8221; to show the known structures in vstruct.</p>
+<p>Usage: struct &lt;StructName&gt; &lt;vtrace expression&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_suspend">
+<tt class="descname">do_suspend</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_suspend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_suspend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suspend a thread.</p>
+<p>Usage: suspend &lt;-A | &lt;tid&gt;[ &lt;tid&gt;...]&gt;</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_syms">
+<tt class="descname">do_syms</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_syms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_syms" title="Permalink to this definition">¶</a></dt>
+<dd><p>List symbols and by file.</p>
+<p>Usage: syms [-s &lt;pattern&gt;] [filename]</p>
+<p>With no arguments, syms will self.vprint(the possible
+libraries with symbol resolvers.  Specify a library
+to see all the symbols for it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_threads">
+<tt class="descname">do_threads</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_threads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the current threads in the target process or select
+the current thread context for the target tracer.
+Usage: threads [thread id]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_var">
+<tt class="descname">do_var</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a variable in the expression parsing context.  This allows
+for scratchspace names (python compatable names) to be used in
+expressions.</p>
+<p>Usage: var &lt;name&gt; &lt;addr_expression&gt;</p>
+<p>NOTE: The address expression <em>must</em> resolve at the time you set it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_vstruct">
+<tt class="descname">do_vstruct</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_vstruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_vstruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>List the available structure modules and optionally
+structure definitions from a particular module in the
+current vstruct.</p>
+<p>Usage: vstruct [modname]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.do_waitlib">
+<tt class="descname">do_waitlib</tt><big>(</big><em>line</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.do_waitlib"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.do_waitlib" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the target process until the specified library
+(by normalized name such as &#8216;kernel32&#8217; or &#8216;libc&#8217;)
+is loaded.  Disable waiting with -D.</p>
+<p>Usage: waitlib [ -D | &lt;libname&gt; ]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.emptyline">
+<tt class="descname">emptyline</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.emptyline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.emptyline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.getExpressionLocals">
+<tt class="descname">getExpressionLocals</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.getExpressionLocals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.getExpressionLocals" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.getSignal">
+<tt class="descname">getSignal</tt><big>(</big><em>sig</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.getSignal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.getSignal" title="Permalink to this definition">¶</a></dt>
+<dd><p>If given an int, return the name, for a name, return the int ;)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.getTrace">
+<tt class="descname">getTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.getTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.getTrace" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.loadConfig">
+<tt class="descname">loadConfig</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.loadConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.loadConfig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.loadDefaultRenderers">
+<tt class="descname">loadDefaultRenderers</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.loadDefaultRenderers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.loadDefaultRenderers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.loadExtensions">
+<tt class="descname">loadExtensions</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.loadExtensions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.loadExtensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load up any extensions which are relevant for the current tracer&#8217;s
+platform/arch/etc...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.newTrace">
+<tt class="descname">newTrace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.newTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.newTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a new trace for this vdb instance.  This fixes many of
+the new attach/exec data munging issues because tracer re-use is
+<em>very</em> sketchy...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.parseExpression">
+<tt class="descname">parseExpression</tt><big>(</big><em>exprstr</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.parseExpression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.parseExpression" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.reprPointer">
+<tt class="descname">reprPointer</tt><big>(</big><em>address</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.reprPointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.reprPointer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a string representing the best known name for
+the given address</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.script">
+<tt class="descname">script</tt><big>(</big><em>filename</em>, <em>args=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a vdb script.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.scriptstring">
+<tt class="descname">scriptstring</tt><big>(</big><em>script</em>, <em>filename</em>, <em>args=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.scriptstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.scriptstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do the actual compile and execute for the script data
+contained in script which was read from filename.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.setupSignalLookups">
+<tt class="descname">setupSignalLookups</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.setupSignalLookups"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.setupSignalLookups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.Vdb.verror">
+<tt class="descname">verror</tt><big>(</big><em>msg</em>, <em>addnl=True</em><big>)</big><a class="reference internal" href="_modules/vdb.html#Vdb.verror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.Vdb.verror" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.VdbLookup">
+<em class="property">class </em><tt class="descclassname">vdb.</tt><tt class="descname">VdbLookup</tt><big>(</big><em>initdict={}</em><big>)</big><a class="reference internal" href="_modules/vdb.html#VdbLookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.VdbLookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">UserDict.UserDict</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.VdbTrace">
+<em class="property">class </em><tt class="descclassname">vdb.</tt><tt class="descname">VdbTrace</tt><big>(</big><em>db</em><big>)</big><a class="reference internal" href="_modules/vdb.html#VdbTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.VdbTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to hand thing that need a persistant reference to a trace
+when using vdb to manage tracers.</p>
+<dl class="method">
+<dt id="vdb.VdbTrace.attach">
+<tt class="descname">attach</tt><big>(</big><em>pid</em><big>)</big><a class="reference internal" href="_modules/vdb.html#VdbTrace.attach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.VdbTrace.attach" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.VdbTrace.deregisterNotifier">
+<tt class="descname">deregisterNotifier</tt><big>(</big><em>event</em>, <em>notif</em><big>)</big><a class="reference internal" href="_modules/vdb.html#VdbTrace.deregisterNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.VdbTrace.deregisterNotifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.VdbTrace.registerNotifier">
+<tt class="descname">registerNotifier</tt><big>(</big><em>event</em>, <em>notif</em><big>)</big><a class="reference internal" href="_modules/vdb.html#VdbTrace.registerNotifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.VdbTrace.registerNotifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.VdbTrace.selectThread">
+<tt class="descname">selectThread</tt><big>(</big><em>threadid</em><big>)</big><a class="reference internal" href="_modules/vdb.html#VdbTrace.selectThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.VdbTrace.selectThread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-vdb.renderers">
+<span id="renderers-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">Renderers</span></tt> Module<a class="headerlink" href="#module-vdb.renderers" title="Permalink to this headline">¶</a></h2>
+<p>A home for the vdb specific memory renderers.</p>
+<dl class="class">
+<dt id="vdb.renderers.DerefRenderer">
+<em class="property">class </em><tt class="descclassname">vdb.renderers.</tt><tt class="descname">DerefRenderer</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/renderers.html#DerefRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.renderers.DerefRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="envi.memcanvas.html#envi.memcanvas.MemoryRenderer" title="envi.memcanvas.MemoryRenderer"><tt class="xref py py-class docutils literal"><span class="pre">envi.memcanvas.MemoryRenderer</span></tt></a></p>
+<dl class="method">
+<dt id="vdb.renderers.DerefRenderer.isAscii">
+<tt class="descname">isAscii</tt><big>(</big><em>bytes</em><big>)</big><a class="reference internal" href="_modules/vdb/renderers.html#DerefRenderer.isAscii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.renderers.DerefRenderer.isAscii" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.renderers.DerefRenderer.isBasicUnicode">
+<tt class="descname">isBasicUnicode</tt><big>(</big><em>bytes</em><big>)</big><a class="reference internal" href="_modules/vdb/renderers.html#DerefRenderer.isBasicUnicode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.renderers.DerefRenderer.isBasicUnicode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.renderers.DerefRenderer.render">
+<tt class="descname">render</tt><big>(</big><em>mcanv</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/vdb/renderers.html#DerefRenderer.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.renderers.DerefRenderer.render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.renderers.OpcodeRenderer">
+<em class="property">class </em><tt class="descclassname">vdb.renderers.</tt><tt class="descname">OpcodeRenderer</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/renderers.html#OpcodeRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.renderers.OpcodeRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="envi.memcanvas.html#envi.memcanvas.MemoryRenderer" title="envi.memcanvas.MemoryRenderer"><tt class="xref py py-class docutils literal"><span class="pre">envi.memcanvas.MemoryRenderer</span></tt></a></p>
+<dl class="method">
+<dt id="vdb.renderers.OpcodeRenderer.render">
+<tt class="descname">render</tt><big>(</big><em>mcanv</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/vdb/renderers.html#OpcodeRenderer.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.renderers.OpcodeRenderer.render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.renderers.SymbolRenderer">
+<em class="property">class </em><tt class="descclassname">vdb.renderers.</tt><tt class="descname">SymbolRenderer</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/renderers.html#SymbolRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.renderers.SymbolRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="envi.memcanvas.html#envi.memcanvas.MemoryRenderer" title="envi.memcanvas.MemoryRenderer"><tt class="xref py py-class docutils literal"><span class="pre">envi.memcanvas.MemoryRenderer</span></tt></a></p>
+<dl class="method">
+<dt id="vdb.renderers.SymbolRenderer.render">
+<tt class="descname">render</tt><big>(</big><em>mcanv</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/vdb/renderers.html#SymbolRenderer.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.renderers.SymbolRenderer.render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="vdb.extensions.html">extensions Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#id1"><tt class="docutils literal"><span class="pre">extensions</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.amd64"><tt class="docutils literal"><span class="pre">amd64</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.android"><tt class="docutils literal"><span class="pre">android</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#arm-module"><tt class="docutils literal"><span class="pre">arm</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.darwin"><tt class="docutils literal"><span class="pre">darwin</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.gdbstub"><tt class="docutils literal"><span class="pre">gdbstub</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.i386"><tt class="docutils literal"><span class="pre">i386</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.i486"><tt class="docutils literal"><span class="pre">i486</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.i586"><tt class="docutils literal"><span class="pre">i586</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.i686"><tt class="docutils literal"><span class="pre">i686</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.extensions.html#module-vdb.extensions.windows"><tt class="docutils literal"><span class="pre">windows</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vdb.gui.html">gui Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vdb.gui.html#id1"><tt class="docutils literal"><span class="pre">gui</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.gui.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="vdb.gui.extensions.html">extensions Package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="vdb.gui.extensions.html#id1"><tt class="docutils literal"><span class="pre">extensions</span></tt> Package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vdb.gui.extensions.html#windows-module"><tt class="docutils literal"><span class="pre">windows</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vdb.qt.html">qt Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vdb.qt.html#id1"><tt class="docutils literal"><span class="pre">qt</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.qt.html#module-vdb.qt.windows"><tt class="docutils literal"><span class="pre">windows</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vdb.recon.html">recon Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vdb.recon.html#id1"><tt class="docutils literal"><span class="pre">recon</span></tt> Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.recon.html#module-vdb.recon.dopestack"><tt class="docutils literal"><span class="pre">dopestack</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vdb.recon.html#module-vdb.recon.sniper"><tt class="docutils literal"><span class="pre">sniper</span></tt> Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vdb.stalker.html">stalker Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vdb.stalker.html#id1"><tt class="docutils literal"><span class="pre">stalker</span></tt> Package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vdb.testmods.html">testmods Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vdb.testmods.html#module-vdb.testmods.basictest"><tt class="docutils literal"><span class="pre">basictest</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">VDB Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">VDB</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-vdb.renderers"><tt class="docutils literal"><span class="pre">Renderers</span></tt> Module</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vdb.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

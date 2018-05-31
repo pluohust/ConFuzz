@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.archs.arm.thumbdisasm &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../../index.html" />
+    <link rel="up" title="envi.archs.arm" href="../arm.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../arm.html" accesskey="U">envi.archs.arm</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.archs.arm.thumbdisasm</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+<span class="kn">import</span> <span class="nn">envi.bintree</span> <span class="kn">as</span> <span class="nn">e_btree</span>
+
+<span class="kn">from</span> <span class="nn">envi.bits</span> <span class="kn">import</span> <span class="n">binary</span>
+
+<span class="kn">from</span> <span class="nn">envi.archs.arm.armdisasm</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">thumb_32</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">binary</span><span class="p">(</span><span class="s">&#39;11101&#39;</span><span class="p">),</span>
+        <span class="n">binary</span><span class="p">(</span><span class="s">&#39;11110&#39;</span><span class="p">),</span>
+        <span class="n">binary</span><span class="p">(</span><span class="s">&#39;11111&#39;</span><span class="p">),</span>
+<span class="p">]</span>
+
+
+<span class="n">O_REG</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">O_IMM</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">OperType</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">ArmRegOper</span><span class="p">,</span>
+    <span class="n">ArmImmOper</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">def</span> <span class="nf">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">shval</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>  <span class="c">#FIXME: unnecessary to make this another fn call.  will be called a bajillion times.</span>
+<div class="viewcode-block" id="shmaskval"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.shmaskval">[docs]</a>    <span class="k">return</span> <span class="p">(</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="n">shval</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mask</span>
+
+<span class="k">class</span> <span class="nc">simpleops</span><span class="p">:</span></div>
+<div class="viewcode-block" id="simpleops"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.simpleops">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">operdef</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operdef</span> <span class="o">=</span> <span class="n">operdef</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">otype</span><span class="p">,</span> <span class="n">shval</span><span class="p">,</span> <span class="n">mask</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operdef</span><span class="p">:</span>
+            <span class="n">oval</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">shval</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+            <span class="n">oper</span> <span class="o">=</span> <span class="n">OperType</span><span class="p">[</span><span class="n">otype</span><span class="p">]((</span><span class="n">value</span> <span class="o">&gt;&gt;</span> <span class="n">shval</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mask</span><span class="p">)</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">oper</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+<span class="n">imm5_rm_rd</span>  <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_IMM</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mh">0x1f</span><span class="p">))</span></div>
+<span class="n">rm_rn_rd</span>    <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">))</span>
+<span class="n">imm3_rn_rd</span>  <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_IMM</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">))</span>
+<span class="n">imm8_rd</span>     <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_IMM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xff</span><span class="p">))</span>
+<span class="n">rm_rd</span>       <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">))</span>
+<span class="n">rn_rdm</span>      <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">))</span>
+<span class="n">rm_rdn</span>      <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">))</span>
+<span class="n">rm_rd_imm0</span>  <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_IMM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">rm4_shift3</span>  <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0xf</span><span class="p">))</span>
+<span class="n">rm_rn_rt</span>    <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">),</span> <span class="p">(</span><span class="n">O_REG</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">))</span>
+<span class="n">imm8</span>        <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_IMM</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mh">0xff</span><span class="p">))</span>
+<span class="n">imm11</span>       <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_IMM</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mh">0x7ff</span><span class="p">))</span>
+
+<span class="n">sh4_imm1</span>    <span class="o">=</span> <span class="n">simpleops</span><span class="p">((</span><span class="n">O_IMM</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x1</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">d1_rm4_rd3</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="d1_rm4_rd3"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.d1_rm4_rd3">[docs]</a>    <span class="c"># 0 1 0 0 0 1 0 0 DN(1) Rm(4) Rdn(3)</span>
+    <span class="n">rdbit</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mh">0x8</span><span class="p">)</span>
+    <span class="n">rd</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span> <span class="o">+</span> <span class="n">rdbit</span>
+    <span class="n">rm</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0xf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rd</span><span class="p">),</span><span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rm</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">rm_rn_rt</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="rm_rn_rt"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.rm_rn_rt">[docs]</a>    <span class="n">rt</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span> <span class="c"># target</span>
+    <span class="n">rn</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span> <span class="c"># base</span>
+    <span class="n">rm</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span> <span class="c"># offset</span>
+    <span class="n">oper0</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rt</span><span class="p">)</span>
+    <span class="n">oper1</span> <span class="o">=</span> <span class="n">ArmRegOffsetOper</span><span class="p">(</span><span class="n">rn</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">oper0</span><span class="p">,</span><span class="n">oper1</span>
+
+<span class="k">def</span> <span class="nf">imm5_rn_rt</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="imm5_rn_rt"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.imm5_rn_rt">[docs]</a>    <span class="n">imm</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mh">0x1f</span><span class="p">)</span>
+    <span class="n">rn</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span>
+    <span class="n">rt</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span>
+    <span class="n">oper0</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rt</span><span class="p">)</span>
+    <span class="n">oper1</span> <span class="o">=</span> <span class="n">ArmImmOffsetOper</span><span class="p">(</span><span class="n">rn</span><span class="p">,</span> <span class="n">imm</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">oper0</span><span class="p">,</span><span class="n">oper1</span>
+
+<span class="k">def</span> <span class="nf">rd_sp_imm8</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="rd_sp_imm8"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.rd_sp_imm8">[docs]</a>    <span class="n">rd</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span>
+    <span class="n">imm</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>
+    <span class="n">oper0</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rd</span><span class="p">)</span>
+    <span class="c"># pre-compute PC relative addr</span>
+    <span class="n">oper1</span> <span class="o">=</span> <span class="n">ArmImmOffsetOper</span><span class="p">(</span><span class="n">REG_SP</span><span class="p">,</span> <span class="n">imm</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">oper0</span><span class="p">,</span><span class="n">oper1</span>
+
+<span class="k">def</span> <span class="nf">rd_pc_imm8</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="rd_pc_imm8"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.rd_pc_imm8">[docs]</a>    <span class="n">rd</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span>
+    <span class="n">imm</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>
+    <span class="n">oper0</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rd</span><span class="p">)</span>
+    <span class="c"># pre-compute PC relative addr</span>
+    <span class="n">oper1</span> <span class="o">=</span> <span class="n">ArmImmOper</span><span class="p">(</span><span class="n">va</span><span class="o">+</span><span class="n">imm</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">oper0</span><span class="p">,</span><span class="n">oper1</span>
+
+<span class="k">def</span> <span class="nf">rt_pc_imm8</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="rt_pc_imm8"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.rt_pc_imm8">[docs]</a>    <span class="n">rt</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span>
+    <span class="n">imm</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0xff</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span>
+    <span class="n">oper0</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rt</span><span class="p">)</span>
+    <span class="n">oper1</span> <span class="o">=</span> <span class="n">ArmImmOffsetOper</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">imm</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span> <span class="c"># FIXME offset from PC</span>
+    <span class="k">return</span> <span class="n">oper0</span><span class="p">,</span><span class="n">oper1</span>
+
+<span class="k">def</span> <span class="nf">ldmia</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span> </div>
+<div class="viewcode-block" id="ldmia"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.ldmia">[docs]</a>    <span class="n">rd</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span>
+    <span class="n">reg_list</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+    <span class="n">oper0</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rd</span><span class="p">)</span>
+    <span class="n">oper1</span> <span class="o">=</span> <span class="n">ArmRegListOper</span><span class="p">(</span><span class="n">reg_list</span><span class="p">)</span>
+    <span class="n">flags</span> <span class="o">=</span> <span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">11</span>   <span class="c"># W flag indicating that write back should occur (marked by &quot;!&quot;)</span>
+    <span class="k">return</span> <span class="n">oper0</span><span class="p">,</span><span class="n">oper1</span>
+
+<span class="k">def</span> <span class="nf">sp_sp_imm7</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="sp_sp_imm7"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.sp_sp_imm7">[docs]</a>    <span class="n">imm</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mh">0x7f</span><span class="p">)</span>
+    <span class="n">o0</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">REG_SP</span><span class="p">)</span>
+    <span class="n">o1</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">REG_SP</span><span class="p">)</span>
+    <span class="n">o2</span> <span class="o">=</span> <span class="n">ArmImmOper</span><span class="p">(</span><span class="n">imm</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">o0</span><span class="p">,</span><span class="n">o1</span><span class="p">,</span><span class="n">o2</span>
+
+<span class="k">def</span> <span class="nf">rm_reglist</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span></div>
+<div class="viewcode-block" id="rm_reglist"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.rm_reglist">[docs]</a>    <span class="n">rm</span> <span class="o">=</span> <span class="n">shmaskval</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mh">0x7</span><span class="p">)</span>
+    <span class="n">reglist</span> <span class="o">=</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+    <span class="n">oper0</span> <span class="o">=</span> <span class="n">ArmRegOper</span><span class="p">(</span><span class="n">rm</span><span class="p">)</span>
+    <span class="n">oper1</span> <span class="o">=</span> <span class="n">ArmRegListOper</span><span class="p">(</span><span class="n">reglist</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">oper0</span><span class="p">,</span><span class="n">oper1</span>
+
+
+<span class="c"># opinfo is:</span>
+<span class="c"># ( &lt;mnem&gt;, &lt;operdef&gt;, &lt;flags&gt; )</span>
+<span class="c"># operdef is:</span>
+<span class="c"># ( (otype, oshift, omask), ...)</span>
+<span class="n">thumb_table</span> <span class="o">=</span> <span class="p">[</span></div>
+    <span class="p">(</span><span class="s">&#39;00000&#39;</span><span class="p">,</span>       <span class="p">(</span> <span class="mi">0</span><span class="p">,</span><span class="s">&#39;lsl&#39;</span><span class="p">,</span>     <span class="n">imm5_rm_rd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># LSL&lt;c&gt; &lt;Rd&gt;,&lt;Rm&gt;,#&lt;imm5&gt;</span>
+    <span class="p">(</span><span class="s">&#39;00001&#39;</span><span class="p">,</span>       <span class="p">(</span> <span class="mi">1</span><span class="p">,</span><span class="s">&#39;lsr&#39;</span><span class="p">,</span>     <span class="n">imm5_rm_rd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># LSR&lt;c&gt; &lt;Rd&gt;,&lt;Rm&gt;,#&lt;imm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;00010&#39;</span><span class="p">,</span>       <span class="p">(</span> <span class="mi">2</span><span class="p">,</span><span class="s">&#39;asr&#39;</span><span class="p">,</span>     <span class="n">imm5_rm_rd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># ASR&lt;c&gt; &lt;Rd&gt;,&lt;Rm&gt;,#&lt;imm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0001100&#39;</span><span class="p">,</span>     <span class="p">(</span> <span class="mi">3</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">rm_rn_rd</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; &lt;Rd&gt;,&lt;Rn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0001101&#39;</span><span class="p">,</span>     <span class="p">(</span> <span class="mi">4</span><span class="p">,</span><span class="s">&#39;sub&#39;</span><span class="p">,</span>     <span class="n">rm_rn_rd</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># SUB&lt;c&gt; &lt;Rd&gt;,&lt;Rn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0001110&#39;</span><span class="p">,</span>     <span class="p">(</span> <span class="mi">5</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">imm3_rn_rd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; &lt;Rd&gt;,&lt;Rn&gt;,#&lt;imm3&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0001111&#39;</span><span class="p">,</span>     <span class="p">(</span> <span class="mi">6</span><span class="p">,</span><span class="s">&#39;sub&#39;</span><span class="p">,</span>     <span class="n">imm3_rn_rd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># SUB&lt;c&gt; &lt;Rd&gt;,&lt;Rn&gt;,#&lt;imm3&gt;</span>
+    <span class="p">(</span><span class="s">&#39;00100&#39;</span><span class="p">,</span>       <span class="p">(</span> <span class="mi">7</span><span class="p">,</span><span class="s">&#39;mov&#39;</span><span class="p">,</span>     <span class="n">imm8_rd</span><span class="p">,</span>    <span class="mi">0</span><span class="p">)),</span> <span class="c"># MOV&lt;c&gt; &lt;Rd&gt;,#&lt;imm8&gt;</span>
+    <span class="p">(</span><span class="s">&#39;00101&#39;</span><span class="p">,</span>       <span class="p">(</span> <span class="mi">8</span><span class="p">,</span><span class="s">&#39;cmp&#39;</span><span class="p">,</span>     <span class="n">imm8_rd</span><span class="p">,</span>    <span class="mi">0</span><span class="p">)),</span> <span class="c"># CMP&lt;c&gt; &lt;Rn&gt;,#&lt;imm8&gt;</span>
+    <span class="p">(</span><span class="s">&#39;00110&#39;</span><span class="p">,</span>       <span class="p">(</span> <span class="mi">9</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">imm8_rd</span><span class="p">,</span>    <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; &lt;Rdn&gt;,#&lt;imm8&gt;</span>
+    <span class="p">(</span><span class="s">&#39;00111&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="s">&#39;sub&#39;</span><span class="p">,</span>     <span class="n">imm8_rd</span><span class="p">,</span>    <span class="mi">0</span><span class="p">)),</span> <span class="c"># SUB&lt;c&gt; &lt;Rdn&gt;,#&lt;imm8&gt;</span>
+    <span class="c"># Data processing instructions</span>
+    <span class="p">(</span><span class="s">&#39;0100000000&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="s">&#39;and&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># AND&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100000001&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="s">&#39;eor&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># EOR&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100000010&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">13</span><span class="p">,</span><span class="s">&#39;lsl&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># LSL&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100000011&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">14</span><span class="p">,</span><span class="s">&#39;lsr&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># LSR&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100000100&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="s">&#39;asr&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># ASR&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100000101&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="s">&#39;adc&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADC&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100000110&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="s">&#39;sbc&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># SBC&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100000111&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="s">&#39;ror&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># ROR&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100001000&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">19</span><span class="p">,</span><span class="s">&#39;tst&#39;</span><span class="p">,</span>     <span class="n">rm_rd</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)),</span> <span class="c"># TST&lt;c&gt; &lt;Rn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100001001&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="s">&#39;rsb&#39;</span><span class="p">,</span>     <span class="n">rm_rd_imm0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># RSB&lt;c&gt; &lt;Rd&gt;,&lt;Rn&gt;,#0</span>
+    <span class="p">(</span><span class="s">&#39;0100001010&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">21</span><span class="p">,</span><span class="s">&#39;cmp&#39;</span><span class="p">,</span>     <span class="n">rm_rd</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)),</span> <span class="c"># CMP&lt;c&gt; &lt;Rn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100001011&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">22</span><span class="p">,</span><span class="s">&#39;cmn&#39;</span><span class="p">,</span>     <span class="n">rm_rd</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)),</span> <span class="c"># CMN&lt;c&gt; &lt;Rn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100001100&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">23</span><span class="p">,</span><span class="s">&#39;orr&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># ORR&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100001101&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">24</span><span class="p">,</span><span class="s">&#39;mul&#39;</span><span class="p">,</span>     <span class="n">rn_rdm</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># MUL&lt;c&gt; &lt;Rdm&gt;,&lt;Rn&gt;,&lt;Rdm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100001110&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="s">&#39;bic&#39;</span><span class="p">,</span>     <span class="n">rm_rdn</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># BIC&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100001111&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">26</span><span class="p">,</span><span class="s">&#39;mvn&#39;</span><span class="p">,</span>     <span class="n">rm_rd</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)),</span> <span class="c"># MVN&lt;c&gt; &lt;Rd&gt;,&lt;Rm&gt;</span>
+    <span class="c"># Special data in2tructions and branch and exchange</span>
+    <span class="p">(</span><span class="s">&#39;0100010000&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">27</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">d1_rm4_rd3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100010001&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">28</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">d1_rm4_rd3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;010001001&#39;</span><span class="p">,</span>   <span class="p">(</span><span class="mi">29</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">d1_rm4_rd3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; &lt;Rdn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100010101&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="s">&#39;cmp&#39;</span><span class="p">,</span>     <span class="n">d1_rm4_rd3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># CMP&lt;c&gt; &lt;Rn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;010001011&#39;</span><span class="p">,</span>   <span class="p">(</span><span class="mi">31</span><span class="p">,</span><span class="s">&#39;cmp&#39;</span><span class="p">,</span>     <span class="n">d1_rm4_rd3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># CMP&lt;c&gt; &lt;Rn&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100011000&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">32</span><span class="p">,</span><span class="s">&#39;mov&#39;</span><span class="p">,</span>     <span class="n">d1_rm4_rd3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># MOV&lt;c&gt; &lt;Rd&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100011001&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">33</span><span class="p">,</span><span class="s">&#39;mov&#39;</span><span class="p">,</span>     <span class="n">d1_rm4_rd3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># MOV&lt;c&gt; &lt;Rd&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;0100011010&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">34</span><span class="p">,</span><span class="s">&#39;mov&#39;</span><span class="p">,</span>     <span class="n">d1_rm4_rd3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># MOV&lt;c&gt; &lt;Rd&gt;,&lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;010001110&#39;</span><span class="p">,</span>   <span class="p">(</span><span class="mi">35</span><span class="p">,</span><span class="s">&#39;bx&#39;</span><span class="p">,</span>      <span class="n">rm4_shift3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># BX&lt;c&gt; &lt;Rm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;010001111&#39;</span><span class="p">,</span>   <span class="p">(</span><span class="mi">36</span><span class="p">,</span><span class="s">&#39;blx&#39;</span><span class="p">,</span>     <span class="n">rm4_shift3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># BLX&lt;c&gt; &lt;Rm&gt;</span>
+    <span class="c"># Load from Litera7 Pool</span>
+    <span class="p">(</span><span class="s">&#39;01001&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">37</span><span class="p">,</span><span class="s">&#39;ldr&#39;</span><span class="p">,</span>     <span class="n">rt_pc_imm8</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDR&lt;c&gt; &lt;Rt&gt;,&lt;label&gt;</span>
+    <span class="c"># Load/Stor single data item</span>
+    <span class="p">(</span><span class="s">&#39;0101000&#39;</span><span class="p">,</span>     <span class="p">(</span><span class="mi">38</span><span class="p">,</span><span class="s">&#39;str&#39;</span><span class="p">,</span>     <span class="n">rm_rn_rt</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># STR&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,&lt;Rm&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;0101001&#39;</span><span class="p">,</span>     <span class="p">(</span><span class="mi">39</span><span class="p">,</span><span class="s">&#39;strh&#39;</span><span class="p">,</span>    <span class="n">rm_rn_rt</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># STRH&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,&lt;Rm&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;0101010&#39;</span><span class="p">,</span>     <span class="p">(</span><span class="mi">40</span><span class="p">,</span><span class="s">&#39;strb&#39;</span><span class="p">,</span>    <span class="n">rm_rn_rt</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># STRB&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,&lt;Rm&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;0101011&#39;</span><span class="p">,</span>     <span class="p">(</span><span class="mi">41</span><span class="p">,</span><span class="s">&#39;ldrsb&#39;</span><span class="p">,</span>   <span class="n">rm_rn_rt</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDRSB&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,&lt;Rm&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;0101100&#39;</span><span class="p">,</span>     <span class="p">(</span><span class="mi">42</span><span class="p">,</span><span class="s">&#39;ldr&#39;</span><span class="p">,</span>     <span class="n">rm_rn_rt</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDR&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,&lt;Rm&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;0101101&#39;</span><span class="p">,</span>     <span class="p">(</span><span class="mi">43</span><span class="p">,</span><span class="s">&#39;ldrh&#39;</span><span class="p">,</span>    <span class="n">rm_rn_rt</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDRH&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,&lt;Rm&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;0101110&#39;</span><span class="p">,</span>     <span class="p">(</span><span class="mi">44</span><span class="p">,</span><span class="s">&#39;ldrb&#39;</span><span class="p">,</span>    <span class="n">rm_rn_rt</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDRB&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,&lt;Rm&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;0101111&#39;</span><span class="p">,</span>     <span class="p">(</span><span class="mi">45</span><span class="p">,</span><span class="s">&#39;ldrsh&#39;</span><span class="p">,</span>   <span class="n">rm_rn_rt</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDRSH&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,&lt;Rm&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;01100&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">46</span><span class="p">,</span><span class="s">&#39;str&#39;</span><span class="p">,</span>     <span class="n">imm5_rn_rt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># STR&lt;c&gt; &lt;Rt&gt;, [&lt;Rn&gt;{,#&lt;imm5&gt;}]</span>
+    <span class="p">(</span><span class="s">&#39;01101&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">47</span><span class="p">,</span><span class="s">&#39;ldr&#39;</span><span class="p">,</span>     <span class="n">imm5_rn_rt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDR&lt;c&gt; &lt;Rt&gt;, [&lt;Rn&gt;{,#&lt;imm5&gt;}]</span>
+    <span class="p">(</span><span class="s">&#39;01110&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">48</span><span class="p">,</span><span class="s">&#39;strb&#39;</span><span class="p">,</span>    <span class="n">imm5_rn_rt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># STRB&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;,#&lt;imm5&gt;]</span>
+    <span class="p">(</span><span class="s">&#39;01111&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">49</span><span class="p">,</span><span class="s">&#39;ldrb&#39;</span><span class="p">,</span>    <span class="n">imm5_rn_rt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDRB&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;{,#&lt;imm5&gt;}]</span>
+    <span class="p">(</span><span class="s">&#39;10000&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="s">&#39;strh&#39;</span><span class="p">,</span>    <span class="n">imm5_rn_rt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># STRH&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;{,#&lt;imm&gt;}]</span>
+    <span class="p">(</span><span class="s">&#39;10001&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">51</span><span class="p">,</span><span class="s">&#39;ldrh&#39;</span><span class="p">,</span>    <span class="n">imm5_rn_rt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDRH&lt;c&gt; &lt;Rt&gt;,[&lt;Rn&gt;{,#&lt;imm&gt;}]</span>
+    <span class="p">(</span><span class="s">&#39;10010&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">52</span><span class="p">,</span><span class="s">&#39;str&#39;</span><span class="p">,</span>     <span class="n">imm5_rn_rt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># STR&lt;c&gt; &lt;Rt&gt;, [&lt;Rn&gt;{,#&lt;imm&gt;}]</span>
+    <span class="p">(</span><span class="s">&#39;10011&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">53</span><span class="p">,</span><span class="s">&#39;ldr&#39;</span><span class="p">,</span>     <span class="n">imm5_rn_rt</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># LDR&lt;c&gt; &lt;Rt&gt;, [&lt;Rn&gt;{,#&lt;imm&gt;}]</span>
+    <span class="c"># Generate PC rel54ive address</span>
+    <span class="p">(</span><span class="s">&#39;10100&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">54</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">rd_pc_imm8</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; &lt;Rd&gt;,&lt;label&gt;</span>
+    <span class="c"># Generate SP rel5tive address</span>
+    <span class="p">(</span><span class="s">&#39;10101&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">55</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">rd_sp_imm8</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; &lt;Rd&gt;,SP,#&lt;imm&gt;</span>
+    <span class="c"># Miscellaneous in6tructions</span>
+    <span class="p">(</span><span class="s">&#39;10110110010&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">56</span><span class="p">,</span><span class="s">&#39;setend&#39;</span><span class="p">,</span>  <span class="n">sh4_imm1</span><span class="p">,</span>   <span class="mi">0</span><span class="p">)),</span> <span class="c"># SETEND &lt;endian_specifier&gt;</span>
+    <span class="p">(</span><span class="s">&#39;10110110011&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">57</span><span class="p">,</span><span class="s">&#39;cps&#39;</span><span class="p">,</span>     <span class="n">simpleops</span><span class="p">(),</span><span class="mi">0</span><span class="p">)),</span> <span class="c"># CPS&lt;effect&gt; &lt;iflags&gt; FIXME</span>
+    <span class="p">(</span><span class="s">&#39;1011101000&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">58</span><span class="p">,</span><span class="s">&#39;rev&#39;</span><span class="p">,</span>     <span class="n">rn_rdm</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># REV Rd, Rn</span>
+    <span class="p">(</span><span class="s">&#39;1011101001&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">59</span><span class="p">,</span><span class="s">&#39;rev16&#39;</span><span class="p">,</span>   <span class="n">rn_rdm</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># REV16 Rd, Rn</span>
+    <span class="p">(</span><span class="s">&#39;1011101011&#39;</span><span class="p">,</span>  <span class="p">(</span><span class="mi">60</span><span class="p">,</span><span class="s">&#39;revsh&#39;</span><span class="p">,</span>   <span class="n">rn_rdm</span><span class="p">,</span>     <span class="mi">0</span><span class="p">)),</span> <span class="c"># REVSH Rd, Rn</span>
+    <span class="p">(</span><span class="s">&#39;101100000&#39;</span><span class="p">,</span>   <span class="p">(</span><span class="mi">61</span><span class="p">,</span><span class="s">&#39;add&#39;</span><span class="p">,</span>     <span class="n">sp_sp_imm7</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># ADD&lt;c&gt; SP,SP,#&lt;imm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;101100001&#39;</span><span class="p">,</span>   <span class="p">(</span><span class="mi">62</span><span class="p">,</span><span class="s">&#39;sub&#39;</span><span class="p">,</span>     <span class="n">sp_sp_imm7</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="c"># SUB&lt;c&gt; SP,SP,#&lt;imm&gt;</span>
+    <span class="p">(</span><span class="s">&#39;10111110&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">63</span><span class="p">,</span><span class="s">&#39;bkpt&#39;</span><span class="p">,</span>    <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span> <span class="c"># BKPT &lt;blahblah&gt;</span>
+    <span class="c"># Load / Store Mu64iple</span>
+    <span class="p">(</span><span class="s">&#39;11000&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">64</span><span class="p">,</span><span class="s">&#39;stmia&#39;</span><span class="p">,</span>   <span class="n">rm_reglist</span><span class="p">,</span> <span class="mh">0x800</span><span class="p">)),</span> <span class="c"># LDMIA Rd!, reg_list</span>
+    <span class="p">(</span><span class="s">&#39;11001&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">65</span><span class="p">,</span><span class="s">&#39;ldmia&#39;</span><span class="p">,</span>   <span class="n">rm_reglist</span><span class="p">,</span> <span class="mh">0x800</span><span class="p">)),</span> <span class="c"># STMIA Rd!, reg_list</span>
+    <span class="c"># Conditional Bran6hes</span>
+    <span class="p">(</span><span class="s">&#39;11010000&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">66</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">,</span>       <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11010001&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">67</span><span class="p">,</span><span class="s">&#39;bn&#39;</span><span class="p">,</span>      <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11010010&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">68</span><span class="p">,</span><span class="s">&#39;bz&#39;</span><span class="p">,</span>      <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11010011&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">69</span><span class="p">,</span><span class="s">&#39;bnz&#39;</span><span class="p">,</span>     <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11010100&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">70</span><span class="p">,</span><span class="s">&#39;bc&#39;</span><span class="p">,</span>      <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11010101&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">71</span><span class="p">,</span><span class="s">&#39;bnc&#39;</span><span class="p">,</span>     <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11010100&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">72</span><span class="p">,</span><span class="s">&#39;bzc&#39;</span><span class="p">,</span>     <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11010111&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">73</span><span class="p">,</span><span class="s">&#39;bnzc&#39;</span><span class="p">,</span>    <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11011000&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">74</span><span class="p">,</span><span class="s">&#39;bv&#39;</span><span class="p">,</span>      <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11011001&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">75</span><span class="p">,</span><span class="s">&#39;bnv&#39;</span><span class="p">,</span>     <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11011010&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">76</span><span class="p">,</span><span class="s">&#39;bzv&#39;</span><span class="p">,</span>     <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11011011&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">77</span><span class="p">,</span><span class="s">&#39;bnzv&#39;</span><span class="p">,</span>    <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11011100&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">78</span><span class="p">,</span><span class="s">&#39;bcv&#39;</span><span class="p">,</span>     <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11011101&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">79</span><span class="p">,</span><span class="s">&#39;bncv&#39;</span><span class="p">,</span>    <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11011110&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">80</span><span class="p">,</span><span class="s">&#39;bzcv&#39;</span><span class="p">,</span>    <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s">&#39;11011111&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">81</span><span class="p">,</span><span class="s">&#39;bnzcv&#39;</span><span class="p">,</span>   <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span>
+    <span class="c"># Software Interru2t</span>
+    <span class="p">(</span><span class="s">&#39;11011111&#39;</span><span class="p">,</span>    <span class="p">(</span><span class="mi">82</span><span class="p">,</span><span class="s">&#39;swi&#39;</span><span class="p">,</span>     <span class="n">imm8</span><span class="p">,</span>       <span class="mi">0</span><span class="p">)),</span> <span class="c"># SWI &lt;blahblah&gt;</span>
+    <span class="p">(</span><span class="s">&#39;11100&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">83</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">,</span>       <span class="n">imm11</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)),</span> <span class="c"># B &lt;addr11&gt; </span>
+    <span class="p">(</span><span class="s">&#39;11101&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">84</span><span class="p">,</span><span class="s">&#39;blx&#39;</span><span class="p">,</span>     <span class="n">imm11</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)),</span> <span class="c"># BLX suffix &lt;addr11&gt;  -- SEE p542 of 14218.pdf manual for how this if gonna fuck with emulation. </span>
+    <span class="p">(</span><span class="s">&#39;11110&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">85</span><span class="p">,</span><span class="s">&#39;bl&#39;</span><span class="p">,</span>      <span class="n">imm11</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)),</span> <span class="c"># BL/BLX prefix &lt;addr11&gt; -- SEE p542 of 14218.pdf manual for how this if gonna fuck with emulation. </span>
+    <span class="p">(</span><span class="s">&#39;11111&#39;</span><span class="p">,</span>       <span class="p">(</span><span class="mi">86</span><span class="p">,</span><span class="s">&#39;blx&#39;</span><span class="p">,</span>     <span class="n">imm11</span><span class="p">,</span>      <span class="mi">0</span><span class="p">)),</span> <span class="c"># BL suffix &lt;addr11&gt;   -- SEE p542 of 14218.pdf manual for how this if gonna fuck with emulation.</span>
+<span class="p">]</span>
+
+<span class="n">ttree</span> <span class="o">=</span> <span class="n">e_btree</span><span class="o">.</span><span class="n">BinaryTree</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">binstr</span><span class="p">,</span> <span class="n">opinfo</span> <span class="ow">in</span> <span class="n">thumb_table</span><span class="p">:</span>
+    <span class="n">ttree</span><span class="o">.</span><span class="n">addBinstr</span><span class="p">(</span><span class="n">binstr</span><span class="p">,</span> <span class="n">opinfo</span><span class="p">)</span>
+
+<span class="n">thumb32mask</span> <span class="o">=</span> <span class="n">binary</span><span class="p">(</span><span class="s">&#39;11111&#39;</span><span class="p">)</span>
+<span class="n">thumb32min</span>  <span class="o">=</span> <span class="n">binary</span><span class="p">(</span><span class="s">&#39;11100&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">is_thumb32</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+<div class="viewcode-block" id="is_thumb32"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.is_thumb32">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Take a 16 bit integer (opcode) value and determine</span>
+<span class="sd">    if it is really the first 16 bits of a 32 bit</span>
+<span class="sd">    instruction.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">bval</span> <span class="o">=</span> <span class="n">val</span> <span class="o">&gt;&gt;</span> <span class="mi">11</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">bval</span> <span class="o">&amp;</span> <span class="n">thumb32mask</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">thumb32min</span>
+
+
+<span class="k">class</span> <span class="nc">ThumbOpcode</span><span class="p">(</span><span class="n">ArmOpcode</span><span class="p">):</span></div>
+<div class="viewcode-block" id="ThumbOpcode"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.ThumbOpcode">[docs]</a>    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">ArmThumbDisasm</span><span class="p">:</span></div>
+<div class="viewcode-block" id="ArmThumbDisasm"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.ArmThumbDisasm">[docs]</a>
+    <span class="k">def</span> <span class="nf">disasm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">trackMode</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<div class="viewcode-block" id="ArmThumbDisasm.disasm"><a class="viewcode-back" href="../../../../envi.archs.arm.html#envi.archs.arm.thumbdisasm.ArmThumbDisasm.disasm">[docs]</a>        <span class="n">val</span><span class="p">,</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;H&quot;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">opcode</span><span class="p">,</span> <span class="n">mnem</span><span class="p">,</span> <span class="n">opermkr</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="n">ttree</span><span class="o">.</span><span class="n">getInt</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">olist</span> <span class="o">=</span> <span class="n">opermkr</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+        <span class="n">op</span> <span class="o">=</span> <span class="n">ThumbOpcode</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">opcode</span><span class="p">,</span> <span class="n">mnem</span><span class="p">,</span> <span class="mh">0xe</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">olist</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">op</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../../envi.html" >envi</a> &raquo;</li>
+          <li><a href="../arm.html" >envi.archs.arm</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

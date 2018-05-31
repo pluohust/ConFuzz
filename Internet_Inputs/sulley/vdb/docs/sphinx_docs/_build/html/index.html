@@ -1,0 +1,174 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to the VDB documentation! &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="#" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="welcome-to-the-vdb-documentation">
+<h1>Welcome to the VDB documentation!<a class="headerlink" href="#welcome-to-the-vdb-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The documentation for VDB is still very much under development! If you want to contribute (or have ideas for better documentation), feel free to <a class="reference external" href="https://github.com/Fitblip/vdb-fork">send me a pull request</a> or <a class="reference external" href="https://github.com/Fitblip">email me</a>.</p>
+</div>
+<p>VDB is a (mostly) python-based multi-debugging platform written by <a class="reference external" href="https://twitter.com/invisig0th">&#64;invisig0th</a> from the <a class="reference external" href="http://kenshoto.com/">Kenshoto</a> team.</p>
+<p>It&#8217;s more of a layer of abstraction written around native debugging platforms and techniques (e.g. ptrace, and Windows native API debugging), which allows you to have a same basic process for debugging executables on Windows/<a href="#id1"><span class="problematic" id="id2">*</span></a>nix/OSX platforms.</p>
+<p><a class="reference external" href="https://twitter.com/invisig0th">&#64;invisig0th</a> has done an amazing job, and written this project pretty much by himself. I (<a class="reference external" href="https://twitter.com/fitblip">&#64;fitblip</a>) have taken it upon myself to start documentation for this project in my spare time, because this project needs it!</p>
+<p>I&#8217;ve also added a few of <a class="reference external" href="https://github.com/Fitblip/vdb-fork#major-differences">my own</a> changes to <a class="reference external" href="https://twitter.com/invisig0th">&#64;invisig0th</a>&#8216;s code, and fixed a couple bugs. Eventually (hopefully) they&#8217;ll be merged into the next release!</p>
+<p>Another excellent resource is <a class="reference external" href="http://visi.kenshoto.com/">the VDB wiki itself</a>, which just got redone and is now much more responsive.</p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Either download the <a class="reference external" href="http://visi.kenshoto.com/static/releases/">most recent snapshot</a> from visi&#8217;s page, or <a class="reference external" href="https://github.com/Fitblip/vdb-fork">clone my repo</a>.</p>
+<p>Extract it to a directory you like, then do something like this in your code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Import standard modules</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c"># Setup our VDB path</span>
+<span class="n">vdb_path</span> <span class="o">=</span> <span class="s">&quot;C:</span><span class="se">\\</span><span class="s">PathToVDB</span><span class="se">\\</span><span class="s">vdb_20120806&quot;</span>
+
+<span class="c"># Insert VDB directory in search path</span>
+<span class="k">if</span> <span class="n">vdb_path</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">vdb_path</span><span class="p">)</span>
+
+<span class="c"># Import PE and vtrace</span>
+<span class="kn">import</span> <span class="nn">PE</span><span class="o">,</span> <span class="nn">vtrace</span>
+</pre></div>
+</div>
+<p>There isn&#8217;t a setup.py for this project, nor will there probably be, as it changes so quickly. If you really have gripes with that, send me a pull request :-P.</p>
+<p>If you want to use the PyQt interface, obviously you need that as well!</p>
+</div>
+<div class="section" id="tutorials-examples">
+<h2>Tutorials/Examples<a class="headerlink" href="#tutorials-examples" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.talesofacoldadmin.com">At my blog</a> you can find a few examples and tutorials (more to come), but watch this space, as the tutorials page is coming!</p>
+</div>
+<div class="section" id="api-refrence">
+<h2>API Refrence<a class="headerlink" href="#api-refrence" title="Permalink to this headline">¶</a></h2>
+<p>You can find the API reference</p>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><a class="reference external" href="https://github.com/Fitblip/vdb-fork">My github repo</a> will take and manage any pull request you can throw at it!</li>
+<li>Email visi himself</li>
+<li><a class="reference external" href="https://github.com/Fitblip/vdb-fork/issues">Create me an issue</a> for a feature you want/bug you&#8217;ve found, and I&#8217;ll see what I can do with</li>
+</ol>
+</div>
+<div class="section" id="state-of-project">
+<h2>State of Project<a class="headerlink" href="#state-of-project" title="Permalink to this headline">¶</a></h2>
+<p>Visi is a busy man, but he&#8217;s no doubt working on the next release. <a class="reference external" href="http://visi.kenshoto.com/viki/ReleaseNotes">You can checkout his ReleaseNotes</a> which gives you a good update on the progress he&#8217;s making. You can also check out <a class="reference external" href="https://github.com/Fitblip/vdb-fork/commits/master">my commit history</a> to see the commits I&#8217;ve made myself.</p>
+</div>
+<div class="section" id="credit">
+<h2>Credit<a class="headerlink" href="#credit" title="Permalink to this headline">¶</a></h2>
+<p>This is <a class="reference external" href="https://twitter.com/invisig0th">&#64;invisig0th</a>&#8216;s project in it&#8217;s entirety. He&#8217;s the only author, although there have been some outside contributions in the past, mostly from within the Kenshoto team.</p>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p>Visi has a license somewhere, but I need to poke him, as it doesn&#8217;t specify anywhere in the code, and the LICENSE file is missing in newer releases.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to the VDB documentation!</a><ul>
+<li><a class="reference internal" href="#about">About</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#tutorials-examples">Tutorials/Examples</a></li>
+<li><a class="reference internal" href="#api-refrence">API Refrence</a></li>
+<li><a class="reference internal" href="#contributing">Contributing</a></li>
+<li><a class="reference internal" href="#state-of-project">State of Project</a></li>
+<li><a class="reference internal" href="#credit">Credit</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="#">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.archs.i386 &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vtrace" href="../../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.archs.i386</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">x86 Support Module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">vtrace.breakpoints</span> <span class="kn">as</span> <span class="nn">breakpoints</span>
+
+<span class="kn">import</span> <span class="nn">envi.archs.i386</span> <span class="kn">as</span> <span class="nn">e_i386</span>
+
+<span class="c"># Pre-populating these saves a little processing</span>
+<span class="c"># time (important in tight watchpoint loops)</span>
+<span class="n">drnames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;debug</span><span class="si">%d</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span>
+
+<span class="n">dbg_status</span> <span class="o">=</span> <span class="s">&quot;debug6&quot;</span>
+<span class="n">dbg_ctrl</span> <span class="o">=</span> <span class="s">&quot;debug7&quot;</span>
+
+<span class="n">dbg_execute</span>    <span class="o">=</span> <span class="mi">0</span>
+<span class="n">dbg_write</span>      <span class="o">=</span> <span class="mi">1</span>
+<span class="n">dbg_read_write</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">dbg_types</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&quot;x&quot;</span><span class="p">:</span><span class="n">dbg_execute</span><span class="p">,</span>
+    <span class="s">&quot;w&quot;</span><span class="p">:</span><span class="n">dbg_write</span><span class="p">,</span>
+    <span class="s">&quot;rw&quot;</span><span class="p">:</span><span class="n">dbg_read_write</span><span class="p">,</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="i386WatchMixin"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.i386.i386WatchMixin">[docs]</a><span class="k">class</span> <span class="nc">i386WatchMixin</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Which ones are in use / enabled.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hwdebug</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="c"># FIXME change this to storing debug0 index and using setRegister()</span>
+
+<div class="viewcode-block" id="i386WatchMixin.archAddWatchpoint"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.i386.i386WatchMixin.archAddWatchpoint">[docs]</a>    <span class="k">def</span> <span class="nf">archAddWatchpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">perms</span><span class="o">=</span><span class="s">&quot;rw&quot;</span><span class="p">):</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hwdebug</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;ERROR: there...  are... 4... debug registers!&quot;</span><span class="p">)</span>
+
+        <span class="n">pbits</span> <span class="o">=</span> <span class="n">dbg_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">perms</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pbits</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Unsupported watchpoint perms </span><span class="si">%s</span><span class="s"> (x86 supports x,w,rw)&quot;</span> <span class="o">%</span> <span class="n">perms</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pbits</span> <span class="o">==</span> <span class="n">dbg_execute</span> <span class="ow">and</span> <span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Watchpoint for execute *must* be 1 byte long!&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">size</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Unsupported watchpoint size </span><span class="si">%d</span><span class="s"> (x86 supports 1,2,4)&quot;</span> <span class="o">%</span> <span class="n">size</span><span class="p">)</span>
+
+        <span class="n">ctrl</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hwdebug</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">address</span>
+
+        <span class="n">ctrl</span> <span class="o">|=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">idx</span><span class="p">)</span>           <span class="c"># Enabled</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">((</span><span class="n">size</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">pbits</span> <span class="c"># perms and size</span>
+        <span class="n">ctrl</span> <span class="o">|=</span> <span class="p">(</span><span class="n">mask</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">16</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">idx</span><span class="p">)))</span>
+        <span class="c">#ctrl |= 0x100 # Local exact (ignored by p6+ for read)</span>
+
+        <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterContext</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
+            <span class="n">ctrl_orig</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_DEBUG7</span><span class="p">)</span>
+            <span class="c">#print &quot;debug%d: %.8x debug7: %.8x&quot; % (idx,address,ctrl|ctrl_orig)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_DEBUG7</span><span class="p">,</span> <span class="n">ctrl_orig</span> <span class="o">|</span> <span class="n">ctrl</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_DEBUG0</span> <span class="o">+</span> <span class="n">idx</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="i386WatchMixin.archRemWatchpoint"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.i386.i386WatchMixin.archRemWatchpoint">[docs]</a>    <span class="k">def</span> <span class="nf">archRemWatchpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hwdebug</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">address</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Watchpoint not found at 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">address</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hwdebug</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">ctrl_disable</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">idx</span><span class="p">))</span>      <span class="c"># we are not enabled</span>
+        <span class="n">ctrl_disperm</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="mh">0xf</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">16</span><span class="o">+</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">idx</span><span class="p">)))</span> <span class="c"># mask off the rwx stuff</span>
+        <span class="n">ctrl_mask</span> <span class="o">=</span> <span class="n">ctrl_disable</span> <span class="o">&amp;</span> <span class="n">ctrl_disperm</span>
+
+        <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterContext</span><span class="p">(</span><span class="n">tid</span><span class="p">)</span>
+            <span class="n">ctrl</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_DEBUG7</span><span class="p">)</span>
+            <span class="n">ctrl</span> <span class="o">&amp;=</span> <span class="n">ctrl_mask</span>
+            <span class="c">#print &quot;debug%d: %.8x debug7: %.8x&quot; % (idx,address,ctrl|ctrl_orig)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_DEBUG7</span><span class="p">,</span> <span class="n">ctrl</span><span class="p">)</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_DEBUG0</span> <span class="o">+</span> <span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span>
+</div>
+<div class="viewcode-block" id="i386WatchMixin.archCheckWatchpoints"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.i386.i386WatchMixin.archCheckWatchpoints">[docs]</a>    <span class="k">def</span> <span class="nf">archCheckWatchpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">regs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisters</span><span class="p">()</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">regs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dbg_status</span><span class="p">)</span>
+        <span class="c">#print &quot;STATUS %.8x&quot; % status</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">status</span> <span class="o">&amp;</span> <span class="mh">0x0f</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">x</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="n">i</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hwdebug</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">None</span>
+
+</div></div>
+<div class="viewcode-block" id="i386Mixin"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.i386.i386Mixin">[docs]</a><span class="k">class</span> <span class="nc">i386Mixin</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">i386Module</span><span class="p">,</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">i386RegisterContext</span><span class="p">,</span> <span class="n">i386WatchMixin</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Mixin our i386 envi architecture module and register context</span>
+        <span class="n">e_i386</span><span class="o">.</span><span class="n">i386Module</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c"># FIXME tracer base should inherit from RegisterContext and we should</span>
+        <span class="c"># just have to load a register definition!</span>
+        <span class="n">e_i386</span><span class="o">.</span><span class="n">i386RegisterContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">i386WatchMixin</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">,</span> <span class="s">&#39;i386&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="i386Mixin.archGetStackTrace"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.i386.i386Mixin.archGetStackTrace">[docs]</a>    <span class="k">def</span> <span class="nf">archGetStackTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sanity</span> <span class="o">=</span> <span class="mi">1000</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c">#FIXME make these by register index</span>
+        <span class="c">#FIXME make these GPREG stuff! (then both are the same)</span>
+        <span class="n">ebp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterByName</span><span class="p">(</span><span class="s">&quot;ebp&quot;</span><span class="p">)</span>
+        <span class="n">eip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterByName</span><span class="p">(</span><span class="s">&quot;eip&quot;</span><span class="p">)</span>
+        <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">eip</span><span class="p">,</span><span class="n">ebp</span><span class="p">))</span>
+
+        <span class="k">while</span> <span class="n">ebp</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">current</span> <span class="o">&lt;</span> <span class="n">sanity</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">ebp</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+                <span class="n">ebp</span><span class="p">,</span><span class="n">eip</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;LL&quot;</span><span class="p">,</span><span class="n">buf</span><span class="p">)</span>
+                <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">eip</span><span class="p">,</span><span class="n">ebp</span><span class="p">))</span>
+                <span class="n">current</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">frames</span>
+</div>
+<div class="viewcode-block" id="i386Mixin.platformCall"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.i386.i386Mixin.platformCall">[docs]</a>    <span class="k">def</span> <span class="nf">platformCall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">convention</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="n">finalargs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">saved_regs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisters</span><span class="p">()</span>
+        <span class="n">sp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStackCounter</span><span class="p">()</span>
+        <span class="n">pc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="o">==</span> <span class="n">types</span><span class="o">.</span><span class="n">StringType</span><span class="p">:</span> <span class="c"># Nicly map strings into mem</span>
+                <span class="n">buf</span> <span class="o">=</span> <span class="n">arg</span><span class="o">+</span><span class="s">&quot;</span><span class="se">\x00\x00</span><span class="s">&quot;</span><span class="o">+</span><span class="n">buf</span>    <span class="c"># Pad with a null for convenience</span>
+                <span class="n">finalargs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sp</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">finalargs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span>
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="p">(</span><span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">4</span><span class="o">-</span><span class="n">m</span><span class="p">))</span> <span class="o">+</span> <span class="n">buf</span>
+
+        <span class="c"># Args are </span>
+        <span class="c">#finalargs.reverse()</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;</span><span class="si">%d</span><span class="s">I&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">finalargs</span><span class="p">),</span> <span class="o">*</span><span class="n">finalargs</span><span class="p">)</span> <span class="o">+</span> <span class="n">buf</span>
+
+        <span class="c"># Saved EIP is target addr so when we hit the break...</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;I&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span> <span class="o">+</span> <span class="n">buf</span>
+        <span class="c"># Calc the new stack pointer</span>
+        <span class="n">newsp</span> <span class="o">=</span> <span class="n">sp</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="c"># Write the stack buffer in</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="n">newsp</span><span class="p">,</span> <span class="n">buf</span><span class="p">)</span>
+        <span class="c"># Setup the stack pointer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStackCounter</span><span class="p">(</span><span class="n">newsp</span><span class="p">)</span>
+        <span class="c"># Setup the instruction pointer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setProgramCounter</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="c"># Add the magical call-break</span>
+        <span class="n">callbreak</span> <span class="o">=</span> <span class="n">breakpoints</span><span class="o">.</span><span class="n">CallBreak</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">saved_regs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">callbreak</span><span class="p">)</span>
+        <span class="c"># Continue until the CallBreak has been hit</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">callbreak</span><span class="o">.</span><span class="n">endregs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">callbreak</span><span class="o">.</span><span class="n">endregs</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

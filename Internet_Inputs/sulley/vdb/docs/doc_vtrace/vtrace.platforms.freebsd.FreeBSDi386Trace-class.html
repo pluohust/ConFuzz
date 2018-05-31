@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.platforms.freebsd.FreeBSDi386Trace</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        <a href="vtrace.platforms-module.html">Package&nbsp;platforms</a> ::
+        <a href="vtrace.platforms.freebsd-module.html">Module&nbsp;freebsd</a> ::
+        Class&nbsp;FreeBSDi386Trace
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.platforms.freebsd.FreeBSDi386Trace-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class FreeBSDi386Trace</h1><p class="nomargin-top"><span class="codelink"><a href="vtrace.platforms.freebsd-pysrc.html#FreeBSDi386Trace">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+                     envi.memory.IMemory --+    
+                                           |    
+          envi.registers.RegisterContext --+    
+                                           |    
+            envi.resolver.SymbolResolver --+    
+                                           |    
+                                  object --+    
+                                           |    
+                                       <a href="vtrace.Trace-class.html">Trace</a> --+
+                                               |
+                                <a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html">FreeBSDMixin</a> --+
+                                               |
+             envi.ArchitectureModule --+       |
+                                       |       |
+              envi.archs.i386.i386Module --+   |
+                                           |   |
+      envi.registers.RegisterContext --+   |   |
+                                       |   |   |
+envi.archs.i386.regs.i386RegisterContext --+   |
+                                           |   |
+               <a href="vtrace.archs.i386.i386WatchMixin-class.html">archs.i386.i386WatchMixin</a> --+   |
+                                           |   |
+                        <a href="vtrace.archs.i386.i386Mixin-class.html">archs.i386.i386Mixin</a> --+
+                                               |
+                              <a href="vtrace.platforms.posix.ElfMixin-class.html">posix.ElfMixin</a> --+
+                                               |
+                            <a href="vtrace.platforms.posix.PosixMixin-class.html">posix.PosixMixin</a> --+
+                                               |
+                              object --+       |
+                                       |       |
+                      <a href="vtrace.notifiers.Notifier-class.html">notifiers.Notifier</a> --+   |
+                                           |   |
+                             <a href="vtrace.platforms.base.TracerBase-class.html">base.TracerBase</a> --+
+                                               |
+                                              <strong class="uidshort">FreeBSDi386Trace</strong>
+</pre>
+
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Hand in a register definition which consists of a list of 
+      (&lt;name&gt;, &lt;width&gt;) tuples.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.platforms.freebsd-pysrc.html#FreeBSDi386Trace.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#platformGetRegCtx" class="summary-sig-name">platformGetRegCtx</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.platforms.freebsd-pysrc.html#FreeBSDi386Trace.platformGetRegCtx">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#platformSetRegCtx" class="summary-sig-name">platformSetRegCtx</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">tid</span>,
+        <span class="summary-sig-arg">ctx</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace.platforms.freebsd-pysrc.html#FreeBSDi386Trace.platformSetRegCtx">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.Trace-class.html">Trace</a></code></b>:
+      <code><a href="vtrace.Trace-class.html#addBreakByAddr">addBreakByAddr</a></code>,
+      <code><a href="vtrace.Trace-class.html#addBreakByExpr">addBreakByExpr</a></code>,
+      <code><a href="vtrace.Trace-class.html#addBreakpoint">addBreakpoint</a></code>,
+      <code><a href="vtrace.Trace-class.html#addIgnoreSignal">addIgnoreSignal</a></code>,
+      <code><a href="vtrace.Trace-class.html#allocateMemory">allocateMemory</a></code>,
+      <code><a href="vtrace.Trace-class.html#attach">attach</a></code>,
+      <code><a href="vtrace.Trace-class.html#buildNewTrace">buildNewTrace</a></code>,
+      <code><a href="vtrace.Trace-class.html#call">call</a></code>,
+      <code><a href="vtrace.Trace-class.html#delIgnoreSignal">delIgnoreSignal</a></code>,
+      <code><a href="vtrace.Trace-class.html#deregisterNotifier">deregisterNotifier</a></code>,
+      <code><a href="vtrace.Trace-class.html#detach">detach</a></code>,
+      <code><a href="vtrace.Trace-class.html#disableAutoContinue">disableAutoContinue</a></code>,
+      <code><a href="vtrace.Trace-class.html#enableAutoContinue">enableAutoContinue</a></code>,
+      <code><a href="vtrace.Trace-class.html#execute">execute</a></code>,
+      <code><a href="vtrace.Trace-class.html#getAutoContinueList">getAutoContinueList</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpoint">getBreakpoint</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpointByAddr">getBreakpointByAddr</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpointCode">getBreakpointCode</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpointEnabled">getBreakpointEnabled</a></code>,
+      <code><a href="vtrace.Trace-class.html#getBreakpoints">getBreakpoints</a></code>,
+      <code><a href="vtrace.Trace-class.html#getCurrentBreakpoint">getCurrentBreakpoint</a></code>,
+      <code><a href="vtrace.Trace-class.html#getCurrentSignal">getCurrentSignal</a></code>,
+      <code><a href="vtrace.Trace-class.html#getCurrentThread">getCurrentThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#getFds">getFds</a></code>,
+      <code><a href="vtrace.Trace-class.html#getMemoryFault">getMemoryFault</a></code>,
+      <code><a href="vtrace.Trace-class.html#getMemoryMaps">getMemoryMaps</a></code>,
+      <code><a href="vtrace.Trace-class.html#getMeta">getMeta</a></code>,
+      <code><a href="vtrace.Trace-class.html#getMode">getMode</a></code>,
+      <code><a href="vtrace.Trace-class.html#getNormalizedLibNames">getNormalizedLibNames</a></code>,
+      <code><a href="vtrace.Trace-class.html#getNotifiers">getNotifiers</a></code>,
+      <code><a href="vtrace.Trace-class.html#getPid">getPid</a></code>,
+      <code><a href="vtrace.Trace-class.html#getRegister">getRegister</a></code>,
+      <code><a href="vtrace.Trace-class.html#getRegisterContext">getRegisterContext</a></code>,
+      <code><a href="vtrace.Trace-class.html#getStackTrace">getStackTrace</a></code>,
+      <code><a href="vtrace.Trace-class.html#getStruct">getStruct</a></code>,
+      <code><a href="vtrace.Trace-class.html#getStructNames">getStructNames</a></code>,
+      <code><a href="vtrace.Trace-class.html#getSymByAddr">getSymByAddr</a></code>,
+      <code><a href="vtrace.Trace-class.html#getSymByName">getSymByName</a></code>,
+      <code><a href="vtrace.Trace-class.html#getSymsForFile">getSymsForFile</a></code>,
+      <code><a href="vtrace.Trace-class.html#getThreads">getThreads</a></code>,
+      <code><a href="vtrace.Trace-class.html#getVariable">getVariable</a></code>,
+      <code><a href="vtrace.Trace-class.html#getVariables">getVariables</a></code>,
+      <code><a href="vtrace.Trace-class.html#hasMeta">hasMeta</a></code>,
+      <code><a href="vtrace.Trace-class.html#hex">hex</a></code>,
+      <code><a href="vtrace.Trace-class.html#injectThread">injectThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#injectso">injectso</a></code>,
+      <code><a href="vtrace.Trace-class.html#isAttached">isAttached</a></code>,
+      <code><a href="vtrace.Trace-class.html#isRemote">isRemote</a></code>,
+      <code><a href="vtrace.Trace-class.html#isRunning">isRunning</a></code>,
+      <code><a href="vtrace.Trace-class.html#isThreadSuspended">isThreadSuspended</a></code>,
+      <code><a href="vtrace.Trace-class.html#joinThread">joinThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#kill">kill</a></code>,
+      <code><a href="vtrace.Trace-class.html#parseExpression">parseExpression</a></code>,
+      <code><a href="vtrace.Trace-class.html#protectMemory">protectMemory</a></code>,
+      <code><a href="vtrace.Trace-class.html#ps">ps</a></code>,
+      <code><a href="vtrace.Trace-class.html#readMemory">readMemory</a></code>,
+      <code><a href="vtrace.Trace-class.html#registerNotifier">registerNotifier</a></code>,
+      <code><a href="vtrace.Trace-class.html#release">release</a></code>,
+      <code><a href="vtrace.Trace-class.html#removeBreakpoint">removeBreakpoint</a></code>,
+      <code><a href="vtrace.Trace-class.html#requireAttached">requireAttached</a></code>,
+      <code><a href="vtrace.Trace-class.html#requireNotExited">requireNotExited</a></code>,
+      <code><a href="vtrace.Trace-class.html#requireNotRunning">requireNotRunning</a></code>,
+      <code><a href="vtrace.Trace-class.html#resumeThread">resumeThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#run">run</a></code>,
+      <code><a href="vtrace.Trace-class.html#runAgain">runAgain</a></code>,
+      <code><a href="vtrace.Trace-class.html#searchMemory">searchMemory</a></code>,
+      <code><a href="vtrace.Trace-class.html#searchMemoryRange">searchMemoryRange</a></code>,
+      <code><a href="vtrace.Trace-class.html#searchSymbols">searchSymbols</a></code>,
+      <code><a href="vtrace.Trace-class.html#selectThread">selectThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#sendBreak">sendBreak</a></code>,
+      <code><a href="vtrace.Trace-class.html#setBreakpointCode">setBreakpointCode</a></code>,
+      <code><a href="vtrace.Trace-class.html#setBreakpointEnabled">setBreakpointEnabled</a></code>,
+      <code><a href="vtrace.Trace-class.html#setCurrentSignal">setCurrentSignal</a></code>,
+      <code><a href="vtrace.Trace-class.html#setMeta">setMeta</a></code>,
+      <code><a href="vtrace.Trace-class.html#setMode">setMode</a></code>,
+      <code><a href="vtrace.Trace-class.html#setRegister">setRegister</a></code>,
+      <code><a href="vtrace.Trace-class.html#setVariable">setVariable</a></code>,
+      <code><a href="vtrace.Trace-class.html#stepi">stepi</a></code>,
+      <code><a href="vtrace.Trace-class.html#suspendThread">suspendThread</a></code>,
+      <code><a href="vtrace.Trace-class.html#writeMemory">writeMemory</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>envi.memory.IMemory</code></b>:
+      <code>addMemoryMap</code>,
+      <code>getMemoryMap</code>,
+      <code>getPointerSize</code>,
+      <code>getSegmentInfo</code>,
+      <code>isExecutable</code>,
+      <code>isReadable</code>,
+      <code>isShared</code>,
+      <code>isValidPointer</code>,
+      <code>isWriteable</code>,
+      <code>parseOpcode</code>,
+      <code>probeMemory</code>,
+      <code>readMemValue</code>,
+      <code>readMemoryFormat</code>,
+      <code>writeMemoryFormat</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html">FreeBSDMixin</a></code></b>:
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#finiMixin">finiMixin</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#handleAttach">handleAttach</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformAttach">platformAttach</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformContinue">platformContinue</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformDetach">platformDetach</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformExec">platformExec</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformGetFds">platformGetFds</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformGetMaps">platformGetMaps</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformGetThreads">platformGetThreads</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformPs">platformPs</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformReadMemory">platformReadMemory</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformResumeThread">platformResumeThread</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformStepi">platformStepi</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformSuspendThread">platformSuspendThread</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformWait">platformWait</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#platformWriteMemory">platformWriteMemory</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html">FreeBSDMixin</a></code></b> (private):
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#_getExeName" onclick="show_private();">_getExeName</a></code>,
+      <code><a href="vtrace.platforms.freebsd.FreeBSDMixin-class.html#_getThreadCount" onclick="show_private();">_getThreadCount</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.archs.i386.i386Mixin-class.html">archs.i386.i386Mixin</a></code></b>:
+      <code><a href="vtrace.archs.i386.i386Mixin-class.html#archGetStackTrace">archGetStackTrace</a></code>,
+      <code><a href="vtrace.archs.i386.i386Mixin-class.html#platformCall">platformCall</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>envi.archs.i386.i386Module</code></b>:
+      <code>archGetBreakInstr</code>,
+      <code>archGetRegCtx</code>,
+      <code>getEmulator</code>,
+      <code>makeOpcode</code>,
+      <code>pointerString</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>envi.registers.RegisterContext</code></b>:
+      <code>addMetaRegister</code>,
+      <code>getMetaRegInfo</code>,
+      <code>getProgramCounter</code>,
+      <code>getRegDef</code>,
+      <code>getRegisterByName</code>,
+      <code>getRegisterIndex</code>,
+      <code>getRegisterInfo</code>,
+      <code>getRegisterName</code>,
+      <code>getRegisterNameIndexes</code>,
+      <code>getRegisterNames</code>,
+      <code>getRegisterSnap</code>,
+      <code>getRegisterWidth</code>,
+      <code>getRegisters</code>,
+      <code>getStackCounter</code>,
+      <code>isDirty</code>,
+      <code>isMetaRegister</code>,
+      <code>loadRegDef</code>,
+      <code>loadRegMetas</code>,
+      <code>reprRegister</code>,
+      <code>setIsDirty</code>,
+      <code>setProgramCounter</code>,
+      <code>setRegisterByName</code>,
+      <code>setRegisterIndexes</code>,
+      <code>setRegisterInfo</code>,
+      <code>setRegisterSnap</code>,
+      <code>setRegisters</code>,
+      <code>setStackCounter</code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>envi.registers.RegisterContext</code></b> (private):
+      <code>_rctx_Export</code>,
+      <code>_rctx_Import</code>,
+      <code>_xlateToMetaReg</code>,
+      <code>_xlateToNativeReg</code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>envi.resolver.SymbolResolver</code></b>:
+      <code>addSymbol</code>,
+      <code>delSymbol</code>,
+      <code>getSymHint</code>,
+      <code>getSymList</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.archs.i386.i386WatchMixin-class.html">archs.i386.i386WatchMixin</a></code></b>:
+      <code><a href="vtrace.archs.i386.i386WatchMixin-class.html#archAddWatchpoint">archAddWatchpoint</a></code>,
+      <code><a href="vtrace.archs.i386.i386WatchMixin-class.html#archCheckWatchpoints">archCheckWatchpoints</a></code>,
+      <code><a href="vtrace.archs.i386.i386WatchMixin-class.html#archRemWatchpoint">archRemWatchpoint</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.platforms.posix.ElfMixin-class.html">posix.ElfMixin</a></code></b>:
+      <code><a href="vtrace.platforms.posix.ElfMixin-class.html#platformParseBinary">platformParseBinary</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.platforms.posix.PosixMixin-class.html">posix.PosixMixin</a></code></b>:
+      <code><a href="vtrace.platforms.posix.PosixMixin-class.html#handlePosixSignal">handlePosixSignal</a></code>,
+      <code><a href="vtrace.platforms.posix.PosixMixin-class.html#platformKill">platformKill</a></code>,
+      <code><a href="vtrace.platforms.posix.PosixMixin-class.html#platformProcessEvent">platformProcessEvent</a></code>,
+      <code><a href="vtrace.platforms.posix.PosixMixin-class.html#platformSendBreak">platformSendBreak</a></code>,
+      <code><a href="vtrace.platforms.posix.PosixMixin-class.html#sendSignal">sendSignal</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.platforms.base.TracerBase-class.html">base.TracerBase</a></code></b>:
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#__del__">__del__</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#__repr__">__repr__</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#addLibraryBase">addLibraryBase</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#checkBreakpoints">checkBreakpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#checkPageWatchpoints">checkPageWatchpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#checkWatchpoints">checkWatchpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#delLibraryBase">delLibraryBase</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#doStepLoop">doStepLoop</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#fireNotifiers">fireNotifiers</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#fireTracerThread">fireTracerThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#getExe">getExe</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#getResolverForFile">getResolverForFile</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#initMode">initMode</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#nextBpId">nextBpId</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#normFileName">normFileName</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#notify">notify</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformAllocateMemory">platformAllocateMemory</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformGetMemFault">platformGetMemFault</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformGetSignal">platformGetSignal</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformInjectSo">platformInjectSo</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformInjectThread">platformInjectThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformOpenFile">platformOpenFile</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformProtectMemory">platformProtectMemory</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformRelease">platformRelease</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformSelectThread">platformSelectThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#platformSetSignal">platformSetSignal</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#shouldRunAgain">shouldRunAgain</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#steploop">steploop</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#wait">wait</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.platforms.base.TracerBase-class.html">base.TracerBase</a></code></b> (private):
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_activateBreak" onclick="show_private();">_activateBreak</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_cacheRegs" onclick="show_private();">_cacheRegs</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_checkForBreak" onclick="show_private();">_checkForBreak</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_cleanupBreakpoints" onclick="show_private();">_cleanupBreakpoints</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_cleanupResources" onclick="show_private();">_cleanupResources</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_doRun" onclick="show_private();">_doRun</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_doWait" onclick="show_private();">_doWait</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_findLibraryMaps" onclick="show_private();">_findLibraryMaps</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireBreakpoint" onclick="show_private();">_fireBreakpoint</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireExit" onclick="show_private();">_fireExit</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireExitThread" onclick="show_private();">_fireExitThread</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireSignal" onclick="show_private();">_fireSignal</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_fireStep" onclick="show_private();">_fireStep</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_justAttached" onclick="show_private();">_justAttached</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_loadBinary" onclick="show_private();">_loadBinary</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_loadBinaryNorm" onclick="show_private();">_loadBinaryNorm</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_simpleCreateThreads" onclick="show_private();">_simpleCreateThreads</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_syncRegs" onclick="show_private();">_syncRegs</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_tellThreadExit" onclick="show_private();">_tellThreadExit</a></code>,
+      <code><a href="vtrace.platforms.base.TracerBase-class.html#_throwdownBreaks" onclick="show_private();">_throwdownBreaks</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="vtrace.notifiers.Notifier-class.html">notifiers.Notifier</a></code></b>:
+      <code><a href="vtrace.notifiers.Notifier-class.html#handleEvent">handleEvent</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.platforms.freebsd-pysrc.html#FreeBSDi386Trace.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Hand in a register definition which consists of a list of 
+  (&lt;name&gt;, &lt;width&gt;) tuples.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformGetRegCtx"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformGetRegCtx</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.platforms.freebsd-pysrc.html#FreeBSDi386Trace.platformGetRegCtx">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@v_base.threadwrap</code></li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformGetRegCtx">base.TracerBase.platformGetRegCtx</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="platformSetRegCtx"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">platformSetRegCtx</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tid</span>,
+        <span class="sig-arg">ctx</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace.platforms.freebsd-pysrc.html#FreeBSDi386Trace.platformSetRegCtx">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Decorators:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code>@v_base.threadwrap</code></li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="vtrace.platforms.base.TracerBase-class.html#platformSetRegCtx">base.TracerBase.platformSetRegCtx</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:44:58 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.tools.win32aslr &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vtrace" href="../../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.tools.win32aslr</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Utilities for windows tracer objects.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">PE</span>
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+
+<div class="viewcode-block" id="deAslr"><a class="viewcode-back" href="../../../vtrace.tools.html#vtrace.tools.win32aslr.deAslr">[docs]</a><span class="k">def</span> <span class="nf">deAslr</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Given an address in an ASLR&#39;d library, rebase</span>
+<span class="sd">    it back to the address as it would be if the</span>
+<span class="sd">    given PE were at it&#39;s suggested address...</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">remote</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;deAslr only works for local debuggers!&#39;</span><span class="p">)</span>
+
+    <span class="nb">map</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMemoryMap</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">map</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">va</span>
+
+    <span class="n">mapva</span><span class="p">,</span> <span class="n">mapsize</span><span class="p">,</span> <span class="n">mapperm</span><span class="p">,</span> <span class="n">mapfname</span> <span class="o">=</span> <span class="nb">map</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">mapfname</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">va</span>
+
+    <span class="n">normname</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">normFileName</span><span class="p">(</span><span class="n">mapfname</span><span class="p">)</span>
+    <span class="n">sym</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getSymByName</span><span class="p">(</span><span class="n">normname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sym</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">va</span>
+
+    <span class="n">membase</span> <span class="o">=</span> <span class="nb">long</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">peFromFileName</span><span class="p">(</span><span class="n">mapfname</span><span class="p">)</span>
+    <span class="n">filebase</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">OptionalHeader</span><span class="o">.</span><span class="n">ImageBase</span>
+
+    <span class="n">rva</span> <span class="o">=</span> <span class="n">va</span> <span class="o">-</span> <span class="n">membase</span>
+
+    <span class="k">return</span> <span class="n">filebase</span> <span class="o">+</span> <span class="n">rva</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.tools.iathook</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        <a href="vtrace.tools-module.html">Package&nbsp;tools</a> ::
+        Module&nbsp;iathook
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.tools.iathook-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vtrace.tools.iathook-module.html">Module vtrace.tools.iathook</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">Code for hooking import address tables by making them invalid</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">pointers and catching the exceptions...</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">PE</tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package vtrace=vtrace-module.html"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-0', 'vtrace', 'link-0');">vtrace</a></tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-1', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module vtrace.watchpoints=vtrace.watchpoints-module.html"><a title="vtrace.watchpoints" class="py-name" href="#" onclick="return doclink('link-2', 'watchpoints', 'link-2');">watchpoints</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vt_watchpoints</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"> </tt>
+<a name="IatHook"></a><div id="IatHook-def"><a name="L9"></a><tt class="py-lineno"> 9</tt> <a class="py-toggle" href="#" id="IatHook-toggle" onclick="return toggle('IatHook');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.tools.iathook.IatHook-class.html">IatHook</a><tt class="py-op">(</tt><tt class="py-base-class">vt_watchpoints</tt><tt class="py-op">.</tt><tt class="py-base-class">Watchpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="IatHook-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="IatHook-expanded"><a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line"><tt class="py-docstring">    Abuse the PageWatch subsystem to allow function pointers to be</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-docstring">    frob'd to create breakpoint like behavior.</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">    <tt id="link-3" class="py-name" targets="Variable vtrace.tools.iathook.IatHook.newptr=vtrace.tools.iathook.IatHook-class.html#newptr"><a title="vtrace.tools.iathook.IatHook.newptr" class="py-name" href="#" onclick="return doclink('link-3', 'newptr', 'link-3');">newptr</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0xfbfbf000</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"> </tt>
+<a name="IatHook.__init__"></a><div id="IatHook.__init__-def"><a name="L17"></a><tt class="py-lineno">17</tt> <a class="py-toggle" href="#" id="IatHook.__init__-toggle" onclick="return toggle('IatHook.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.iathook.IatHook-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">ptraddr</tt><tt class="py-op">,</tt> <tt class="py-param">iatname</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="IatHook.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="IatHook.__init__-expanded"><a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">fakeptr</tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name" targets="Class vtrace.tools.iathook.IatHook=vtrace.tools.iathook.IatHook-class.html"><a title="vtrace.tools.iathook.IatHook" class="py-name" href="#" onclick="return doclink('link-4', 'IatHook', 'link-4');">IatHook</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name"><a title="vtrace.tools.iathook.IatHook.newptr" class="py-name" href="#" onclick="return doclink('link-5', 'newptr', 'link-3');">newptr</a></tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt id="link-6" class="py-name"><a title="vtrace.tools.iathook.IatHook" class="py-name" href="#" onclick="return doclink('link-6', 'IatHook', 'link-4');">IatHook</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name"><a title="vtrace.tools.iathook.IatHook.newptr" class="py-name" href="#" onclick="return doclink('link-7', 'newptr', 'link-3');">newptr</a></tt> <tt class="py-op">+=</tt> <tt class="py-number">4096</tt> <tt class="py-comment"># FIXME race... sigh...</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line"> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">        <tt class="py-name">vt_watchpoints</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Class vtrace.watchpoints.Watchpoint=vtrace.watchpoints.Watchpoint-class.html"><a title="vtrace.watchpoints.Watchpoint" class="py-name" href="#" onclick="return doclink('link-8', 'Watchpoint', 'link-8');">Watchpoint</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Method vtrace.AccessViolation.__init__()=vtrace.AccessViolation-class.html#__init__,Method vtrace.Trace.__init__()=vtrace.Trace-class.html#__init__,Method vtrace.TraceGroup.__init__()=vtrace.TraceGroup-class.html#__init__,Method vtrace.VtraceExpressionLocals.__init__()=vtrace.VtraceExpressionLocals-class.html#__init__,Method vtrace.archs.amd64.Amd64Mixin.__init__()=vtrace.archs.amd64.Amd64Mixin-class.html#__init__,Method vtrace.archs.arm.ArmMixin.__init__()=vtrace.archs.arm.ArmMixin-class.html#__init__,Method vtrace.archs.i386.i386Mixin.__init__()=vtrace.archs.i386.i386Mixin-class.html#__init__,Method vtrace.archs.i386.i386WatchMixin.__init__()=vtrace.archs.i386.i386WatchMixin-class.html#__init__,Method vtrace.breakpoints.Breakpoint.__init__()=vtrace.breakpoints.Breakpoint-class.html#__init__,Method vtrace.breakpoints.CallBreak.__init__()=vtrace.breakpoints.CallBreak-class.html#__init__,Method vtrace.envitools.TraceEmulator.__init__()=vtrace.envitools.TraceEmulator-class.html#__init__,Method vtrace.notifiers.DistributedNotifier.__init__()=vtrace.notifiers.DistributedNotifier-class.html#__init__,Method vtrace.notifiers.Notifier.__init__()=vtrace.notifiers.Notifier-class.html#__init__,Method vtrace.platforms.android.AndroidArmTrace.__init__()=vtrace.platforms.android.AndroidArmTrace-class.html#__init__,Method vtrace.platforms.base.TracerBase.__init__()=vtrace.platforms.base.TracerBase-class.html#__init__,Method vtrace.platforms.base.TracerThread.__init__()=vtrace.platforms.base.TracerThread-class.html#__init__,Method vtrace.platforms.darwin.DarwinAmd64Trace.__init__()=vtrace.platforms.darwin.DarwinAmd64Trace-class.html#__init__,Method vtrace.platforms.darwin.DarwinMixin.__init__()=vtrace.platforms.darwin.DarwinMixin-class.html#__init__,Method vtrace.platforms.darwin.Darwini386Trace.__init__()=vtrace.platforms.darwin.Darwini386Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__()=vtrace.platforms.freebsd.FreeBSDAmd64Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDMixin.__init__()=vtrace.platforms.freebsd.FreeBSDMixin-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDi386Trace.__init__()=vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin.__init__()=vtrace.platforms.gdbstub.GdbStubMixin-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin_old.__init__()=vtrace.platforms.gdbstub.GdbStubMixin_old-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubTrace.__init__()=vtrace.platforms.gdbstub.GdbStubTrace-class.html#__init__,Method vtrace.platforms.gdbstub.KeBugCheckBreak.__init__()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#__init__,Method vtrace.platforms.linux.LinuxAmd64Trace.__init__()=vtrace.platforms.linux.LinuxAmd64Trace-class.html#__init__,Method vtrace.platforms.linux.LinuxMixin.__init__()=vtrace.platforms.linux.LinuxMixin-class.html#__init__,Method vtrace.platforms.linux.Linuxi386Trace.__init__()=vtrace.platforms.linux.Linuxi386Trace-class.html#__init__,Method vtrace.platforms.posix.ElfMixin.__init__()=vtrace.platforms.posix.ElfMixin-class.html#__init__,Method vtrace.platforms.posix.PosixMixin.__init__()=vtrace.platforms.posix.PosixMixin-class.html#__init__,Method vtrace.platforms.posix.PtraceMixin.__init__()=vtrace.platforms.posix.PtraceMixin-class.html#__init__,Method vtrace.platforms.win32.Win32SymbolParser.__init__()=vtrace.platforms.win32.Win32SymbolParser-class.html#__init__,Method vtrace.platforms.win32.WindowsAmd64Trace.__init__()=vtrace.platforms.win32.WindowsAmd64Trace-class.html#__init__,Method vtrace.platforms.win32.WindowsMixin.__init__()=vtrace.platforms.win32.WindowsMixin-class.html#__init__,Method vtrace.platforms.win32.Windowsi386Trace.__init__()=vtrace.platforms.win32.Windowsi386Trace-class.html#__init__,Method vtrace.qt.RegColorDelegate.__init__()=vtrace.qt.RegColorDelegate-class.html#__init__,Method vtrace.qt.VQFileDescView.__init__()=vtrace.qt.VQFileDescView-class.html#__init__,Method vtrace.qt.VQMemoryMapView.__init__()=vtrace.qt.VQMemoryMapView-class.html#__init__,Method vtrace.qt.VQProcessListView.__init__()=vtrace.qt.VQProcessListView-class.html#__init__,Method vtrace.qt.VQProcessSelectDialog.__init__()=vtrace.qt.VQProcessSelectDialog-class.html#__init__,Method vtrace.qt.VQRegistersListView.__init__()=vtrace.qt.VQRegistersListView-class.html#__init__,Method vtrace.qt.VQRegistersView.__init__()=vtrace.qt.VQRegistersView-class.html#__init__,Method vtrace.qt.VQThreadsView.__init__()=vtrace.qt.VQThreadsView-class.html#__init__,Method vtrace.qt.VQTraceNotifier.__init__()=vtrace.qt.VQTraceNotifier-class.html#__init__,Method vtrace.qt.VQTraceToolBar.__init__()=vtrace.qt.VQTraceToolBar-class.html#__init__,Method vtrace.rmi.RemoteTrace.__init__()=vtrace.rmi.RemoteTrace-class.html#__init__,Method vtrace.snapshot.TraceSnapshot.__init__()=vtrace.snapshot.TraceSnapshot-class.html#__init__,Method vtrace.tools.iathook.IatHook.__init__()=vtrace.tools.iathook.IatHook-class.html#__init__,Method vtrace.tools.win32alloc.ReturnBreak.__init__()=vtrace.tools.win32alloc.ReturnBreak-class.html#__init__,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__,Method vtrace.tools.win32heap.FreeListCorruption.__init__()=vtrace.tools.win32heap.FreeListCorruption-class.html#__init__,Method vtrace.tools.win32heap.HeapCorruptionException.__init__()=vtrace.tools.win32heap.HeapCorruptionException-class.html#__init__,Method vtrace.tools.win32heap.Win32Chunk.__init__()=vtrace.tools.win32heap.Win32Chunk-class.html#__init__,Method vtrace.tools.win32heap.Win32Heap.__init__()=vtrace.tools.win32heap.Win32Heap-class.html#__init__,Method vtrace.tools.win32heap.Win32Segment.__init__()=vtrace.tools.win32heap.Win32Segment-class.html#__init__,Method vtrace.util.TraceManager.__init__()=vtrace.util.TraceManager-class.html#__init__,Method vtrace.watchpoints.PageWatchpoint.__init__()=vtrace.watchpoints.PageWatchpoint-class.html#__init__,Method vtrace.watchpoints.Watchpoint.__init__()=vtrace.watchpoints.Watchpoint-class.html#__init__"><a title="vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__" class="py-name" href="#" onclick="return doclink('link-9', '__init__', 'link-9');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">fakeptr</tt><tt class="py-op">)</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ptraddr</tt> <tt class="py-op">=</tt> <tt class="py-name">ptraddr</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fakeptr</tt> <tt class="py-op">=</tt> <tt class="py-name">fakeptr</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">iatname</tt> <tt class="py-op">=</tt> <tt class="py-name">iatname</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">origptr</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"> </tt>
+<a name="IatHook.getName"></a><div id="IatHook.getName-def"><a name="L27"></a><tt class="py-lineno">27</tt> <a class="py-toggle" href="#" id="IatHook.getName-toggle" onclick="return toggle('IatHook.getName');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.iathook.IatHook-class.html#getName">getName</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="IatHook.getName-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="IatHook.getName-expanded"><a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-comment">#bname = Breakpoint.getName(self)</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">iatname</tt> </tt>
+</div><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="IatHook.resolveAddr"></a><div id="IatHook.resolveAddr-def"><a name="L31"></a><tt class="py-lineno">31</tt> <a class="py-toggle" href="#" id="IatHook.resolveAddr-toggle" onclick="return toggle('IatHook.resolveAddr');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.iathook.IatHook-class.html#resolveAddr">resolveAddr</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">,</tt> <tt class="py-param">addr</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="IatHook.resolveAddr-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="IatHook.resolveAddr-expanded"><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"> </tt>
+<a name="IatHook.activate"></a><div id="IatHook.activate-def"><a name="L34"></a><tt class="py-lineno">34</tt> <a class="py-toggle" href="#" id="IatHook.activate-toggle" onclick="return toggle('IatHook.activate');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.iathook.IatHook-class.html#activate">activate</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="IatHook.activate-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="IatHook.activate-expanded"><a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">origptr</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">origptr</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">readMemoryFormat</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ptraddr</tt><tt class="py-op">,</tt> <tt class="py-string">'&lt;P'</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">writeMemoryFormat</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ptraddr</tt><tt class="py-op">,</tt> <tt class="py-string">'&lt;P'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fakeptr</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="IatHook.deactivate"></a><div id="IatHook.deactivate-def"><a name="L39"></a><tt class="py-lineno">39</tt> <a class="py-toggle" href="#" id="IatHook.deactivate-toggle" onclick="return toggle('IatHook.deactivate');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.iathook.IatHook-class.html#deactivate">deactivate</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="IatHook.deactivate-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="IatHook.deactivate-expanded"><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">origptr</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">writeMemoryFormat</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ptraddr</tt><tt class="py-op">,</tt> <tt class="py-string">'&lt;P'</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">origptr</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt>
+<a name="IatHook.notify"></a><div id="IatHook.notify-def"><a name="L43"></a><tt class="py-lineno">43</tt> <a class="py-toggle" href="#" id="IatHook.notify-toggle" onclick="return toggle('IatHook.notify');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.iathook.IatHook-class.html#notify">notify</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="IatHook.notify-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="IatHook.notify-expanded"><a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-comment"># We have to fake out the program counter...</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">setProgramCounter</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">origptr</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method vtrace.Trace.setCurrentSignal()=vtrace.Trace-class.html#setCurrentSignal"><a title="vtrace.Trace.setCurrentSignal" class="py-name" href="#" onclick="return doclink('link-10', 'setCurrentSignal', 'link-10');">setCurrentSignal</a></tt><tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">vt_watchpoints</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name"><a title="vtrace.watchpoints.Watchpoint" class="py-name" href="#" onclick="return doclink('link-11', 'Watchpoint', 'link-8');">Watchpoint</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Method vtrace.TraceGroup.notify()=vtrace.TraceGroup-class.html#notify,Method vtrace.breakpoints.Breakpoint.notify()=vtrace.breakpoints.Breakpoint-class.html#notify,Method vtrace.breakpoints.CallBreak.notify()=vtrace.breakpoints.CallBreak-class.html#notify,Method vtrace.breakpoints.OneTimeBreak.notify()=vtrace.breakpoints.OneTimeBreak-class.html#notify,Method vtrace.breakpoints.SnapshotBreak.notify()=vtrace.breakpoints.SnapshotBreak-class.html#notify,Method vtrace.breakpoints.StopAndRemoveBreak.notify()=vtrace.breakpoints.StopAndRemoveBreak-class.html#notify,Method vtrace.breakpoints.StopRunForeverBreak.notify()=vtrace.breakpoints.StopRunForeverBreak-class.html#notify,Method vtrace.breakpoints.TrackerBreak.notify()=vtrace.breakpoints.TrackerBreak-class.html#notify,Method vtrace.notifiers.DistributedNotifier.notify()=vtrace.notifiers.DistributedNotifier-class.html#notify,Method vtrace.notifiers.Notifier.notify()=vtrace.notifiers.Notifier-class.html#notify,Method vtrace.notifiers.VerboseNotifier.notify()=vtrace.notifiers.VerboseNotifier-class.html#notify,Method vtrace.platforms.base.TracerBase.notify()=vtrace.platforms.base.TracerBase-class.html#notify,Method vtrace.platforms.gdbstub.KeBugCheckBreak.notify()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#notify,Method vtrace.qt.VQTraceNotifier.notify()=vtrace.qt.VQTraceNotifier-class.html#notify,Method vtrace.qt.VQTraceToolBar.notify()=vtrace.qt.VQTraceToolBar-class.html#notify,Method vtrace.tools.iathook.IatHook.notify()=vtrace.tools.iathook.IatHook-class.html#notify,Method vtrace.tools.win32alloc.ReturnBreak.notify()=vtrace.tools.win32alloc.ReturnBreak-class.html#notify,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.notify()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#notify,Method vtrace.tools.win32stealth.StealthBreak.notify()=vtrace.tools.win32stealth.StealthBreak-class.html#notify,Method vtrace.watchpoints.PageWatchpoint.notify()=vtrace.watchpoints.PageWatchpoint-class.html#notify"><a title="vtrace.TraceGroup.notify
+vtrace.breakpoints.Breakpoint.notify
+vtrace.breakpoints.CallBreak.notify
+vtrace.breakpoints.OneTimeBreak.notify
+vtrace.breakpoints.SnapshotBreak.notify
+vtrace.breakpoints.StopAndRemoveBreak.notify
+vtrace.breakpoints.StopRunForeverBreak.notify
+vtrace.breakpoints.TrackerBreak.notify
+vtrace.notifiers.DistributedNotifier.notify
+vtrace.notifiers.Notifier.notify
+vtrace.notifiers.VerboseNotifier.notify
+vtrace.platforms.base.TracerBase.notify
+vtrace.platforms.gdbstub.KeBugCheckBreak.notify
+vtrace.qt.VQTraceNotifier.notify
+vtrace.qt.VQTraceToolBar.notify
+vtrace.tools.iathook.IatHook.notify
+vtrace.tools.win32alloc.ReturnBreak.notify
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.notify
+vtrace.tools.win32stealth.StealthBreak.notify
+vtrace.watchpoints.PageWatchpoint.notify" class="py-name" href="#" onclick="return doclink('link-12', 'notify', 'link-12');">notify</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">event</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"> </tt>
+<a name="hookIat"></a><div id="hookIat-def"><a name="L50"></a><tt class="py-lineno">50</tt> <a class="py-toggle" href="#" id="hookIat-toggle" onclick="return toggle('hookIat');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.iathook-module.html#hookIat">hookIat</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">,</tt> <tt class="py-param">libname</tt><tt class="py-op">,</tt> <tt class="py-param">implib</tt><tt class="py-op">=</tt><tt class="py-string">'*'</tt><tt class="py-op">,</tt> <tt class="py-param">impfunc</tt><tt class="py-op">=</tt><tt class="py-string">'*'</tt><tt class="py-op">,</tt> <tt class="py-param">fast</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="hookIat-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="hookIat-expanded"><a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line"><tt class="py-docstring">    Hook the IAT with special "breakpoint" like objects which</tt> </tt>
+<a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"><tt class="py-docstring">    handle the memory access errors and document the calls...</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"><tt class="py-docstring">    Set fast=True for them to be "Fastbreak" breakpoints.</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line"><tt class="py-docstring">    This returns a list of (name, bpid) tuples...</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"><tt class="py-docstring">    Example:</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line"><tt class="py-docstring">        for impname, bpid in hookIat(t, 'ws2_32')</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"><tt class="py-docstring">            t.setBreakpointCode(bpid, codestr)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line"><tt class="py-docstring">            ...</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">    <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">    <tt class="py-name">baseaddr</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method vtrace.Trace.parseExpression()=vtrace.Trace-class.html#parseExpression"><a title="vtrace.Trace.parseExpression" class="py-name" href="#" onclick="return doclink('link-13', 'parseExpression', 'link-13');">parseExpression</a></tt><tt class="py-op">(</tt><tt class="py-name">libname</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">    <tt class="py-name">pe</tt> <tt class="py-op">=</tt> <tt class="py-name">PE</tt><tt class="py-op">.</tt><tt class="py-name">peFromMemoryObject</tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">,</tt> <tt class="py-name">baseaddr</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">    <tt class="py-name">origs</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line"> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line">    <tt class="py-name">implib</tt> <tt class="py-op">=</tt> <tt class="py-name">implib</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line">    <tt class="py-name">impfunc</tt> <tt class="py-op">=</tt> <tt class="py-name">impfunc</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">rva</tt><tt class="py-op">,</tt> <tt class="py-name">ilib</tt><tt class="py-op">,</tt> <tt class="py-name">ifunc</tt> <tt class="py-keyword">in</tt> <tt class="py-name">pe</tt><tt class="py-op">.</tt><tt class="py-name">getImports</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">        <tt class="py-name">ilib</tt> <tt class="py-op">=</tt> <tt class="py-name">ilib</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">replace</tt><tt class="py-op">(</tt><tt class="py-string">'.dll'</tt><tt class="py-op">,</tt> <tt class="py-string">''</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ilib</tt> <tt class="py-op">!=</tt> <tt class="py-name">implib</tt> <tt class="py-keyword">and</tt> <tt class="py-name">implib</tt> <tt class="py-op">!=</tt> <tt class="py-string">'*'</tt><tt class="py-op">:</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">            <tt class="py-keyword">continue</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line"> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ifunc</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">impfunc</tt> <tt class="py-keyword">and</tt> <tt class="py-name">impfunc</tt><tt class="py-op">!=</tt><tt class="py-string">'*'</tt><tt class="py-op">:</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">            <tt class="py-keyword">continue</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line"> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">        <tt class="py-name">iatname</tt> <tt class="py-op">=</tt> <tt class="py-string">'%s.%s.%s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">libname</tt><tt class="py-op">,</tt> <tt class="py-name">ilib</tt><tt class="py-op">,</tt> <tt class="py-name">ifunc</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">        <tt class="py-name">wp</tt> <tt class="py-op">=</tt> <tt id="link-14" class="py-name"><a title="vtrace.tools.iathook.IatHook" class="py-name" href="#" onclick="return doclink('link-14', 'IatHook', 'link-4');">IatHook</a></tt><tt class="py-op">(</tt><tt class="py-name">baseaddr</tt> <tt class="py-op">+</tt> <tt class="py-name">rva</tt><tt class="py-op">,</tt> <tt class="py-name">iatname</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">        <tt class="py-name">wp</tt><tt class="py-op">.</tt><tt class="py-name">fastbreak</tt> <tt class="py-op">=</tt> <tt class="py-name">fast</tt> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">        <tt class="py-name">bpid</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method vtrace.Trace.addBreakpoint()=vtrace.Trace-class.html#addBreakpoint"><a title="vtrace.Trace.addBreakpoint" class="py-name" href="#" onclick="return doclink('link-15', 'addBreakpoint', 'link-15');">addBreakpoint</a></tt><tt class="py-op">(</tt><tt class="py-name">wp</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">        <tt class="py-name">ret</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt> <tt class="py-op">(</tt><tt class="py-name">iatname</tt><tt class="py-op">,</tt> <tt class="py-name">bpid</tt><tt class="py-op">)</tt> <tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">ret</tt> </tt>
+</div><a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:45:00 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

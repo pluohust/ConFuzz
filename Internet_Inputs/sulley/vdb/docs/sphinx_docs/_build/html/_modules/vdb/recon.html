@@ -1,0 +1,214 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vdb.recon &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vdb" href="../vdb.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vdb.html" accesskey="U">vdb</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vdb.recon</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The recon subsystem for monitoring well known library</span>
+<span class="sd">calls and identifying dangerous calling mechanisms.</span>
+
+<span class="sd">NOTE: This subsystem pretty much assumes some intel-like</span>
+<span class="sd">conventions...</span>
+
+<span class="sd">Recon Format Chars:</span>
+<span class="sd">    A - A NULL terminated ascii string</span>
+<span class="sd">    W - A NULL terminated utf-16le string</span>
+<span class="sd">    P - A platform width pointer</span>
+<span class="sd">    I - An integer (32 bits for now...)</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">vtrace.breakpoints</span> <span class="kn">as</span> <span class="nn">vt_breakpoints</span>
+
+<div class="viewcode-block" id="reprargs"><a class="viewcode-back" href="../../vdb.recon.html#vdb.recon.reprargs">[docs]</a><span class="k">def</span> <span class="nf">reprargs</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fmt</span><span class="p">)):</span>
+        <span class="n">fchr</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">arg</span>  <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">fchr</span> <span class="o">==</span> <span class="s">&#39;P&#39;</span><span class="p">:</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s">&#39;</span>
+
+        <span class="k">elif</span> <span class="n">fchr</span> <span class="o">==</span> <span class="s">&#39;I&#39;</span><span class="p">:</span>
+            <span class="n">rstr</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">fchr</span> <span class="o">==</span> <span class="s">&#39;U&#39;</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="s">&#39;NULL&#39;</span>
+
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">trace</span><span class="o">.</span><span class="n">isValidPointer</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">arg</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">buf</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="mi">260</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">ubuf</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-16le&#39;</span><span class="p">,</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">ubuf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                
+        <span class="k">elif</span> <span class="n">fchr</span> <span class="o">==</span> <span class="s">&#39;S&#39;</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="s">&#39;NULL&#39;</span>
+
+            <span class="k">elif</span> <span class="ow">not</span> <span class="n">trace</span><span class="o">.</span><span class="n">isValidPointer</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">arg</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">buf</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="mi">260</span><span class="p">)</span>
+                <span class="n">rstr</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">buf</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="n">fchr</span> <span class="o">==</span> <span class="s">&#39;C&#39;</span><span class="p">:</span>
+            <span class="n">rstr</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">chr</span><span class="p">(</span> <span class="n">arg</span> <span class="o">&amp;</span> <span class="mh">0xff</span> <span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">fchr</span> <span class="o">==</span> <span class="s">&#39;X&#39;</span><span class="p">:</span>
+            <span class="n">rstr</span> <span class="o">=</span> <span class="s">&#39;0x</span><span class="si">%.8x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">arg</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Unknown Recon Format: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">fchr</span><span class="p">)</span>
+
+        <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rstr</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r</span>
+</div>
+<div class="viewcode-block" id="ReconBreak"><a class="viewcode-back" href="../../vdb.recon.html#vdb.recon.ReconBreak">[docs]</a><span class="k">class</span> <span class="nc">ReconBreak</span><span class="p">(</span><span class="n">vt_breakpoints</span><span class="o">.</span><span class="n">Breakpoint</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symname</span><span class="p">,</span> <span class="n">reconfmt</span><span class="p">):</span>
+        <span class="n">vt_breakpoints</span><span class="o">.</span><span class="n">Breakpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">symname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">True</span> <span class="c"># We are a fast-break, don&#39;t notify the trace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_symname</span> <span class="o">=</span> <span class="n">symname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reconfmt</span> <span class="o">=</span> <span class="n">reconfmt</span>
+
+<div class="viewcode-block" id="ReconBreak.getName"><a class="viewcode-back" href="../../vdb.recon.html#vdb.recon.ReconBreak.getName">[docs]</a>    <span class="k">def</span> <span class="nf">getName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_symname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconfmt</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ReconBreak.notify"><a class="viewcode-back" href="../../vdb.recon.html#vdb.recon.ReconBreak.notify">[docs]</a>    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+        <span class="n">thid</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">)</span>
+        <span class="n">stackptr</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStackCounter</span><span class="p">()</span>
+
+        <span class="n">rawargs</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">stackptr</span><span class="p">,</span> <span class="s">&#39;&lt;</span><span class="si">%d</span><span class="s">P&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reconfmt</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">savedeip</span> <span class="o">=</span> <span class="n">rawargs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">rawargs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">recon_hits</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;recon_hits&#39;</span><span class="p">)</span>
+
+        <span class="n">argrep</span> <span class="o">=</span> <span class="n">reprargs</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reconfmt</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">recon_hits</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">thid</span><span class="p">,</span> <span class="n">savedeip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symname</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">argrep</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;recon_quiet&#39;</span><span class="p">):</span>
+            <span class="n">argstr</span> <span class="o">=</span> <span class="s">&#39;(</span><span class="si">%s</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">argrep</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&#39;RECON: </span><span class="si">%.4d</span><span class="s"> 0x</span><span class="si">%.8x</span><span class="s"> </span><span class="si">%s%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">thid</span><span class="p">,</span> <span class="n">savedeip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symname</span><span class="p">,</span> <span class="n">argstr</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="addReconBreak"><a class="viewcode-back" href="../../vdb.recon.html#vdb.recon.addReconBreak">[docs]</a><span class="k">def</span> <span class="nf">addReconBreak</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">symname</span><span class="p">,</span> <span class="n">reconfmt</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;recon_hits&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;recon_hits&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">bp</span> <span class="o">=</span> <span class="n">ReconBreak</span><span class="p">(</span><span class="n">symname</span><span class="p">,</span> <span class="n">reconfmt</span><span class="p">)</span>
+    <span class="n">bpid</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bpid</span>
+</div>
+<div class="viewcode-block" id="clearReconHits"><a class="viewcode-back" href="../../vdb.recon.html#vdb.recon.clearReconHits">[docs]</a><span class="k">def</span> <span class="nf">clearReconHits</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Clear the current list of recon hits.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">trace</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;recon_hits&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</div>
+<div class="viewcode-block" id="getReconHits"><a class="viewcode-back" href="../../vdb.recon.html#vdb.recon.getReconHits">[docs]</a><span class="k">def</span> <span class="nf">getReconHits</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the list of recon &quot;hits&quot; entries.  Each hit entry is a tuple</span>
+<span class="sd">    of (threadid, savedeip, symname, argtup, argreprtup).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;recon_hits&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vdb.html" >vdb</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

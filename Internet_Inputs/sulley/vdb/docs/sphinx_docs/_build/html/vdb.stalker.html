@@ -1,0 +1,206 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>stalker Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="stalker-package">
+<h1>stalker Package<a class="headerlink" href="#stalker-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">stalker</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-vdb.stalker"></span><p>The stalker subsystem is a breakpoint based coverage tool</p>
+<dl class="class">
+<dt id="vdb.stalker.StalkerBlockBreak">
+<em class="property">class </em><tt class="descclassname">vdb.stalker.</tt><tt class="descname">StalkerBlockBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerBlockBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerBlockBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>A breakpoint object which is put on codeblock boundaries
+to track hits.</p>
+<dl class="method">
+<dt id="vdb.stalker.StalkerBlockBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerBlockBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerBlockBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.stalker.StalkerBreak">
+<em class="property">class </em><tt class="descclassname">vdb.stalker.</tt><tt class="descname">StalkerBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>Stalker breakpoints are added to function entry points
+to trigger code-flow analysis and subsequent block breakpoint
+addition.</p>
+<dl class="method">
+<dt id="vdb.stalker.StalkerBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.stalker.StalkerBreak.resolvedaddr">
+<tt class="descname">resolvedaddr</tt><big>(</big><em>trace</em>, <em>address</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerBreak.resolvedaddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerBreak.resolvedaddr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.stalker.StalkerCodeFlow">
+<em class="property">class </em><tt class="descclassname">vdb.stalker.</tt><tt class="descname">StalkerCodeFlow</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerCodeFlow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerCodeFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="envi.html#envi.codeflow.CodeFlowContext" title="envi.codeflow.CodeFlowContext"><tt class="xref py py-class docutils literal"><span class="pre">envi.codeflow.CodeFlowContext</span></tt></a></p>
+<dl class="method">
+<dt id="vdb.stalker.StalkerCodeFlow.setupBreakLists">
+<tt class="descname">setupBreakLists</tt><big>(</big><em>mmap</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerCodeFlow.setupBreakLists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerCodeFlow.setupBreakLists" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vdb.stalker.StalkerDynBreak">
+<em class="property">class </em><tt class="descclassname">vdb.stalker.</tt><tt class="descname">StalkerDynBreak</tt><big>(</big><em>address</em>, <em>expression=None</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerDynBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerDynBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vtrace.html#vtrace.breakpoints.Breakpoint" title="vtrace.breakpoints.Breakpoint"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.breakpoints.Breakpoint</span></tt></a></p>
+<p>A breakpoint which is placed on dynamic branches to track
+code flow across them.</p>
+<dl class="method">
+<dt id="vdb.stalker.StalkerDynBreak.notify">
+<tt class="descname">notify</tt><big>(</big><em>event</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerDynBreak.notify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerDynBreak.notify" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="vdb.stalker.StalkerDynBreak.resolvedaddr">
+<tt class="descname">resolvedaddr</tt><big>(</big><em>trace</em>, <em>address</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#StalkerDynBreak.resolvedaddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.StalkerDynBreak.resolvedaddr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.stalker.addStalkerEntry">
+<tt class="descclassname">vdb.stalker.</tt><tt class="descname">addStalkerEntry</tt><big>(</big><em>trace</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#addStalkerEntry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.addStalkerEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add stalker coverage beginning with the specified entry point</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.stalker.clearStalkerBreaks">
+<tt class="descclassname">vdb.stalker.</tt><tt class="descname">clearStalkerBreaks</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#clearStalkerBreaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.clearStalkerBreaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleanup all stalker breaks and metadata</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.stalker.clearStalkerHits">
+<tt class="descclassname">vdb.stalker.</tt><tt class="descname">clearStalkerHits</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#clearStalkerHits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.clearStalkerHits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the stalker hit list for the given trace</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.stalker.getStalkerHits">
+<tt class="descclassname">vdb.stalker.</tt><tt class="descname">getStalkerHits</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#getStalkerHits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.getStalkerHits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the list of blocks hit in the current stalker</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vdb.stalker.initStalker">
+<tt class="descclassname">vdb.stalker.</tt><tt class="descname">initStalker</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#initStalker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.initStalker" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="vdb.stalker.resetStalkerBreaks">
+<tt class="descclassname">vdb.stalker.</tt><tt class="descname">resetStalkerBreaks</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/vdb/stalker.html#resetStalkerBreaks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#vdb.stalker.resetStalkerBreaks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-enable all previously hit stalker breakpoints.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">stalker Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">stalker</span></tt> Package</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vdb.stalker.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,2979 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.Trace</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        Class&nbsp;Trace
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.Trace-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Trace</h1><p class="nomargin-top"><span class="codelink"><a href="vtrace-pysrc.html#Trace">source&nbsp;code</a></span></p>
+<pre class="base-tree">
+           <a href="envi.memory.IMemory-class.html">envi.memory.IMemory</a> --+
+                                 |
+<a href="envi.registers.RegisterContext-class.html">envi.registers.RegisterContext</a> --+
+                                 |
+  <a href="envi.resolver.SymbolResolver-class.html">envi.resolver.SymbolResolver</a> --+
+                                 |
+                        object --+
+                                 |
+                                <strong class="uidshort">Trace</strong>
+</pre>
+
+<dl><dt>Known Subclasses:</dt>
+<dd>
+      <ul class="subclass-list">
+<li><a href="vtrace.envitools.TraceEmulator-class.html">envitools.TraceEmulator</a></li><li>, <a href="vtrace.snapshot.TraceSnapshot-class.html">snapshot.TraceSnapshot</a></li><li>, <a href="vtrace.platforms.win32.WindowsAmd64Trace-class.html">platforms.win32.WindowsAmd64Trace</a></li><li>, <a href="vtrace.platforms.win32.Windowsi386Trace-class.html">platforms.win32.Windowsi386Trace</a></li><li>, <a href="vtrace.platforms.linux.LinuxAmd64Trace-class.html">platforms.linux.LinuxAmd64Trace</a></li><li>, <a href="vtrace.platforms.linux.Linuxi386Trace-class.html">platforms.linux.Linuxi386Trace</a></li><li>, <a href="vtrace.platforms.android.AndroidArmTrace-class.html">platforms.android.AndroidArmTrace</a></li><li>, <a href="vtrace.platforms.gdbstub.GdbStubTrace-class.html">platforms.gdbstub.GdbStubTrace</a></li>  </ul>
+</dd></dl>
+
+<hr />
+<p>The main tracer object.  A trace instance is dynamically generated 
+  using this and *many* potential mixin classes.  However, API users should
+  *not* worry about the methods that come from the mixins...  Everything 
+  that is *meant* to be used from the API is contained and documented 
+  here.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">archname</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Hand in a register definition which consists of a list of 
+      (&lt;name&gt;, &lt;width&gt;) tuples.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#addBreakByAddr" class="summary-sig-name">addBreakByAddr</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">va</span>,
+        <span class="summary-sig-arg">fastbreak</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Add a breakpoint by address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.addBreakByAddr">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#addBreakByExpr" class="summary-sig-name">addBreakByExpr</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">symname</span>,
+        <span class="summary-sig-arg">fastbreak</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Add a breakpoint by resolving an expression.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.addBreakByExpr">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#addBreakpoint" class="summary-sig-name">addBreakpoint</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">breakpoint</span>)</span><br />
+      Add a breakpoint/watchpoint to the trace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.addBreakpoint">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#addIgnoreSignal" class="summary-sig-name">addIgnoreSignal</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">code</span>,
+        <span class="summary-sig-arg">address</span>=<span class="summary-sig-default">0</span>)</span><br />
+      By adding an IgnoreSignal you tell the tracer object to supress the 
+      notification of a particular type of signal.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.addIgnoreSignal">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#allocateMemory" class="summary-sig-name">allocateMemory</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">perms</span>=<span class="summary-sig-default">7</span>,
+        <span class="summary-sig-arg">suggestaddr</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Allocate a chunk of memory inside the target process' address space.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.allocateMemory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="attach"></a><span class="summary-sig-name">attach</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pid</span>)</span><br />
+      Attach to a new process ID.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.attach">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#buildNewTrace" class="summary-sig-name">buildNewTrace</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Build a new/clean trace &quot;like&quot; this one.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.buildNewTrace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#call" class="summary-sig-name">call</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>,
+        <span class="summary-sig-arg">args</span>,
+        <span class="summary-sig-arg">convention</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Setup the &quot;stack&quot; and call the target address with the 
+      following arguments.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.call">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#delIgnoreSignal" class="summary-sig-name">delIgnoreSignal</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">code</span>,
+        <span class="summary-sig-arg">address</span>=<span class="summary-sig-default">0</span>)</span><br />
+      See addIgnoreSignal for a description of signal ignoring.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.delIgnoreSignal">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="deregisterNotifier"></a><span class="summary-sig-name">deregisterNotifier</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>,
+        <span class="summary-sig-arg">notifier</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.deregisterNotifier">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="detach"></a><span class="summary-sig-name">detach</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Detach from the currently attached process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.detach">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="disableAutoContinue"></a><span class="summary-sig-name">disableAutoContinue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Disable Auto Continue for the specified event.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.disableAutoContinue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#enableAutoContinue" class="summary-sig-name">enableAutoContinue</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span><br />
+      Put the tracer object in to AutoContinue mode for the specified 
+      event.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.enableAutoContinue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="execute"></a><span class="summary-sig-name">execute</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cmdline</span>)</span><br />
+      Start a new process and debug it</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.execute">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getAutoContinueList"></a><span class="summary-sig-name">getAutoContinueList</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Retrieve the list of vtrace notification events that will be 
+      auto-continued.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getAutoContinueList">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getBreakpoint" class="summary-sig-name">getBreakpoint</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">id</span>)</span><br />
+      Return a reference to the breakpoint with the requested ID.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getBreakpoint">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getBreakpointByAddr"></a><span class="summary-sig-name">getBreakpointByAddr</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">va</span>)</span><br />
+      Return the breakpoint object (or None) for a given virtual address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getBreakpointByAddr">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getBreakpointCode"></a><span class="summary-sig-name">getBreakpointCode</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bpid</span>)</span><br />
+      Return the python string of user specified code that will run when 
+      this breakpoint is hit.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getBreakpointCode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getBreakpointEnabled" class="summary-sig-name">getBreakpointEnabled</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bpid</span>)</span><br />
+      An accessor method for returning if a breakpoint is currently 
+      enabled.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getBreakpointEnabled">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getBreakpoints"></a><span class="summary-sig-name">getBreakpoints</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of the current breakpoints.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getBreakpoints">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getCurrentBreakpoint"></a><span class="summary-sig-name">getCurrentBreakpoint</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the current breakpoint otherwise None</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getCurrentBreakpoint">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getCurrentSignal" class="summary-sig-name">getCurrentSignal</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Retrieve the current signal/exception posted to the process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getCurrentSignal">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getCurrentThread"></a><span class="summary-sig-name">getCurrentThread</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the thread id of the currently selected thread.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getCurrentThread">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getFds" class="summary-sig-name">getFds</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get a list of (fd,type,bestname) pairs.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getFds">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getMemoryFault" class="summary-sig-name">getMemoryFault</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      If the most receent event is a memory access error, this API will
+return a tuple of (&lt;addr&gt;,&lt;perm&gt;) on supported platforms.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getMemoryFault">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getMemoryMaps" class="summary-sig-name">getMemoryMaps</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of the currently mapped memory for the target process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getMemoryMaps">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getMeta" class="summary-sig-name">getMeta</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">default</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Get some metadata.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getMeta">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getMode"></a><span class="summary-sig-name">getMode</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">default</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Get the value for a mode setting allowing for a clean default...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getMode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getNormalizedLibNames" class="summary-sig-name">getNormalizedLibNames</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Symbols are stored internally based off of &quot;normalized&quot; 
+      library names.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getNormalizedLibNames">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getNotifiers"></a><span class="summary-sig-name">getNotifiers</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getNotifiers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getPid"></a><span class="summary-sig-name">getPid</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the pid for this Trace</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getPid">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getRegister" class="summary-sig-name">getRegister</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idx</span>)</span><br />
+      Return the current value of the specified register index.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getRegister">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getRegisterContext" class="summary-sig-name">getRegisterContext</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">threadid</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Retrieve the envi.registers.RegisterContext object for the specified 
+      thread.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getRegisterContext">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getStackTrace" class="summary-sig-name">getStackTrace</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns a list of (instruction pointer, stack frame) tuples.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getStackTrace">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getStruct" class="summary-sig-name">getStruct</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sname</span>,
+        <span class="summary-sig-arg">address</span>)</span><br />
+      Retrieve a vstruct structure populated with memory from the specified
+      address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getStruct">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getStructNames" class="summary-sig-name">getStructNames</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">namespace</span>=<span class="summary-sig-default">None</span>)</span><br />
+      This method returns either the structure names, or
+the structure namespaces that the target tracer is aware
+of.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getStructNames">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getSymByAddr" class="summary-sig-name">getSymByAddr</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">addr</span>,
+        <span class="summary-sig-arg">exact</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Return an envi Symbol object for an address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getSymByAddr">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getSymByName" class="summary-sig-name">getSymByName</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Return an envi.Symbol object for the given name (or None)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getSymByName">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getSymsForFile"></a><span class="summary-sig-name">getSymsForFile</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">libname</span>)</span><br />
+      Return the entire symbol list for the specified normalized library 
+      name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getSymsForFile">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getThreads"></a><span class="summary-sig-name">getThreads</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get a dictionary of &lt;threadid&gt;:&lt;tinfo&gt; pairs where tinfo 
+      is platform dependant, but is tyically either the top of the stack 
+      for that thread, or the TEB on win32</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getThreads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#getVariable" class="summary-sig-name">getVariable</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Get the value of a previously set variable name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getVariable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="getVariables"></a><span class="summary-sig-name">getVariables</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get the dictionary of named variables.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.getVariables">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#hasMeta" class="summary-sig-name">hasMeta</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>)</span><br />
+      Check to see if a metadata key exists...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.hasMeta">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="hex"></a><span class="summary-sig-name">hex</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Much like the python hex routine, except this will automatically pad 
+      the value's string length out to pointer width.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.hex">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#injectThread" class="summary-sig-name">injectThread</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pc</span>)</span><br />
+      Create a new thread inside the target process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.injectThread">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#injectso" class="summary-sig-name">injectso</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">filename</span>)</span><br />
+      Inject a shared object into the target of the trace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.injectso">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isAttached"></a><span class="summary-sig-name">isAttached</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return boolean true/false for weather or not this trace is currently 
+      attached to a process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.isAttached">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isRemote"></a><span class="summary-sig-name">isRemote</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns True if the trace is a CobraProxy object to a trace on 
+      another system</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.isRemote">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isRunning"></a><span class="summary-sig-name">isRunning</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return true or false if this trace's target process is 
+      &quot;running&quot;.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.isRunning">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="isThreadSuspended"></a><span class="summary-sig-name">isThreadSuspended</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">threadid</span>)</span><br />
+      Used to determine if a thread is suspended.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.isThreadSuspended">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="joinThread"></a><span class="summary-sig-name">joinThread</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">threadid</span>)</span><br />
+      Run the trace in a loop until the specified thread exits.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.joinThread">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="kill"></a><span class="summary-sig-name">kill</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Kill the target process for this trace (will result in process exit 
+      and fire appropriate notifiers)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.kill">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#parseExpression" class="summary-sig-name">parseExpression</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">expression</span>)</span><br />
+      Parse a python expression with many useful helpers mapped into the 
+      execution namespace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.parseExpression">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#protectMemory" class="summary-sig-name">protectMemory</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">va</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">perms</span>)</span><br />
+      Change the page protections on the specified region of memory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.protectMemory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#ps" class="summary-sig-name">ps</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of proccesses which are currently running on the 
+      system.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.ps">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#readMemory" class="summary-sig-name">readMemory</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>,
+        <span class="summary-sig-arg">size</span>)</span><br />
+      Read memory from address.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.readMemory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#registerNotifier" class="summary-sig-name">registerNotifier</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>,
+        <span class="summary-sig-arg">notifier</span>)</span><br />
+      Register a notifier who will be called for various events.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.registerNotifier">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#release" class="summary-sig-name">release</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Release resources for this tracer.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.release">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="removeBreakpoint"></a><span class="summary-sig-name">removeBreakpoint</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">id</span>)</span><br />
+      Remove the breakpoint with the specified ID</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.removeBreakpoint">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="requireAttached"></a><span class="summary-sig-name">requireAttached</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      A utility method for other methods to use in order to require being 
+      attached</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.requireAttached">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="requireNotExited"></a><span class="summary-sig-name">requireNotExited</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.requireNotExited">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="requireNotRunning"></a><span class="summary-sig-name">requireNotRunning</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Just a quick method to throw an error if the tracer is already 
+      running...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.requireNotRunning">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="resumeThread"></a><span class="summary-sig-name">resumeThread</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">threadid</span>)</span><br />
+      Resume a suspended thread.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.resumeThread">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">until</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Allow the traced target to continue execution.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.run">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="runAgain"></a><span class="summary-sig-name">runAgain</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">val</span>=<span class="summary-sig-default">True</span>)</span><br />
+      The runAgain() method may be used from inside a notifier (Notifier, 
+      Breakpoint, Watchpoint, etc...) to inform the trace that once event 
+      processing is complete, it should continue running the trace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.runAgain">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#searchMemory" class="summary-sig-name">searchMemory</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">needle</span>,
+        <span class="summary-sig-arg">regex</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Search all of process memory for a sequence of bytes.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.searchMemory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#searchMemoryRange" class="summary-sig-name">searchMemoryRange</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">needle</span>,
+        <span class="summary-sig-arg">address</span>,
+        <span class="summary-sig-arg">size</span>,
+        <span class="summary-sig-arg">regex</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Search a memory range for the specified sequence of bytes</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.searchMemoryRange">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#searchSymbols" class="summary-sig-name">searchSymbols</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">regex</span>,
+        <span class="summary-sig-arg">libname</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Search for symbols which match the given regular expression.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.searchSymbols">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#selectThread" class="summary-sig-name">selectThread</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">threadid</span>)</span><br />
+      Set the &quot;current thread&quot; context to the given thread id.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.selectThread">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#sendBreak" class="summary-sig-name">sendBreak</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Send an asynchronous break signal to the target process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.sendBreak">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#setBreakpointCode" class="summary-sig-name">setBreakpointCode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bpid</span>,
+        <span class="summary-sig-arg">pystr</span>)</span><br />
+      Because breakpoints are potentially on the remote debugger and code 
+      is not pickleable in python, special access methods which takes 
+      strings of python code are necissary for the vdb interface to quick 
+      script breakpoint code.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.setBreakpointCode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#setBreakpointEnabled" class="summary-sig-name">setBreakpointEnabled</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">bpid</span>,
+        <span class="summary-sig-arg">enabled</span>=<span class="summary-sig-default">True</span>)</span><br />
+      An accessor method for setting a breakpoint enabled/disabled.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.setBreakpointEnabled">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#setCurrentSignal" class="summary-sig-name">setCurrentSignal</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sig</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Set the currently pending signal for delivery to the target process 
+      on continue.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.setCurrentSignal">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#setMeta" class="summary-sig-name">setMeta</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set some metadata.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.setMeta">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#setMode" class="summary-sig-name">setMode</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set a mode setting...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.setMode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#setRegister" class="summary-sig-name">setRegister</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idx</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set a register value by index.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.setRegister">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#setVariable" class="summary-sig-name">setVariable</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set a named variable in the trace which may be used in subsequent 
+      VtraceExpressions.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.setVariable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#stepi" class="summary-sig-name">stepi</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Single step the target process ONE instruction (and do NOT activate 
+      breakpoints for the one step).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.stepi">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#suspendThread" class="summary-sig-name">suspendThread</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">threadid</span>)</span><br />
+      Suspend a thread by ID.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.suspendThread">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="vtrace.Trace-class.html#writeMemory" class="summary-sig-name">writeMemory</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">address</span>,
+        <span class="summary-sig-arg">bytes</span>)</span><br />
+      Write the given bytes to the address in the current trace.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="vtrace-pysrc.html#Trace.writeMemory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="envi.memory.IMemory-class.html">envi.memory.IMemory</a></code></b>:
+      <code><a href="envi.memory.IMemory-class.html#addMemoryMap">addMemoryMap</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#getMemoryMap">getMemoryMap</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#getPointerSize">getPointerSize</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#getSegmentInfo">getSegmentInfo</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isExecutable">isExecutable</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isReadable">isReadable</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isShared">isShared</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isValidPointer">isValidPointer</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#isWriteable">isWriteable</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#parseOpcode">parseOpcode</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#probeMemory">probeMemory</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#readMemValue">readMemValue</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#readMemoryFormat">readMemoryFormat</a></code>,
+      <code><a href="envi.memory.IMemory-class.html#writeMemoryFormat">writeMemoryFormat</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="envi.registers.RegisterContext-class.html">envi.registers.RegisterContext</a></code></b>:
+      <code><a href="envi.registers.RegisterContext-class.html#addMetaRegister">addMetaRegister</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getMetaRegInfo">getMetaRegInfo</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getProgramCounter">getProgramCounter</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegDef">getRegDef</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterByName">getRegisterByName</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterIndex">getRegisterIndex</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterInfo">getRegisterInfo</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterName">getRegisterName</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterNameIndexes">getRegisterNameIndexes</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterNames">getRegisterNames</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterSnap">getRegisterSnap</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisterWidth">getRegisterWidth</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getRegisters">getRegisters</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#getStackCounter">getStackCounter</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#isDirty">isDirty</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#isMetaRegister">isMetaRegister</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#loadRegDef">loadRegDef</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#loadRegMetas">loadRegMetas</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#reprRegister">reprRegister</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setIsDirty">setIsDirty</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setProgramCounter">setProgramCounter</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisterByName">setRegisterByName</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisterIndexes">setRegisterIndexes</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisterInfo">setRegisterInfo</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisterSnap">setRegisterSnap</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setRegisters">setRegisters</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#setStackCounter">setStackCounter</a></code>
+      </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="envi.registers.RegisterContext-class.html">envi.registers.RegisterContext</a></code></b> (private):
+      <code><a href="envi.registers.RegisterContext-class.html#_rctx_Export" onclick="show_private();">_rctx_Export</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#_rctx_Import" onclick="show_private();">_rctx_Import</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#_xlateToMetaReg" onclick="show_private();">_xlateToMetaReg</a></code>,
+      <code><a href="envi.registers.RegisterContext-class.html#_xlateToNativeReg" onclick="show_private();">_xlateToNativeReg</a></code>
+      </p></div>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="envi.resolver.SymbolResolver-class.html">envi.resolver.SymbolResolver</a></code></b>:
+      <code><a href="envi.resolver.SymbolResolver-class.html#addSymbol">addSymbol</a></code>,
+      <code><a href="envi.resolver.SymbolResolver-class.html#delSymbol">delSymbol</a></code>,
+      <code><a href="envi.resolver.SymbolResolver-class.html#getSymHint">getSymHint</a></code>,
+      <code><a href="envi.resolver.SymbolResolver-class.html#getSymList">getSymList</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">archname</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Hand in a register definition which consists of a list of 
+  (&lt;name&gt;, &lt;width&gt;) tuples.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="addBreakByAddr"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addBreakByAddr</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">va</span>,
+        <span class="sig-arg">fastbreak</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.addBreakByAddr">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a breakpoint by address.  This will create the Breakpoint object 
+  for you and add it to the trace.  It returns the newly created breakpoint
+  id.</p>
+  <p>Optionally, set fastbreak=True to have the breakpoint behave in 
+  &quot;fast break&quot; mode which automatically continues execution and 
+  does not fire notifiers for the breakpoint.</p>
+  <p>Example: trace.addBreakByAddr(0x7c770308)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="addBreakByExpr"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addBreakByExpr</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">symname</span>,
+        <span class="sig-arg">fastbreak</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.addBreakByExpr">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a breakpoint by resolving an expression.  This will create the 
+  Breakpoint object for you and add it to the trace.  It returns the newly 
+  created breakpoint id.</p>
+  <p>Optionally, set fastbreak=True to have the breakpoint behave in 
+  &quot;fast break&quot; mode which automatically continues execution and 
+  does not fire notifiers for the breakpoint.</p>
+  <p>Example: trace.addBreakByExpr('kernel32.CreateFileA + ecx')</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="addBreakpoint"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addBreakpoint</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">breakpoint</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.addBreakpoint">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add a breakpoint/watchpoint to the trace.  The &quot;breakpoint&quot; 
+  argument is a vtrace Breakpoint/Watchpoint object or something that 
+  extends it.</p>
+  <p>To add a basic breakpoint use 
+  trace.addBreakpoint(vtrace.Breakpoint(address)) NOTE: expression 
+  breakpoints do *not* get evaluated in fastbreak mode</p>
+  <p>This will return the internal ID given to the new breakpoint</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="addIgnoreSignal"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">addIgnoreSignal</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">code</span>,
+        <span class="sig-arg">address</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.addIgnoreSignal">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>By adding an IgnoreSignal you tell the tracer object to supress the 
+  notification of a particular type of signal. In POSIX, these are regular 
+  signals, in Win32, these are exception codes.  This is mostly useful in 
+  RunForever mode because you still need the process to begin running 
+  again. (these may be viewed/modified by the metadata key 
+  &quot;IgnoredSignals&quot;) FIXME: make address do something.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="allocateMemory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">allocateMemory</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">perms</span>=<span class="sig-default">7</span>,
+        <span class="sig-arg">suggestaddr</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.allocateMemory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Allocate a chunk of memory inside the target process' address space.  
+  Memory wil be mapped rwx unless otherwise specified with 
+  perms=envi.memory.MM_FOO values. Optionally you may *suggest* an address 
+  to the allocator, but there is no guarentee.  Returns the mapped memory 
+  address.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.memory.IMemory-class.html#allocateMemory">envi.memory.IMemory.allocateMemory</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="buildNewTrace"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">buildNewTrace</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.buildNewTrace">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Build a new/clean trace &quot;like&quot; this one.  For platforms where a
+special trace was handed in, this allows initialization of a new one.
+For most implementations, this is very simple....
+
+Example:
+    if need_another_trace:
+        newt = trace.buildNewTrace()
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="call"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">call</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>,
+        <span class="sig-arg">args</span>,
+        <span class="sig-arg">convention</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.call">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Setup the &quot;stack&quot; and call the target address with the 
+  following arguments.  If the argument is a string or a buffer, copy that 
+  into memory and hand in the argument.</p>
+  <p>The current state of ALL registers are returned as a dictionary at the
+  end of the call...</p>
+  <p>Additionally, a &quot;convention&quot; string may be specified that 
+  the underlying platform may be able to interpret...</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="delIgnoreSignal"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">delIgnoreSignal</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">code</span>,
+        <span class="sig-arg">address</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.delIgnoreSignal">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>See addIgnoreSignal for a description of signal ignoring. This removes
+  an ignored signal and re-enables it's delivery.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="enableAutoContinue"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">enableAutoContinue</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">event</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.enableAutoContinue">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Put the tracer object in to AutoContinue mode for the specified event.
+  To make all events continue running see RunForever mode in setMode().</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getBreakpoint"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getBreakpoint</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">id</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getBreakpoint">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a reference to the breakpoint with the requested ID.</p>
+  <p>NOTE: NEVER set locals or use things like setBreakpointCode() method 
+  on return'd breakpoint objects as they may be remote and would then be 
+  *coppies* of the bp objects. (use the trace's setBreakpointCode() 
+  instead).</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getBreakpointEnabled"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getBreakpointEnabled</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">bpid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getBreakpointEnabled">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>An accessor method for returning if a breakpoint is currently enabled.
+  NOTE: code which wants to be remote-safe should use this</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getCurrentSignal"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getCurrentSignal</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getCurrentSignal">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retrieve the current signal/exception posted to the process. If there 
+  are no pending signals/exceptions the API will return None.  For POSIX 
+  systems, this will be a traditional POSIX signal. For Windows systems it 
+  will be a current exception code (if any).</p>
+  <p>Example: sig = trace.getCurrentSignal()</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getFds"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getFds</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getFds">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get a list of (fd,type,bestname) pairs.  This is MOSTLY useful for 
+  HUMON consumtion...  or giving HUMONs consumption...</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMemoryFault"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMemoryFault</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getMemoryFault">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+If the most receent event is a memory access error, this API will
+return a tuple of (&lt;addr&gt;,&lt;perm&gt;) on supported platforms.  Otherwise,
+a (None, None) will result.
+
+Example:
+import envi.memory as e_mem
+vaddr,vperm = trace.getMemoryFault()
+if vaddr != None:
+    print 'Memory Fault At: 0x%.8x (perm: %d)' % (vaddr, vperm)
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMemoryMaps"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMemoryMaps</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getMemoryMaps">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a list of the currently mapped memory for the target process.  
+  This is acomplished by calling the platform's platformGetMaps() mixin 
+  method.  This will also cache the results until CONTINUE.  The format is 
+  (addr,len,perms,file).</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.memory.IMemory-class.html#getMemoryMaps">envi.memory.IMemory.getMemoryMaps</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getMeta"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getMeta</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">default</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getMeta">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get some metadata.  Metadata is a clean way for arbitrary trace 
+  consumers (and notifiers) to present and track additional information in 
+  trace objects.</p>
+  <p>If you specify a default and the key doesn't exist, not not only will 
+  the default be returned, but the key will be set to the default 
+  specified.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getNormalizedLibNames"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getNormalizedLibNames</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getNormalizedLibNames">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Symbols are stored internally based off of &quot;normalized&quot; 
+  library names.  This method returns the list of normalized names for the 
+  loaded libraries.</p>
+  <p>(probably only useful for writting symbol browsers...)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getRegister"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRegister</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idx</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getRegister">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the current value of the specified register index.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.registers.RegisterContext-class.html#getRegister">envi.registers.RegisterContext.getRegister</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getRegisterContext"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getRegisterContext</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">threadid</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getRegisterContext">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retrieve the envi.registers.RegisterContext object for the specified 
+  thread.  Use this API to iterate over threads register values without 
+  setting the global tracer thread context.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getStackTrace"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getStackTrace</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getStackTrace">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns a list of (instruction pointer, stack frame) tuples. If stack 
+  tracing results in an error, the error entry will be (-1,-1).  Otherwise 
+  most platforms end up with 0,0 as the top stack frame</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getStruct"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getStruct</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sname</span>,
+        <span class="sig-arg">address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getStruct">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Retrieve a vstruct structure populated with memory from the specified 
+  address.  Returns a standard vstruct object.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getStructNames"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getStructNames</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">namespace</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getStructNames">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+This method returns either the structure names, or
+the structure namespaces that the target tracer is aware
+of.  If &quot;namespace&quot; is specified, it is structures within
+that namespace, otherwise it is &quot;known namespaces&quot;
+
+Example: namespaces = trace.getStructNames()
+         ntdll_structs = trace.getStructNames(namespace='ntdll')
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="getSymByAddr"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSymByAddr</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">addr</span>,
+        <span class="sig-arg">exact</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getSymByAddr">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return an envi Symbol object for an address. Use exact=False to get 
+  the nearest previous match.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.resolver.SymbolResolver-class.html#getSymByAddr">envi.resolver.SymbolResolver.getSymByAddr</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getSymByName"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getSymByName</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getSymByName">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return an envi.Symbol object for the given name (or None)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.resolver.SymbolResolver-class.html#getSymByName">envi.resolver.SymbolResolver.getSymByName</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getVariable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getVariable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.getVariable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the value of a previously set variable name. (or None on not 
+  found)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="hasMeta"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">hasMeta</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.hasMeta">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Check to see if a metadata key exists... Mostly un-necissary as 
+  getMeta() with a default will set the key to the default if 
+  non-existant.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="injectThread"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">injectThread</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pc</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.injectThread">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a new thread inside the target process.  This thread will begin
+  execution on the next process run().</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="injectso"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">injectso</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">filename</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.injectso">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Inject a shared object into the target of the trace.  So, on windows
+this is easy with InjectDll and on *nix... it's.. fugly...
+
+NOTE: This method will likely cause the trace to run.  Do not call from
+      within a notifier!
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="parseExpression"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">parseExpression</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">expression</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.parseExpression">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parse a python expression with many useful helpers mapped into the 
+  execution namespace.</p>
+  <p>Example: 
+  trace.parseExpression(&quot;ispoi(ecx+ntdll.RtlAllocateHeap)&quot;)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="protectMemory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">protectMemory</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">va</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">perms</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.protectMemory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Change the page protections on the specified region of memory. See 
+  envi.memory for perms values.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.memory.IMemory-class.html#protectMemory">envi.memory.IMemory.protectMemory</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ps"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ps</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.ps">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a list of proccesses which are currently running on the system.
+  (pid, name)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="readMemory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">readMemory</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>,
+        <span class="sig-arg">size</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.readMemory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Read memory from address.  Areas that are NOT valid memory will be 
+  read back as  s (this probably goes in a mixin soon)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.memory.IMemory-class.html#readMemory">envi.memory.IMemory.readMemory</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="registerNotifier"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">registerNotifier</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">event</span>,
+        <span class="sig-arg">notifier</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.registerNotifier">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Register a notifier who will be called for various events.  See 
+  NOTIFY_* constants for handler hooks.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="release"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">release</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.release">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Release resources for this tracer.  This API should be called once you
+  are done with the trace.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="run"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">run</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">until</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.run">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Allow the traced target to continue execution.  (Depending on the mode
+  &quot;Blocking&quot; this will either block until an event, or return 
+  immediately) Additionally, the argument until may be used to cause 
+  execution to continue until the specified address is reached (internally 
+  uses and removes a breakpoint).</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="searchMemory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchMemory</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">needle</span>,
+        <span class="sig-arg">regex</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.searchMemory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search all of process memory for a sequence of bytes.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.memory.IMemory-class.html#searchMemory">envi.memory.IMemory.searchMemory</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="searchMemoryRange"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchMemoryRange</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">needle</span>,
+        <span class="sig-arg">address</span>,
+        <span class="sig-arg">size</span>,
+        <span class="sig-arg">regex</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.searchMemoryRange">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search a memory range for the specified sequence of bytes</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.memory.IMemory-class.html#searchMemoryRange">envi.memory.IMemory.searchMemoryRange</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="searchSymbols"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchSymbols</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">regex</span>,
+        <span class="sig-arg">libname</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.searchSymbols">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search for symbols which match the given regular expression.  Specify 
+  libname as the &quot;normalized&quot; library name to only search the 
+  specified lib.</p>
+  <p>Example:  for sym in trace.searchSymbols('.*CreateFile.*', 
+  'kernel32'):</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="selectThread"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">selectThread</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">threadid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.selectThread">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set the &quot;current thread&quot; context to the given thread id. 
+  (For example stack traces and register values will depend on the current 
+  thread context).  By default the thread responsible for an 
+  &quot;interesting event&quot; is selected.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="sendBreak"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sendBreak</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.sendBreak">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Send an asynchronous break signal to the target process. This is only 
+  valid if the target is actually running...</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setBreakpointCode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setBreakpointCode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">bpid</span>,
+        <span class="sig-arg">pystr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.setBreakpointCode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Because breakpoints are potentially on the remote debugger and code is
+  not pickleable in python, special access methods which takes strings of 
+  python code are necissary for the vdb interface to quick script 
+  breakpoint code.  Use this method to set the python code for this 
+  breakpoint.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setBreakpointEnabled"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setBreakpointEnabled</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">bpid</span>,
+        <span class="sig-arg">enabled</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.setBreakpointEnabled">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>An accessor method for setting a breakpoint enabled/disabled.</p>
+  <p>NOTE: code which wants to be remote-safe should use this</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setCurrentSignal"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setCurrentSignal</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sig</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.setCurrentSignal">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set the currently pending signal for delivery to the target process on
+  continue.  This is intended for use by programs wishing the mask or 
+  change the delivery of exceptions on a NOTIFY_SIGNAL event.</p>
+  <p>Example:  trace.setCurrentSignal(None)</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setMeta"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setMeta</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.setMeta">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set some metadata.  Metadata is a clean way for arbitrary trace 
+  consumers (and notifiers) to present and track additional information in 
+  trace objects.</p>
+  <p>Any modules which use this *should* initialize them on attach (so when
+  they get re-used they're clean)</p>
+  <p>Some examples of metadata used: ShouldBreak - We're expecting a 
+  non-signal related break ExitCode - The int() exit code  (if exited) 
+  PendingSignal - The current signal</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setMode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setMode</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.setMode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set a mode setting...  This is ONLY valid if that mode has been 
+  iniitialized with initMode(name, value).  Otherwise, it's an unsupported 
+  mode for this platform ;)  cute huh? This way, platform sections can 
+  cleanly setmodes and such.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setRegister"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setRegister</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idx</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.setRegister">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set a register value by index.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.registers.RegisterContext-class.html#setRegister">envi.registers.RegisterContext.setRegister</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="setVariable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setVariable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.setVariable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set a named variable in the trace which may be used in subsequent 
+  VtraceExpressions.</p>
+  <p>Example: trace.setVariable(&quot;whereiam&quot;, 
+  trace.getProgramCounter())</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="stepi"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">stepi</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.stepi">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Single step the target process ONE instruction (and do NOT activate 
+  breakpoints for the one step). Also, we don't deliver pending signals for
+  the single step... Use the mode FastStep to allow/supress notifier 
+  callbacks on step</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="suspendThread"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">suspendThread</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">threadid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.suspendThread">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Suspend a thread by ID.  This will mean that on continuing the trace, 
+  the suspended thread will not be scheduled.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="writeMemory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">writeMemory</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">address</span>,
+        <span class="sig-arg">bytes</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="vtrace-pysrc.html#Trace.writeMemory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Write the given bytes to the address in the current trace.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="envi.memory.IMemory-class.html#writeMemory">envi.memory.IMemory.writeMemory</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:13 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.util</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        Module&nbsp;util
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.util-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vtrace.util-module.html">Module vtrace.util</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">Extra utilities for vtrace</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package vtrace=vtrace-module.html"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-0', 'vtrace', 'link-0');">vtrace</a></tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-1', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module vtrace.notifiers=vtrace.notifiers-module.html"><a title="vtrace.notifiers" class="py-name" href="#" onclick="return doclink('link-2', 'notifiers', 'link-2');">notifiers</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">v_notifiers</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-3', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Module vtrace.rmi=vtrace.rmi-module.html"><a title="vtrace.rmi" class="py-name" href="#" onclick="return doclink('link-4', 'rmi', 'link-4');">rmi</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">v_rmi</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager"></a><div id="TraceManager-def"><a name="L10"></a><tt class="py-lineno">10</tt> <a class="py-toggle" href="#" id="TraceManager-toggle" onclick="return toggle('TraceManager');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html">TraceManager</a><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="TraceManager-expanded"><a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line"><tt class="py-docstring">    A trace-manager is a utility class to extend from when you may be dealing</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"><tt class="py-docstring">    with multiple tracer objects.  It allows for persistant mode settings and</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"><tt class="py-docstring">    persistent metadata as well as bundling a DistributedNotifier.  You may also</tt> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"><tt class="py-docstring">    extend from this to get auto-magic remote stuff for your managed traces.</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TraceManager.__init__"></a><div id="TraceManager.__init__-def"><a name="L17"></a><tt class="py-lineno">17</tt> <a class="py-toggle" href="#" id="TraceManager.__init__-toggle" onclick="return toggle('TraceManager.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.__init__-expanded"><a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dnotif</tt> <tt class="py-op">=</tt> <tt class="py-name">v_notifiers</tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Class vtrace.notifiers.DistributedNotifier=vtrace.notifiers.DistributedNotifier-class.html"><a title="vtrace.notifiers.DistributedNotifier" class="py-name" href="#" onclick="return doclink('link-5', 'DistributedNotifier', 'link-5');">DistributedNotifier</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">modes</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> <tt class="py-comment"># See docs for trace modes</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">metadata</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> <tt class="py-comment"># Like traces, but persistant</tt> </tt>
+</div><a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.manageTrace"></a><div id="TraceManager.manageTrace-def"><a name="L23"></a><tt class="py-lineno">23</tt> <a class="py-toggle" href="#" id="TraceManager.manageTrace-toggle" onclick="return toggle('TraceManager.manageTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#manageTrace">manageTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.manageTrace-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.manageTrace-expanded"><a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line"><tt class="py-docstring">        Set all the modes/meta/notifiers in this trace for management</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-docstring">        by this TraceManager.</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-6" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-6', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Variable vtrace.remote=vtrace-module.html#remote,Variable vtrace.watchpoints.remote=vtrace.watchpoints-module.html#remote"><a title="vtrace.remote
+vtrace.watchpoints.remote" class="py-name" href="#" onclick="return doclink('link-7', 'remote', 'link-7');">remote</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method vtrace.Trace.registerNotifier()=vtrace.Trace-class.html#registerNotifier,Method vtrace.notifiers.DistributedNotifier.registerNotifier()=vtrace.notifiers.DistributedNotifier-class.html#registerNotifier,Method vtrace.util.TraceManager.registerNotifier()=vtrace.util.TraceManager-class.html#registerNotifier"><a title="vtrace.Trace.registerNotifier
+vtrace.notifiers.DistributedNotifier.registerNotifier
+vtrace.util.TraceManager.registerNotifier" class="py-name" href="#" onclick="return doclink('link-8', 'registerNotifier', 'link-8');">registerNotifier</a></tt><tt class="py-op">(</tt><tt id="link-9" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-9', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Variable vtrace.NOTIFY_ALL=vtrace-module.html#NOTIFY_ALL,Variable vtrace.watchpoints.NOTIFY_ALL=vtrace.watchpoints-module.html#NOTIFY_ALL"><a title="vtrace.NOTIFY_ALL
+vtrace.watchpoints.NOTIFY_ALL" class="py-name" href="#" onclick="return doclink('link-10', 'NOTIFY_ALL', 'link-10');">NOTIFY_ALL</a></tt><tt class="py-op">,</tt> <tt class="py-name">v_rmi</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Function vtrace.rmi.getCallbackProxy()=vtrace.rmi-module.html#getCallbackProxy"><a title="vtrace.rmi.getCallbackProxy" class="py-name" href="#" onclick="return doclink('link-11', 'getCallbackProxy', 'link-11');">getCallbackProxy</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dnotif</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="vtrace.Trace.registerNotifier
+vtrace.notifiers.DistributedNotifier.registerNotifier
+vtrace.util.TraceManager.registerNotifier" class="py-name" href="#" onclick="return doclink('link-12', 'registerNotifier', 'link-8');">registerNotifier</a></tt><tt class="py-op">(</tt><tt id="link-13" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-13', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="vtrace.NOTIFY_ALL
+vtrace.watchpoints.NOTIFY_ALL" class="py-name" href="#" onclick="return doclink('link-14', 'NOTIFY_ALL', 'link-10');">NOTIFY_ALL</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dnotif</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line"> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">val</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">modes</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method vtrace.Trace.setMode()=vtrace.Trace-class.html#setMode,Method vtrace.TraceGroup.setMode()=vtrace.TraceGroup-class.html#setMode,Method vtrace.util.TraceManager.setMode()=vtrace.util.TraceManager-class.html#setMode"><a title="vtrace.Trace.setMode
+vtrace.TraceGroup.setMode
+vtrace.util.TraceManager.setMode" class="py-name" href="#" onclick="return doclink('link-15', 'setMode', 'link-15');">setMode</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">val</tt><tt class="py-op">)</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">val</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">metadata</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method vtrace.Trace.setMeta()=vtrace.Trace-class.html#setMeta,Method vtrace.TraceGroup.setMeta()=vtrace.TraceGroup-class.html#setMeta,Method vtrace.util.TraceManager.setMeta()=vtrace.util.TraceManager-class.html#setMeta"><a title="vtrace.Trace.setMeta
+vtrace.TraceGroup.setMeta
+vtrace.util.TraceManager.setMeta" class="py-name" href="#" onclick="return doclink('link-16', 'setMeta', 'link-16');">setMeta</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">val</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.unManageTrace"></a><div id="TraceManager.unManageTrace-def"><a name="L40"></a><tt class="py-lineno">40</tt> <a class="py-toggle" href="#" id="TraceManager.unManageTrace-toggle" onclick="return toggle('TraceManager.unManageTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#unManageTrace">unManageTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.unManageTrace-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.unManageTrace-expanded"><a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"><tt class="py-docstring">        Untie this trace manager from the trace.</tt> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-17" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-17', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="vtrace.remote
+vtrace.watchpoints.remote" class="py-name" href="#" onclick="return doclink('link-18', 'remote', 'link-7');">remote</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method vtrace.Trace.deregisterNotifier()=vtrace.Trace-class.html#deregisterNotifier,Method vtrace.notifiers.DistributedNotifier.deregisterNotifier()=vtrace.notifiers.DistributedNotifier-class.html#deregisterNotifier,Method vtrace.util.TraceManager.deregisterNotifier()=vtrace.util.TraceManager-class.html#deregisterNotifier"><a title="vtrace.Trace.deregisterNotifier
+vtrace.notifiers.DistributedNotifier.deregisterNotifier
+vtrace.util.TraceManager.deregisterNotifier" class="py-name" href="#" onclick="return doclink('link-19', 'deregisterNotifier', 'link-19');">deregisterNotifier</a></tt><tt class="py-op">(</tt><tt id="link-20" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-20', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="vtrace.NOTIFY_ALL
+vtrace.watchpoints.NOTIFY_ALL" class="py-name" href="#" onclick="return doclink('link-21', 'NOTIFY_ALL', 'link-10');">NOTIFY_ALL</a></tt><tt class="py-op">,</tt> <tt class="py-name">v_rmi</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name"><a title="vtrace.rmi.getCallbackProxy" class="py-name" href="#" onclick="return doclink('link-22', 'getCallbackProxy', 'link-11');">getCallbackProxy</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dnotif</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="vtrace.Trace.deregisterNotifier
+vtrace.notifiers.DistributedNotifier.deregisterNotifier
+vtrace.util.TraceManager.deregisterNotifier" class="py-name" href="#" onclick="return doclink('link-23', 'deregisterNotifier', 'link-19');">deregisterNotifier</a></tt><tt class="py-op">(</tt><tt id="link-24" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-24', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="vtrace.NOTIFY_ALL
+vtrace.watchpoints.NOTIFY_ALL" class="py-name" href="#" onclick="return doclink('link-25', 'NOTIFY_ALL', 'link-10');">NOTIFY_ALL</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dnotif</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.setMode"></a><div id="TraceManager.setMode-def"><a name="L49"></a><tt class="py-lineno">49</tt> <a class="py-toggle" href="#" id="TraceManager.setMode-toggle" onclick="return toggle('TraceManager.setMode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#setMode">setMode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.setMode-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.setMode-expanded"><a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="vtrace.Trace.setMode
+vtrace.TraceGroup.setMode
+vtrace.util.TraceManager.setMode" class="py-name" href="#" onclick="return doclink('link-26', 'setMode', 'link-15');">setMode</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt id="link-27" class="py-name" targets="Variable vtrace.platforms.win32.MSR.value=vtrace.platforms.win32.MSR-class.html#value"><a title="vtrace.platforms.win32.MSR.value" class="py-name" href="#" onclick="return doclink('link-27', 'value', 'link-27');">value</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L52"></a><tt class="py-lineno">52</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">modes</tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-28" class="py-name"><a title="vtrace.platforms.win32.MSR.value" class="py-name" href="#" onclick="return doclink('link-28', 'value', 'link-27');">value</a></tt> </tt>
+</div><a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.getMode"></a><div id="TraceManager.getMode-def"><a name="L54"></a><tt class="py-lineno">54</tt> <a class="py-toggle" href="#" id="TraceManager.getMode-toggle" onclick="return toggle('TraceManager.getMode');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#getMode">getMode</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">default</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.getMode-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.getMode-expanded"><a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method vtrace.Trace.getMode()=vtrace.Trace-class.html#getMode,Method vtrace.util.TraceManager.getMode()=vtrace.util.TraceManager-class.html#getMode"><a title="vtrace.Trace.getMode
+vtrace.util.TraceManager.getMode" class="py-name" href="#" onclick="return doclink('link-29', 'getMode', 'link-29');">getMode</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">modes</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.setMeta"></a><div id="TraceManager.setMeta-def"><a name="L59"></a><tt class="py-lineno">59</tt> <a class="py-toggle" href="#" id="TraceManager.setMeta-toggle" onclick="return toggle('TraceManager.setMeta');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#setMeta">setMeta</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.setMeta-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.setMeta-expanded"><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="vtrace.Trace.setMeta
+vtrace.TraceGroup.setMeta
+vtrace.util.TraceManager.setMeta" class="py-name" href="#" onclick="return doclink('link-30', 'setMeta', 'link-16');">setMeta</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt id="link-31" class="py-name"><a title="vtrace.platforms.win32.MSR.value" class="py-name" href="#" onclick="return doclink('link-31', 'value', 'link-27');">value</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L62"></a><tt class="py-lineno">62</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">metadata</tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-32" class="py-name"><a title="vtrace.platforms.win32.MSR.value" class="py-name" href="#" onclick="return doclink('link-32', 'value', 'link-27');">value</a></tt> </tt>
+</div><a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.getMeta"></a><div id="TraceManager.getMeta-def"><a name="L64"></a><tt class="py-lineno">64</tt> <a class="py-toggle" href="#" id="TraceManager.getMeta-toggle" onclick="return toggle('TraceManager.getMeta');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#getMeta">getMeta</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">default</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.getMeta-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.getMeta-expanded"><a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name" targets="Method vtrace.Trace.getMeta()=vtrace.Trace-class.html#getMeta,Method vtrace.util.TraceManager.getMeta()=vtrace.util.TraceManager-class.html#getMeta"><a title="vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-33', 'getMeta', 'link-33');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">metadata</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.registerNotifier"></a><div id="TraceManager.registerNotifier-def"><a name="L69"></a><tt class="py-lineno">69</tt> <a class="py-toggle" href="#" id="TraceManager.registerNotifier-toggle" onclick="return toggle('TraceManager.registerNotifier');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#registerNotifier">registerNotifier</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">notif</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.registerNotifier-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.registerNotifier-expanded"><a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dnotif</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="vtrace.Trace.registerNotifier
+vtrace.notifiers.DistributedNotifier.registerNotifier
+vtrace.util.TraceManager.registerNotifier" class="py-name" href="#" onclick="return doclink('link-34', 'registerNotifier', 'link-8');">registerNotifier</a></tt><tt class="py-op">(</tt><tt class="py-name">event</tt><tt class="py-op">,</tt> <tt class="py-name">notif</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.deregisterNotifier"></a><div id="TraceManager.deregisterNotifier-def"><a name="L72"></a><tt class="py-lineno">72</tt> <a class="py-toggle" href="#" id="TraceManager.deregisterNotifier-toggle" onclick="return toggle('TraceManager.deregisterNotifier');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#deregisterNotifier">deregisterNotifier</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">notif</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.deregisterNotifier-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.deregisterNotifier-expanded"><a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dnotif</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="vtrace.Trace.deregisterNotifier
+vtrace.notifiers.DistributedNotifier.deregisterNotifier
+vtrace.util.TraceManager.deregisterNotifier" class="py-name" href="#" onclick="return doclink('link-35', 'deregisterNotifier', 'link-19');">deregisterNotifier</a></tt><tt class="py-op">(</tt><tt class="py-name">event</tt><tt class="py-op">,</tt> <tt class="py-name">notif</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line"> </tt>
+<a name="TraceManager.fireLocalNotifiers"></a><div id="TraceManager.fireLocalNotifiers-def"><a name="L75"></a><tt class="py-lineno">75</tt> <a class="py-toggle" href="#" id="TraceManager.fireLocalNotifiers-toggle" onclick="return toggle('TraceManager.fireLocalNotifiers');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.util.TraceManager-class.html#fireLocalNotifiers">fireLocalNotifiers</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceManager.fireLocalNotifiers-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="TraceManager.fireLocalNotifiers-expanded"><a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line"><tt class="py-docstring">        Deliver a local event to the DistributedNotifier managing</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line"><tt class="py-docstring">        the traces. (used to locally bump notifiers)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">dnotif</tt><tt class="py-op">.</tt><tt id="link-36" class="py-name" targets="Method vtrace.TraceGroup.notify()=vtrace.TraceGroup-class.html#notify,Method vtrace.breakpoints.Breakpoint.notify()=vtrace.breakpoints.Breakpoint-class.html#notify,Method vtrace.breakpoints.CallBreak.notify()=vtrace.breakpoints.CallBreak-class.html#notify,Method vtrace.breakpoints.OneTimeBreak.notify()=vtrace.breakpoints.OneTimeBreak-class.html#notify,Method vtrace.breakpoints.SnapshotBreak.notify()=vtrace.breakpoints.SnapshotBreak-class.html#notify,Method vtrace.breakpoints.StopAndRemoveBreak.notify()=vtrace.breakpoints.StopAndRemoveBreak-class.html#notify,Method vtrace.breakpoints.StopRunForeverBreak.notify()=vtrace.breakpoints.StopRunForeverBreak-class.html#notify,Method vtrace.breakpoints.TrackerBreak.notify()=vtrace.breakpoints.TrackerBreak-class.html#notify,Method vtrace.notifiers.DistributedNotifier.notify()=vtrace.notifiers.DistributedNotifier-class.html#notify,Method vtrace.notifiers.Notifier.notify()=vtrace.notifiers.Notifier-class.html#notify,Method vtrace.notifiers.VerboseNotifier.notify()=vtrace.notifiers.VerboseNotifier-class.html#notify,Method vtrace.platforms.base.TracerBase.notify()=vtrace.platforms.base.TracerBase-class.html#notify,Method vtrace.platforms.gdbstub.KeBugCheckBreak.notify()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#notify,Method vtrace.qt.VQTraceNotifier.notify()=vtrace.qt.VQTraceNotifier-class.html#notify,Method vtrace.qt.VQTraceToolBar.notify()=vtrace.qt.VQTraceToolBar-class.html#notify,Method vtrace.tools.iathook.IatHook.notify()=vtrace.tools.iathook.IatHook-class.html#notify,Method vtrace.tools.win32alloc.ReturnBreak.notify()=vtrace.tools.win32alloc.ReturnBreak-class.html#notify,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.notify()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#notify,Method vtrace.tools.win32stealth.StealthBreak.notify()=vtrace.tools.win32stealth.StealthBreak-class.html#notify,Method vtrace.watchpoints.PageWatchpoint.notify()=vtrace.watchpoints.PageWatchpoint-class.html#notify"><a title="vtrace.TraceGroup.notify
+vtrace.breakpoints.Breakpoint.notify
+vtrace.breakpoints.CallBreak.notify
+vtrace.breakpoints.OneTimeBreak.notify
+vtrace.breakpoints.SnapshotBreak.notify
+vtrace.breakpoints.StopAndRemoveBreak.notify
+vtrace.breakpoints.StopRunForeverBreak.notify
+vtrace.breakpoints.TrackerBreak.notify
+vtrace.notifiers.DistributedNotifier.notify
+vtrace.notifiers.Notifier.notify
+vtrace.notifiers.VerboseNotifier.notify
+vtrace.platforms.base.TracerBase.notify
+vtrace.platforms.gdbstub.KeBugCheckBreak.notify
+vtrace.qt.VQTraceNotifier.notify
+vtrace.qt.VQTraceToolBar.notify
+vtrace.tools.iathook.IatHook.notify
+vtrace.tools.win32alloc.ReturnBreak.notify
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.notify
+vtrace.tools.win32stealth.StealthBreak.notify
+vtrace.watchpoints.PageWatchpoint.notify" class="py-name" href="#" onclick="return doclink('link-36', 'notify', 'link-36');">notify</a></tt><tt class="py-op">(</tt><tt class="py-name">event</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:45:03 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.archs.amd64 &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vtrace" href="../../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.archs.amd64</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Amd64 Support Module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+
+<span class="kn">import</span> <span class="nn">envi.archs.amd64</span> <span class="kn">as</span> <span class="nn">e_amd64</span>
+<span class="kn">import</span> <span class="nn">vtrace.archs.i386</span> <span class="kn">as</span> <span class="nn">vt_i386</span>
+
+<div class="viewcode-block" id="Amd64Mixin"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.amd64.Amd64Mixin">[docs]</a><span class="k">class</span> <span class="nc">Amd64Mixin</span><span class="p">(</span>
+        <span class="n">e_amd64</span><span class="o">.</span><span class="n">Amd64Module</span><span class="p">,</span>
+        <span class="n">e_amd64</span><span class="o">.</span><span class="n">Amd64RegisterContext</span><span class="p">,</span>
+        <span class="n">vt_i386</span><span class="o">.</span><span class="n">i386WatchMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Do what we need to for the lucious amd64</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">e_amd64</span><span class="o">.</span><span class="n">Amd64Module</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">e_amd64</span><span class="o">.</span><span class="n">Amd64RegisterContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">vt_i386</span><span class="o">.</span><span class="n">i386WatchMixin</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">,</span><span class="s">&#39;amd64&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Amd64Mixin.archGetStackTrace"><a class="viewcode-back" href="../../../vtrace.archs.html#vtrace.archs.amd64.Amd64Mixin.archGetStackTrace">[docs]</a>    <span class="k">def</span> <span class="nf">archGetStackTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requireAttached</span><span class="p">()</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sanity</span> <span class="o">=</span> <span class="mi">1000</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">rbp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterByName</span><span class="p">(</span><span class="s">&quot;rbp&quot;</span><span class="p">)</span>
+        <span class="n">rip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterByName</span><span class="p">(</span><span class="s">&quot;rip&quot;</span><span class="p">)</span>
+        <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rip</span><span class="p">,</span><span class="n">rbp</span><span class="p">))</span>
+
+        <span class="k">while</span> <span class="n">rbp</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">current</span> <span class="o">&lt;</span> <span class="n">sanity</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rbp</span><span class="p">,</span><span class="n">rip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">rbp</span><span class="p">,</span> <span class="s">&quot;&lt;QQ&quot;</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">rip</span><span class="p">,</span><span class="n">rbp</span><span class="p">))</span>
+            <span class="n">current</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">frames</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

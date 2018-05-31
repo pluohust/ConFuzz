@@ -1,0 +1,954 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.platforms.gdbstub &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vtrace" href="../../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.platforms.gdbstub</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">code</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">import</span> <span class="nn">PE</span>
+<span class="kn">import</span> <span class="nn">vdb</span>
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+<span class="kn">import</span> <span class="nn">envi.resolver</span> <span class="kn">as</span> <span class="nn">e_resolv</span>
+<span class="kn">import</span> <span class="nn">vtrace</span>
+
+<span class="kn">import</span> <span class="nn">envi.registers</span> <span class="kn">as</span> <span class="nn">e_registers</span>
+<span class="kn">import</span> <span class="nn">vtrace.platforms.base</span> <span class="kn">as</span> <span class="nn">v_base</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">VMWare config options...</span>
+<span class="sd">debugStub.listen.guest64 = &quot;TRUE&quot; # ends up on port 8864 (or next avail)</span>
+<span class="sd">debugStub.listen.guest32 = &quot;TRUE&quot; # ....            8832</span>
+
+<span class="sd">debugStub.listen.guest32.remote = &quot;TRUE&quot;</span>
+
+<span class="sd">debugStub.hideBreakpoints = &quot;TRUE&quot; # Enable breakpoints</span>
+
+<span class="sd">From GDB stuff...  </span>
+<span class="sd">===== i386 </span>
+<span class="sd">src/gdb/i386-tdep.c</span>
+<span class="sd">src/gdb/regformats/reg-i386.dat</span>
+<span class="sd">===== amd64</span>
+<span class="sd">src/gdb/amd64-tdep.c</span>
+<span class="sd">src/gdb/regformats/reg-x86-64.dat</span>
+<span class="sd">===== arm</span>
+<span class="sd">name:arm</span>
+<span class="sd">expedite:r11,sp,pc</span>
+<span class="sd">32:r0</span>
+<span class="sd">32:r1</span>
+<span class="sd">32:r2</span>
+<span class="sd">32:r3</span>
+<span class="sd">32:r4</span>
+<span class="sd">32:r5</span>
+<span class="sd">32:r6</span>
+<span class="sd">32:r7</span>
+<span class="sd">32:r8</span>
+<span class="sd">32:r9</span>
+<span class="sd">32:r10</span>
+<span class="sd">32:r11</span>
+<span class="sd">32:r12</span>
+<span class="sd">32:sp</span>
+<span class="sd">32:lr</span>
+<span class="sd">32:pc</span>
+<span class="sd">96:f0</span>
+<span class="sd">96:f1</span>
+<span class="sd">96:f2</span>
+<span class="sd">96:f3</span>
+<span class="sd">96:f4</span>
+<span class="sd">96:f5</span>
+<span class="sd">96:f6</span>
+<span class="sd">96:f7</span>
+<span class="sd">32:fps</span>
+<span class="sd">32:cpsr</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="n">gdb_reg_defs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;i386&#39;</span><span class="p">:</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s">&#39;eax&#39;</span><span class="p">,</span><span class="s">&#39;ecx&#39;</span><span class="p">,</span><span class="s">&#39;edx&#39;</span><span class="p">,</span><span class="s">&#39;ebx&#39;</span><span class="p">,</span><span class="s">&#39;esp&#39;</span><span class="p">,</span><span class="s">&#39;ebp&#39;</span><span class="p">,</span><span class="s">&#39;esi&#39;</span><span class="p">,</span><span class="s">&#39;edi&#39;</span><span class="p">,</span><span class="s">&#39;eip&#39;</span><span class="p">,</span><span class="s">&#39;eflags&#39;</span><span class="p">,</span><span class="s">&#39;cs&#39;</span><span class="p">,</span><span class="s">&#39;ss&#39;</span><span class="p">,</span><span class="s">&#39;ds&#39;</span><span class="p">,</span><span class="s">&#39;es&#39;</span><span class="p">,</span><span class="s">&#39;fs&#39;</span><span class="p">,</span><span class="s">&#39;gs&#39;</span>
+        <span class="p">],</span>
+        <span class="s">&#39;&lt;16I&#39;</span>
+    <span class="p">),</span>
+
+    <span class="s">&#39;amd64&#39;</span><span class="p">:</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s">&#39;rax&#39;</span><span class="p">,</span><span class="s">&#39;rbx&#39;</span><span class="p">,</span><span class="s">&#39;rcx&#39;</span><span class="p">,</span><span class="s">&#39;rdx&#39;</span><span class="p">,</span><span class="s">&#39;rsi&#39;</span><span class="p">,</span><span class="s">&#39;rdi&#39;</span><span class="p">,</span><span class="s">&#39;rbp&#39;</span><span class="p">,</span><span class="s">&#39;rsp&#39;</span><span class="p">,</span>
+         <span class="s">&#39;r8&#39;</span><span class="p">,</span><span class="s">&#39;r9&#39;</span><span class="p">,</span><span class="s">&#39;r10&#39;</span><span class="p">,</span><span class="s">&#39;r11&#39;</span><span class="p">,</span><span class="s">&#39;r12&#39;</span><span class="p">,</span><span class="s">&#39;r13&#39;</span><span class="p">,</span><span class="s">&#39;r14&#39;</span><span class="p">,</span><span class="s">&#39;r15&#39;</span><span class="p">,</span><span class="s">&#39;rip&#39;</span><span class="p">,</span>
+         <span class="s">&#39;eflags&#39;</span><span class="p">,</span><span class="s">&#39;cs&#39;</span><span class="p">,</span><span class="s">&#39;ss&#39;</span><span class="p">,</span><span class="s">&#39;ds&#39;</span><span class="p">,</span><span class="s">&#39;es&#39;</span><span class="p">,</span><span class="s">&#39;fs&#39;</span><span class="p">,</span><span class="s">&#39;gs&#39;</span><span class="p">,</span>
+         <span class="c">#&#39;st0&#39;,&#39;st1&#39;,&#39;st2&#39;,&#39;st3&#39;,&#39;st4&#39;,&#39;st5&#39;,&#39;st6&#39;,&#39;st7&#39;,</span>
+         <span class="c">#&#39;fctrl&#39;,&#39;fstat&#39;,&#39;ftag&#39;,&#39;fiseg&#39;,&#39;fioff&#39;,&#39;foseg&#39;,&#39;fooff&#39;,&#39;fop&#39;</span>
+        <span class="p">],</span>
+
+        <span class="c">#&#39;&lt;17Q7L&#39; + (&#39;10s&#39; * 8) + &#39;8L&#39;</span>
+        <span class="s">&#39;&lt;17Q7L&#39;</span>
+    <span class="p">),</span>
+
+    <span class="c"># FIXME we will need arm flavors...</span>
+    <span class="s">&#39;arm&#39;</span><span class="p">:</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s">&quot;r0&quot;</span><span class="p">,</span><span class="s">&quot;r1&quot;</span><span class="p">,</span><span class="s">&quot;r2&quot;</span><span class="p">,</span><span class="s">&quot;r3&quot;</span><span class="p">,</span><span class="s">&quot;r4&quot;</span><span class="p">,</span><span class="s">&quot;r5&quot;</span><span class="p">,</span><span class="s">&quot;r6&quot;</span><span class="p">,</span><span class="s">&quot;r7&quot;</span><span class="p">,</span><span class="s">&quot;r8&quot;</span><span class="p">,</span><span class="s">&quot;r9&quot;</span><span class="p">,</span><span class="s">&quot;sl&quot;</span><span class="p">,</span><span class="s">&quot;fp&quot;</span><span class="p">,</span><span class="s">&quot;ip&quot;</span><span class="p">,</span><span class="s">&quot;sp&quot;</span><span class="p">,</span>
+         <span class="s">&quot;lr&quot;</span><span class="p">,</span><span class="s">&quot;pc&quot;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&quot;cpsr&quot;</span><span class="p">],</span>
+        <span class="s">&#39;&lt;16I96sI&#39;</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">exit_types</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;X&#39;</span><span class="p">,</span> <span class="s">&#39;W&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">pkt</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+<div class="viewcode-block" id="pkt"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.pkt">[docs]</a>    <span class="k">return</span> <span class="s">&#39;$</span><span class="si">%s</span><span class="s">#</span><span class="si">%.2x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">csum</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">csum</span><span class="p">(</span><span class="nb">bytes</span><span class="p">):</span></div>
+<div class="viewcode-block" id="csum"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.csum">[docs]</a>    <span class="nb">sum</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">bytes</span><span class="p">:</span>
+        <span class="nb">sum</span> <span class="o">+=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sum</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+
+<span class="n">SIGINT</span>  <span class="o">=</span> <span class="mi">2</span></div>
+<span class="n">SIGTRAP</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">trap_sigs</span> <span class="o">=</span> <span class="p">(</span><span class="n">SIGINT</span><span class="p">,</span> <span class="n">SIGTRAP</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">GdbServerDisconnected</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="GdbServerDisconnected"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbServerDisconnected">[docs]</a>    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">KeBugCheckBreak</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="p">):</span></div>
+<div class="viewcode-block" id="KeBugCheckBreak"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.KeBugCheckBreak">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">symname</span><span class="p">):</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="n">symname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fastbreak</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="KeBugCheckBreak.notify"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.KeBugCheckBreak.notify">[docs]</a>        <span class="n">sp</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getStackCounter</span><span class="p">()</span>
+        <span class="n">savedpc</span><span class="p">,</span> <span class="n">exccode</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="s">&#39;&lt;PP&#39;</span><span class="p">)</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">_fireSignal</span><span class="p">(</span><span class="n">exccode</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">GdbStubMixin</span><span class="p">:</span></div></div>
+<div class="viewcode-block" id="GdbStubMixin"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_filemagic</span> <span class="o">=</span> <span class="bp">None</span> <span class="c"># Tracers may use this to trigger _findLibraryMaps</span>
+
+        <span class="c"># These get set by _gdbSetRegisterInfo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regfmt</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regsize</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_reg_xlat</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regnames</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaking</span> <span class="o">=</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">_recvUntil</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">ret</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;socket closed prematurely!&#39;</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">x</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_recvPkt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">GdbServerDisconnected</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">b</span> <span class="o">!=</span> <span class="s">&#39;$&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Invalid Pkt Beginning! -&gt;</span><span class="si">%s</span><span class="s">&lt;-&#39;</span> <span class="o">%</span> <span class="n">b</span><span class="p">)</span>
+
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recvUntil</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">)</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">isum</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">ssum</span> <span class="o">=</span> <span class="n">csum</span><span class="p">(</span><span class="nb">bytes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isum</span> <span class="o">!=</span> <span class="n">ssum</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Invalid Checksum! his: 0x</span><span class="si">%.2x</span><span class="s"> ours: 0x</span><span class="si">%.2x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">isum</span><span class="p">,</span> <span class="n">ssum</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s">&#39;+&#39;</span><span class="p">)</span>
+
+        <span class="c">#print &#39;RECV: -&gt;%s&lt;-&#39; % bytes</span>
+        <span class="k">return</span> <span class="nb">bytes</span>
+
+    <span class="k">def</span> <span class="nf">_cmdTransact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sendPkt</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recvPkt</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_sendPkt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="c">#print &#39;SEND: -&gt;%s&lt;-&#39; % cmd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">pkt</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">b</span> <span class="o">!=</span> <span class="s">&#39;+&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Retrans! -&gt;</span><span class="si">%s</span><span class="s">&lt;-&#39;</span> <span class="o">%</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_connectSocket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">tries</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">tries</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_port</span><span class="p">)</span> <span class="p">)</span>
+
+                <span class="c"># Some gdb stubs seem to send/expect an initial &#39;+&#39;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s">&#39;+&#39;</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+                <span class="n">tries</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">_monitorCommand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;qRcmd,</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">cmd</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+        <span class="n">pkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">pkt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;OK&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raiseIfError</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pkt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;O&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">pkt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+            <span class="n">resp</span> <span class="o">+=</span> <span class="n">pkt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+            <span class="n">pkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recvPkt</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">resp</span>
+
+    <span class="k">def</span> <span class="nf">platformAttach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+<div class="viewcode-block" id="GdbStubMixin.platformAttach"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformAttach">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">_connectSocket</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attaching</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="c"># Wait for the debug stub to stop the target</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">pkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="s">&#39;?&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Attach Response Error!&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">pkt</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">time</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">platformSendBreak</span><span class="p">()</span>
+                <span class="n">pkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="s">&#39;?&#39;</span><span class="p">)</span>
+            <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sendPkt</span><span class="p">(</span><span class="s">&#39;?&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformContinue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformContinue"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformContinue">[docs]</a>        <span class="n">sig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCurrentSignal</span><span class="p">()</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;c&#39;</span>
+        <span class="k">if</span> <span class="n">sig</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;C</span><span class="si">%.2x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">sig</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sendPkt</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="c">#self._cmdTransact(cmd)</span>
+
+    <span class="k">def</span> <span class="nf">platformStepi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformStepi"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformStepi">[docs]</a>        <span class="c"># FIXME by selected thread? and address?</span>
+        <span class="c">#self._cmdTransact(&#39;s&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sendPkt</span><span class="p">(</span><span class="s">&#39;s&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepping</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">platformDetach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformDetach"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformDetach">[docs]</a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">platformContinue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">platformSendBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformSendBreak"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformSendBreak">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        For now, the only way I know how to re-break the target</span>
+<span class="sd">        is to disconnect and re-connect...  TOTALLY GHETTO HACK!</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c"># If this isn&#39;t a break during attach, tell everybody we are</span>
+        <span class="c"># breaking...</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">attaching</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">breaking</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x03</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformWait"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformWait">[docs]</a>        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">pkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recvPkt</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">pkt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;O&#39;</span><span class="p">):</span>
+                <span class="k">print</span> <span class="s">&#39;GDBSTUB SAID: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">pkt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">break</span>
+        <span class="k">return</span> <span class="n">pkt</span>
+
+    <span class="k">def</span> <span class="nf">platformProcessEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformProcessEvent"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformProcessEvent">[docs]</a>        <span class="c">#print &#39;EVENT -&gt;%s&lt;-&#39; % event</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ExitCode&#39;</span><span class="p">,</span> <span class="mh">0xffffffff</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_EXIT</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_sock</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">return</span>
+
+        <span class="n">atype</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">signo</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+
+        <span class="c"># Is this a thread specific signal?</span>
+        <span class="k">if</span> <span class="n">atype</span> <span class="o">==</span> <span class="s">&#39;T&#39;</span><span class="p">:</span>
+
+            <span class="c">#print &#39;SIGNAL&#39;,sig</span>
+
+            <span class="n">dictbytes</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+            <span class="n">evdict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">kvstr</span> <span class="ow">in</span> <span class="n">dictbytes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;;&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">kvstr</span><span class="p">:</span> <span class="k">break</span>
+                <span class="c">#print &#39;KVSTR -&gt;%s&lt;-&#39; % kvstr</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">kvstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">evdict</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="c"># Did we get a specific thread?</span>
+            <span class="n">tidstr</span> <span class="o">=</span> <span class="n">evdict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;thread&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tidstr</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">tid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">tidstr</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">,</span> <span class="n">tid</span><span class="p">)</span>
+            <span class="c">#else:</span>
+                <span class="c">#print &quot;WE SHOULD ASK FOR THE CURRENT THREAD HERE!&quot;</span>
+
+        <span class="k">elif</span> <span class="n">atype</span> <span class="o">==</span> <span class="s">&#39;S&#39;</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">elif</span> <span class="n">atype</span> <span class="ow">in</span> <span class="n">exit_types</span><span class="p">:</span>
+
+            <span class="c"># Fire an exit event and GTFO!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fireExit</span><span class="p">(</span><span class="n">signo</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;Unhandled Gdb Server Event: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">event</span>
+
+        <span class="c">#if self.attaching and signo in trap_sigs:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attaching</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attaching</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="c">#self._enumGdbTarget()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_filemagic</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_findLibraryMaps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_filemagic</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_simpleCreateThreads</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">runAgain</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="c"># Clear this, if they want BREAK to run, it will</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_BREAK</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">breaking</span> <span class="ow">and</span> <span class="n">signo</span> <span class="ow">in</span> <span class="n">trap_sigs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">breaking</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_BREAK</span><span class="p">)</span>
+
+        <span class="c"># Process the signal and decide what to do...</span>
+        <span class="k">elif</span> <span class="n">signo</span> <span class="o">==</span> <span class="n">SIGTRAP</span><span class="p">:</span>
+
+            <span class="c"># Traps on posix systems are a little complicated</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stepping</span><span class="p">:</span>
+                <span class="c">#FIXME try out was single step thing for intel</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stepping</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_STEP</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkBreakpoints</span><span class="p">():</span>
+                <span class="k">return</span>
+
+            <span class="c">#elif self.checkWatchpoints():</span>
+                <span class="c">#return</span>
+
+            <span class="c">#elif self.checkBreakpoints():</span>
+                <span class="c"># It was either a known BP or a sendBreak()</span>
+                <span class="c">#return</span>
+
+            <span class="c">#elif self.execing:</span>
+                <span class="c">##self.execing = False</span>
+                <span class="c">#self.handleAttach()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fireSignal</span><span class="p">(</span><span class="n">signo</span><span class="p">)</span>
+
+        <span class="c">#elif signo == signal.SIGSTOP:</span>
+            <span class="c">#self.handleAttach()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fireSignal</span><span class="p">(</span><span class="n">signo</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gdbCreateThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+        <span class="n">initid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformGetThreads</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">,</span> <span class="n">tid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_CREATE_THREAD</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;ThreadId&#39;</span><span class="p">,</span> <span class="n">initid</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gdbSetRegisterInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fmt</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="c"># Used by the Trace implementations to tell the gdb</span>
+        <span class="c"># stub code how to unpack the register buf</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regfmt</span> <span class="o">=</span> <span class="n">fmt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regnames</span> <span class="o">=</span> <span class="n">names</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_reg_xlat</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regsize</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="c"># So we can skip parts of the gdb definition...</span>
+                <span class="k">continue</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getRegisterIndex</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_reg_xlat</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformGetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tid</span><span class="p">):</span>
+<div class="viewcode-block" id="GdbStubMixin.platformGetRegCtx"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformGetRegCtx">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get an envi register context from the target stub.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c"># FIXME tid!</span>
+        <span class="n">regbuf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="s">&#39;g&#39;</span><span class="p">)</span>
+        <span class="n">regbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runLengthDecode</span><span class="p">(</span><span class="n">regbuf</span><span class="p">)</span>
+        <span class="n">rvals</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regfmt</span><span class="p">,</span> <span class="n">regbytes</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regsize</span><span class="p">])</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">archGetRegCtx</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">myidx</span><span class="p">,</span> <span class="n">enviidx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_reg_xlat</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">enviidx</span><span class="p">,</span> <span class="n">rvals</span><span class="p">[</span><span class="n">myidx</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">ctx</span>
+        
+    <span class="k">def</span> <span class="nf">platformSetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tid</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformSetRegCtx"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformSetRegCtx">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the target stub&#39;s register context from the envi register context</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c"># FIXME tid!</span>
+        <span class="n">regbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="s">&#39;g&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+        <span class="n">regremain</span> <span class="o">=</span> <span class="n">regbytes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regsize</span><span class="p">:]</span>
+        <span class="n">rvals</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regfmt</span><span class="p">,</span> <span class="n">regbytes</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regsize</span><span class="p">])</span>
+        <span class="n">rvals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rvals</span><span class="p">)</span> <span class="c"># So we can assign to them...</span>
+        <span class="k">for</span> <span class="n">myidx</span><span class="p">,</span> <span class="n">enviidx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gdb_reg_xlat</span><span class="p">:</span>
+            <span class="n">rvals</span><span class="p">[</span><span class="n">myidx</span><span class="p">]</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">enviidx</span><span class="p">)</span>
+        <span class="n">newbytes</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_gdb_regfmt</span><span class="p">,</span> <span class="n">rvals</span><span class="p">)</span> <span class="o">+</span> <span class="n">regremain</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="s">&#39;G&#39;</span><span class="o">+</span><span class="n">newbytes</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">platformGetThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformGetThreads"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformGetThreads">[docs]</a>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sendPkt</span><span class="p">(</span><span class="s">&#39;qfThreadInfo&#39;</span><span class="p">)</span>
+        <span class="n">tbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recvPkt</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="n">tbytes</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;m&#39;</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">tbytes</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">bval</span> <span class="ow">in</span> <span class="n">tbytes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">):</span>
+                    <span class="n">ret</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">bval</span><span class="p">,</span> <span class="mi">16</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ret</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">tbytes</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="mi">16</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sendPkt</span><span class="p">(</span><span class="s">&#39;qsThreadInfo&#39;</span><span class="p">)</span>
+            <span class="n">tbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recvPkt</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">_raiseIfError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span></div>
+        <span class="k">if</span> <span class="n">msg</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;E&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Error: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_runLengthDecode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
+        <span class="c"># GDB RSP implements some run-length encoding to save space</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">cnt</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mi">29</span> <span class="c"># Run-length encoding is minus 29...</span>
+            <span class="n">pad</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">cnt</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[:</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">pad</span> <span class="o">+</span> <span class="n">buf</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">:]</span>
+
+            <span class="n">i</span> <span class="o">=</span> <span class="n">buf</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">buf</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformReadMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+<div class="viewcode-block" id="GdbStubMixin.platformReadMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformReadMemory">[docs]</a>        <span class="n">mbytes</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">mbytes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">:</span>
+            <span class="c"># FIXME is this 256 problem just in the VMWare gdb stub?</span>
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;m</span><span class="si">%x</span><span class="s">,</span><span class="si">%x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">addr</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">size</span><span class="o">-</span><span class="n">offset</span><span class="p">))</span>
+            <span class="n">pkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raiseIfError</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+            <span class="n">pbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runLengthDecode</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pbytes</span><span class="p">)</span>
+            <span class="n">mbytes</span> <span class="o">+=</span> <span class="n">pbytes</span>
+        <span class="k">return</span> <span class="n">mbytes</span>
+
+    <span class="k">def</span> <span class="nf">platformWriteMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">mbytes</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformWriteMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformWriteMemory">[docs]</a>        <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;M</span><span class="si">%x</span><span class="s">,</span><span class="si">%x</span><span class="s">:</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">mbytes</span><span class="p">),</span> <span class="n">mbytes</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;hex&#39;</span><span class="p">))</span>
+        <span class="n">pkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raiseIfError</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformGetMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin.platformGetMaps"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin.platformGetMaps">[docs]</a>        <span class="k">return</span> <span class="p">[]</span>
+
+<span class="c"># FROM HERE DOWN IS ALL CRAP THAT IS STILL GETTING SORTED OUT</span>
+
+<span class="k">class</span> <span class="nc">GdbStubMixin_old</span><span class="p">(</span><span class="n">e_registers</span><span class="o">.</span><span class="n">RegisterContext</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="GdbStubMixin_old"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin_old">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stepping</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attaching</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaking</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span> <span class="o">=</span> <span class="n">e_bits</span><span class="o">.</span><span class="n">u_maxes</span><span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">()</span> <span class="p">]</span>
+
+        <span class="n">aname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addArchNamespace</span><span class="p">(</span><span class="n">aname</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;Platform&#39;</span><span class="p">,</span> <span class="s">&#39;gdbstub&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbServerHost&#39;</span><span class="p">,</span> <span class="s">&#39;localhost&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbServerPort&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbPlatform&#39;</span><span class="p">,</span> <span class="s">&#39;Unknown&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbTargetPlatform&#39;</span><span class="p">,</span> <span class="s">&#39;Unknown&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;BinaryFormat&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+
+        <span class="n">arch_reg_info</span> <span class="o">=</span> <span class="n">gdb_reg_defs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">aname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">arch_reg_info</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;We dont know the GDB register definition for arch: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arch_regnames</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arch_regfmt</span> <span class="o">=</span> <span class="n">arch_reg_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arch_regsize</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arch_regfmt</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arch_rctx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arch</span><span class="o">.</span><span class="n">archGetRegCtx</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arch_reg_xlat</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_arch_regnames</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="c"># So we can skip parts of the gdb definition...</span>
+                <span class="k">continue</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arch_rctx</span><span class="o">.</span><span class="n">getRegisterIndex</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_arch_reg_xlat</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+
+        <span class="c"># Load up our register definition!</span>
+        <span class="n">e_registers</span><span class="o">.</span><span class="n">RegisterContext</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">rinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arch_rctx</span><span class="o">.</span><span class="n">getRegisterInfo</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegisterInfo</span><span class="p">(</span><span class="n">rinfo</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_addArchNamespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">aname</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">aname</span> <span class="o">==</span> <span class="s">&#39;arm&#39;</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">vstruct.defs.arm7</span> <span class="kn">as</span> <span class="nn">vs_arm7</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vsbuilder</span><span class="o">.</span><span class="n">addVStructNamespace</span><span class="p">(</span><span class="s">&#39;arm7&#39;</span><span class="p">,</span> <span class="n">vs_arm7</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">normFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="p">):</span>
+<div class="viewcode-block" id="GdbStubMixin_old.normFileName"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin_old.normFileName">[docs]</a>        <span class="c"># We don&#39;t know if it&#39;s / or \ ...   do both!</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">basename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">platformParseBinary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">baseaddr</span><span class="p">,</span> <span class="n">normname</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin_old.platformParseBinary"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin_old.platformParseBinary">[docs]</a>        <span class="k">print</span> <span class="s">&#39;platformParseBinary: 0x</span><span class="si">%.8x</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">baseaddr</span><span class="p">,</span> <span class="n">normname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformParseBinaryPe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">baseaddr</span><span class="p">,</span> <span class="n">normname</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin_old.platformParseBinaryPe"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin_old.platformParseBinaryPe">[docs]</a>
+        <span class="c"># If we&#39;re on windows, fake out the PE header and use dbghelp</span>
+        <span class="c">#if platform.system() in [&#39;Microsoft&#39;, &#39;Windows&#39;]:</span>
+        <span class="k">if</span> <span class="bp">False</span><span class="p">:</span>
+            <span class="c"># FIXME this code is stolen and should be a function!</span>
+            <span class="kn">import</span> <span class="nn">vtrace.platforms.win32</span> <span class="kn">as</span> <span class="nn">vt_win32</span>
+            <span class="n">fakepe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">baseaddr</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+            <span class="n">tfile</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">delete</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="n">tfilename</span> <span class="o">=</span> <span class="n">tfile</span><span class="o">.</span><span class="n">name</span>
+            <span class="kn">import</span> <span class="nn">ctypes</span>
+            <span class="n">pebuf</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">fakepe</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fakepe</span><span class="p">)</span>
+                    <span class="n">tfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="c">#parser = vt_win32.Win32SymbolParser(-1, tfilename, baseaddr)</span>
+                    <span class="n">parser</span> <span class="o">=</span> <span class="n">vt_win32</span><span class="o">.</span><span class="n">Win32SymbolParser</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">addressof</span><span class="p">(</span><span class="n">pebuf</span><span class="p">))</span>
+                    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+                    <span class="n">parser</span><span class="o">.</span><span class="n">loadSymsIntoTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">normname</span><span class="p">)</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">tfilename</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">print</span> <span class="n">e</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pe</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">peFromMemoryObject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">baseaddr</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">rva</span><span class="p">,</span> <span class="nb">ord</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">pe</span><span class="o">.</span><span class="n">getExports</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addSymbol</span><span class="p">(</span><span class="n">e_resolv</span><span class="o">.</span><span class="n">Symbol</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">baseaddr</span><span class="o">+</span><span class="n">rva</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">normname</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">platformPs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubMixin_old.platformPs"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubMixin_old.platformPs">[docs]</a>        <span class="k">return</span> <span class="p">[</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;SystemProcess&#39;</span><span class="p">),</span> <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_getVmwareReg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rname</span><span class="p">):</span></div>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Use VMWare&#39;s monitor extension to get a register we wouldn&#39;t</span>
+<span class="sd">        normally have...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c">#fs 0x30 base 0xffdff000 limit 0x00001fff type 0x3 s 1 dpl 0 p 1 db 1</span>
+        <span class="n">fsstr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitorCommand</span><span class="p">(</span><span class="s">&#39;r </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">rname</span><span class="p">)</span>
+        <span class="n">fsparts</span> <span class="o">=</span> <span class="n">fsstr</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">fsparts</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_getVmwareIdtr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">istr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitorCommand</span><span class="p">(</span><span class="s">&#39;r idtr&#39;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s">&#39;.* base=(0x\w+) .*&#39;</span><span class="p">,</span> <span class="n">istr</span><span class="p">)</span>
+        <span class="n">idtr</span> <span class="o">=</span> <span class="nb">long</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">idtr</span>
+
+    <span class="k">def</span> <span class="nf">_getNtOsKrnl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idtr</span><span class="p">):</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">kptr</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">idtr</span><span class="p">,</span> <span class="s">&#39;&lt;IQI&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">kptr</span> <span class="o">-=</span> <span class="n">kptr</span> <span class="o">&amp;</span> <span class="mh">0xfff</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">kptr</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;MZ</span><span class="se">\x90\x00</span><span class="s">&#39;</span><span class="p">):</span>
+                <span class="n">kptr</span> <span class="o">-=</span> <span class="mi">4096</span>
+            <span class="k">return</span> <span class="n">kptr</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">_enumTargetOs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fsbase</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setVariable</span><span class="p">(</span><span class="s">&#39;fsbase&#39;</span><span class="p">,</span> <span class="n">fsbase</span><span class="p">)</span>
+
+        <span class="n">fs_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">fsbase</span><span class="p">,</span> <span class="s">&#39;&lt;8I&#39;</span><span class="p">)</span>
+
+        <span class="c"># Windows has a self reference in the KPCR...</span>
+        <span class="k">if</span> <span class="n">fs_fields</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">==</span> <span class="n">fsbase</span><span class="p">:</span>
+
+            <span class="c"># Use KPCR from XP for now...</span>
+            <span class="kn">import</span> <span class="nn">vstruct.defs.windows.win_5_1_i386.ntoskrnl</span> <span class="kn">as</span> <span class="nn">vs_w_ntoskrnl</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vsbuilder</span><span class="o">.</span><span class="n">addVStructNamespace</span><span class="p">(</span><span class="s">&#39;nt&#39;</span><span class="p">,</span> <span class="n">vs_w_ntoskrnl</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbTargetPlatform&#39;</span><span class="p">,</span> <span class="s">&#39;Windows&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">casesens</span> <span class="o">=</span> <span class="bp">False</span>
+
+            <span class="n">kpcr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.KPCR&#39;</span><span class="p">,</span> <span class="n">fsbase</span><span class="p">)</span>
+            <span class="n">kver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.DBGKD_GET_VERSION64&#39;</span><span class="p">,</span> <span class="n">kpcr</span><span class="o">.</span><span class="n">KdVersionBlock</span><span class="p">)</span>
+
+            <span class="c">#print kpcr.tree()</span>
+            <span class="c">#print kver.tree()</span>
+
+            <span class="n">kernbase</span> <span class="o">=</span> <span class="n">kver</span><span class="o">.</span><span class="n">KernBase</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span>
+            <span class="n">modlist</span> <span class="o">=</span> <span class="n">kver</span><span class="o">.</span><span class="n">PsLoadedModuleList</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setVariable</span><span class="p">(</span><span class="s">&#39;PsLoadedModuleList&#39;</span><span class="p">,</span> <span class="n">modlist</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setVariable</span><span class="p">(</span><span class="s">&#39;KernelBase&#39;</span><span class="p">,</span> <span class="n">kernbase</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">platformParseBinary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformParseBinaryPe</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">addLibraryBase</span><span class="p">(</span><span class="s">&#39;nt&#39;</span><span class="p">,</span> <span class="n">kernbase</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">ldr_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">modlist</span><span class="p">,</span> <span class="s">&#39;&lt;I&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">while</span> <span class="n">ldr_entry</span> <span class="o">!=</span> <span class="n">modlist</span><span class="p">:</span>
+                <span class="n">ldte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.LDR_DATA_TABLE_ENTRY&#39;</span><span class="p">,</span> <span class="n">ldr_entry</span><span class="p">)</span>
+                <span class="n">dllname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">ldte</span><span class="o">.</span><span class="n">FullDllName</span><span class="o">.</span><span class="n">Buffer</span><span class="p">,</span> <span class="n">ldte</span><span class="o">.</span><span class="n">FullDllName</span><span class="o">.</span><span class="n">Length</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-16le&#39;</span><span class="p">)</span>
+                <span class="n">dllbase</span> <span class="o">=</span> <span class="n">ldte</span><span class="o">.</span><span class="n">DllBase</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addLibraryBase</span><span class="p">(</span><span class="n">dllname</span><span class="p">,</span> <span class="n">dllbase</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="n">ldr_entry</span> <span class="o">=</span> <span class="n">ldte</span><span class="o">.</span><span class="n">InLoadOrderLinks</span><span class="o">.</span><span class="n">Flink</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">KeBugCheckBreak</span><span class="p">(</span><span class="s">&#39;nt.KeBugCheck&#39;</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;Error Seting KeBugCheck Bp: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">KeBugCheckBreak</span><span class="p">(</span><span class="s">&#39;nt.KeBugCheckEx&#39;</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&#39;Error Seting KeBugCheck Bp: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># FIXME enumerate non-windows OSs!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_enumGdbTarget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">psize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">()</span>
+        <span class="n">vercmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitorCommand</span><span class="p">(</span><span class="s">&#39;version&#39;</span><span class="p">)</span>
+
+        <span class="n">monhelp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitorCommand</span><span class="p">(</span><span class="s">&#39;help&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">monhelp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;netdev_add&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbPlatform&#39;</span><span class="p">,</span> <span class="s">&#39;Qemu32&#39;</span><span class="p">)</span>
+
+            <span class="n">fsbase</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">monreg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_monitorCommand</span><span class="p">(</span><span class="s">&#39;info registers&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">monreg</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;FS&#39;</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="n">fsbase</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+                <span class="k">break</span>
+                
+            <span class="bp">self</span><span class="o">.</span><span class="n">_enumTargetOs</span><span class="p">(</span><span class="n">fsbase</span><span class="p">)</span>
+            <span class="c">#print monreg</span>
+            <span class="c">#m = re.match(&#39;FS =\w+ (\w+)&#39;, monreg, re.G)</span>
+            <span class="c">#fsbase = long(m.groups()[0], 0)</span>
+            <span class="c">#print &#39;FSBASE&#39;,hex(fsbase)</span>
+
+        <span class="k">elif</span> <span class="n">monhelp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;linuxoffsets&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbPlatform&#39;</span><span class="p">,</span> <span class="s">&#39;VMware</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">psize</span> <span class="o">*</span> <span class="mi">8</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="n">psize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span> <span class="c"># Use the fs register to get KPCR</span>
+                <span class="n">fsbase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getVmwareReg</span><span class="p">(</span><span class="s">&#39;fs&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_enumTargetOs</span><span class="p">(</span><span class="n">fsbase</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span> <span class="c"># FIXME 64bit vmware!</span>
+
+                <span class="n">idtr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getVmwareIdtr</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setVariable</span><span class="p">(</span><span class="s">&#39;idtr&#39;</span><span class="p">,</span> <span class="n">idtr</span><span class="p">)</span>
+
+                <span class="n">win_kpcr</span> <span class="o">=</span> <span class="mh">0x07fffffde000</span>
+
+                <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">win_kpcr</span><span class="p">,</span> <span class="s">&#39;&lt;7Q&#39;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">print</span> <span class="s">&#39;Exception:&#39;</span><span class="p">,</span><span class="n">e</span>
+
+                <span class="c"># FIXME other heuristics for linux/bsd/etc...</span>
+                <span class="k">if</span> <span class="n">fields</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">win_kpcr</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_initWin64</span><span class="p">(</span><span class="n">win_kpcr</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">)</span>
+
+                <span class="c">#fsbase = self._getVmwareReg(&#39;fs&#39;)</span>
+                <span class="c">#self.setVariable(&#39;fsbase&#39;, fsbase)</span>
+
+                <span class="c">#fs_fields = self.readMemoryFormat(fsbase, &#39;&lt;8I&#39;)</span>
+
+                <span class="c">#nt = self._getNtOsKrnl(idtr)</span>
+                <span class="c">#if nt != None:</span>
+                    <span class="c"># We are 64bit windows!</span>
+                    <span class="c">#import vstruct.defs.windows.win_6_1_amd64.ntoskrnl as vs_w_ntoskrnl</span>
+                    <span class="c">#self.vsbuilder.addVStructNamespace(&#39;nt&#39;, vs_w_ntoskrnl)</span>
+                    <span class="c">#self.setMeta(&#39;GdbTargetPlatform&#39;, &#39;Windows&#39;)</span>
+                    <span class="c">#self.setVariable(&#39;KernelBase&#39;, nt)</span>
+                    <span class="c">#self.platformParseBinary = self.platformParseBinaryPe</span>
+                    <span class="c">#self.fireNotifiers(vtrace.NOTIFY_ATTACH)</span>
+                    <span class="c">#self.addLibraryBase(&#39;nt&#39;, nt, always=True)</span>
+
+                <span class="c">#else:</span>
+
+        <span class="k">elif</span> <span class="n">vercmd</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s">&#39;open on-chip debugger&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbPlatform&#39;</span><span class="p">,</span> <span class="s">&#39;OpenOCD&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;Unidentified gdbstub: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">vercmd</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">)</span>
+
+
+    <span class="c"># FIXME implement getRegister(idx) and steal get/set for regs which are not part of the whole...</span>
+    <span class="k">def</span> <span class="nf">_initWin64</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kpcr</span><span class="p">):</span>
+
+        <span class="kn">import</span> <span class="nn">vstrct.defs.windows.win_6_1_amd64.ntoskrnl</span> <span class="kn">as</span> <span class="nn">vs_w_ntoskrnl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vsbuilder</span><span class="o">.</span><span class="n">addVStructNamespace</span><span class="p">(</span><span class="s">&#39;nt&#39;</span><span class="p">,</span> <span class="n">vs_w_ntoskrnl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initWinBase</span><span class="p">()</span>
+                <span class="c">#nt = self._getNtOsKrnl(idtr)</span>
+                <span class="c">#if nt != None:</span>
+                    <span class="c"># We are 64bit windows!</span>
+                    <span class="c">#import vstruct.defs.windows.win_6_1_amd64.ntoskrnl as vs_w_ntoskrnl</span>
+                    <span class="c">#self.vsbuilder.addVStructNamespace(&#39;nt&#39;, vs_w_ntoskrnl)</span>
+                    <span class="c">#self.setMeta(&#39;GdbTargetPlatform&#39;, &#39;Windows&#39;)</span>
+                    <span class="c">#self.setVariable(&#39;KernelBase&#39;, nt)</span>
+                    <span class="c">#self.platformParseBinary = self.platformParseBinaryPe</span>
+                    <span class="c">#self.fireNotifiers(vtrace.NOTIFY_ATTACH)</span>
+                    <span class="c">#self.addLibraryBase(&#39;nt&#39;, nt, always=True)</span>
+
+    <span class="k">def</span> <span class="nf">_initWinBase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kpcr</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbTargetPlatform&#39;</span><span class="p">,</span> <span class="s">&#39;Windows&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">casesens</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">kpcr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.KPCR&#39;</span><span class="p">,</span> <span class="n">kpcr</span><span class="p">)</span>
+        <span class="n">kver</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.DBGKD_GET_VERSION64&#39;</span><span class="p">,</span> <span class="n">kpcr</span><span class="o">.</span><span class="n">KdVersionBlock</span><span class="p">)</span>
+
+        <span class="n">kernbase</span> <span class="o">=</span> <span class="n">kver</span><span class="o">.</span><span class="n">KernBase</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span>
+        <span class="n">modlist</span> <span class="o">=</span> <span class="n">kver</span><span class="o">.</span><span class="n">PsLoadedModuleList</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setVariable</span><span class="p">(</span><span class="s">&#39;PsLoadedModuleList&#39;</span><span class="p">,</span> <span class="n">modlist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setVariable</span><span class="p">(</span><span class="s">&#39;KernelBase&#39;</span><span class="p">,</span> <span class="n">kernbase</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">platformParseBinary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">platformParseBinaryPe</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">addLibraryBase</span><span class="p">(</span><span class="s">&#39;nt&#39;</span><span class="p">,</span> <span class="n">kernbase</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">ldr_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemoryFormat</span><span class="p">(</span><span class="n">modlist</span><span class="p">,</span> <span class="s">&#39;&lt;P&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">ldr_entry</span> <span class="o">!=</span> <span class="n">modlist</span><span class="p">:</span>
+            <span class="n">ldte</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.LDR_DATA_TABLE_ENTRY&#39;</span><span class="p">,</span> <span class="n">ldr_entry</span><span class="p">)</span>
+            <span class="n">dllname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">ldte</span><span class="o">.</span><span class="n">FullDllName</span><span class="o">.</span><span class="n">Buffer</span><span class="p">,</span> <span class="n">ldte</span><span class="o">.</span><span class="n">FullDllName</span><span class="o">.</span><span class="n">Length</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-16le&#39;</span><span class="p">)</span>
+            <span class="n">dllbase</span> <span class="o">=</span> <span class="n">ldte</span><span class="o">.</span><span class="n">DllBase</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addLibraryBase</span><span class="p">(</span><span class="n">dllname</span><span class="p">,</span> <span class="n">dllbase</span><span class="p">,</span> <span class="n">always</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">ldr_entry</span> <span class="o">=</span> <span class="n">ldte</span><span class="o">.</span><span class="n">InLoadOrderLinks</span><span class="o">.</span><span class="n">Flink</span> <span class="o">&amp;</span> <span class="bp">self</span><span class="o">.</span><span class="n">bigmask</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">KeBugCheckBreak</span><span class="p">(</span><span class="s">&#39;nt.KeBugCheck&#39;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;Error Seting KeBugCheck Bp: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">KeBugCheckBreak</span><span class="p">(</span><span class="s">&#39;nt.KeBugCheckEx&#39;</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&#39;Error Seting KeBugCheck Bp: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">e</span>
+
+
+<span class="n">GDB_BP_SOFTWARE</span>     <span class="o">=</span> <span class="mi">0</span></div>
+<span class="n">GDB_BP_HARDWARE</span>     <span class="o">=</span> <span class="mi">1</span>
+<span class="n">GDB_BP_WATCH_WRITE</span>  <span class="o">=</span> <span class="mi">2</span>
+<span class="n">GDB_BP_WATCH_READ</span>   <span class="o">=</span> <span class="mi">3</span>
+<span class="n">GDB_BP_WATCH_ACCESS</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">class</span> <span class="nc">GdbStubTrace</span><span class="p">(</span>
+<div class="viewcode-block" id="GdbStubTrace"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubTrace">[docs]</a>        <span class="n">vtrace</span><span class="o">.</span><span class="n">Trace</span><span class="p">,</span>
+        <span class="n">GdbStubMixin</span><span class="p">,</span>
+        <span class="n">v_base</span><span class="o">.</span><span class="n">TracerBase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archname</span><span class="p">):</span>
+
+        <span class="c"># First things first, lets steal ourself an arch!</span>
+        <span class="n">envi</span><span class="o">.</span><span class="n">stealArchMethods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archname</span><span class="p">)</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Trace</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">archname</span><span class="o">=</span><span class="n">archname</span><span class="p">)</span>
+        <span class="n">v_base</span><span class="o">.</span><span class="n">TracerBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">GdbStubMixin</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_break_after_bp</span> <span class="o">=</span> <span class="bp">False</span>    <span class="c"># We break *at* the bp</span>
+
+    <span class="c"># FIXME this should have a cleaner abstraction to allow for stuff...</span>
+    <span class="c"># platformActivateBreak / Watch!</span>
+    <span class="c"># platformDeactivateBreak / Watch!</span>
+
+    <span class="c"># FIXME we also need cleaner abstraction for checkBreakpoints</span>
+    <span class="c"># (some platforms stop *on* break and some stop *after...)</span>
+
+    <span class="k">def</span> <span class="nf">_activateBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bp</span><span class="p">):</span>
+        <span class="c"># For now, we don&#39;t support watchpoints...</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bp</span><span class="o">.</span><span class="n">active</span><span class="p">:</span>
+            <span class="n">addr</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">resolveAddress</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="s">&#39;Z</span><span class="si">%d</span><span class="s">,</span><span class="si">%x</span><span class="s">,</span><span class="si">%x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">GDB_BP_SOFTWARE</span><span class="p">,</span><span class="n">addr</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_cleanupBreakpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Cleanup any non-fastbreak breakpoints.  This routine doesn&#39;t even get</span>
+<span class="sd">        called in the event of mode FastBreak=True.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fb_bp_done</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">breakpoints</span><span class="o">.</span><span class="n">itervalues</span><span class="p">():</span>
+            <span class="c"># No harm in calling deactivate on</span>
+            <span class="c"># an inactive bp</span>
+            <span class="k">if</span> <span class="n">force</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">bp</span><span class="o">.</span><span class="n">fastbreak</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cmdTransact</span><span class="p">(</span><span class="s">&#39;z</span><span class="si">%d</span><span class="s">,</span><span class="si">%x</span><span class="s">,</span><span class="si">%x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">GDB_BP_SOFTWARE</span><span class="p">,</span><span class="n">bp</span><span class="o">.</span><span class="n">getAddress</span><span class="p">(),</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">bp</span><span class="o">.</span><span class="n">active</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="c">#bp.deactivate(self)</span>
+
+    <span class="k">def</span> <span class="nf">_checkForBreak</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check to see if we&#39;ve landed on a breakpoint, and if so</span>
+<span class="sd">        deactivate and step us past it.</span>
+
+<span class="sd">        WARNING: Unfortunatly, cause this is used immidiatly before</span>
+<span class="sd">        a call to run/wait, we must block briefly even for the GUI</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c"># Steal a reference because the step should</span>
+        <span class="c"># clear curbp...</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">curbp</span>
+        <span class="k">if</span> <span class="n">bp</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span><span class="o">.</span><span class="n">isEnabled</span><span class="p">():</span>
+            <span class="c"># We had to remove a check for active and a deactivate here...</span>
+            <span class="n">orig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMode</span><span class="p">(</span><span class="s">&quot;FastStep&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;FastStep&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stepi</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setMode</span><span class="p">(</span><span class="s">&quot;FastStep&quot;</span><span class="p">,</span> <span class="n">orig</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activateBreak</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">buildNewTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GdbStubTrace.buildNewTrace"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.gdbstub.GdbStubTrace.buildNewTrace">[docs]</a>        <span class="n">arch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">)</span>
+        <span class="n">newt</span> <span class="o">=</span> <span class="n">GdbStubTrace</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
+        <span class="n">newt</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbServerHost&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;GdbServerHost&#39;</span><span class="p">))</span>
+        <span class="n">newt</span><span class="o">.</span><span class="n">setMeta</span><span class="p">(</span><span class="s">&#39;GdbServerPort&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;GdbServerPort&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">newt</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

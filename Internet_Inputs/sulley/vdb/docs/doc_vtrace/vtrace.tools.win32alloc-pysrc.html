@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.tools.win32alloc</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        <a href="vtrace.tools-module.html">Package&nbsp;tools</a> ::
+        Module&nbsp;win32alloc
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.tools.win32alloc-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vtrace.tools.win32alloc-module.html">Module vtrace.tools.win32alloc</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">A module with some cute toys for monitoring allocations.</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package vtrace=vtrace-module.html"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-0', 'vtrace', 'link-0');">vtrace</a></tt> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">envi</tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package vtrace.archs=vtrace.archs-module.html"><a title="vtrace.archs" class="py-name" href="#" onclick="return doclink('link-1', 'archs', 'link-1');">archs</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module vtrace.archs.i386=vtrace.archs.i386-module.html"><a title="vtrace.archs.i386" class="py-name" href="#" onclick="return doclink('link-2', 'i386', 'link-2');">i386</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_i386</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"> </tt>
+<a name="ReturnBreak"></a><div id="ReturnBreak-def"><a name="L9"></a><tt class="py-lineno"> 9</tt> <a class="py-toggle" href="#" id="ReturnBreak-toggle" onclick="return toggle('ReturnBreak');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.tools.win32alloc.ReturnBreak-class.html">ReturnBreak</a><tt class="py-op">(</tt><tt class="py-base-class">vtrace</tt><tt class="py-op">.</tt><tt class="py-base-class">Breakpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ReturnBreak-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ReturnBreak-expanded"><a name="ReturnBreak.__init__"></a><div id="ReturnBreak.__init__-def"><a name="L10"></a><tt class="py-lineno">10</tt> <a class="py-toggle" href="#" id="ReturnBreak.__init__-toggle" onclick="return toggle('ReturnBreak.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.win32alloc.ReturnBreak-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">addr</tt><tt class="py-op">,</tt> <tt class="py-param">chsize</tt><tt class="py-op">,</tt> <tt class="py-param">chflags</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ReturnBreak.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ReturnBreak.__init__-expanded"><a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">        <tt id="link-3" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-3', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Class vtrace.breakpoints.Breakpoint=vtrace.breakpoints.Breakpoint-class.html"><a title="vtrace.breakpoints.Breakpoint" class="py-name" href="#" onclick="return doclink('link-4', 'Breakpoint', 'link-4');">Breakpoint</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Method vtrace.AccessViolation.__init__()=vtrace.AccessViolation-class.html#__init__,Method vtrace.Trace.__init__()=vtrace.Trace-class.html#__init__,Method vtrace.TraceGroup.__init__()=vtrace.TraceGroup-class.html#__init__,Method vtrace.VtraceExpressionLocals.__init__()=vtrace.VtraceExpressionLocals-class.html#__init__,Method vtrace.archs.amd64.Amd64Mixin.__init__()=vtrace.archs.amd64.Amd64Mixin-class.html#__init__,Method vtrace.archs.arm.ArmMixin.__init__()=vtrace.archs.arm.ArmMixin-class.html#__init__,Method vtrace.archs.i386.i386Mixin.__init__()=vtrace.archs.i386.i386Mixin-class.html#__init__,Method vtrace.archs.i386.i386WatchMixin.__init__()=vtrace.archs.i386.i386WatchMixin-class.html#__init__,Method vtrace.breakpoints.Breakpoint.__init__()=vtrace.breakpoints.Breakpoint-class.html#__init__,Method vtrace.breakpoints.CallBreak.__init__()=vtrace.breakpoints.CallBreak-class.html#__init__,Method vtrace.envitools.TraceEmulator.__init__()=vtrace.envitools.TraceEmulator-class.html#__init__,Method vtrace.notifiers.DistributedNotifier.__init__()=vtrace.notifiers.DistributedNotifier-class.html#__init__,Method vtrace.notifiers.Notifier.__init__()=vtrace.notifiers.Notifier-class.html#__init__,Method vtrace.platforms.android.AndroidArmTrace.__init__()=vtrace.platforms.android.AndroidArmTrace-class.html#__init__,Method vtrace.platforms.base.TracerBase.__init__()=vtrace.platforms.base.TracerBase-class.html#__init__,Method vtrace.platforms.base.TracerThread.__init__()=vtrace.platforms.base.TracerThread-class.html#__init__,Method vtrace.platforms.darwin.DarwinAmd64Trace.__init__()=vtrace.platforms.darwin.DarwinAmd64Trace-class.html#__init__,Method vtrace.platforms.darwin.DarwinMixin.__init__()=vtrace.platforms.darwin.DarwinMixin-class.html#__init__,Method vtrace.platforms.darwin.Darwini386Trace.__init__()=vtrace.platforms.darwin.Darwini386Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__()=vtrace.platforms.freebsd.FreeBSDAmd64Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDMixin.__init__()=vtrace.platforms.freebsd.FreeBSDMixin-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDi386Trace.__init__()=vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin.__init__()=vtrace.platforms.gdbstub.GdbStubMixin-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin_old.__init__()=vtrace.platforms.gdbstub.GdbStubMixin_old-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubTrace.__init__()=vtrace.platforms.gdbstub.GdbStubTrace-class.html#__init__,Method vtrace.platforms.gdbstub.KeBugCheckBreak.__init__()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#__init__,Method vtrace.platforms.linux.LinuxAmd64Trace.__init__()=vtrace.platforms.linux.LinuxAmd64Trace-class.html#__init__,Method vtrace.platforms.linux.LinuxMixin.__init__()=vtrace.platforms.linux.LinuxMixin-class.html#__init__,Method vtrace.platforms.linux.Linuxi386Trace.__init__()=vtrace.platforms.linux.Linuxi386Trace-class.html#__init__,Method vtrace.platforms.posix.ElfMixin.__init__()=vtrace.platforms.posix.ElfMixin-class.html#__init__,Method vtrace.platforms.posix.PosixMixin.__init__()=vtrace.platforms.posix.PosixMixin-class.html#__init__,Method vtrace.platforms.posix.PtraceMixin.__init__()=vtrace.platforms.posix.PtraceMixin-class.html#__init__,Method vtrace.platforms.win32.Win32SymbolParser.__init__()=vtrace.platforms.win32.Win32SymbolParser-class.html#__init__,Method vtrace.platforms.win32.WindowsAmd64Trace.__init__()=vtrace.platforms.win32.WindowsAmd64Trace-class.html#__init__,Method vtrace.platforms.win32.WindowsMixin.__init__()=vtrace.platforms.win32.WindowsMixin-class.html#__init__,Method vtrace.platforms.win32.Windowsi386Trace.__init__()=vtrace.platforms.win32.Windowsi386Trace-class.html#__init__,Method vtrace.qt.RegColorDelegate.__init__()=vtrace.qt.RegColorDelegate-class.html#__init__,Method vtrace.qt.VQFileDescView.__init__()=vtrace.qt.VQFileDescView-class.html#__init__,Method vtrace.qt.VQMemoryMapView.__init__()=vtrace.qt.VQMemoryMapView-class.html#__init__,Method vtrace.qt.VQProcessListView.__init__()=vtrace.qt.VQProcessListView-class.html#__init__,Method vtrace.qt.VQProcessSelectDialog.__init__()=vtrace.qt.VQProcessSelectDialog-class.html#__init__,Method vtrace.qt.VQRegistersListView.__init__()=vtrace.qt.VQRegistersListView-class.html#__init__,Method vtrace.qt.VQRegistersView.__init__()=vtrace.qt.VQRegistersView-class.html#__init__,Method vtrace.qt.VQThreadsView.__init__()=vtrace.qt.VQThreadsView-class.html#__init__,Method vtrace.qt.VQTraceNotifier.__init__()=vtrace.qt.VQTraceNotifier-class.html#__init__,Method vtrace.qt.VQTraceToolBar.__init__()=vtrace.qt.VQTraceToolBar-class.html#__init__,Method vtrace.rmi.RemoteTrace.__init__()=vtrace.rmi.RemoteTrace-class.html#__init__,Method vtrace.snapshot.TraceSnapshot.__init__()=vtrace.snapshot.TraceSnapshot-class.html#__init__,Method vtrace.tools.iathook.IatHook.__init__()=vtrace.tools.iathook.IatHook-class.html#__init__,Method vtrace.tools.win32alloc.ReturnBreak.__init__()=vtrace.tools.win32alloc.ReturnBreak-class.html#__init__,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__,Method vtrace.tools.win32heap.FreeListCorruption.__init__()=vtrace.tools.win32heap.FreeListCorruption-class.html#__init__,Method vtrace.tools.win32heap.HeapCorruptionException.__init__()=vtrace.tools.win32heap.HeapCorruptionException-class.html#__init__,Method vtrace.tools.win32heap.Win32Chunk.__init__()=vtrace.tools.win32heap.Win32Chunk-class.html#__init__,Method vtrace.tools.win32heap.Win32Heap.__init__()=vtrace.tools.win32heap.Win32Heap-class.html#__init__,Method vtrace.tools.win32heap.Win32Segment.__init__()=vtrace.tools.win32heap.Win32Segment-class.html#__init__,Method vtrace.util.TraceManager.__init__()=vtrace.util.TraceManager-class.html#__init__,Method vtrace.watchpoints.PageWatchpoint.__init__()=vtrace.watchpoints.PageWatchpoint-class.html#__init__,Method vtrace.watchpoints.Watchpoint.__init__()=vtrace.watchpoints.Watchpoint-class.html#__init__"><a title="vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__" class="py-name" href="#" onclick="return doclink('link-5', '__init__', 'link-5');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">addr</tt><tt class="py-op">)</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fastbreak</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_chsize</tt> <tt class="py-op">=</tt> <tt class="py-name">chsize</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_chflags</tt> <tt class="py-op">=</tt> <tt class="py-name">chflags</tt> </tt>
+</div><a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line"> </tt>
+<a name="ReturnBreak.notify"></a><div id="ReturnBreak.notify-def"><a name="L16"></a><tt class="py-lineno">16</tt> <a class="py-toggle" href="#" id="ReturnBreak.notify-toggle" onclick="return toggle('ReturnBreak.notify');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.win32alloc.ReturnBreak-class.html#notify">notify</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ReturnBreak.notify-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ReturnBreak.notify-expanded"><a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">        <tt id="link-6" class="py-name" targets="Variable vtrace.platforms.linux.user_regs_i386.eax=vtrace.platforms.linux.user_regs_i386-class.html#eax,Variable vtrace.platforms.win32.CONTEXTx86.eax=vtrace.platforms.win32.CONTEXTx86-class.html#eax"><a title="vtrace.platforms.linux.user_regs_i386.eax
+vtrace.platforms.win32.CONTEXTx86.eax" class="py-name" href="#" onclick="return doclink('link-6', 'eax', 'link-6');">eax</a></tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method vtrace.Trace.getRegister()=vtrace.Trace-class.html#getRegister"><a title="vtrace.Trace.getRegister" class="py-name" href="#" onclick="return doclink('link-7', 'getRegister', 'link-7');">getRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt class="py-name">REG_EAX</tt><tt class="py-op">)</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">a</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method vtrace.Trace.getMeta()=vtrace.Trace-class.html#getMeta,Method vtrace.util.TraceManager.getMeta()=vtrace.util.TraceManager-class.html#getMeta"><a title="vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-8', 'getMeta', 'link-8');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">'HeapAllocs'</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line">        <tt class="py-name">a</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">address</tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name"><a title="vtrace.platforms.linux.user_regs_i386.eax
+vtrace.platforms.win32.CONTEXTx86.eax" class="py-name" href="#" onclick="return doclink('link-9', 'eax', 'link-6');">eax</a></tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_chsize</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_chflags</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Method vtrace.Trace.runAgain()=vtrace.Trace-class.html#runAgain"><a title="vtrace.Trace.runAgain" class="py-name" href="#" onclick="return doclink('link-10', 'runAgain', 'link-10');">runAgain</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"> </tt>
+<a name="RtlAllocateHeapBreak"></a><div id="RtlAllocateHeapBreak-def"><a name="L22"></a><tt class="py-lineno">22</tt> <a class="py-toggle" href="#" id="RtlAllocateHeapBreak-toggle" onclick="return toggle('RtlAllocateHeapBreak');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html">RtlAllocateHeapBreak</a><tt class="py-op">(</tt><tt class="py-base-class">vtrace</tt><tt class="py-op">.</tt><tt class="py-base-class">Breakpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RtlAllocateHeapBreak-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="RtlAllocateHeapBreak-expanded"><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="RtlAllocateHeapBreak.__init__"></a><div id="RtlAllocateHeapBreak.__init__-def"><a name="L24"></a><tt class="py-lineno">24</tt> <a class="py-toggle" href="#" id="RtlAllocateHeapBreak.__init__-toggle" onclick="return toggle('RtlAllocateHeapBreak.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">addr</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RtlAllocateHeapBreak.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="RtlAllocateHeapBreak.__init__-expanded"><a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">        <tt id="link-11" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-11', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="vtrace.breakpoints.Breakpoint" class="py-name" href="#" onclick="return doclink('link-12', 'Breakpoint', 'link-4');">Breakpoint</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__" class="py-name" href="#" onclick="return doclink('link-13', '__init__', 'link-5');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">addr</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fastbreak</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"> </tt>
+<a name="RtlAllocateHeapBreak.notify"></a><div id="RtlAllocateHeapBreak.notify-def"><a name="L28"></a><tt class="py-lineno">28</tt> <a class="py-toggle" href="#" id="RtlAllocateHeapBreak.notify-toggle" onclick="return toggle('RtlAllocateHeapBreak.notify');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#notify">notify</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RtlAllocateHeapBreak.notify-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="RtlAllocateHeapBreak.notify-expanded"><a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line"> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line">        <tt class="py-name">sp</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getStackCounter</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-op">(</tt> <tt class="py-name">saved_eip</tt><tt class="py-op">,</tt>  </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">          <tt class="py-name">heap</tt><tt class="py-op">,</tt>  </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">          <tt class="py-name">flags</tt><tt class="py-op">,</tt>  </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">          <tt class="py-name">size</tt> <tt class="py-op">)</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">readMemoryFormat</tt><tt class="py-op">(</tt><tt class="py-name">sp</tt><tt class="py-op">,</tt> <tt class="py-string">'&lt;4P'</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Method vtrace.Trace.getBreakpointByAddr()=vtrace.Trace-class.html#getBreakpointByAddr"><a title="vtrace.Trace.getBreakpointByAddr" class="py-name" href="#" onclick="return doclink('link-14', 'getBreakpointByAddr', 'link-14');">getBreakpointByAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">saved_eip</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">            <tt id="link-15" class="py-name" targets="Method vtrace.VtraceExpressionLocals.bp()=vtrace.VtraceExpressionLocals-class.html#bp"><a title="vtrace.VtraceExpressionLocals.bp" class="py-name" href="#" onclick="return doclink('link-15', 'bp', 'link-15');">bp</a></tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name" targets="Class vtrace.tools.win32alloc.ReturnBreak=vtrace.tools.win32alloc.ReturnBreak-class.html"><a title="vtrace.tools.win32alloc.ReturnBreak" class="py-name" href="#" onclick="return doclink('link-16', 'ReturnBreak', 'link-16');">ReturnBreak</a></tt><tt class="py-op">(</tt><tt class="py-name">saved_eip</tt><tt class="py-op">,</tt> <tt class="py-name">size</tt><tt class="py-op">,</tt> <tt class="py-name">flags</tt><tt class="py-op">)</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line">            <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Method vtrace.Trace.addBreakpoint()=vtrace.Trace-class.html#addBreakpoint"><a title="vtrace.Trace.addBreakpoint" class="py-name" href="#" onclick="return doclink('link-17', 'addBreakpoint', 'link-17');">addBreakpoint</a></tt><tt class="py-op">(</tt><tt id="link-18" class="py-name"><a title="vtrace.VtraceExpressionLocals.bp" class="py-name" href="#" onclick="return doclink('link-18', 'bp', 'link-15');">bp</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line"> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="vtrace.Trace.runAgain" class="py-name" href="#" onclick="return doclink('link-19', 'runAgain', 'link-10');">runAgain</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line"> </tt>
+<a name="watchHeapAllocs"></a><div id="watchHeapAllocs-def"><a name="L42"></a><tt class="py-lineno">42</tt> <a class="py-toggle" href="#" id="watchHeapAllocs-toggle" onclick="return toggle('watchHeapAllocs');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.win32alloc-module.html#watchHeapAllocs">watchHeapAllocs</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="watchHeapAllocs-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="watchHeapAllocs-expanded"><a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line"><tt class="py-docstring">    Add a breakpoint to ntdll.RtlAllocateHeap to watch for</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"><tt class="py-docstring">    allocations and track who made them...</tt> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">    <tt id="link-20" class="py-name" targets="Function vtrace.tools.win32alloc.clearHeapAllocs()=vtrace.tools.win32alloc-module.html#clearHeapAllocs"><a title="vtrace.tools.win32alloc.clearHeapAllocs" class="py-name" href="#" onclick="return doclink('link-20', 'clearHeapAllocs', 'link-20');">clearHeapAllocs</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">    <tt class="py-name">addr</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method vtrace.Trace.parseExpression()=vtrace.Trace-class.html#parseExpression"><a title="vtrace.Trace.parseExpression" class="py-name" href="#" onclick="return doclink('link-21', 'parseExpression', 'link-21');">parseExpression</a></tt><tt class="py-op">(</tt><tt class="py-string">'ntdll.RtlAllocateHeap'</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line">    <tt id="link-22" class="py-name"><a title="vtrace.VtraceExpressionLocals.bp" class="py-name" href="#" onclick="return doclink('link-22', 'bp', 'link-15');">bp</a></tt> <tt class="py-op">=</tt> <tt id="link-23" class="py-name" targets="Class vtrace.tools.win32alloc.RtlAllocateHeapBreak=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html"><a title="vtrace.tools.win32alloc.RtlAllocateHeapBreak" class="py-name" href="#" onclick="return doclink('link-23', 'RtlAllocateHeapBreak', 'link-23');">RtlAllocateHeapBreak</a></tt><tt class="py-op">(</tt><tt class="py-name">addr</tt><tt class="py-op">)</tt> </tt>
+<a name="L50"></a><tt class="py-lineno">50</tt>  <tt class="py-line">    <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="vtrace.Trace.addBreakpoint" class="py-name" href="#" onclick="return doclink('link-24', 'addBreakpoint', 'link-17');">addBreakpoint</a></tt><tt class="py-op">(</tt><tt id="link-25" class="py-name"><a title="vtrace.VtraceExpressionLocals.bp" class="py-name" href="#" onclick="return doclink('link-25', 'bp', 'link-15');">bp</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"> </tt>
+<a name="clearHeapAllocs"></a><div id="clearHeapAllocs-def"><a name="L52"></a><tt class="py-lineno">52</tt> <a class="py-toggle" href="#" id="clearHeapAllocs-toggle" onclick="return toggle('clearHeapAllocs');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.win32alloc-module.html#clearHeapAllocs">clearHeapAllocs</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="clearHeapAllocs-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="clearHeapAllocs-expanded"><a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">    <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method vtrace.Trace.setMeta()=vtrace.Trace-class.html#setMeta,Method vtrace.TraceGroup.setMeta()=vtrace.TraceGroup-class.html#setMeta,Method vtrace.util.TraceManager.setMeta()=vtrace.util.TraceManager-class.html#setMeta"><a title="vtrace.Trace.setMeta
+vtrace.TraceGroup.setMeta
+vtrace.util.TraceManager.setMeta" class="py-name" href="#" onclick="return doclink('link-26', 'setMeta', 'link-26');">setMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">'HeapAllocs'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line"> </tt>
+<a name="getHeapAllocs"></a><div id="getHeapAllocs-def"><a name="L55"></a><tt class="py-lineno">55</tt> <a class="py-toggle" href="#" id="getHeapAllocs-toggle" onclick="return toggle('getHeapAllocs');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.tools.win32alloc-module.html#getHeapAllocs">getHeapAllocs</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getHeapAllocs-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="getHeapAllocs-expanded"><a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"><tt class="py-docstring">    Return a list of (caller_eip, heap_chunk, size, flags) tuples</tt> </tt>
+<a name="L58"></a><tt class="py-lineno">58</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="vtrace.Trace.getMeta
+vtrace.util.TraceManager.getMeta" class="py-name" href="#" onclick="return doclink('link-27', 'getMeta', 'link-8');">getMeta</a></tt><tt class="py-op">(</tt><tt class="py-string">'HeapAllocs'</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:45:01 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

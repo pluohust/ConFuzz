@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>envi.archs.amd64.disasm</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="envi-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="envi-module.html">Package&nbsp;envi</a> ::
+        <a href="envi.archs-module.html">Package&nbsp;archs</a> ::
+        <a href="envi.archs.amd64-module.html">Package&nbsp;amd64</a> ::
+        Module&nbsp;disasm
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="envi.archs.amd64.disasm-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="envi.archs.amd64.disasm-module.html">Module envi.archs.amd64.disasm</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package envi=envi-module.html"><a title="envi" class="py-name" href="#" onclick="return doclink('link-0', 'envi', 'link-0');">envi</a></tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-1', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module envi.bits=envi.bits-module.html"><a title="envi.bits" class="py-name" href="#" onclick="return doclink('link-2', 'bits', 'link-2');">bits</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_bits</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-3" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-3', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Package envi.archs=envi.archs-module.html"><a title="envi.archs" class="py-name" href="#" onclick="return doclink('link-4', 'archs', 'link-4');">archs</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Package envi.archs.i386=envi.archs.i386-module.html"><a title="envi.archs.i386" class="py-name" href="#" onclick="return doclink('link-5', 'i386', 'link-5');">i386</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_i386</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-6" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-6', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name"><a title="envi.archs" class="py-name" href="#" onclick="return doclink('link-7', 'archs', 'link-4');">archs</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name"><a title="envi.archs.i386" class="py-name" href="#" onclick="return doclink('link-8', 'i386', 'link-5');">i386</a></tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Module envi.archs.i386.opcode86=envi.archs.i386.opcode86-module.html"><a title="envi.archs.i386.opcode86" class="py-name" href="#" onclick="return doclink('link-9', 'opcode86', 'link-9');">opcode86</a></tt> <tt class="py-keyword">as</tt> <tt id="link-10" class="py-name"><a title="envi.archs.i386.opcode86" class="py-name" href="#" onclick="return doclink('link-10', 'opcode86', 'link-9');">opcode86</a></tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-11" class="py-name"><a title="envi" class="py-name" href="#" onclick="return doclink('link-11', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="envi.archs" class="py-name" href="#" onclick="return doclink('link-12', 'archs', 'link-4');">archs</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Package envi.archs.amd64=envi.archs.amd64-module.html"><a title="envi.archs.amd64" class="py-name" href="#" onclick="return doclink('link-13', 'amd64', 'link-13');">amd64</a></tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Module envi.archs.amd64.regs=envi.archs.amd64.regs-module.html,Module envi.archs.arm.regs=envi.archs.arm.regs-module.html,Variable envi.archs.i386.opcode86.regs=envi.archs.i386.opcode86-module.html#regs,Module envi.archs.i386.regs=envi.archs.i386.regs-module.html,Module envi.archs.z80.regs=envi.archs.z80.regs-module.html"><a title="envi.archs.amd64.regs
+envi.archs.arm.regs
+envi.archs.i386.opcode86.regs
+envi.archs.i386.regs
+envi.archs.z80.regs" class="py-name" href="#" onclick="return doclink('link-14', 'regs', 'link-14');">regs</a></tt> <tt class="py-keyword">import</tt> <tt class="py-op">*</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"># Pre generate these for fast lookup. Because our REX prefixes have the same relative</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"># bit relationship to eachother, we can cheat a little...</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt id="link-15" class="py-name" targets="Variable envi.archs.amd64.amd64_prefixes=envi.archs.amd64-module.html#amd64_prefixes,Variable envi.archs.amd64.disasm.amd64_prefixes=envi.archs.amd64.disasm-module.html#amd64_prefixes"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-15', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt> <tt class="py-op">=</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Variable envi.archs.i386.disasm.i386_prefixes=envi.archs.i386.disasm-module.html#i386_prefixes,Variable envi.archs.i386.emu.i386_prefixes=envi.archs.i386.emu-module.html#i386_prefixes,Variable envi.archs.i386.i386_prefixes=envi.archs.i386-module.html#i386_prefixes"><a title="envi.archs.i386.disasm.i386_prefixes
+envi.archs.i386.emu.i386_prefixes
+envi.archs.i386.i386_prefixes" class="py-name" href="#" onclick="return doclink('link-16', 'i386_prefixes', 'link-16');">i386_prefixes</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt id="link-17" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-17', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x40</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x10</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt id="link-18" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-18', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x41</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x11</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt id="link-19" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-19', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x42</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x12</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt id="link-20" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-20', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x43</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x13</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt id="link-21" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-21', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x44</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x14</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt id="link-22" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-22', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x45</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x15</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt id="link-23" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-23', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x46</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x16</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt id="link-24" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-24', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x47</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x17</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt id="link-25" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-25', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x48</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x18</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt id="link-26" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-26', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x49</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x19</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt id="link-27" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-27', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x4a</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x1a</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt id="link-28" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-28', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x4b</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x1b</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt id="link-29" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-29', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x4c</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x1c</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt id="link-30" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-30', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x4d</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x1d</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt id="link-31" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-31', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x4e</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x1e</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt id="link-32" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-32', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt><tt class="py-op">[</tt><tt class="py-number">0x4f</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">0x1f</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-comment"># NOTE: some notes from the intel manual...</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-comment"># REX.W overrides 66, but alternate registers (via REX.B etc..) can have 66 to be 16 bit..</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-comment"># REX.R only modifies reg for GPR/SSE(SIMD)/ctrl/debug addressing modes.</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-comment"># REX.X only modifies the SIB index value</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-comment"># REX.B modifies modrm r/m field, or SIB base (if SIB present), or opcode reg.</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-comment"># We inherit all the regular intel prefixes...</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt id="link-33" class="py-name" targets="Variable envi.archs.amd64.PREFIX_REX=envi.archs.amd64-module.html#PREFIX_REX,Variable envi.archs.amd64.disasm.PREFIX_REX=envi.archs.amd64.disasm-module.html#PREFIX_REX"><a title="envi.archs.amd64.PREFIX_REX
+envi.archs.amd64.disasm.PREFIX_REX" class="py-name" href="#" onclick="return doclink('link-33', 'PREFIX_REX', 'link-33');">PREFIX_REX</a></tt>   <tt class="py-op">=</tt> <tt class="py-number">0x100000</tt> <tt class="py-comment"># Shows that the rex prefix is present</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt id="link-34" class="py-name" targets="Variable envi.archs.amd64.PREFIX_REX_B=envi.archs.amd64-module.html#PREFIX_REX_B,Variable envi.archs.amd64.disasm.PREFIX_REX_B=envi.archs.amd64.disasm-module.html#PREFIX_REX_B"><a title="envi.archs.amd64.PREFIX_REX_B
+envi.archs.amd64.disasm.PREFIX_REX_B" class="py-name" href="#" onclick="return doclink('link-34', 'PREFIX_REX_B', 'link-34');">PREFIX_REX_B</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0x010000</tt> <tt class="py-comment"># Bit 0 in REX prefix (0x41) means ModR/M r/m field, SIB base, or opcode reg</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt id="link-35" class="py-name" targets="Variable envi.archs.amd64.PREFIX_REX_X=envi.archs.amd64-module.html#PREFIX_REX_X,Variable envi.archs.amd64.disasm.PREFIX_REX_X=envi.archs.amd64.disasm-module.html#PREFIX_REX_X"><a title="envi.archs.amd64.PREFIX_REX_X
+envi.archs.amd64.disasm.PREFIX_REX_X" class="py-name" href="#" onclick="return doclink('link-35', 'PREFIX_REX_X', 'link-35');">PREFIX_REX_X</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0x020000</tt> <tt class="py-comment"># Bit 1 in REX prefix (0x42) means SIB index extension</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt id="link-36" class="py-name" targets="Variable envi.archs.amd64.PREFIX_REX_R=envi.archs.amd64-module.html#PREFIX_REX_R,Variable envi.archs.amd64.disasm.PREFIX_REX_R=envi.archs.amd64.disasm-module.html#PREFIX_REX_R"><a title="envi.archs.amd64.PREFIX_REX_R
+envi.archs.amd64.disasm.PREFIX_REX_R" class="py-name" href="#" onclick="return doclink('link-36', 'PREFIX_REX_R', 'link-36');">PREFIX_REX_R</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0x040000</tt> <tt class="py-comment"># Bit 2 in REX prefix (0x44) means ModR/M reg extention</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt id="link-37" class="py-name" targets="Variable envi.archs.amd64.PREFIX_REX_W=envi.archs.amd64-module.html#PREFIX_REX_W,Variable envi.archs.amd64.disasm.PREFIX_REX_W=envi.archs.amd64.disasm-module.html#PREFIX_REX_W"><a title="envi.archs.amd64.PREFIX_REX_W
+envi.archs.amd64.disasm.PREFIX_REX_W" class="py-name" href="#" onclick="return doclink('link-37', 'PREFIX_REX_W', 'link-37');">PREFIX_REX_W</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0x080000</tt> <tt class="py-comment"># Bit 3 in REX prefix (0x48) means 64 bit operand</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt id="link-38" class="py-name" targets="Variable envi.archs.amd64.REX_BUMP=envi.archs.amd64-module.html#REX_BUMP,Variable envi.archs.amd64.disasm.REX_BUMP=envi.archs.amd64.disasm-module.html#REX_BUMP"><a title="envi.archs.amd64.REX_BUMP
+envi.archs.amd64.disasm.REX_BUMP" class="py-name" href="#" onclick="return doclink('link-38', 'REX_BUMP', 'link-38');">REX_BUMP</a></tt> <tt class="py-op">=</tt> <tt class="py-number">8</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt id="link-39" class="py-name" targets="Variable envi.archs.amd64.MODE_16=envi.archs.amd64-module.html#MODE_16,Variable envi.archs.amd64.disasm.MODE_16=envi.archs.amd64.disasm-module.html#MODE_16,Variable envi.archs.i386.MODE_16=envi.archs.i386-module.html#MODE_16,Variable envi.archs.i386.disasm.MODE_16=envi.archs.i386.disasm-module.html#MODE_16,Variable envi.archs.i386.emu.MODE_16=envi.archs.i386.emu-module.html#MODE_16"><a title="envi.archs.amd64.MODE_16
+envi.archs.amd64.disasm.MODE_16
+envi.archs.i386.MODE_16
+envi.archs.i386.disasm.MODE_16
+envi.archs.i386.emu.MODE_16" class="py-name" href="#" onclick="return doclink('link-39', 'MODE_16', 'link-39');">MODE_16</a></tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt id="link-40" class="py-name" targets="Variable envi.archs.amd64.MODE_32=envi.archs.amd64-module.html#MODE_32,Variable envi.archs.amd64.disasm.MODE_32=envi.archs.amd64.disasm-module.html#MODE_32,Variable envi.archs.i386.MODE_32=envi.archs.i386-module.html#MODE_32,Variable envi.archs.i386.disasm.MODE_32=envi.archs.i386.disasm-module.html#MODE_32,Variable envi.archs.i386.emu.MODE_32=envi.archs.i386.emu-module.html#MODE_32"><a title="envi.archs.amd64.MODE_32
+envi.archs.amd64.disasm.MODE_32
+envi.archs.i386.MODE_32
+envi.archs.i386.disasm.MODE_32
+envi.archs.i386.emu.MODE_32" class="py-name" href="#" onclick="return doclink('link-40', 'MODE_32', 'link-40');">MODE_32</a></tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt id="link-41" class="py-name" targets="Variable envi.archs.amd64.MODE_64=envi.archs.amd64-module.html#MODE_64,Variable envi.archs.amd64.disasm.MODE_64=envi.archs.amd64.disasm-module.html#MODE_64,Variable envi.archs.i386.MODE_64=envi.archs.i386-module.html#MODE_64,Variable envi.archs.i386.disasm.MODE_64=envi.archs.i386.disasm-module.html#MODE_64,Variable envi.archs.i386.emu.MODE_64=envi.archs.i386.emu-module.html#MODE_64"><a title="envi.archs.amd64.MODE_64
+envi.archs.amd64.disasm.MODE_64
+envi.archs.i386.MODE_64
+envi.archs.i386.disasm.MODE_64
+envi.archs.i386.emu.MODE_64" class="py-name" href="#" onclick="return doclink('link-41', 'MODE_64', 'link-41');">MODE_64</a></tt> <tt class="py-op">=</tt> <tt class="py-number">2</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"> </tt>
+<a name="Amd64RipRelOper"></a><div id="Amd64RipRelOper-def"><a name="L45"></a><tt class="py-lineno"> 45</tt> <a class="py-toggle" href="#" id="Amd64RipRelOper-toggle" onclick="return toggle('Amd64RipRelOper');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64RipRelOper-class.html">Amd64RipRelOper</a><tt class="py-op">(</tt><tt class="py-base-class">envi</tt><tt class="py-op">.</tt><tt class="py-base-class">DerefOper</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64RipRelOper-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Amd64RipRelOper-expanded"><a name="Amd64RipRelOper.__init__"></a><div id="Amd64RipRelOper.__init__-def"><a name="L46"></a><tt class="py-lineno"> 46</tt> <a class="py-toggle" href="#" id="Amd64RipRelOper.__init__-toggle" onclick="return toggle('Amd64RipRelOper.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64RipRelOper-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">imm</tt><tt class="py-op">,</tt> <tt class="py-param">tsize</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64RipRelOper.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64RipRelOper.__init__-expanded"><a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imm</tt> <tt class="py-op">=</tt> <tt class="py-name">imm</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">tsize</tt> <tt class="py-op">=</tt> <tt class="py-name">tsize</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_is_deref</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"> </tt>
+<a name="Amd64RipRelOper.getOperValue"></a><div id="Amd64RipRelOper.getOperValue-def"><a name="L51"></a><tt class="py-lineno"> 51</tt> <a class="py-toggle" href="#" id="Amd64RipRelOper.getOperValue-toggle" onclick="return toggle('Amd64RipRelOper.getOperValue');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64RipRelOper-class.html#getOperValue">getOperValue</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">op</tt><tt class="py-op">,</tt> <tt class="py-param">emu</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64RipRelOper.getOperValue-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64RipRelOper.getOperValue-expanded"><a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_is_deref</tt> <tt class="py-op">==</tt> <tt class="py-name">False</tt><tt class="py-op">:</tt> <tt class="py-comment"># Special lea behavior</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name" targets="Method envi.Emulator.getOperAddr()=envi.Emulator-class.html#getOperAddr,Method envi.Operand.getOperAddr()=envi.Operand-class.html#getOperAddr,Method envi.archs.amd64.disasm.Amd64RipRelOper.getOperAddr()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#getOperAddr,Method envi.archs.i386.disasm.i386ImmMemOper.getOperAddr()=envi.archs.i386.disasm.i386ImmMemOper-class.html#getOperAddr,Method envi.archs.i386.disasm.i386RegMemOper.getOperAddr()=envi.archs.i386.disasm.i386RegMemOper-class.html#getOperAddr,Method envi.archs.i386.disasm.i386SibOper.getOperAddr()=envi.archs.i386.disasm.i386SibOper-class.html#getOperAddr"><a title="envi.Emulator.getOperAddr
+envi.Operand.getOperAddr
+envi.archs.amd64.disasm.Amd64RipRelOper.getOperAddr
+envi.archs.i386.disasm.i386ImmMemOper.getOperAddr
+envi.archs.i386.disasm.i386RegMemOper.getOperAddr
+envi.archs.i386.disasm.i386SibOper.getOperAddr" class="py-name" href="#" onclick="return doclink('link-42', 'getOperAddr', 'link-42');">getOperAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">)</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-43" class="py-name" targets="Module envi.archs.arm.emu=envi.archs.arm.emu-module.html,Module envi.archs.i386.emu=envi.archs.i386.emu-module.html"><a title="envi.archs.arm.emu
+envi.archs.i386.emu" class="py-name" href="#" onclick="return doclink('link-43', 'emu', 'link-43');">emu</a></tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-44" class="py-name"><a title="envi.archs.arm.emu
+envi.archs.i386.emu" class="py-name" href="#" onclick="return doclink('link-44', 'emu', 'link-43');">emu</a></tt><tt class="py-op">.</tt><tt id="link-45" class="py-name" targets="Method envi.archs.arm.emu.ArmEmulator.readMemValue()=envi.archs.arm.emu.ArmEmulator-class.html#readMemValue,Method envi.archs.i386.emu.IntelEmulator.readMemValue()=envi.archs.i386.emu.IntelEmulator-class.html#readMemValue,Method envi.memory.IMemory.readMemValue()=envi.memory.IMemory-class.html#readMemValue"><a title="envi.archs.arm.emu.ArmEmulator.readMemValue
+envi.archs.i386.emu.IntelEmulator.readMemValue
+envi.memory.IMemory.readMemValue" class="py-name" href="#" onclick="return doclink('link-45', 'readMemValue', 'link-45');">readMemValue</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="envi.Emulator.getOperAddr
+envi.Operand.getOperAddr
+envi.archs.amd64.disasm.Amd64RipRelOper.getOperAddr
+envi.archs.i386.disasm.i386ImmMemOper.getOperAddr
+envi.archs.i386.disasm.i386RegMemOper.getOperAddr
+envi.archs.i386.disasm.i386SibOper.getOperAddr" class="py-name" href="#" onclick="return doclink('link-46', 'getOperAddr', 'link-42');">getOperAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">,</tt> <tt id="link-47" class="py-name"><a title="envi.archs.arm.emu
+envi.archs.i386.emu" class="py-name" href="#" onclick="return doclink('link-47', 'emu', 'link-43');">emu</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">tsize</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"> </tt>
+<a name="Amd64RipRelOper.setOperValue"></a><div id="Amd64RipRelOper.setOperValue-def"><a name="L57"></a><tt class="py-lineno"> 57</tt> <a class="py-toggle" href="#" id="Amd64RipRelOper.setOperValue-toggle" onclick="return toggle('Amd64RipRelOper.setOperValue');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64RipRelOper-class.html#setOperValue">setOperValue</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">op</tt><tt class="py-op">,</tt> <tt class="py-param">emu</tt><tt class="py-op">,</tt> <tt class="py-param">val</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64RipRelOper.setOperValue-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64RipRelOper.setOperValue-expanded"><a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt id="link-48" class="py-name"><a title="envi.archs.arm.emu
+envi.archs.i386.emu" class="py-name" href="#" onclick="return doclink('link-48', 'emu', 'link-43');">emu</a></tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method envi.archs.arm.emu.ArmEmulator.writeMemValue()=envi.archs.arm.emu.ArmEmulator-class.html#writeMemValue,Method envi.archs.i386.emu.IntelEmulator.writeMemValue()=envi.archs.i386.emu.IntelEmulator-class.html#writeMemValue"><a title="envi.archs.arm.emu.ArmEmulator.writeMemValue
+envi.archs.i386.emu.IntelEmulator.writeMemValue" class="py-name" href="#" onclick="return doclink('link-49', 'writeMemValue', 'link-49');">writeMemValue</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="envi.Emulator.getOperAddr
+envi.Operand.getOperAddr
+envi.archs.amd64.disasm.Amd64RipRelOper.getOperAddr
+envi.archs.i386.disasm.i386ImmMemOper.getOperAddr
+envi.archs.i386.disasm.i386RegMemOper.getOperAddr
+envi.archs.i386.disasm.i386SibOper.getOperAddr" class="py-name" href="#" onclick="return doclink('link-50', 'getOperAddr', 'link-42');">getOperAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">,</tt> <tt id="link-51" class="py-name"><a title="envi.archs.arm.emu
+envi.archs.i386.emu" class="py-name" href="#" onclick="return doclink('link-51', 'emu', 'link-43');">emu</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">val</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">tsize</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"> </tt>
+<a name="Amd64RipRelOper.getOperAddr"></a><div id="Amd64RipRelOper.getOperAddr-def"><a name="L60"></a><tt class="py-lineno"> 60</tt> <a class="py-toggle" href="#" id="Amd64RipRelOper.getOperAddr-toggle" onclick="return toggle('Amd64RipRelOper.getOperAddr');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64RipRelOper-class.html#getOperAddr">getOperAddr</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">op</tt><tt class="py-op">,</tt> <tt class="py-param">emu</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64RipRelOper.getOperAddr-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64RipRelOper.getOperAddr-expanded"><a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">op</tt><tt class="py-op">.</tt><tt class="py-name">va</tt> <tt class="py-op">+</tt> <tt class="py-name">op</tt><tt class="py-op">.</tt><tt class="py-name">size</tt> <tt class="py-op">+</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imm</tt> </tt>
+</div><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"> </tt>
+<a name="Amd64RipRelOper.isDeref"></a><div id="Amd64RipRelOper.isDeref-def"><a name="L63"></a><tt class="py-lineno"> 63</tt> <a class="py-toggle" href="#" id="Amd64RipRelOper.isDeref-toggle" onclick="return toggle('Amd64RipRelOper.isDeref');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64RipRelOper-class.html#isDeref">isDeref</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64RipRelOper.isDeref-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64RipRelOper.isDeref-expanded"><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-comment"># The disassembler may reach in and set this (if lea...)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_is_deref</tt> </tt>
+</div><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line"> </tt>
+<a name="Amd64RipRelOper.render"></a><div id="Amd64RipRelOper.render-def"><a name="L67"></a><tt class="py-lineno"> 67</tt> <a class="py-toggle" href="#" id="Amd64RipRelOper.render-toggle" onclick="return toggle('Amd64RipRelOper.render');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64RipRelOper-class.html#render">render</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">mcanv</tt><tt class="py-op">,</tt> <tt class="py-param">op</tt><tt class="py-op">,</tt> <tt class="py-param">idx</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64RipRelOper.render-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64RipRelOper.render-expanded"><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-name">destva</tt> <tt class="py-op">=</tt> <tt class="py-name">op</tt><tt class="py-op">.</tt><tt class="py-name">va</tt> <tt class="py-op">+</tt> <tt class="py-name">op</tt><tt class="py-op">.</tt><tt class="py-name">size</tt> <tt class="py-op">+</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imm</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt id="link-52" class="py-name" targets="Method envi.expression.MemoryExpressionLocals.sym()=envi.expression.MemoryExpressionLocals-class.html#sym"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-52', 'sym', 'link-52');">sym</a></tt> <tt class="py-op">=</tt> <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt class="py-name">syms</tt><tt class="py-op">.</tt><tt id="link-53" class="py-name" targets="Method envi.resolver.SymbolResolver.getSymByAddr()=envi.resolver.SymbolResolver-class.html#getSymByAddr"><a title="envi.resolver.SymbolResolver.getSymByAddr" class="py-name" href="#" onclick="return doclink('link-53', 'getSymByAddr', 'link-53');">getSymByAddr</a></tt><tt class="py-op">(</tt><tt class="py-name">destva</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addNameText()=envi.memcanvas.MemoryCanvas-class.html#addNameText"><a title="envi.memcanvas.MemoryCanvas.addNameText" class="py-name" href="#" onclick="return doclink('link-54', 'addNameText', 'link-54');">addNameText</a></tt><tt class="py-op">(</tt><tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-55" class="py-name" targets="Variable envi.archs.i386.disasm.sizenames=envi.archs.i386.disasm-module.html#sizenames,Variable envi.archs.i386.emu.sizenames=envi.archs.i386.emu-module.html#sizenames,Variable envi.archs.i386.sizenames=envi.archs.i386-module.html#sizenames"><a title="envi.archs.i386.disasm.sizenames
+envi.archs.i386.emu.sizenames
+envi.archs.i386.sizenames" class="py-name" href="#" onclick="return doclink('link-55', 'sizenames', 'link-55');">sizenames</a></tt><tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">tsize</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addText()=envi.memcanvas.MemoryCanvas-class.html#addText,Method envi.memcanvas.StringMemoryCanvas.addText()=envi.memcanvas.StringMemoryCanvas-class.html#addText,Method envi.qt.memcanvas.VQMemoryCanvas.addText()=envi.qt.memcanvas.VQMemoryCanvas-class.html#addText"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-56', 'addText', 'link-56');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">" ["</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addNameText" class="py-name" href="#" onclick="return doclink('link-57', 'addNameText', 'link-54');">addNameText</a></tt><tt class="py-op">(</tt><tt class="py-string">"rip"</tt><tt class="py-op">,</tt> <tt class="py-name">typename</tt><tt class="py-op">=</tt><tt class="py-string">"registers"</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imm</tt> <tt class="py-op">&gt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-58" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-58', 'addText', 'link-56');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">" + "</tt><tt class="py-op">)</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-59" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-59', 'sym', 'link-52');">sym</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-60" class="py-name" targets="Method envi.memcanvas.MemoryCanvas.addVaText()=envi.memcanvas.MemoryCanvas-class.html#addVaText"><a title="envi.memcanvas.MemoryCanvas.addVaText" class="py-name" href="#" onclick="return doclink('link-60', 'addVaText', 'link-60');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-string">"$%s"</tt> <tt class="py-op">%</tt> <tt id="link-61" class="py-name" targets="Method envi.Operand.repr()=envi.Operand-class.html#repr,Method envi.archs.amd64.disasm.Amd64RipRelOper.repr()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocOper.repr()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.repr()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmEndianOper.repr()=envi.archs.arm.armdisasm.ArmEndianOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.repr()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmImmOper.repr()=envi.archs.arm.armdisasm.ArmImmOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmOffsetOper.repr()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegListOper.repr()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.repr()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegOper.repr()=envi.archs.arm.armdisasm.ArmRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#repr,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#repr,Method envi.archs.i386.disasm.i386ImmMemOper.repr()=envi.archs.i386.disasm.i386ImmMemOper-class.html#repr,Method envi.archs.i386.disasm.i386ImmOper.repr()=envi.archs.i386.disasm.i386ImmOper-class.html#repr,Method envi.archs.i386.disasm.i386PcRelOper.repr()=envi.archs.i386.disasm.i386PcRelOper-class.html#repr,Method envi.archs.i386.disasm.i386RegMemOper.repr()=envi.archs.i386.disasm.i386RegMemOper-class.html#repr,Method envi.archs.i386.disasm.i386RegOper.repr()=envi.archs.i386.disasm.i386RegOper-class.html#repr,Method envi.archs.i386.disasm.i386SibOper.repr()=envi.archs.i386.disasm.i386SibOper-class.html#repr,Method envi.archs.z80.disasm.z80ImmOper.repr()=envi.archs.z80.disasm.z80ImmOper-class.html#repr,Method envi.archs.z80.disasm.z80RegMem.repr()=envi.archs.z80.disasm.z80RegMem-class.html#repr"><a title="envi.Operand.repr
+envi.archs.amd64.disasm.Amd64RipRelOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOper.repr
+envi.archs.arm.armdisasm.ArmCoprocRegOper.repr
+envi.archs.arm.armdisasm.ArmEndianOper.repr
+envi.archs.arm.armdisasm.ArmImmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmImmOper.repr
+envi.archs.arm.armdisasm.ArmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr
+envi.archs.arm.armdisasm.ArmRegListOper.repr
+envi.archs.arm.armdisasm.ArmRegOffsetOper.repr
+envi.archs.arm.armdisasm.ArmRegOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr
+envi.archs.i386.disasm.i386ImmMemOper.repr
+envi.archs.i386.disasm.i386ImmOper.repr
+envi.archs.i386.disasm.i386PcRelOper.repr
+envi.archs.i386.disasm.i386RegMemOper.repr
+envi.archs.i386.disasm.i386RegOper.repr
+envi.archs.i386.disasm.i386SibOper.repr
+envi.archs.z80.disasm.z80ImmOper.repr
+envi.archs.z80.disasm.z80RegMem.repr" class="py-name" href="#" onclick="return doclink('link-61', 'repr', 'link-61');">repr</a></tt><tt class="py-op">(</tt><tt id="link-62" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-62', 'sym', 'link-52');">sym</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">destva</tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-63" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addNameText" class="py-name" href="#" onclick="return doclink('link-63', 'addNameText', 'link-54');">addNameText</a></tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imm</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imm</tt> <tt class="py-op">&lt;</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">            <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-64" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-64', 'addText', 'link-56');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">" - "</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-65" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-65', 'sym', 'link-52');">sym</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addVaText" class="py-name" href="#" onclick="return doclink('link-66', 'addVaText', 'link-60');">addVaText</a></tt><tt class="py-op">(</tt><tt class="py-string">"$%s"</tt> <tt class="py-op">%</tt> <tt id="link-67" class="py-name"><a title="envi.Operand.repr
+envi.archs.amd64.disasm.Amd64RipRelOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOper.repr
+envi.archs.arm.armdisasm.ArmCoprocRegOper.repr
+envi.archs.arm.armdisasm.ArmEndianOper.repr
+envi.archs.arm.armdisasm.ArmImmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmImmOper.repr
+envi.archs.arm.armdisasm.ArmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr
+envi.archs.arm.armdisasm.ArmRegListOper.repr
+envi.archs.arm.armdisasm.ArmRegOffsetOper.repr
+envi.archs.arm.armdisasm.ArmRegOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr
+envi.archs.i386.disasm.i386ImmMemOper.repr
+envi.archs.i386.disasm.i386ImmOper.repr
+envi.archs.i386.disasm.i386PcRelOper.repr
+envi.archs.i386.disasm.i386RegMemOper.repr
+envi.archs.i386.disasm.i386RegOper.repr
+envi.archs.i386.disasm.i386SibOper.repr
+envi.archs.z80.disasm.z80ImmOper.repr
+envi.archs.z80.disasm.z80RegMem.repr" class="py-name" href="#" onclick="return doclink('link-67', 'repr', 'link-61');">repr</a></tt><tt class="py-op">(</tt><tt id="link-68" class="py-name"><a title="envi.expression.MemoryExpressionLocals.sym" class="py-name" href="#" onclick="return doclink('link-68', 'sym', 'link-52');">sym</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">destva</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">                <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-69" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addNameText" class="py-name" href="#" onclick="return doclink('link-69', 'addNameText', 'link-54');">addNameText</a></tt><tt class="py-op">(</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">abs</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imm</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-name">mcanv</tt><tt class="py-op">.</tt><tt id="link-70" class="py-name"><a title="envi.memcanvas.MemoryCanvas.addText
+envi.memcanvas.StringMemoryCanvas.addText
+envi.qt.memcanvas.VQMemoryCanvas.addText" class="py-name" href="#" onclick="return doclink('link-70', 'addText', 'link-56');">addText</a></tt><tt class="py-op">(</tt><tt class="py-string">"]"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"> </tt>
+<a name="Amd64RipRelOper.repr"></a><div id="Amd64RipRelOper.repr-def"><a name="L89"></a><tt class="py-lineno"> 89</tt> <a class="py-toggle" href="#" id="Amd64RipRelOper.repr-toggle" onclick="return toggle('Amd64RipRelOper.repr');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64RipRelOper-class.html#repr">repr</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">op</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64RipRelOper.repr-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64RipRelOper.repr-expanded"><a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">"[rip + %d]"</tt> <tt class="py-op">%</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">imm</tt> </tt>
+</div></div><a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm"></a><div id="Amd64Disasm-def"><a name="L92"></a><tt class="py-lineno"> 92</tt> <a class="py-toggle" href="#" id="Amd64Disasm-toggle" onclick="return toggle('Amd64Disasm');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html">Amd64Disasm</a><tt class="py-op">(</tt><tt class="py-base-class">e_i386</tt><tt class="py-op">.</tt><tt class="py-base-class">i386Disasm</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Amd64Disasm-expanded"><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.__init__"></a><div id="Amd64Disasm.__init__-def"><a name="L94"></a><tt class="py-lineno"> 94</tt> <a class="py-toggle" href="#" id="Amd64Disasm.__init__-toggle" onclick="return toggle('Amd64Disasm.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.__init__-expanded"><a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-71" class="py-name" targets="Class envi.archs.i386.disasm.i386Disasm=envi.archs.i386.disasm.i386Disasm-class.html"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-71', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-72" class="py-name" targets="Method envi.ArchitectureModule.__init__()=envi.ArchitectureModule-class.html#__init__,Method envi.EmuException.__init__()=envi.EmuException-class.html#__init__,Method envi.Emulator.__init__()=envi.Emulator-class.html#__init__,Method envi.InvalidInstruction.__init__()=envi.InvalidInstruction-class.html#__init__,Method envi.MapOverlapException.__init__()=envi.MapOverlapException-class.html#__init__,Method envi.Opcode.__init__()=envi.Opcode-class.html#__init__,Method envi.SegmentationViolation.__init__()=envi.SegmentationViolation-class.html#__init__,Method envi.UnsupportedInstruction.__init__()=envi.UnsupportedInstruction-class.html#__init__,Method envi.archs.amd64.Amd64Emulator.__init__()=envi.archs.amd64.Amd64Emulator-class.html#__init__,Method envi.archs.amd64.Amd64Module.__init__()=envi.archs.amd64.Amd64Module-class.html#__init__,Method envi.archs.amd64.disasm.Amd64Disasm.__init__()=envi.archs.amd64.disasm.Amd64Disasm-class.html#__init__,Method envi.archs.amd64.disasm.Amd64RipRelOper.__init__()=envi.archs.amd64.disasm.Amd64RipRelOper-class.html#__init__,Method envi.archs.amd64.regs.Amd64RegisterContext.__init__()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#__init__,Method envi.archs.arm.ArmModule.__init__()=envi.archs.arm.ArmModule-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOpcodeOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__()=envi.archs.arm.armdisasm.ArmCoprocRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmImmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmImmOper.__init__()=envi.archs.arm.armdisasm.ArmImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPSRFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatFlagsOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__()=envi.archs.arm.armdisasm.ArmPgmStatRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegListOper.__init__()=envi.archs.arm.armdisasm.ArmRegListOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmRegOffsetOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftImmOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__()=envi.archs.arm.armdisasm.ArmRegShiftRegOper-class.html#__init__,Method envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__()=envi.archs.arm.armdisasm.ArmScaledOffsetOper-class.html#__init__,Method envi.archs.arm.disasm.ArmDisasm.__init__()=envi.archs.arm.disasm.ArmDisasm-class.html#__init__,Method envi.archs.arm.emu.ArmEmulator.__init__()=envi.archs.arm.emu.ArmEmulator-class.html#__init__,Method envi.archs.arm.emu.CoProcEmulator.__init__()=envi.archs.arm.emu.CoProcEmulator-class.html#__init__,Method envi.archs.arm.regs.ArmRegisterContext.__init__()=envi.archs.arm.regs.ArmRegisterContext-class.html#__init__,Method envi.archs.arm.thumb.simpleops.__init__()=envi.archs.arm.thumb.simpleops-class.html#__init__,Method envi.archs.arm.thumbdisasm.simpleops.__init__()=envi.archs.arm.thumbdisasm.simpleops-class.html#__init__,Method envi.archs.i386.disasm.i386Disasm.__init__()=envi.archs.i386.disasm.i386Disasm-class.html#__init__,Method envi.archs.i386.disasm.i386ImmMemOper.__init__()=envi.archs.i386.disasm.i386ImmMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386ImmOper.__init__()=envi.archs.i386.disasm.i386ImmOper-class.html#__init__,Method envi.archs.i386.disasm.i386PcRelOper.__init__()=envi.archs.i386.disasm.i386PcRelOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegMemOper.__init__()=envi.archs.i386.disasm.i386RegMemOper-class.html#__init__,Method envi.archs.i386.disasm.i386RegOper.__init__()=envi.archs.i386.disasm.i386RegOper-class.html#__init__,Method envi.archs.i386.disasm.i386SibOper.__init__()=envi.archs.i386.disasm.i386SibOper-class.html#__init__,Method envi.archs.i386.emu.BFastCall.__init__()=envi.archs.i386.emu.BFastCall-class.html#__init__,Method envi.archs.i386.emu.FastCall.__init__()=envi.archs.i386.emu.FastCall-class.html#__init__,Method envi.archs.i386.emu.IntelEmulator.__init__()=envi.archs.i386.emu.IntelEmulator-class.html#__init__,Method envi.archs.i386.emu.MsFastCall.__init__()=envi.archs.i386.emu.MsFastCall-class.html#__init__,Method envi.archs.i386.i386Module.__init__()=envi.archs.i386.i386Module-class.html#__init__,Method envi.archs.i386.regs.i386RegisterContext.__init__()=envi.archs.i386.regs.i386RegisterContext-class.html#__init__,Method envi.archs.z80.disasm.z80Disasm.__init__()=envi.archs.z80.disasm.z80Disasm-class.html#__init__,Method envi.archs.z80.disasm.z80ImmOper.__init__()=envi.archs.z80.disasm.z80ImmOper-class.html#__init__,Method envi.archs.z80.disasm.z80RegMem.__init__()=envi.archs.z80.disasm.z80RegMem-class.html#__init__,Method envi.archs.z80.disasm.z80RegOper.__init__()=envi.archs.z80.disasm.z80RegOper-class.html#__init__,Method envi.archs.z80.regs.z80RegisterContext.__init__()=envi.archs.z80.regs.z80RegisterContext-class.html#__init__,Method envi.arm.ArmModule.__init__()=envi.arm.ArmModule-class.html#__init__,Method envi.arm.ArmOpcode.__init__()=envi.arm.ArmOpcode-class.html#__init__,Method envi.arm.ArmOperand.__init__()=envi.arm.ArmOperand-class.html#__init__,Method envi.bintree.BinaryTree.__init__()=envi.bintree.BinaryTree-class.html#__init__,Method envi.bytesig.SignatureTree.__init__()=envi.bytesig.SignatureTree-class.html#__init__,Method envi.cli.CliExtMeth.__init__()=envi.cli.CliExtMeth-class.html#__init__,Method envi.cli.EnviCli.__init__()=envi.cli.EnviCli-class.html#__init__,Method envi.codeflow.CodeFlowContext.__init__()=envi.codeflow.CodeFlowContext-class.html#__init__,Method envi.config.EnviConfig.__init__()=envi.config.EnviConfig-class.html#__init__,Method envi.expression.ExpressionLocals.__init__()=envi.expression.ExpressionLocals-class.html#__init__,Method envi.expression.MemoryExpressionLocals.__init__()=envi.expression.MemoryExpressionLocals-class.html#__init__,Method envi.memcanvas.MemoryCanvas.__init__()=envi.memcanvas.MemoryCanvas-class.html#__init__,Method envi.memcanvas.StringMemoryCanvas.__init__()=envi.memcanvas.StringMemoryCanvas-class.html#__init__,Method envi.memcanvas.renderers.ByteRend.__init__()=envi.memcanvas.renderers.ByteRend-class.html#__init__,Method envi.memory.IMemory.__init__()=envi.memory.IMemory-class.html#__init__,Method envi.memory.MemoryFile.__init__()=envi.memory.MemoryFile-class.html#__init__,Method envi.memory.MemoryObject.__init__()=envi.memory.MemoryObject-class.html#__init__,Method envi.pagelookup.MapLookup.__init__()=envi.pagelookup.MapLookup-class.html#__init__,Method envi.pagelookup.PageLookup.__init__()=envi.pagelookup.PageLookup-class.html#__init__,Method envi.qt.VQMemoryMapView.__init__()=envi.qt.VQMemoryMapView-class.html#__init__,Method envi.qt.memcanvas.VQMemoryCanvas.__init__()=envi.qt.memcanvas.VQMemoryCanvas-class.html#__init__,Method envi.qt.memory.VQMemoryWindow.__init__()=envi.qt.memory.VQMemoryWindow-class.html#__init__,Method envi.registers.RegisterContext.__init__()=envi.registers.RegisterContext-class.html#__init__,Method envi.resolver.FileSymbol.__init__()=envi.resolver.FileSymbol-class.html#__init__,Method envi.resolver.Symbol.__init__()=envi.resolver.Symbol-class.html#__init__,Method envi.resolver.SymbolResolver.__init__()=envi.resolver.SymbolResolver-class.html#__init__,Method envi.util.CopyOnWrite.__init__()=envi.util.CopyOnWrite-class.html#__init__"><a title="envi.ArchitectureModule.__init__
+envi.EmuException.__init__
+envi.Emulator.__init__
+envi.InvalidInstruction.__init__
+envi.MapOverlapException.__init__
+envi.Opcode.__init__
+envi.SegmentationViolation.__init__
+envi.UnsupportedInstruction.__init__
+envi.archs.amd64.Amd64Emulator.__init__
+envi.archs.amd64.Amd64Module.__init__
+envi.archs.amd64.disasm.Amd64Disasm.__init__
+envi.archs.amd64.disasm.Amd64RipRelOper.__init__
+envi.archs.amd64.regs.Amd64RegisterContext.__init__
+envi.archs.arm.ArmModule.__init__
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocOper.__init__
+envi.archs.arm.armdisasm.ArmCoprocRegOper.__init__
+envi.archs.arm.armdisasm.ArmImmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmImmOper.__init__
+envi.archs.arm.armdisasm.ArmOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.__init__
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegListOper.__init__
+envi.archs.arm.armdisasm.ArmRegOffsetOper.__init__
+envi.archs.arm.armdisasm.ArmRegOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.__init__
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.__init__
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.__init__
+envi.archs.arm.disasm.ArmDisasm.__init__
+envi.archs.arm.emu.ArmEmulator.__init__
+envi.archs.arm.emu.CoProcEmulator.__init__
+envi.archs.arm.regs.ArmRegisterContext.__init__
+envi.archs.arm.thumb.simpleops.__init__
+envi.archs.arm.thumbdisasm.simpleops.__init__
+envi.archs.i386.disasm.i386Disasm.__init__
+envi.archs.i386.disasm.i386ImmMemOper.__init__
+envi.archs.i386.disasm.i386ImmOper.__init__
+envi.archs.i386.disasm.i386PcRelOper.__init__
+envi.archs.i386.disasm.i386RegMemOper.__init__
+envi.archs.i386.disasm.i386RegOper.__init__
+envi.archs.i386.disasm.i386SibOper.__init__
+envi.archs.i386.emu.BFastCall.__init__
+envi.archs.i386.emu.FastCall.__init__
+envi.archs.i386.emu.IntelEmulator.__init__
+envi.archs.i386.emu.MsFastCall.__init__
+envi.archs.i386.i386Module.__init__
+envi.archs.i386.regs.i386RegisterContext.__init__
+envi.archs.z80.disasm.z80Disasm.__init__
+envi.archs.z80.disasm.z80ImmOper.__init__
+envi.archs.z80.disasm.z80RegMem.__init__
+envi.archs.z80.disasm.z80RegOper.__init__
+envi.archs.z80.regs.z80RegisterContext.__init__
+envi.arm.ArmModule.__init__
+envi.arm.ArmOpcode.__init__
+envi.arm.ArmOperand.__init__
+envi.bintree.BinaryTree.__init__
+envi.bytesig.SignatureTree.__init__
+envi.cli.CliExtMeth.__init__
+envi.cli.EnviCli.__init__
+envi.codeflow.CodeFlowContext.__init__
+envi.config.EnviConfig.__init__
+envi.expression.ExpressionLocals.__init__
+envi.expression.MemoryExpressionLocals.__init__
+envi.memcanvas.MemoryCanvas.__init__
+envi.memcanvas.StringMemoryCanvas.__init__
+envi.memcanvas.renderers.ByteRend.__init__
+envi.memory.IMemory.__init__
+envi.memory.MemoryFile.__init__
+envi.memory.MemoryObject.__init__
+envi.pagelookup.MapLookup.__init__
+envi.pagelookup.PageLookup.__init__
+envi.qt.VQMemoryMapView.__init__
+envi.qt.memcanvas.VQMemoryCanvas.__init__
+envi.qt.memory.VQMemoryWindow.__init__
+envi.registers.RegisterContext.__init__
+envi.resolver.FileSymbol.__init__
+envi.resolver.Symbol.__init__
+envi.resolver.SymbolResolver.__init__
+envi.util.CopyOnWrite.__init__" class="py-name" href="#" onclick="return doclink('link-72', '__init__', 'link-72');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_dis_prefixes</tt> <tt class="py-op">=</tt> <tt id="link-73" class="py-name"><a title="envi.archs.amd64.amd64_prefixes
+envi.archs.amd64.disasm.amd64_prefixes" class="py-name" href="#" onclick="return doclink('link-73', 'amd64_prefixes', 'link-15');">amd64_prefixes</a></tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_dis_regctx</tt> <tt class="py-op">=</tt> <tt id="link-74" class="py-name" targets="Class envi.archs.amd64.regs.Amd64RegisterContext=envi.archs.amd64.regs.Amd64RegisterContext-class.html"><a title="envi.archs.amd64.regs.Amd64RegisterContext" class="py-name" href="#" onclick="return doclink('link-74', 'Amd64RegisterContext', 'link-74');">Amd64RegisterContext</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-comment"># Over-ride these which are in use by the i386 version of the ASM</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ROFFSET_MMX</tt>   <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-75" class="py-name" targets="Function envi.archs.i386.regs.getRegOffset()=envi.archs.i386.regs-module.html#getRegOffset"><a title="envi.archs.i386.regs.getRegOffset" class="py-name" href="#" onclick="return doclink('link-75', 'getRegOffset', 'link-75');">getRegOffset</a></tt><tt class="py-op">(</tt><tt id="link-76" class="py-name" targets="Variable envi.archs.amd64.amd64regs=envi.archs.amd64-module.html#amd64regs,Variable envi.archs.amd64.disasm.amd64regs=envi.archs.amd64.disasm-module.html#amd64regs,Variable envi.archs.amd64.regs.amd64regs=envi.archs.amd64.regs-module.html#amd64regs"><a title="envi.archs.amd64.amd64regs
+envi.archs.amd64.disasm.amd64regs
+envi.archs.amd64.regs.amd64regs" class="py-name" href="#" onclick="return doclink('link-76', 'amd64regs', 'link-76');">amd64regs</a></tt><tt class="py-op">,</tt> <tt class="py-string">"mm0"</tt><tt class="py-op">)</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ROFFSET_SIMD</tt>  <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-77" class="py-name"><a title="envi.archs.i386.regs.getRegOffset" class="py-name" href="#" onclick="return doclink('link-77', 'getRegOffset', 'link-75');">getRegOffset</a></tt><tt class="py-op">(</tt><tt id="link-78" class="py-name"><a title="envi.archs.amd64.amd64regs
+envi.archs.amd64.disasm.amd64regs
+envi.archs.amd64.regs.amd64regs" class="py-name" href="#" onclick="return doclink('link-78', 'amd64regs', 'link-76');">amd64regs</a></tt><tt class="py-op">,</tt> <tt class="py-string">"xmm0"</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ROFFSET_DEBUG</tt> <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-79" class="py-name"><a title="envi.archs.i386.regs.getRegOffset" class="py-name" href="#" onclick="return doclink('link-79', 'getRegOffset', 'link-75');">getRegOffset</a></tt><tt class="py-op">(</tt><tt id="link-80" class="py-name"><a title="envi.archs.amd64.amd64regs
+envi.archs.amd64.disasm.amd64regs
+envi.archs.amd64.regs.amd64regs" class="py-name" href="#" onclick="return doclink('link-80', 'amd64regs', 'link-76');">amd64regs</a></tt><tt class="py-op">,</tt> <tt class="py-string">"debug0"</tt><tt class="py-op">)</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ROFFSET_CTRL</tt>  <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-81" class="py-name"><a title="envi.archs.i386.regs.getRegOffset" class="py-name" href="#" onclick="return doclink('link-81', 'getRegOffset', 'link-75');">getRegOffset</a></tt><tt class="py-op">(</tt><tt id="link-82" class="py-name"><a title="envi.archs.amd64.amd64regs
+envi.archs.amd64.disasm.amd64regs
+envi.archs.amd64.regs.amd64regs" class="py-name" href="#" onclick="return doclink('link-82', 'amd64regs', 'link-76');">amd64regs</a></tt><tt class="py-op">,</tt> <tt class="py-string">"ctrl0"</tt><tt class="py-op">)</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ROFFSET_TEST</tt>  <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="envi.archs.i386.regs.getRegOffset" class="py-name" href="#" onclick="return doclink('link-83', 'getRegOffset', 'link-75');">getRegOffset</a></tt><tt class="py-op">(</tt><tt id="link-84" class="py-name"><a title="envi.archs.amd64.amd64regs
+envi.archs.amd64.disasm.amd64regs
+envi.archs.amd64.regs.amd64regs" class="py-name" href="#" onclick="return doclink('link-84', 'amd64regs', 'link-76');">amd64regs</a></tt><tt class="py-op">,</tt> <tt class="py-string">"test0"</tt><tt class="py-op">)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ROFFSET_SEG</tt>   <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-85" class="py-name"><a title="envi.archs.i386.regs.getRegOffset" class="py-name" href="#" onclick="return doclink('link-85', 'getRegOffset', 'link-75');">getRegOffset</a></tt><tt class="py-op">(</tt><tt id="link-86" class="py-name"><a title="envi.archs.amd64.amd64regs
+envi.archs.amd64.disasm.amd64regs
+envi.archs.amd64.regs.amd64regs" class="py-name" href="#" onclick="return doclink('link-86', 'amd64regs', 'link-76');">amd64regs</a></tt><tt class="py-op">,</tt> <tt class="py-string">"es"</tt><tt class="py-op">)</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">ROFFSET_FPU</tt>   <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-87" class="py-name"><a title="envi.archs.i386.regs.getRegOffset" class="py-name" href="#" onclick="return doclink('link-87', 'getRegOffset', 'link-75');">getRegOffset</a></tt><tt class="py-op">(</tt><tt id="link-88" class="py-name"><a title="envi.archs.amd64.amd64regs
+envi.archs.amd64.disasm.amd64regs
+envi.archs.amd64.regs.amd64regs" class="py-name" href="#" onclick="return doclink('link-88', 'amd64regs', 'link-76');">amd64regs</a></tt><tt class="py-op">,</tt> <tt class="py-string">"st0"</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">    <tt class="py-comment"># NOTE: Technically, the REX must be the *last* prefix specified</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm._dis_calc_tsize"></a><div id="Amd64Disasm._dis_calc_tsize-def"><a name="L110"></a><tt class="py-lineno">110</tt> <a class="py-toggle" href="#" id="Amd64Disasm._dis_calc_tsize-toggle" onclick="return toggle('Amd64Disasm._dis_calc_tsize');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#_dis_calc_tsize">_dis_calc_tsize</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">opertype</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm._dis_calc_tsize-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm._dis_calc_tsize-expanded"><a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"><tt class="py-docstring">        Use the oper type and prefixes to decide on the tsize for</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-docstring">        the operand.</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-name">mode</tt> <tt class="py-op">=</tt> <tt id="link-89" class="py-name"><a title="envi.archs.amd64.MODE_32
+envi.archs.amd64.disasm.MODE_32
+envi.archs.i386.MODE_32
+envi.archs.i386.disasm.MODE_32
+envi.archs.i386.emu.MODE_32" class="py-name" href="#" onclick="return doclink('link-89', 'MODE_32', 'link-40');">MODE_32</a></tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">        <tt class="py-name">sizelist</tt> <tt class="py-op">=</tt> <tt id="link-90" class="py-name"><a title="envi.archs.i386.opcode86" class="py-name" href="#" onclick="return doclink('link-90', 'opcode86', 'link-9');">opcode86</a></tt><tt class="py-op">.</tt><tt id="link-91" class="py-name" targets="Variable envi.archs.i386.opcode86.OPERSIZE=envi.archs.i386.opcode86-module.html#OPERSIZE"><a title="envi.archs.i386.opcode86.OPERSIZE" class="py-name" href="#" onclick="return doclink('link-91', 'OPERSIZE', 'link-91');">OPERSIZE</a></tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">opertype</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">sizelist</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-string">"OPERSIZE FAIL"</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">        <tt class="py-comment"># NOTE: REX takes precedence over 66</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt class="py-comment"># (see section 2.2.1.2 in Intel 2a)</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt id="link-92" class="py-name"><a title="envi.archs.amd64.PREFIX_REX_W
+envi.archs.amd64.disasm.PREFIX_REX_W" class="py-name" href="#" onclick="return doclink('link-92', 'PREFIX_REX_W', 'link-37');">PREFIX_REX_W</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">            <tt class="py-name">mode</tt> <tt class="py-op">=</tt> <tt id="link-93" class="py-name"><a title="envi.archs.amd64.MODE_64
+envi.archs.amd64.disasm.MODE_64
+envi.archs.i386.MODE_64
+envi.archs.i386.disasm.MODE_64
+envi.archs.i386.emu.MODE_64" class="py-name" href="#" onclick="return doclink('link-93', 'MODE_64', 'link-41');">MODE_64</a></tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-94" class="py-name" targets="Variable envi.archs.i386.PREFIX_OP_SIZE=envi.archs.i386-module.html#PREFIX_OP_SIZE,Variable envi.archs.i386.disasm.PREFIX_OP_SIZE=envi.archs.i386.disasm-module.html#PREFIX_OP_SIZE,Variable envi.archs.i386.emu.PREFIX_OP_SIZE=envi.archs.i386.emu-module.html#PREFIX_OP_SIZE,Variable envi.archs.i386.opcode86.PREFIX_OP_SIZE=envi.archs.i386.opcode86-module.html#PREFIX_OP_SIZE"><a title="envi.archs.i386.PREFIX_OP_SIZE
+envi.archs.i386.disasm.PREFIX_OP_SIZE
+envi.archs.i386.emu.PREFIX_OP_SIZE
+envi.archs.i386.opcode86.PREFIX_OP_SIZE" class="py-name" href="#" onclick="return doclink('link-94', 'PREFIX_OP_SIZE', 'link-94');">PREFIX_OP_SIZE</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">            <tt class="py-name">mode</tt> <tt class="py-op">=</tt> <tt id="link-95" class="py-name"><a title="envi.archs.amd64.MODE_16
+envi.archs.amd64.disasm.MODE_16
+envi.archs.i386.MODE_16
+envi.archs.i386.disasm.MODE_16
+envi.archs.i386.emu.MODE_16" class="py-name" href="#" onclick="return doclink('link-95', 'MODE_16', 'link-39');">MODE_16</a></tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">sizelist</tt><tt class="py-op">[</tt><tt class="py-name">mode</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.byteRegOffset"></a><div id="Amd64Disasm.byteRegOffset-def"><a name="L134"></a><tt class="py-lineno">134</tt> <a class="py-toggle" href="#" id="Amd64Disasm.byteRegOffset-toggle" onclick="return toggle('Amd64Disasm.byteRegOffset');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#byteRegOffset">byteRegOffset</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">val</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.byteRegOffset-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.byteRegOffset-expanded"><a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-comment"># NOTE: Override this because there is no AH etc in 64 bit mode</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">val</tt> <tt class="py-op">+</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-96" class="py-name" targets="Variable envi.archs.i386.RMETA_LOW8=envi.archs.i386-module.html#RMETA_LOW8,Variable envi.archs.i386.disasm.RMETA_LOW8=envi.archs.i386.disasm-module.html#RMETA_LOW8,Variable envi.archs.i386.emu.RMETA_LOW8=envi.archs.i386.emu-module.html#RMETA_LOW8"><a title="envi.archs.i386.RMETA_LOW8
+envi.archs.i386.disasm.RMETA_LOW8
+envi.archs.i386.emu.RMETA_LOW8" class="py-name" href="#" onclick="return doclink('link-96', 'RMETA_LOW8', 'link-96');">RMETA_LOW8</a></tt> </tt>
+</div><a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.extended_parse_modrm"></a><div id="Amd64Disasm.extended_parse_modrm-def"><a name="L138"></a><tt class="py-lineno">138</tt> <a class="py-toggle" href="#" id="Amd64Disasm.extended_parse_modrm-toggle" onclick="return toggle('Amd64Disasm.extended_parse_modrm');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#extended_parse_modrm">extended_parse_modrm</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">opersize</tt><tt class="py-op">,</tt> <tt class="py-param">regbase</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.extended_parse_modrm-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.extended_parse_modrm-expanded"><a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">        Return a tuple of (size, Operand)</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">        <tt class="py-name">size</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-comment"># FIXME this would be best to not parse_modrm twice.  tweak it.</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">        <tt class="py-name">mod</tt><tt class="py-op">,</tt><tt class="py-name">reg</tt><tt class="py-op">,</tt><tt class="py-name">rm</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-97" class="py-name" targets="Method envi.archs.i386.disasm.i386Disasm.parse_modrm()=envi.archs.i386.disasm.i386Disasm-class.html#parse_modrm"><a title="envi.archs.i386.disasm.i386Disasm.parse_modrm" class="py-name" href="#" onclick="return doclink('link-97', 'parse_modrm', 'link-97');">parse_modrm</a></tt><tt class="py-op">(</tt><tt class="py-name">ord</tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">[</tt><tt class="py-name">offset</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">mod</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt> <tt class="py-keyword">and</tt> <tt class="py-name">rm</tt> <tt class="py-op">==</tt> <tt class="py-number">5</tt><tt class="py-op">:</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">            <tt class="py-name">imm</tt> <tt class="py-op">=</tt> <tt class="py-name">e_bits</tt><tt class="py-op">.</tt><tt id="link-98" class="py-name" targets="Function envi.bits.parsebytes()=envi.bits-module.html#parsebytes"><a title="envi.bits.parsebytes" class="py-name" href="#" onclick="return doclink('link-98', 'parsebytes', 'link-98');">parsebytes</a></tt><tt class="py-op">(</tt><tt class="py-name">bytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt> <tt class="py-op">+</tt> <tt class="py-name">size</tt><tt class="py-op">,</tt> <tt class="py-number">4</tt><tt class="py-op">,</tt> <tt class="py-name">sign</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">            <tt class="py-name">size</tt> <tt class="py-op">+=</tt> <tt class="py-number">4</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt><tt class="py-op">(</tt><tt class="py-name">size</tt><tt class="py-op">,</tt> <tt id="link-99" class="py-name" targets="Class envi.archs.amd64.disasm.Amd64RipRelOper=envi.archs.amd64.disasm.Amd64RipRelOper-class.html"><a title="envi.archs.amd64.disasm.Amd64RipRelOper" class="py-name" href="#" onclick="return doclink('link-99', 'Amd64RipRelOper', 'link-99');">Amd64RipRelOper</a></tt><tt class="py-op">(</tt><tt class="py-name">imm</tt><tt class="py-op">,</tt> <tt class="py-number">4</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-100" class="py-name"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-100', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-101" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm.extended_parse_modrm()=envi.archs.amd64.disasm.Amd64Disasm-class.html#extended_parse_modrm,Method envi.archs.i386.disasm.i386Disasm.extended_parse_modrm()=envi.archs.i386.disasm.i386Disasm-class.html#extended_parse_modrm"><a title="envi.archs.amd64.disasm.Amd64Disasm.extended_parse_modrm
+envi.archs.i386.disasm.i386Disasm.extended_parse_modrm" class="py-name" href="#" onclick="return doclink('link-101', 'extended_parse_modrm', 'link-101');">extended_parse_modrm</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">bytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">opersize</tt><tt class="py-op">,</tt> <tt class="py-name">regbase</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">    <tt class="py-comment"># NOTE: Override a bunch of the address modes to account for REX</tt> </tt>
+<a name="Amd64Disasm.ameth_0"></a><div id="Amd64Disasm.ameth_0-def"><a name="L153"></a><tt class="py-lineno">153</tt> <a class="py-toggle" href="#" id="Amd64Disasm.ameth_0-toggle" onclick="return toggle('Amd64Disasm.ameth_0');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_0">ameth_0</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">operflags</tt><tt class="py-op">,</tt> <tt class="py-param">operval</tt><tt class="py-op">,</tt> <tt class="py-param">tsize</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.ameth_0-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.ameth_0-expanded"><a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-name">o</tt> <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-102" class="py-name"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-102', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-103" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm.ameth_0()=envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_0,Method envi.archs.i386.disasm.i386Disasm.ameth_0()=envi.archs.i386.disasm.i386Disasm-class.html#ameth_0"><a title="envi.archs.amd64.disasm.Amd64Disasm.ameth_0
+envi.archs.i386.disasm.i386Disasm.ameth_0" class="py-name" href="#" onclick="return doclink('link-103', 'ameth_0', 'link-103');">ameth_0</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">operflags</tt><tt class="py-op">,</tt> <tt class="py-name">operval</tt><tt class="py-op">,</tt> <tt class="py-name">tsize</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt class="py-comment"># If it has a builtin register, we need to check for bump prefix</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt id="link-104" class="py-name"><a title="envi.archs.amd64.PREFIX_REX_B
+envi.archs.amd64.disasm.PREFIX_REX_B" class="py-name" href="#" onclick="return doclink('link-104', 'PREFIX_REX_B', 'link-34');">PREFIX_REX_B</a></tt> <tt class="py-keyword">and</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">o</tt><tt class="py-op">,</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-105" class="py-name" targets="Class envi.archs.i386.disasm.i386RegOper=envi.archs.i386.disasm.i386RegOper-class.html"><a title="envi.archs.i386.disasm.i386RegOper" class="py-name" href="#" onclick="return doclink('link-105', 'i386RegOper', 'link-105');">i386RegOper</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">            <tt class="py-name">o</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">+=</tt> <tt id="link-106" class="py-name"><a title="envi.archs.amd64.REX_BUMP
+envi.archs.amd64.disasm.REX_BUMP" class="py-name" href="#" onclick="return doclink('link-106', 'REX_BUMP', 'link-38');">REX_BUMP</a></tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">o</tt> </tt>
+</div><a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.ameth_g"></a><div id="Amd64Disasm.ameth_g-def"><a name="L160"></a><tt class="py-lineno">160</tt> <a class="py-toggle" href="#" id="Amd64Disasm.ameth_g-toggle" onclick="return toggle('Amd64Disasm.ameth_g');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_g">ameth_g</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">tsize</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.ameth_g-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.ameth_g-expanded"><a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt class="py-name">osize</tt><tt class="py-op">,</tt> <tt class="py-name">oper</tt> <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-107" class="py-name"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-107', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-108" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm.ameth_g()=envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_g,Method envi.archs.i386.disasm.i386Disasm.ameth_g()=envi.archs.i386.disasm.i386Disasm-class.html#ameth_g"><a title="envi.archs.amd64.disasm.Amd64Disasm.ameth_g
+envi.archs.i386.disasm.i386Disasm.ameth_g" class="py-name" href="#" onclick="return doclink('link-108', 'ameth_g', 'link-108');">ameth_g</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">bytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">tsize</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">tsize</tt> <tt class="py-op">==</tt> <tt class="py-number">4</tt> <tt class="py-keyword">and</tt> <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">!=</tt> <tt id="link-109" class="py-name" targets="Variable envi.archs.amd64.REG_RIP=envi.archs.amd64-module.html#REG_RIP,Variable envi.archs.amd64.disasm.REG_RIP=envi.archs.amd64.disasm-module.html#REG_RIP,Variable envi.archs.amd64.regs.REG_RIP=envi.archs.amd64.regs-module.html#REG_RIP"><a title="envi.archs.amd64.REG_RIP
+envi.archs.amd64.disasm.REG_RIP
+envi.archs.amd64.regs.REG_RIP" class="py-name" href="#" onclick="return doclink('link-109', 'REG_RIP', 'link-109');">REG_RIP</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">            <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">+=</tt> <tt id="link-110" class="py-name" targets="Variable envi.archs.amd64.RMETA_LOW32=envi.archs.amd64-module.html#RMETA_LOW32,Variable envi.archs.amd64.disasm.RMETA_LOW32=envi.archs.amd64.disasm-module.html#RMETA_LOW32,Variable envi.archs.amd64.regs.RMETA_LOW32=envi.archs.amd64.regs-module.html#RMETA_LOW32"><a title="envi.archs.amd64.RMETA_LOW32
+envi.archs.amd64.disasm.RMETA_LOW32
+envi.archs.amd64.regs.RMETA_LOW32" class="py-name" href="#" onclick="return doclink('link-110', 'RMETA_LOW32', 'link-110');">RMETA_LOW32</a></tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt id="link-111" class="py-name"><a title="envi.archs.amd64.PREFIX_REX_R
+envi.archs.amd64.disasm.PREFIX_REX_R" class="py-name" href="#" onclick="return doclink('link-111', 'PREFIX_REX_R', 'link-36');">PREFIX_REX_R</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">            <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">+=</tt> <tt id="link-112" class="py-name"><a title="envi.archs.amd64.REX_BUMP
+envi.archs.amd64.disasm.REX_BUMP" class="py-name" href="#" onclick="return doclink('link-112', 'REX_BUMP', 'link-38');">REX_BUMP</a></tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">osize</tt><tt class="py-op">,</tt> <tt class="py-name">oper</tt> </tt>
+</div><a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.ameth_c"></a><div id="Amd64Disasm.ameth_c-def"><a name="L168"></a><tt class="py-lineno">168</tt> <a class="py-toggle" href="#" id="Amd64Disasm.ameth_c-toggle" onclick="return toggle('Amd64Disasm.ameth_c');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_c">ameth_c</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">tsize</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.ameth_c-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.ameth_c-expanded"><a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-name">osize</tt><tt class="py-op">,</tt> <tt class="py-name">oper</tt> <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-113" class="py-name"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-113', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-114" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm.ameth_c()=envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_c,Method envi.archs.i386.disasm.i386Disasm.ameth_c()=envi.archs.i386.disasm.i386Disasm-class.html#ameth_c"><a title="envi.archs.amd64.disasm.Amd64Disasm.ameth_c
+envi.archs.i386.disasm.i386Disasm.ameth_c" class="py-name" href="#" onclick="return doclink('link-114', 'ameth_c', 'link-114');">ameth_c</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">bytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">tsize</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt id="link-115" class="py-name"><a title="envi.archs.amd64.PREFIX_REX_R
+envi.archs.amd64.disasm.PREFIX_REX_R" class="py-name" href="#" onclick="return doclink('link-115', 'PREFIX_REX_R', 'link-36');">PREFIX_REX_R</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">            <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">+=</tt> <tt id="link-116" class="py-name"><a title="envi.archs.amd64.REX_BUMP
+envi.archs.amd64.disasm.REX_BUMP" class="py-name" href="#" onclick="return doclink('link-116', 'REX_BUMP', 'link-38');">REX_BUMP</a></tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">osize</tt><tt class="py-op">,</tt><tt class="py-name">oper</tt> </tt>
+</div><a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.ameth_d"></a><div id="Amd64Disasm.ameth_d-def"><a name="L174"></a><tt class="py-lineno">174</tt> <a class="py-toggle" href="#" id="Amd64Disasm.ameth_d-toggle" onclick="return toggle('Amd64Disasm.ameth_d');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_d">ameth_d</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">tsize</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.ameth_d-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.ameth_d-expanded"><a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">        <tt class="py-name">osize</tt><tt class="py-op">,</tt> <tt class="py-name">oper</tt> <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-117" class="py-name"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-117', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-118" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm.ameth_d()=envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_d,Method envi.archs.i386.disasm.i386Disasm.ameth_d()=envi.archs.i386.disasm.i386Disasm-class.html#ameth_d"><a title="envi.archs.amd64.disasm.Amd64Disasm.ameth_d
+envi.archs.i386.disasm.i386Disasm.ameth_d" class="py-name" href="#" onclick="return doclink('link-118', 'ameth_d', 'link-118');">ameth_d</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">bytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">tsize</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt id="link-119" class="py-name"><a title="envi.archs.amd64.PREFIX_REX_R
+envi.archs.amd64.disasm.PREFIX_REX_R" class="py-name" href="#" onclick="return doclink('link-119', 'PREFIX_REX_R', 'link-36');">PREFIX_REX_R</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">            <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">+=</tt> <tt id="link-120" class="py-name"><a title="envi.archs.amd64.REX_BUMP
+envi.archs.amd64.disasm.REX_BUMP" class="py-name" href="#" onclick="return doclink('link-120', 'REX_BUMP', 'link-38');">REX_BUMP</a></tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">osize</tt><tt class="py-op">,</tt><tt class="py-name">oper</tt> </tt>
+</div><a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.ameth_v"></a><div id="Amd64Disasm.ameth_v-def"><a name="L180"></a><tt class="py-lineno">180</tt> <a class="py-toggle" href="#" id="Amd64Disasm.ameth_v-toggle" onclick="return toggle('Amd64Disasm.ameth_v');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_v">ameth_v</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">tsize</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.ameth_v-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.ameth_v-expanded"><a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">        <tt class="py-name">osize</tt><tt class="py-op">,</tt> <tt class="py-name">oper</tt> <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-121" class="py-name"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-121', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-122" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm.ameth_v()=envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_v,Method envi.archs.i386.disasm.i386Disasm.ameth_v()=envi.archs.i386.disasm.i386Disasm-class.html#ameth_v"><a title="envi.archs.amd64.disasm.Amd64Disasm.ameth_v
+envi.archs.i386.disasm.i386Disasm.ameth_v" class="py-name" href="#" onclick="return doclink('link-122', 'ameth_v', 'link-122');">ameth_v</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">bytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">tsize</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt id="link-123" class="py-name"><a title="envi.archs.amd64.PREFIX_REX_R
+envi.archs.amd64.disasm.PREFIX_REX_R" class="py-name" href="#" onclick="return doclink('link-123', 'PREFIX_REX_R', 'link-36');">PREFIX_REX_R</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">            <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">+=</tt> <tt id="link-124" class="py-name"><a title="envi.archs.amd64.REX_BUMP
+envi.archs.amd64.disasm.REX_BUMP" class="py-name" href="#" onclick="return doclink('link-124', 'REX_BUMP', 'link-38');">REX_BUMP</a></tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">osize</tt><tt class="py-op">,</tt><tt class="py-name">oper</tt> </tt>
+</div><a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line"> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">    <tt class="py-comment"># NOTE: The ones below are the only ones to which REX.X or REX.B can apply (besides ameth_0)</tt> </tt>
+<a name="Amd64Disasm._dis_rex_exmodrm"></a><div id="Amd64Disasm._dis_rex_exmodrm-def"><a name="L187"></a><tt class="py-lineno">187</tt> <a class="py-toggle" href="#" id="Amd64Disasm._dis_rex_exmodrm-toggle" onclick="return toggle('Amd64Disasm._dis_rex_exmodrm');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#_dis_rex_exmodrm">_dis_rex_exmodrm</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">oper</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm._dis_rex_exmodrm-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm._dis_rex_exmodrm-expanded"><a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line">        <tt class="py-comment"># REMEMBER: all extended mod RM reg fields come from the r/m part.  If it</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">        <tt class="py-comment">#           were actually just the reg part, it'd be in one of the above</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">        <tt class="py-comment">#           addressing modes...</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">oper</tt><tt class="py-op">,</tt> <tt class="py-string">"index"</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">tsize</tt> <tt class="py-op">==</tt> <tt class="py-number">4</tt><tt class="py-op">:</tt> </tt>
+<a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">                <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">index</tt> <tt class="py-op">+=</tt> <tt id="link-125" class="py-name"><a title="envi.archs.amd64.RMETA_LOW32
+envi.archs.amd64.disasm.RMETA_LOW32
+envi.archs.amd64.regs.RMETA_LOW32" class="py-name" href="#" onclick="return doclink('link-125', 'RMETA_LOW32', 'link-110');">RMETA_LOW32</a></tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt id="link-126" class="py-name"><a title="envi.archs.amd64.PREFIX_REX_X
+envi.archs.amd64.disasm.PREFIX_REX_X" class="py-name" href="#" onclick="return doclink('link-126', 'PREFIX_REX_X', 'link-35');">PREFIX_REX_X</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">                <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">index</tt> <tt class="py-op">+=</tt> <tt id="link-127" class="py-name"><a title="envi.archs.amd64.REX_BUMP
+envi.archs.amd64.disasm.REX_BUMP" class="py-name" href="#" onclick="return doclink('link-127', 'REX_BUMP', 'link-38');">REX_BUMP</a></tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">            <tt class="py-comment"># Adjust the size if needed</tt> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line">        <tt class="py-comment"># oper.reg will be r/m or SIB base</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">oper</tt><tt class="py-op">,</tt> <tt class="py-string">"reg"</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">            <tt class="py-comment"># Adjust the size if needed</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">tsize</tt> <tt class="py-op">==</tt> <tt class="py-number">4</tt><tt class="py-op">:</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">                <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">+=</tt> <tt id="link-128" class="py-name"><a title="envi.archs.amd64.RMETA_LOW32
+envi.archs.amd64.disasm.RMETA_LOW32
+envi.archs.amd64.regs.RMETA_LOW32" class="py-name" href="#" onclick="return doclink('link-128', 'RMETA_LOW32', 'link-110');">RMETA_LOW32</a></tt> </tt>
+<a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line"> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">prefixes</tt> <tt class="py-op">&amp;</tt> <tt id="link-129" class="py-name"><a title="envi.archs.amd64.PREFIX_REX_B
+envi.archs.amd64.disasm.PREFIX_REX_B" class="py-name" href="#" onclick="return doclink('link-129', 'PREFIX_REX_B', 'link-34');">PREFIX_REX_B</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">                <tt class="py-name">oper</tt><tt class="py-op">.</tt><tt class="py-name">reg</tt> <tt class="py-op">+=</tt> <tt id="link-130" class="py-name"><a title="envi.archs.amd64.REX_BUMP
+envi.archs.amd64.disasm.REX_BUMP" class="py-name" href="#" onclick="return doclink('link-130', 'REX_BUMP', 'link-38');">REX_BUMP</a></tt> </tt>
+</div><a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.ameth_e"></a><div id="Amd64Disasm.ameth_e-def"><a name="L207"></a><tt class="py-lineno">207</tt> <a class="py-toggle" href="#" id="Amd64Disasm.ameth_e-toggle" onclick="return toggle('Amd64Disasm.ameth_e');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_e">ameth_e</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">tsize</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.ameth_e-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.ameth_e-expanded"><a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">        <tt class="py-name">osize</tt><tt class="py-op">,</tt> <tt class="py-name">oper</tt> <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-131" class="py-name"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-131', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-132" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm.ameth_e()=envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_e,Method envi.archs.i386.disasm.i386Disasm.ameth_e()=envi.archs.i386.disasm.i386Disasm-class.html#ameth_e"><a title="envi.archs.amd64.disasm.Amd64Disasm.ameth_e
+envi.archs.i386.disasm.i386Disasm.ameth_e" class="py-name" href="#" onclick="return doclink('link-132', 'ameth_e', 'link-132');">ameth_e</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">bytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">tsize</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-133" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm._dis_rex_exmodrm()=envi.archs.amd64.disasm.Amd64Disasm-class.html#_dis_rex_exmodrm"><a title="envi.archs.amd64.disasm.Amd64Disasm._dis_rex_exmodrm" class="py-name" href="#" onclick="return doclink('link-133', '_dis_rex_exmodrm', 'link-133');">_dis_rex_exmodrm</a></tt><tt class="py-op">(</tt><tt class="py-name">oper</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">osize</tt><tt class="py-op">,</tt> <tt class="py-name">oper</tt> </tt>
+</div><a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line"> </tt>
+<a name="Amd64Disasm.ameth_w"></a><div id="Amd64Disasm.ameth_w-def"><a name="L212"></a><tt class="py-lineno">212</tt> <a class="py-toggle" href="#" id="Amd64Disasm.ameth_w-toggle" onclick="return toggle('Amd64Disasm.ameth_w');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_w">ameth_w</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">tsize</tt><tt class="py-op">,</tt> <tt class="py-param">prefixes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Amd64Disasm.ameth_w-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Amd64Disasm.ameth_w-expanded"><a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">        <tt class="py-name">osize</tt><tt class="py-op">,</tt> <tt class="py-name">oper</tt> <tt class="py-op">=</tt> <tt class="py-name">e_i386</tt><tt class="py-op">.</tt><tt id="link-134" class="py-name"><a title="envi.archs.i386.disasm.i386Disasm" class="py-name" href="#" onclick="return doclink('link-134', 'i386Disasm', 'link-71');">i386Disasm</a></tt><tt class="py-op">.</tt><tt id="link-135" class="py-name" targets="Method envi.archs.amd64.disasm.Amd64Disasm.ameth_w()=envi.archs.amd64.disasm.Amd64Disasm-class.html#ameth_w,Method envi.archs.i386.disasm.i386Disasm.ameth_w()=envi.archs.i386.disasm.i386Disasm-class.html#ameth_w"><a title="envi.archs.amd64.disasm.Amd64Disasm.ameth_w
+envi.archs.i386.disasm.i386Disasm.ameth_w" class="py-name" href="#" onclick="return doclink('link-135', 'ameth_w', 'link-135');">ameth_w</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">bytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">tsize</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-136" class="py-name"><a title="envi.archs.amd64.disasm.Amd64Disasm._dis_rex_exmodrm" class="py-name" href="#" onclick="return doclink('link-136', '_dis_rex_exmodrm', 'link-133');">_dis_rex_exmodrm</a></tt><tt class="py-op">(</tt><tt class="py-name">oper</tt><tt class="py-op">,</tt> <tt class="py-name">prefixes</tt><tt class="py-op">)</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">osize</tt><tt class="py-op">,</tt><tt class="py-name">oper</tt> </tt>
+</div></div><a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line"> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line"> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">'__main__'</tt><tt class="py-op">:</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">    <tt class="py-name">d</tt> <tt class="py-op">=</tt> <tt id="link-137" class="py-name" targets="Class envi.archs.amd64.disasm.Amd64Disasm=envi.archs.amd64.disasm.Amd64Disasm-class.html"><a title="envi.archs.amd64.disasm.Amd64Disasm" class="py-name" href="#" onclick="return doclink('link-137', 'Amd64Disasm', 'link-137');">Amd64Disasm</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">    <tt class="py-name">b</tt> <tt class="py-op">=</tt> <tt class="py-name">file</tt><tt class="py-op">(</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-string">'rb'</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-138" class="py-name" targets="Method envi.memory.MemoryFile.read()=envi.memory.MemoryFile-class.html#read"><a title="envi.memory.MemoryFile.read" class="py-name" href="#" onclick="return doclink('link-138', 'read', 'link-138');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">    <tt class="py-name">offset</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">    <tt class="py-name">va</tt> <tt class="py-op">=</tt> <tt class="py-number">0x41414141</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">offset</tt> <tt class="py-op">&lt;</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">b</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">        <tt class="py-name">op</tt> <tt class="py-op">=</tt> <tt class="py-name">d</tt><tt class="py-op">.</tt><tt id="link-139" class="py-name" targets="Module envi.archs.amd64.disasm=envi.archs.amd64.disasm-module.html,Method envi.archs.arm.armdisasm.ArmStdDisasm.disasm()=envi.archs.arm.armdisasm.ArmStdDisasm-class.html#disasm,Module envi.archs.arm.disasm=envi.archs.arm.disasm-module.html,Method envi.archs.arm.disasm.ArmDisasm.disasm()=envi.archs.arm.disasm.ArmDisasm-class.html#disasm,Method envi.archs.arm.disasm.ArmJazDisasm.disasm()=envi.archs.arm.disasm.ArmJazDisasm-class.html#disasm,Method envi.archs.arm.thumbdisasm.ArmThumbDisasm.disasm()=envi.archs.arm.thumbdisasm.ArmThumbDisasm-class.html#disasm,Module envi.archs.i386.disasm=envi.archs.i386.disasm-module.html,Method envi.archs.i386.disasm.i386Disasm.disasm()=envi.archs.i386.disasm.i386Disasm-class.html#disasm,Module envi.archs.z80.disasm=envi.archs.z80.disasm-module.html,Method envi.archs.z80.disasm.z80Disasm.disasm()=envi.archs.z80.disasm.z80Disasm-class.html#disasm"><a title="envi.archs.amd64.disasm
+envi.archs.arm.armdisasm.ArmStdDisasm.disasm
+envi.archs.arm.disasm
+envi.archs.arm.disasm.ArmDisasm.disasm
+envi.archs.arm.disasm.ArmJazDisasm.disasm
+envi.archs.arm.thumbdisasm.ArmThumbDisasm.disasm
+envi.archs.i386.disasm
+envi.archs.i386.disasm.i386Disasm.disasm
+envi.archs.z80.disasm
+envi.archs.z80.disasm.z80Disasm.disasm" class="py-name" href="#" onclick="return doclink('link-139', 'disasm', 'link-139');">disasm</a></tt><tt class="py-op">(</tt><tt class="py-name">b</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">va</tt><tt class="py-op">+</tt><tt class="py-name">offset</tt><tt class="py-op">)</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'0x%.8x %s %s'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">+</tt><tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">b</tt><tt class="py-op">[</tt><tt class="py-name">offset</tt><tt class="py-op">:</tt><tt class="py-name">offset</tt><tt class="py-op">+</tt><tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">encode</tt><tt class="py-op">(</tt><tt class="py-string">'hex'</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">ljust</tt><tt class="py-op">(</tt><tt class="py-number">16</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-140" class="py-name"><a title="envi.Operand.repr
+envi.archs.amd64.disasm.Amd64RipRelOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOpcodeOper.repr
+envi.archs.arm.armdisasm.ArmCoprocOper.repr
+envi.archs.arm.armdisasm.ArmCoprocRegOper.repr
+envi.archs.arm.armdisasm.ArmEndianOper.repr
+envi.archs.arm.armdisasm.ArmImmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmImmOper.repr
+envi.archs.arm.armdisasm.ArmOffsetOper.repr
+envi.archs.arm.armdisasm.ArmPSRFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatFlagsOper.repr
+envi.archs.arm.armdisasm.ArmPgmStatRegOper.repr
+envi.archs.arm.armdisasm.ArmRegListOper.repr
+envi.archs.arm.armdisasm.ArmRegOffsetOper.repr
+envi.archs.arm.armdisasm.ArmRegOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftImmOper.repr
+envi.archs.arm.armdisasm.ArmRegShiftRegOper.repr
+envi.archs.arm.armdisasm.ArmScaledOffsetOper.repr
+envi.archs.i386.disasm.i386ImmMemOper.repr
+envi.archs.i386.disasm.i386ImmOper.repr
+envi.archs.i386.disasm.i386PcRelOper.repr
+envi.archs.i386.disasm.i386RegMemOper.repr
+envi.archs.i386.disasm.i386RegOper.repr
+envi.archs.i386.disasm.i386SibOper.repr
+envi.archs.z80.disasm.z80ImmOper.repr
+envi.archs.z80.disasm.z80RegMem.repr" class="py-name" href="#" onclick="return doclink('link-140', 'repr', 'link-61');">repr</a></tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">        <tt class="py-name">offset</tt> <tt class="py-op">+=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">op</tt><tt class="py-op">)</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="envi-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:43:37 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

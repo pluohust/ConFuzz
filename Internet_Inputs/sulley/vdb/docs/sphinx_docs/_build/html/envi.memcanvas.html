@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>memcanvas Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="memcanvas-package">
+<h1>memcanvas Package<a class="headerlink" href="#memcanvas-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">memcanvas</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-envi.memcanvas"></span><p>The envi.memcanvas module is the home of the base MemoryRenderer object and
+MemoryCanvas objects.</p>
+<dl class="class">
+<dt id="envi.memcanvas.MemoryCanvas">
+<em class="property">class </em><tt class="descclassname">envi.memcanvas.</tt><tt class="descname">MemoryCanvas</tt><big>(</big><em>mem</em>, <em>syms=None</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>A memory canvas is a place where the textual representation
+of memory will be displayed. The methods implemented here show
+how a memory canvas which simply prints would be implemented.</p>
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.addNameText">
+<tt class="descname">addNameText</tt><big>(</big><em>text</em>, <em>name=None</em>, <em>typename=None</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.addNameText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.addNameText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.addRenderer">
+<tt class="descname">addRenderer</tt><big>(</big><em>name</em>, <em>rend</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.addRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.addRenderer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.addText">
+<tt class="descname">addText</tt><big>(</big><em>text</em>, <em>tag=None</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.addText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.addText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add text to the canvas with a specified tag.</p>
+<p>NOTE: Implementors should probably check _canv_scrolled to
+decide if they should scroll to the end of the view...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.addVaText">
+<tt class="descname">addVaText</tt><big>(</big><em>text</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.addVaText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.addVaText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.clearCanvas">
+<tt class="descname">clearCanvas</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.clearCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.clearCanvas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.getNameTag">
+<tt class="descname">getNameTag</tt><big>(</big><em>name</em>, <em>typename=None</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.getNameTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.getNameTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a &#8220;tag&#8221; object for a name.  &#8220;Name&#8221; tags will
+(if possible) be highlighted in the rendered interface</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.getRenderer">
+<tt class="descname">getRenderer</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.getRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.getRenderer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.getRendererNames">
+<tt class="descname">getRendererNames</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.getRendererNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.getRendererNames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.getTag">
+<tt class="descname">getTag</tt><big>(</big><em>typename</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.getTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.getTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a non-named tag (doesn&#8217;t highlight or do
+anything particularly special, but allows color
+by typename).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.getVaTag">
+<tt class="descname">getVaTag</tt><big>(</big><em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.getVaTag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.getVaTag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a tag object suitable for showing that the text
+added with this tag should link through to the specified
+virtual address in the memory canvas.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.render">
+<tt class="descname">render</tt><big>(</big><em>va</em>, <em>size</em>, <em>rend=None</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.render" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.renderMemory">
+<tt class="descname">renderMemory</tt><big>(</big><em>va</em>, <em>size</em>, <em>rend=None</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.renderMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.renderMemory" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.renderMemoryAppend">
+<tt class="descname">renderMemoryAppend</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.renderMemoryAppend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.renderMemoryAppend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.renderMemoryPrepend">
+<tt class="descname">renderMemoryPrepend</tt><big>(</big><em>size</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.renderMemoryPrepend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.renderMemoryPrepend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.renderMemoryUpdate">
+<tt class="descname">renderMemoryUpdate</tt><big>(</big><em>va</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.renderMemoryUpdate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.renderMemoryUpdate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.setNavCallback">
+<tt class="descname">setNavCallback</tt><big>(</big><em>callback</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.setNavCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.setNavCallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a navigation &#8220;callback&#8221; that will be called with
+a memory expression as it&#8217;s first argument anytime the
+canvas recieves user input which desires nav...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.setRenderer">
+<tt class="descname">setRenderer</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.setRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.setRenderer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.setScrolledCanvas">
+<tt class="descname">setScrolledCanvas</tt><big>(</big><em>scroll</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.setScrolledCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.setScrolledCanvas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryCanvas.write">
+<tt class="descname">write</tt><big>(</big><em>msg</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryCanvas.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryCanvas.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.memcanvas.MemoryRenderer">
+<em class="property">class </em><tt class="descclassname">envi.memcanvas.</tt><tt class="descname">MemoryRenderer</tt><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryRenderer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryRenderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>A top level object for all memory renderers</p>
+<dl class="method">
+<dt id="envi.memcanvas.MemoryRenderer.rendChars">
+<tt class="descname">rendChars</tt><big>(</big><em>mcanv</em>, <em>bytes</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryRenderer.rendChars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryRenderer.rendChars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryRenderer.rendSymbol">
+<tt class="descname">rendSymbol</tt><big>(</big><em>mcanv</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryRenderer.rendSymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryRenderer.rendSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>If there is a symbolic name for the current va, print it...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryRenderer.rendVa">
+<tt class="descname">rendVa</tt><big>(</big><em>mcanv</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryRenderer.rendVa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryRenderer.rendVa" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="envi.memcanvas.MemoryRenderer.render">
+<tt class="descname">render</tt><big>(</big><em>mcanv</em>, <em>va</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#MemoryRenderer.render"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.MemoryRenderer.render" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render one &#8220;unit&#8221; and return the size you ate.
+mcanv will be a MemoryCanvas extender and va
+is the virtual address you are expected to render.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="envi.memcanvas.StringMemoryCanvas">
+<em class="property">class </em><tt class="descclassname">envi.memcanvas.</tt><tt class="descname">StringMemoryCanvas</tt><big>(</big><em>mem</em>, <em>syms=None</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#StringMemoryCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.StringMemoryCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#envi.memcanvas.MemoryCanvas" title="envi.memcanvas.MemoryCanvas"><tt class="xref py py-class docutils literal"><span class="pre">envi.memcanvas.MemoryCanvas</span></tt></a></p>
+<dl class="method">
+<dt id="envi.memcanvas.StringMemoryCanvas.addText">
+<tt class="descname">addText</tt><big>(</big><em>text</em>, <em>tag=None</em><big>)</big><a class="reference internal" href="_modules/envi/memcanvas.html#StringMemoryCanvas.addText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#envi.memcanvas.StringMemoryCanvas.addText" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="envi.memcanvas.renderers.html">renderers Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="envi.memcanvas.renderers.html#id1"><tt class="docutils literal"><span class="pre">renderers</span></tt> Package</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">memcanvas Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">memcanvas</span></tt> Package</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/envi.memcanvas.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

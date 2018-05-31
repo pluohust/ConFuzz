@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.envitools &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vtrace" href="../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.envitools</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Some tools that require the envi framework to be installed</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.archs.i386</span> <span class="kn">as</span> <span class="nn">e_i386</span> <span class="c"># FIXME This should NOT have to be here</span>
+
+<span class="k">class</span> <span class="nc">RegisterException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="RegisterException"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.RegisterException">[docs]</a>    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">cmpRegs</span><span class="p">(</span><span class="n">emu</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="cmpRegs"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.cmpRegs">[docs]</a>    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="n">reg_map</span><span class="p">:</span>
+        <span class="n">er</span> <span class="o">=</span> <span class="n">emu</span><span class="o">.</span><span class="n">getRegister</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="n">tr</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getRegisterByName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">er</span> <span class="o">!=</span> <span class="n">tr</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RegisterException</span><span class="p">(</span><span class="s">&quot;REGISTER MISMATCH: </span><span class="si">%s</span><span class="s"> 0x</span><span class="si">%.8x</span><span class="s"> 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tr</span><span class="p">,</span> <span class="n">er</span><span class="p">))</span>
+    <span class="k">return</span> <span class="bp">True</span>
+
+<span class="n">reg_map</span> <span class="o">=</span> <span class="p">[</span></div>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_EAX</span><span class="p">,</span> <span class="s">&quot;eax&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_ECX</span><span class="p">,</span> <span class="s">&quot;ecx&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_EDX</span><span class="p">,</span> <span class="s">&quot;edx&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_EBX</span><span class="p">,</span> <span class="s">&quot;ebx&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_ESP</span><span class="p">,</span> <span class="s">&quot;esp&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_EBP</span><span class="p">,</span> <span class="s">&quot;ebp&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_ESI</span><span class="p">,</span> <span class="s">&quot;esi&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_EDI</span><span class="p">,</span> <span class="s">&quot;edi&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_EIP</span><span class="p">,</span> <span class="s">&quot;eip&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">REG_EFLAGS</span><span class="p">,</span> <span class="s">&quot;eflags&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+<span class="c">#FIXME intel specific</span>
+<span class="k">def</span> <span class="nf">setRegs</span><span class="p">(</span><span class="n">emu</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="setRegs"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.setRegs">[docs]</a>    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">name</span> <span class="ow">in</span> <span class="n">reg_map</span><span class="p">:</span>
+        <span class="n">tr</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getRegisterByName</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">emu</span><span class="o">.</span><span class="n">setRegister</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">tr</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">emulatorFromTrace</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="emulatorFromTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.emulatorFromTrace">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Produce an envi emulator for this tracer object.  Use the trace&#39;s arch</span>
+<span class="sd">    info to get the emulator so this can be done on the client side of a remote</span>
+<span class="sd">    vtrace session.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arch</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;Architecture&quot;</span><span class="p">)</span>
+    <span class="n">amod</span> <span class="o">=</span> <span class="n">envi</span><span class="o">.</span><span class="n">getArchModule</span><span class="p">(</span><span class="n">arch</span><span class="p">)</span>
+    <span class="n">emu</span> <span class="o">=</span> <span class="n">amod</span><span class="o">.</span><span class="n">getEmulator</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;Platform&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s">&quot;Windows&quot;</span><span class="p">:</span>
+        <span class="n">emu</span><span class="o">.</span><span class="n">setSegmentInfo</span><span class="p">(</span><span class="n">e_i386</span><span class="o">.</span><span class="n">SEG_FS</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">getThreads</span><span class="p">()[</span><span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;ThreadId&quot;</span><span class="p">)],</span> <span class="mh">0xffffffff</span><span class="p">)</span>
+
+    <span class="n">emu</span><span class="o">.</span><span class="n">setMemoryObject</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+    <span class="n">setRegs</span><span class="p">(</span><span class="n">emu</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">emu</span>
+
+<span class="k">def</span> <span class="nf">lockStepEmulator</span><span class="p">(</span><span class="n">emu</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="lockStepEmulator"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.lockStepEmulator">[docs]</a>    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Lockstep: 0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">emu</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pc</span> <span class="o">=</span> <span class="n">emu</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">emu</span><span class="o">.</span><span class="n">makeOpcode</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">stepi</span><span class="p">()</span>
+            <span class="n">emu</span><span class="o">.</span><span class="n">stepi</span><span class="p">()</span>
+            <span class="n">cmpRegs</span><span class="p">(</span><span class="n">emu</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">RegisterException</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Lockstep Error: </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">op</span><span class="p">),</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">setRegs</span><span class="p">(</span><span class="n">emu</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+            <span class="k">print</span> <span class="s">&quot;Lockstep Error: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">msg</span>
+            <span class="k">return</span>
+
+<span class="kn">import</span> <span class="nn">vtrace</span></div>
+<span class="kn">import</span> <span class="nn">vtrace.platforms.base</span> <span class="kn">as</span> <span class="nn">v_base</span>
+
+<span class="k">class</span> <span class="nc">TraceEmulator</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Trace</span><span class="p">,</span> <span class="n">v_base</span><span class="o">.</span><span class="n">TracerBase</span><span class="p">):</span>
+<div class="viewcode-block" id="TraceEmulator"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wrap an arbitrary emulator in a Tracer compatible API.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">emu</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emu</span> <span class="o">=</span> <span class="n">emu</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Trace</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">v_base</span><span class="o">.</span><span class="n">TracerBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c"># Fake out being attached</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attached</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="mh">0x56</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRegisterInfo</span><span class="p">(</span><span class="n">emu</span><span class="o">.</span><span class="n">getRegisterInfo</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">getPointerSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TraceEmulator.getPointerSize"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.getPointerSize">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">emu</span><span class="o">.</span><span class="n">getPointerSize</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">platformStepi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformStepi"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformStepi">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">emu</span><span class="o">.</span><span class="n">stepi</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">platformWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformWait"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformWait">[docs]</a>        <span class="c"># We only support single step events now</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">archGetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.archGetRegCtx"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.archGetRegCtx">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">emu</span>
+
+    <span class="k">def</span> <span class="nf">platformGetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformGetRegCtx"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformGetRegCtx">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">emu</span>
+
+    <span class="k">def</span> <span class="nf">platformSetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threadid</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformSetRegCtx"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformSetRegCtx">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">setRegisterSnap</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">getRegisterSnap</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">platformProcessEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformProcessEvent"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformProcessEvent">[docs]</a>        <span class="bp">self</span><span class="o">.</span><span class="n">fireNotifiers</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_STEP</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformReadMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformReadMemory"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformReadMemory">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">emu</span><span class="o">.</span><span class="n">readMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformWriteMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformWriteMemory"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformWriteMemory">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">emu</span><span class="o">.</span><span class="n">writeMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">platformGetMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformGetMaps"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformGetMaps">[docs]</a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">emu</span><span class="o">.</span><span class="n">getMemoryMaps</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">platformGetThreads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformGetThreads"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformGetThreads">[docs]</a>        <span class="k">return</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span><span class="mh">0xffff0000</span><span class="p">,}</span>
+
+    <span class="k">def</span> <span class="nf">platformGetFds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformGetFds"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformGetFds">[docs]</a>        <span class="k">return</span> <span class="p">[]</span> <span class="c">#FIXME perhaps tie this into magic?</span>
+
+    <span class="k">def</span> <span class="nf">getStackTrace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.getStackTrace"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.getStackTrace">[docs]</a>        <span class="c"># FIXME i386...</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">emu</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">(),</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">platformDetach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="TraceEmulator.platformDetach"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.TraceEmulator.platformDetach">[docs]</a>        <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span></div></div>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../vtrace.html#vtrace.envitools.main">[docs]</a>    <span class="kn">import</span> <span class="nn">vtrace</span>
+    <span class="n">sym</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+    <span class="n">symaddr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">parseExpression</span><span class="p">(</span><span class="n">sym</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">addBreakpoint</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Breakpoint</span><span class="p">(</span><span class="n">symaddr</span><span class="p">))</span>
+    <span class="k">while</span> <span class="n">t</span><span class="o">.</span><span class="n">getProgramCounter</span><span class="p">()</span> <span class="o">!=</span> <span class="n">symaddr</span><span class="p">:</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="n">snap</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">takeSnapshot</span><span class="p">()</span>
+    <span class="c">#snap.saveToFile(&quot;woot.snap&quot;) # You may open in vdb to follow along</span>
+    <span class="n">emu</span> <span class="o">=</span> <span class="n">emulatorFromTrace</span><span class="p">(</span><span class="n">snap</span><span class="p">)</span>
+    <span class="n">lockStepEmulator</span><span class="p">(</span><span class="n">emu</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span></div>
+    <span class="c"># Copy this file out to the vtrace dir for testing and run as main</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

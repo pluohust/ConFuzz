@@ -1,0 +1,153 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>visgraph.layouts &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for visgraph.layouts</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A package for each of the different layout managers.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="c"># Some helper utils...</span>
+<div class="viewcode-block" id="exit_pos"><a class="viewcode-back" href="../../visgraph.layouts.html#visgraph.layouts.exit_pos">[docs]</a><span class="k">def</span> <span class="nf">exit_pos</span><span class="p">(</span><span class="n">ninfo</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;position&#39;</span><span class="p">)</span>
+    <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">xsize</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">ysize</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="entry_pos"><a class="viewcode-back" href="../../visgraph.layouts.html#visgraph.layouts.entry_pos">[docs]</a><span class="k">def</span> <span class="nf">entry_pos</span><span class="p">(</span><span class="n">ninfo</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;position&#39;</span><span class="p">)</span>
+    <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">xsize</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="center_pos"><a class="viewcode-back" href="../../visgraph.layouts.html#visgraph.layouts.center_pos">[docs]</a><span class="k">def</span> <span class="nf">center_pos</span><span class="p">(</span><span class="n">ninfo</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;position&#39;</span><span class="p">)</span>
+    <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="n">xsize</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">y</span> <span class="o">+</span> <span class="p">(</span><span class="n">ysize</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="GraphLayout"><a class="viewcode-back" href="../../visgraph.layouts.html#visgraph.layouts.GraphLayout">[docs]</a><span class="k">class</span> <span class="nc">GraphLayout</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">graph</span>
+
+<div class="viewcode-block" id="GraphLayout.layoutGraph"><a class="viewcode-back" href="../../visgraph.layouts.html#visgraph.layouts.GraphLayout.layoutGraph">[docs]</a>    <span class="k">def</span> <span class="nf">layoutGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Layout the graph nodes and edges</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> must implement layoutGraph()!&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GraphLayout.getLayoutSize"><a class="viewcode-back" href="../../visgraph.layouts.html#visgraph.layouts.GraphLayout.getLayoutSize">[docs]</a>    <span class="k">def</span> <span class="nf">getLayoutSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s"> must implement getLayoutSize()!&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="GraphLayout.renderGraph"><a class="viewcode-back" href="../../visgraph.layouts.html#visgraph.layouts.GraphLayout.renderGraph">[docs]</a>    <span class="k">def</span> <span class="nf">renderGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rend</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Render the graph to the given renderer.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">rend</span><span class="o">.</span><span class="n">setNodeSizes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layoutGraph</span><span class="p">()</span>
+
+        <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getLayoutSize</span><span class="p">()</span>
+        <span class="n">rend</span><span class="o">.</span><span class="n">beginRender</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+
+        <span class="c"># Render each of the nodes (except ghost nodes...)</span>
+        <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ghost&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;position&#39;</span><span class="p">)</span>
+            <span class="n">rend</span><span class="o">.</span><span class="n">renderNode</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span><span class="p">)</span>
+
+        <span class="c"># Render the edges</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
+            <span class="n">points</span> <span class="o">=</span> <span class="n">einfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;edge_points&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">points</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">rend</span><span class="o">.</span><span class="n">renderEdge</span><span class="p">(</span><span class="n">eid</span><span class="p">,</span> <span class="n">einfo</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+
+        <span class="n">rend</span><span class="o">.</span><span class="n">endRender</span><span class="p">()</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

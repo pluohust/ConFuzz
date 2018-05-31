@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.defs.elf &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vstruct" href="../../vstruct.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" accesskey="U">vstruct</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.defs.elf</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+<span class="kn">from</span> <span class="nn">vstruct.primitives</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">EI_NIDENT</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">EI_PADLEN</span> <span class="o">=</span> <span class="mi">7</span>
+
+<div class="viewcode-block" id="Elf32"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf32">[docs]</a><span class="k">class</span> <span class="nc">Elf32</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_ident</span>       <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="n">EI_NIDENT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_class</span>       <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_data</span>        <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_fileversion</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_osabi</span>       <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_abiversio</span>   <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_pad</span>         <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="n">EI_PADLEN</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_type</span>        <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_machine</span>     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_version</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_entry</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_phoff</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_shoff</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_flags</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_ehsize</span>      <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_phentsize</span>   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_phnum</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_shentsize</span>   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_shnum</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_shstrndx</span>    <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf32Section"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf32Section">[docs]</a><span class="k">class</span> <span class="nc">Elf32Section</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_name</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_type</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_flags</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_addr</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_offset</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_size</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_link</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_info</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_addralign</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_entsize</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf32Pheader"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf32Pheader">[docs]</a><span class="k">class</span> <span class="nc">Elf32Pheader</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_type</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_offset</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_vaddr</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_paddr</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_filesz</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_memsz</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_flags</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_align</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf32Reloc"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf32Reloc">[docs]</a><span class="k">class</span> <span class="nc">Elf32Reloc</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_offset</span> <span class="o">=</span> <span class="n">v_ptr32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_info</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf32Reloca"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf32Reloca">[docs]</a><span class="k">class</span> <span class="nc">Elf32Reloca</span><span class="p">(</span><span class="n">Elf32Reloc</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Elf32Reloc</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_addend</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf32Symbol"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf32Symbol">[docs]</a><span class="k">class</span> <span class="nc">Elf32Symbol</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_name</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_value</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_size</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_info</span>  <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_other</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_shndx</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf32Dynamic"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf32Dynamic">[docs]</a><span class="k">class</span> <span class="nc">Elf32Dynamic</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_tag</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d_value</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="Elf64"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf64">[docs]</a><span class="k">class</span> <span class="nc">Elf64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_ident</span>       <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="n">EI_NIDENT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_class</span>       <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_data</span>        <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_fileversion</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_osabi</span>       <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_abiversio</span>   <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_pad</span>         <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="n">EI_PADLEN</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_type</span>        <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_machine</span>     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_version</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_entry</span>       <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_phoff</span>       <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_shoff</span>       <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_flags</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_ehsize</span>      <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_phentsize</span>   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_phnum</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_shentsize</span>   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_shnum</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_shstrndx</span>    <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf64Section"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf64Section">[docs]</a><span class="k">class</span> <span class="nc">Elf64Section</span><span class="p">(</span><span class="n">Elf32Section</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_name</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_type</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_flags</span>     <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_addr</span>      <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_offset</span>    <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_size</span>      <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_link</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_info</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_addralign</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sh_entsize</span>   <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf64Pheader"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf64Pheader">[docs]</a><span class="k">class</span> <span class="nc">Elf64Pheader</span><span class="p">(</span><span class="n">Elf32Pheader</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_type</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_flags</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_offset</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_vaddr</span>  <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_paddr</span>  <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_filesz</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_memsz</span>  <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p_align</span>  <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="Elf64Reloc"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf64Reloc">[docs]</a><span class="k">class</span> <span class="nc">Elf64Reloc</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_offset</span> <span class="o">=</span> <span class="n">v_ptr64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_info</span>   <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf64Reloca"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf64Reloca">[docs]</a><span class="k">class</span> <span class="nc">Elf64Reloca</span><span class="p">(</span><span class="n">Elf64Reloc</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#Elf64Reloc.__init__(self)</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_offset</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_info</span>   <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_addend</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf64Symbol"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf64Symbol">[docs]</a><span class="k">class</span> <span class="nc">Elf64Symbol</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_name</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_info</span>  <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_other</span> <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_shndx</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_value</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_size</span>  <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="Elf64Dynamic"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.elf.Elf64Dynamic">[docs]</a><span class="k">class</span> <span class="nc">Elf64Dynamic</span><span class="p">(</span><span class="n">Elf32Dynamic</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" >vstruct</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

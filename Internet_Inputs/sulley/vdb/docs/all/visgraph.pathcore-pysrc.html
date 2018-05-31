@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>visgraph.pathcore</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="visgraph-module.html">Package&nbsp;visgraph</a> ::
+        Module&nbsp;pathcore
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="visgraph.pathcore-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="visgraph.pathcore-module.html">Module visgraph.pathcore</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">Paths are enumerated threads through a particular graph.  They</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">are implemented as an optimized hierarchical graph using python</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">primitives to save memory and processing time...</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">Each "leaf" node may be tracked back for it's entire path by</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">tracking back to parents.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"> </tt>
+<a name="newPathNode"></a><div id="newPathNode-def"><a name="L10"></a><tt class="py-lineno"> 10</tt> <a class="py-toggle" href="#" id="newPathNode-toggle" onclick="return toggle('newPathNode');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#newPathNode">newPathNode</a><tt class="py-op">(</tt><tt class="py-param">parent</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="newPathNode-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="newPathNode-expanded"><a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">    Create a new path node with the given properties</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line">    <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt id="link-0" class="py-name" targets="Method vqt.tree.VQTreeModel.parent()=vqt.tree.VQTreeModel-class.html#parent"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-0', 'parent', 'link-0');">parent</a></tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-1" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-1', 'parent', 'link-0');">parent</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line">        <tt id="link-2" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-2', 'parent', 'link-0');">parent</a></tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method vqt.tree.VQTreeItem.append()=vqt.tree.VQTreeItem-class.html#append,Method vqt.tree.VQTreeModel.append()=vqt.tree.VQTreeModel-class.html#append"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-3', 'append', 'link-3');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">ret</tt><tt class="py-op">)</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">ret</tt> </tt>
+</div><a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"> </tt>
+<a name="getNodeParent"></a><div id="getNodeParent-def"><a name="L19"></a><tt class="py-lineno"> 19</tt> <a class="py-toggle" href="#" id="getNodeParent-toggle" onclick="return toggle('getNodeParent');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getNodeParent">getNodeParent</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getNodeParent-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getNodeParent-expanded"><a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">pnode</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
+<a name="delPathNode"></a><div id="delPathNode-def"><a name="L22"></a><tt class="py-lineno"> 22</tt> <a class="py-toggle" href="#" id="delPathNode-toggle" onclick="return toggle('delPathNode');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#delPathNode">delPathNode</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="delPathNode-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="delPathNode-expanded"><a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring">    Prune (remove) this node from the parent...</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">    <tt class="py-name">p</tt> <tt class="py-op">=</tt> <tt id="link-4" class="py-name" targets="Function visgraph.pathcore.getNodeParent()=visgraph.pathcore-module.html#getNodeParent"><a title="visgraph.pathcore.getNodeParent" class="py-name" href="#" onclick="return doclink('link-4', 'getNodeParent', 'link-4');">getNodeParent</a></tt><tt class="py-op">(</tt><tt class="py-name">pnode</tt><tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">p</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">        <tt class="py-name">p</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt class="py-name">pnode</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"> </tt>
+<a name="getNodeIndex"></a><div id="getNodeIndex-def"><a name="L30"></a><tt class="py-lineno"> 30</tt> <a class="py-toggle" href="#" id="getNodeIndex-toggle" onclick="return toggle('getNodeIndex');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getNodeIndex">getNodeIndex</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getNodeIndex-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getNodeIndex-expanded"><a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">    <tt class="py-name">p</tt> <tt class="py-op">=</tt> <tt id="link-5" class="py-name"><a title="visgraph.pathcore.getNodeParent" class="py-name" href="#" onclick="return doclink('link-5', 'getNodeParent', 'link-4');">getNodeParent</a></tt><tt class="py-op">(</tt><tt class="py-name">pnode</tt><tt class="py-op">)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">p</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">p</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method vqt.tree.VQTreeModel.index()=vqt.tree.VQTreeModel-class.html#index"><a title="vqt.tree.VQTreeModel.index" class="py-name" href="#" onclick="return doclink('link-6', 'index', 'link-6');">index</a></tt><tt class="py-op">(</tt><tt class="py-name">pnode</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"> </tt>
+<a name="getNodeKids"></a><div id="getNodeKids-def"><a name="L36"></a><tt class="py-lineno"> 36</tt> <a class="py-toggle" href="#" id="getNodeKids-toggle" onclick="return toggle('getNodeKids');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getNodeKids">getNodeKids</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getNodeKids-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getNodeKids-expanded"><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring">    Return the list of children nodes for the specified</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring">    node.</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">    Example: for knode in getNodeKids(pnode):</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">pnode</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"> </tt>
+<a name="getRootNode"></a><div id="getRootNode-def"><a name="L45"></a><tt class="py-lineno"> 45</tt> <a class="py-toggle" href="#" id="getRootNode-toggle" onclick="return toggle('getRootNode');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getRootNode">getRootNode</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getRootNode-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getRootNode-expanded"><a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-docstring">    Get the root node for the path tree which contains</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">    pnode.</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">    Example: root = getRootNode(branchnode)</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">    <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-name">pnode</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">pnode</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">        <tt class="py-name">pnode</tt> <tt class="py-op">=</tt> <tt class="py-name">pnode</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">pnode</tt> </tt>
+</div><a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"> </tt>
+<a name="getLeafNodes"></a><div id="getLeafNodes-def"><a name="L57"></a><tt class="py-lineno"> 57</tt> <a class="py-toggle" href="#" id="getLeafNodes-toggle" onclick="return toggle('getLeafNodes');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getLeafNodes">getLeafNodes</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getLeafNodes-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getLeafNodes-expanded"><a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-docstring">    Get all the leaf nodes for the path tree which contains</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt class="py-docstring">    the pnode.</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"><tt class="py-docstring">    Example: for leaf in getLeafNodes(root):</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">    <tt class="py-name">root</tt> <tt class="py-op">=</tt> <tt id="link-7" class="py-name" targets="Function visgraph.pathcore.getRootNode()=visgraph.pathcore-module.html#getRootNode"><a title="visgraph.pathcore.getRootNode" class="py-name" href="#" onclick="return doclink('link-7', 'getRootNode', 'link-7');">getRootNode</a></tt><tt class="py-op">(</tt><tt class="py-name">pnode</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">    <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">    <tt class="py-name">todo</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">root</tt><tt class="py-op">,</tt> <tt class="py-op">]</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">todo</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt id="link-8" class="py-name" targets="Variable envi.archs.arm.armdisasm.x=envi.archs.arm.armdisasm-module.html#x,Variable envi.archs.arm.disasm.x=envi.archs.arm.disasm-module.html#x,Variable envi.archs.arm.emu.x=envi.archs.arm.emu-module.html#x,Variable envi.archs.arm.regs.x=envi.archs.arm.regs-module.html#x,Variable envi.archs.arm.thumbdisasm.x=envi.archs.arm.thumbdisasm-module.html#x,Variable envi.archs.arm.x=envi.archs.arm-module.html#x,Variable envi.archs.i386.disasm.x=envi.archs.i386.disasm-module.html#x,Variable envi.archs.i386.emu.x=envi.archs.i386.emu-module.html#x,Variable envi.archs.i386.x=envi.archs.i386-module.html#x,Variable vtrace.platforms.win32.x=vtrace.platforms.win32-module.html#x"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-8', 'x', 'link-8');">x</a></tt> <tt class="py-op">=</tt> <tt class="py-name">todo</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt id="link-9" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-9', 'x', 'link-8');">x</a></tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt class="py-name">ret</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-10', 'append', 'link-3');">append</a></tt><tt class="py-op">(</tt><tt id="link-11" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-11', 'x', 'link-8');">x</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">            <tt class="py-keyword">continue</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">n</tt> <tt class="py-keyword">in</tt> <tt id="link-12" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-12', 'x', 'link-8');">x</a></tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">            <tt class="py-name">todo</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-13', 'append', 'link-3');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">n</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">ret</tt> </tt>
+</div><a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"> </tt>
+<a name="getPathToNode"></a><div id="getPathToNode-def"><a name="L76"></a><tt class="py-lineno"> 76</tt> <a class="py-toggle" href="#" id="getPathToNode-toggle" onclick="return toggle('getPathToNode');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getPathToNode">getPathToNode</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getPathToNode-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getPathToNode-expanded"><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"><tt class="py-docstring">    Return a list of the path nodes which lead from the</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line"><tt class="py-docstring">    root node to the specified path node.</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">    <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">pnode</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-14', 'append', 'link-3');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">pnode</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">pnode</tt> <tt class="py-op">=</tt> <tt class="py-name">pnode</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">    <tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method vwidget.views.VRevTextTag.reverse()=vwidget.views.VRevTextTag-class.html#reverse,Method vwidget.views.VTextTag.reverse()=vwidget.views.VTextTag-class.html#reverse"><a title="vwidget.views.VRevTextTag.reverse
+vwidget.views.VTextTag.reverse" class="py-name" href="#" onclick="return doclink('link-15', 'reverse', 'link-15');">reverse</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">path</tt> </tt>
+</div><a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"> </tt>
+<a name="getAllPaths"></a><div id="getAllPaths-def"><a name="L89"></a><tt class="py-lineno"> 89</tt> <a class="py-toggle" href="#" id="getAllPaths-toggle" onclick="return toggle('getAllPaths');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getAllPaths">getAllPaths</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getAllPaths-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getAllPaths-expanded"><a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"><tt class="py-docstring">    Get a list of lists which has each path flattened out.</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line"><tt class="py-docstring">    Example: for path in getAllPaths(pnode):</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring">                 print 'Found A Path:'</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring">                 for node in path:</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-docstring">                    doStuff()</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">    <tt class="py-name">leafs</tt> <tt class="py-op">=</tt> <tt id="link-16" class="py-name" targets="Function visgraph.pathcore.getLeafNodes()=visgraph.pathcore-module.html#getLeafNodes"><a title="visgraph.pathcore.getLeafNodes" class="py-name" href="#" onclick="return doclink('link-16', 'getLeafNodes', 'link-16');">getLeafNodes</a></tt><tt class="py-op">(</tt><tt class="py-name">pnode</tt><tt class="py-op">)</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">    <tt class="py-name">paths</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">leaf</tt> <tt class="py-keyword">in</tt> <tt class="py-name">leafs</tt><tt class="py-op">:</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-name">path</tt> <tt class="py-op">=</tt> <tt id="link-17" class="py-name" targets="Function visgraph.pathcore.getPathToNode()=visgraph.pathcore-module.html#getPathToNode"><a title="visgraph.pathcore.getPathToNode" class="py-name" href="#" onclick="return doclink('link-17', 'getPathToNode', 'link-17');">getPathToNode</a></tt><tt class="py-op">(</tt><tt class="py-name">leaf</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-name">paths</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name"><a title="vqt.tree.VQTreeItem.append
+vqt.tree.VQTreeModel.append" class="py-name" href="#" onclick="return doclink('link-18', 'append', 'link-3');">append</a></tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">paths</tt> </tt>
+</div><a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"> </tt>
+<a name="getNodeProp"></a><div id="getNodeProp-def"><a name="L105"></a><tt class="py-lineno">105</tt> <a class="py-toggle" href="#" id="getNodeProp-toggle" onclick="return toggle('getNodeProp');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getNodeProp">getNodeProp</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">,</tt> <tt class="py-param">default</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getNodeProp-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getNodeProp-expanded"><a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-docstring">    Get a property from the given node, returning</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-docstring">    default in the case that the specified property is</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-docstring">    not present.</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-docstring">    Example:</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"><tt class="py-docstring">        name = getNodeProp(pnode, 'name', 'Unknown')</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">pnode</tt><tt class="py-op">[</tt><tt class="py-number">2</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">,</tt> <tt class="py-name">default</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"> </tt>
+<a name="getPathProp"></a><div id="getPathProp-def"><a name="L116"></a><tt class="py-lineno">116</tt> <a class="py-toggle" href="#" id="getPathProp-toggle" onclick="return toggle('getPathProp');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getPathProp">getPathProp</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">,</tt> <tt class="py-param">default</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getPathProp-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getPathProp-expanded"><a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">    Retrieve the specified property by walking the give</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-docstring">    path backward until the property is found.  Returns</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-docstring">    the specified default if the specified key is not found</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt class="py-docstring">    as a property of any node in the given path.</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"><tt class="py-docstring">    Example:</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line"><tt class="py-docstring">        name = getPathProp(pnode, 'name', 'Unknown')</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">    <tt id="link-19" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-19', 'parent', 'link-0');">parent</a></tt> <tt class="py-op">=</tt> <tt class="py-name">pnode</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt id="link-20" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-20', 'parent', 'link-0');">parent</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt id="link-21" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-21', 'parent', 'link-0');">parent</a></tt><tt class="py-op">,</tt> <tt class="py-name">kids</tt><tt class="py-op">,</tt> <tt class="py-name">props</tt> <tt class="py-op">=</tt> <tt id="link-22" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-22', 'parent', 'link-0');">parent</a></tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt id="link-23" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-23', 'x', 'link-8');">x</a></tt> <tt class="py-op">=</tt> <tt class="py-name">props</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt id="link-24" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-24', 'x', 'link-8');">x</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-25" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x
+vtrace.platforms.win32.x" class="py-name" href="#" onclick="return doclink('link-25', 'x', 'link-8');">x</a></tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">default</tt> </tt>
+</div><a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="setNodeProp"></a><div id="setNodeProp-def"><a name="L134"></a><tt class="py-lineno">134</tt> <a class="py-toggle" href="#" id="setNodeProp-toggle" onclick="return toggle('setNodeProp');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#setNodeProp">setNodeProp</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="setNodeProp-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="setNodeProp-expanded"><a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line"><tt class="py-docstring">    Set a spcified property on the given path node.</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line"><tt class="py-docstring">    Example:</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"><tt class="py-docstring">        setNodeProp(pnode, 'name', 'woot')</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">    <tt class="py-name">pnode</tt><tt class="py-op">[</tt><tt class="py-number">2</tt><tt class="py-op">]</tt><tt class="py-op">[</tt><tt class="py-name">key</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-26" class="py-name" targets="Variable vtrace.platforms.win32.MSR.value=vtrace.platforms.win32.MSR-class.html#value"><a title="vtrace.platforms.win32.MSR.value" class="py-name" href="#" onclick="return doclink('link-26', 'value', 'link-26');">value</a></tt> </tt>
+</div><a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"> </tt>
+<a name="isPathLoop"></a><div id="isPathLoop-def"><a name="L143"></a><tt class="py-lineno">143</tt> <a class="py-toggle" href="#" id="isPathLoop-toggle" onclick="return toggle('isPathLoop');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#isPathLoop">isPathLoop</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="isPathLoop-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="isPathLoop-expanded"><a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"><tt class="py-docstring">    Assuming you have some identifier property (such as graph node id)</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"><tt class="py-docstring">    being set on the path nodes, you may use this API to determine if</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"><tt class="py-docstring">    the current path has a node with the specified key/value property.</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-docstring">    Example:</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"><tt class="py-docstring">        if searchPathLoop(pnode, 'nid', 5):</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line"><tt class="py-docstring">            continue</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">    <tt id="link-27" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-27', 'parent', 'link-0');">parent</a></tt> <tt class="py-op">=</tt> <tt class="py-name">pnode</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt id="link-28" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-28', 'parent', 'link-0');">parent</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line">        <tt id="link-29" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-29', 'parent', 'link-0');">parent</a></tt><tt class="py-op">,</tt> <tt class="py-name">kids</tt><tt class="py-op">,</tt> <tt class="py-name">props</tt> <tt class="py-op">=</tt> <tt id="link-30" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-30', 'parent', 'link-0');">parent</a></tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">props</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt id="link-31" class="py-name"><a title="vtrace.platforms.win32.MSR.value" class="py-name" href="#" onclick="return doclink('link-31', 'value', 'link-26');">value</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+</div><a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"> </tt>
+<a name="getPathLoopCount"></a><div id="getPathLoopCount-def"><a name="L160"></a><tt class="py-lineno">160</tt> <a class="py-toggle" href="#" id="getPathLoopCount-toggle" onclick="return toggle('getPathLoopCount');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="visgraph.pathcore-module.html#getPathLoopCount">getPathLoopCount</a><tt class="py-op">(</tt><tt class="py-param">pnode</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getPathLoopCount-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getPathLoopCount-expanded"><a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"><tt class="py-docstring">    Assuming that the key is unique, walk the current path and see how</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"><tt class="py-docstring">    many times "key" has the specified value.  This will be how many instances</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"><tt class="py-docstring">    of a loop have been encountered.</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">    <tt class="py-name">count</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">    <tt id="link-32" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-32', 'parent', 'link-0');">parent</a></tt> <tt class="py-op">=</tt> <tt class="py-name">pnode</tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt id="link-33" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-33', 'parent', 'link-0');">parent</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt id="link-34" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-34', 'parent', 'link-0');">parent</a></tt><tt class="py-op">,</tt> <tt class="py-name">kids</tt><tt class="py-op">,</tt> <tt class="py-name">props</tt> <tt class="py-op">=</tt> <tt id="link-35" class="py-name"><a title="vqt.tree.VQTreeModel.parent" class="py-name" href="#" onclick="return doclink('link-35', 'parent', 'link-0');">parent</a></tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">props</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt id="link-36" class="py-name"><a title="vtrace.platforms.win32.MSR.value" class="py-name" href="#" onclick="return doclink('link-36', 'value', 'link-26');">value</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">            <tt class="py-name">count</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">count</tt> </tt>
+</div><a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 18:22:21 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

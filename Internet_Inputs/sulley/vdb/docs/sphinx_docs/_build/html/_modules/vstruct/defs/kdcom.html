@@ -1,0 +1,304 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.defs.kdcom &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vstruct" href="../../vstruct.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" accesskey="U">vstruct</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.defs.kdcom</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Initial module with supporting structures for windows</span>
+<span class="sd">kernel serial debugging.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">vstruct</span>
+<span class="kn">from</span> <span class="nn">vstruct.primitives</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># Main packet magic bytes and such</span>
+<span class="n">BREAKIN_PACKET</span>                      <span class="o">=</span> <span class="mh">0x62626262</span>
+<span class="n">BREAKIN_PACKET_BYTE</span>                 <span class="o">=</span> <span class="mh">0x62</span>
+<span class="n">PACKET_LEADER</span>                       <span class="o">=</span> <span class="mh">0x30303030</span>
+<span class="n">PACKET_LEADER_BYTE</span>                  <span class="o">=</span> <span class="mh">0x30</span>
+<span class="n">CONTROL_PACKET_LEADER</span>               <span class="o">=</span> <span class="mh">0x69696969</span>
+<span class="n">CONTROL_PACKET_LEADER_BYTE</span>          <span class="o">=</span> <span class="mh">0x69</span>
+<span class="n">PACKET_TRAILING_BYTE</span>                <span class="o">=</span> <span class="mh">0xAA</span>
+
+<span class="n">pkt_magic_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">BREAKIN_PACKET</span><span class="p">:</span><span class="s">&quot;Break Packet&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_LEADER</span><span class="p">:</span><span class="s">&quot;Packet&quot;</span><span class="p">,</span>
+    <span class="n">CONTROL_PACKET_LEADER</span><span class="p">:</span><span class="s">&quot;Control Packet&quot;</span><span class="p">,</span>
+<span class="p">}</span> 
+
+<span class="c"># Primary &quot;packet types&quot;</span>
+<span class="n">PACKET_TYPE_UNUSED</span>                  <span class="o">=</span> <span class="mi">0</span>
+<span class="n">PACKET_TYPE_KD_STATE_CHANGE32</span>       <span class="o">=</span> <span class="mi">1</span>
+<span class="n">PACKET_TYPE_KD_STATE_MANIPULATE</span>     <span class="o">=</span> <span class="mi">2</span>
+<span class="n">PACKET_TYPE_KD_DEBUG_IO</span>             <span class="o">=</span> <span class="mi">3</span>
+<span class="n">PACKET_TYPE_KD_ACKNOWLEDGE</span>          <span class="o">=</span> <span class="mi">4</span>
+<span class="n">PACKET_TYPE_KD_RESEND</span>               <span class="o">=</span> <span class="mi">5</span>
+<span class="n">PACKET_TYPE_KD_RESET</span>                <span class="o">=</span> <span class="mi">6</span>
+<span class="n">PACKET_TYPE_KD_STATE_CHANGE64</span>       <span class="o">=</span> <span class="mi">7</span>
+<span class="n">PACKET_TYPE_KD_POLL_BREAKIN</span>         <span class="o">=</span> <span class="mi">8</span>
+<span class="n">PACKET_TYPE_KD_TRACE_IO</span>             <span class="o">=</span> <span class="mi">9</span>
+<span class="n">PACKET_TYPE_KD_CONTROL_REQUEST</span>      <span class="o">=</span> <span class="mi">10</span>
+<span class="n">PACKET_TYPE_KD_FILE_IO</span>              <span class="o">=</span> <span class="mi">11</span>
+<span class="n">PACKET_TYPE_MAX</span>                     <span class="o">=</span> <span class="mi">12</span>
+
+<span class="n">pkt_type_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">PACKET_TYPE_UNUSED</span><span class="p">:</span><span class="s">&quot;Unused&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_STATE_CHANGE32</span><span class="p">:</span><span class="s">&quot;State Change32&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_STATE_MANIPULATE</span><span class="p">:</span><span class="s">&quot;Manipulate&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_DEBUG_IO</span><span class="p">:</span><span class="s">&quot;Debug IO&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_ACKNOWLEDGE</span><span class="p">:</span><span class="s">&quot;Ack&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_RESEND</span><span class="p">:</span><span class="s">&quot;Resend&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_RESET</span><span class="p">:</span><span class="s">&quot;Reset&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_STATE_CHANGE64</span><span class="p">:</span><span class="s">&quot;State Change64&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_POLL_BREAKIN</span><span class="p">:</span><span class="s">&quot;Breakin&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_TRACE_IO</span><span class="p">:</span><span class="s">&quot;Trace IO&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_CONTROL_REQUEST</span><span class="p">:</span><span class="s">&quot;Control Request&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_KD_FILE_IO</span><span class="p">:</span><span class="s">&quot;File IO&quot;</span><span class="p">,</span>
+    <span class="n">PACKET_TYPE_MAX</span><span class="p">:</span><span class="s">&quot;Max&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c"># Wait State Change Types</span>
+<span class="n">DbgKdMinimumStateChange</span>             <span class="o">=</span> <span class="mh">0x00003030</span>
+<span class="n">DbgKdExceptionStateChange</span>           <span class="o">=</span> <span class="mh">0x00003030</span>
+<span class="n">DbgKdLoadSymbolsStateChange</span>         <span class="o">=</span> <span class="mh">0x00003031</span>
+<span class="n">DbgKdCommandStringStateChange</span>       <span class="o">=</span> <span class="mh">0x00003032</span>
+<span class="n">DbgKdMaximumStateChange</span>             <span class="o">=</span> <span class="mh">0x00003033</span>
+
+<span class="n">pkt_sub_wait_state_change</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">DbgKdMinimumStateChange</span><span class="p">:</span><span class="s">&quot;DbgKdMinimumStateChange&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdExceptionStateChange</span><span class="p">:</span><span class="s">&quot;DbgKdExceptionStateChange&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdLoadSymbolsStateChange</span><span class="p">:</span><span class="s">&quot;DbgKdLoadSymbolsStateChange&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdCommandStringStateChange</span><span class="p">:</span><span class="s">&quot;DbgKdCommandStringStateChange&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdMaximumStateChange</span><span class="p">:</span><span class="s">&quot;DbgKdMaximumStateChange&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c"># Manipulate Types</span>
+<span class="n">DbgKdMinimumManipulate</span>              <span class="o">=</span> <span class="mh">0x00003130</span>
+<span class="n">DbgKdReadVirtualMemoryApi</span>           <span class="o">=</span> <span class="mh">0x00003130</span>
+<span class="n">DbgKdWriteVirtualMemoryApi</span>          <span class="o">=</span> <span class="mh">0x00003131</span>
+<span class="n">DbgKdGetContextApi</span>                  <span class="o">=</span> <span class="mh">0x00003132</span>
+<span class="n">DbgKdSetContextApi</span>                  <span class="o">=</span> <span class="mh">0x00003133</span>
+<span class="n">DbgKdWriteBreakPointApi</span>             <span class="o">=</span> <span class="mh">0x00003134</span>
+<span class="n">DbgKdRestoreBreakPointApi</span>           <span class="o">=</span> <span class="mh">0x00003135</span>
+<span class="n">DbgKdContinueApi</span>                    <span class="o">=</span> <span class="mh">0x00003136</span>
+<span class="n">DbgKdReadControlSpaceApi</span>            <span class="o">=</span> <span class="mh">0x00003137</span>
+<span class="n">DbgKdWriteControlSpaceApi</span>           <span class="o">=</span> <span class="mh">0x00003138</span>
+<span class="n">DbgKdReadIoSpaceApi</span>                 <span class="o">=</span> <span class="mh">0x00003139</span>
+<span class="n">DbgKdWriteIoSpaceApi</span>                <span class="o">=</span> <span class="mh">0x0000313A</span>
+<span class="n">DbgKdRebootApi</span>                      <span class="o">=</span> <span class="mh">0x0000313B</span>
+<span class="n">DbgKdContinueApi2</span>                   <span class="o">=</span> <span class="mh">0x0000313C</span>
+<span class="n">DbgKdReadPhysicalMemoryApi</span>          <span class="o">=</span> <span class="mh">0x0000313D</span>
+<span class="n">DbgKdWritePhysicalMemoryApi</span>         <span class="o">=</span> <span class="mh">0x0000313E</span>
+<span class="n">DbgKdQuerySpecialCallsApi</span>           <span class="o">=</span> <span class="mh">0x0000313F</span>
+<span class="n">DbgKdSetSpecialCallApi</span>              <span class="o">=</span> <span class="mh">0x00003140</span>
+<span class="n">DbgKdClearSpecialCallsApi</span>           <span class="o">=</span> <span class="mh">0x00003141</span>
+<span class="n">DbgKdSetInternalBreakPointApi</span>       <span class="o">=</span> <span class="mh">0x00003142</span>
+<span class="n">DbgKdGetInternalBreakPointApi</span>       <span class="o">=</span> <span class="mh">0x00003143</span>
+<span class="n">DbgKdReadIoSpaceExtendedApi</span>         <span class="o">=</span> <span class="mh">0x00003144</span>
+<span class="n">DbgKdWriteIoSpaceExtendedApi</span>        <span class="o">=</span> <span class="mh">0x00003145</span>
+<span class="n">DbgKdGetVersionApi</span>                  <span class="o">=</span> <span class="mh">0x00003146</span>
+<span class="n">DbgKdWriteBreakPointExApi</span>           <span class="o">=</span> <span class="mh">0x00003147</span>
+<span class="n">DbgKdRestoreBreakPointExApi</span>         <span class="o">=</span> <span class="mh">0x00003148</span>
+<span class="n">DbgKdCauseBugCheckApi</span>               <span class="o">=</span> <span class="mh">0x00003149</span>
+<span class="n">DbgKdSwitchProcessor</span>                <span class="o">=</span> <span class="mh">0x00003150</span>
+<span class="n">DbgKdPageInApi</span>                      <span class="o">=</span> <span class="mh">0x00003151</span>
+<span class="n">DbgKdReadMachineSpecificRegister</span>    <span class="o">=</span> <span class="mh">0x00003152</span>
+<span class="n">DbgKdWriteMachineSpecificRegister</span>   <span class="o">=</span> <span class="mh">0x00003153</span>
+<span class="n">OldVlm1</span>                             <span class="o">=</span> <span class="mh">0x00003154</span>
+<span class="n">OldVlm2</span>                             <span class="o">=</span> <span class="mh">0x00003155</span>
+<span class="n">DbgKdSearchMemoryApi</span>                <span class="o">=</span> <span class="mh">0x00003156</span>
+<span class="n">DbgKdGetBusDataApi</span>                  <span class="o">=</span> <span class="mh">0x00003157</span>
+<span class="n">DbgKdSetBusDataApi</span>                  <span class="o">=</span> <span class="mh">0x00003158</span>
+<span class="n">DbgKdCheckLowMemoryApi</span>              <span class="o">=</span> <span class="mh">0x00003159</span>
+<span class="n">DbgKdClearAllInternalBreakpointsApi</span> <span class="o">=</span> <span class="mh">0x0000315A</span>
+<span class="n">DbgKdFillMemoryApi</span>                  <span class="o">=</span> <span class="mh">0x0000315B</span>
+<span class="n">DbgKdQueryMemoryApi</span>                 <span class="o">=</span> <span class="mh">0x0000315C</span>
+<span class="n">DbgKdSwitchPartition</span>                <span class="o">=</span> <span class="mh">0x0000315D</span>
+<span class="n">DbgKdMaximumManipulate</span>              <span class="o">=</span> <span class="mh">0x0000315E</span>
+
+<span class="n">pkt_sub_manipulate</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">DbgKdMinimumManipulate</span><span class="p">:</span><span class="s">&quot;DbgKdMinimumManipulate&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdReadVirtualMemoryApi</span><span class="p">:</span><span class="s">&quot;DbgKdReadVirtualMemoryApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdWriteVirtualMemoryApi</span><span class="p">:</span><span class="s">&quot;DbgKdWriteVirtualMemoryApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdGetContextApi</span><span class="p">:</span><span class="s">&quot;DbgKdGetContextApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdSetContextApi</span><span class="p">:</span><span class="s">&quot;DbgKdSetContextApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdWriteBreakPointApi</span><span class="p">:</span><span class="s">&quot;DbgKdWriteBreakPointApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdRestoreBreakPointApi</span><span class="p">:</span><span class="s">&quot;DbgKdRestoreBreakPointApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdContinueApi</span><span class="p">:</span><span class="s">&quot;DbgKdContinueApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdReadControlSpaceApi</span><span class="p">:</span><span class="s">&quot;DbgKdReadControlSpaceApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdWriteControlSpaceApi</span><span class="p">:</span><span class="s">&quot;DbgKdWriteControlSpaceApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdReadIoSpaceApi</span><span class="p">:</span><span class="s">&quot;DbgKdReadIoSpaceApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdWriteIoSpaceApi</span><span class="p">:</span><span class="s">&quot;DbgKdWriteIoSpaceApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdRebootApi</span><span class="p">:</span><span class="s">&quot;DbgKdRebootApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdContinueApi2</span><span class="p">:</span><span class="s">&quot;DbgKdContinueApi2&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdReadPhysicalMemoryApi</span><span class="p">:</span><span class="s">&quot;DbgKdReadPhysicalMemoryApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdWritePhysicalMemoryApi</span><span class="p">:</span><span class="s">&quot;DbgKdWritePhysicalMemoryApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdQuerySpecialCallsApi</span><span class="p">:</span><span class="s">&quot;DbgKdQuerySpecialCallsApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdSetSpecialCallApi</span><span class="p">:</span><span class="s">&quot;DbgKdSetSpecialCallApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdClearSpecialCallsApi</span><span class="p">:</span><span class="s">&quot;DbgKdClearSpecialCallsApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdSetInternalBreakPointApi</span><span class="p">:</span><span class="s">&quot;DbgKdSetInternalBreakPointApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdGetInternalBreakPointApi</span><span class="p">:</span><span class="s">&quot;DbgKdGetInternalBreakPointApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdReadIoSpaceExtendedApi</span><span class="p">:</span><span class="s">&quot;DbgKdReadIoSpaceExtendedApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdWriteIoSpaceExtendedApi</span><span class="p">:</span><span class="s">&quot;DbgKdWriteIoSpaceExtendedApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdGetVersionApi</span><span class="p">:</span><span class="s">&quot;DbgKdGetVersionApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdWriteBreakPointExApi</span><span class="p">:</span><span class="s">&quot;DbgKdWriteBreakPointExApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdRestoreBreakPointExApi</span><span class="p">:</span><span class="s">&quot;DbgKdRestoreBreakPointExApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdCauseBugCheckApi</span><span class="p">:</span><span class="s">&quot;DbgKdCauseBugCheckApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdSwitchProcessor</span><span class="p">:</span><span class="s">&quot;DbgKdSwitchProcessor&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdPageInApi</span><span class="p">:</span><span class="s">&quot;DbgKdPageInApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdReadMachineSpecificRegister</span><span class="p">:</span><span class="s">&quot;DbgKdReadMachineSpecificRegister&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdWriteMachineSpecificRegister</span><span class="p">:</span><span class="s">&quot;DbgKdWriteMachineSpecificRegister&quot;</span><span class="p">,</span>
+    <span class="n">OldVlm1</span><span class="p">:</span><span class="s">&quot;OldVlm1&quot;</span><span class="p">,</span>
+    <span class="n">OldVlm2</span><span class="p">:</span><span class="s">&quot;OldVlm2&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdSearchMemoryApi</span><span class="p">:</span><span class="s">&quot;DbgKdSearchMemoryApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdGetBusDataApi</span><span class="p">:</span><span class="s">&quot;DbgKdGetBusDataApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdSetBusDataApi</span><span class="p">:</span><span class="s">&quot;DbgKdSetBusDataApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdCheckLowMemoryApi</span><span class="p">:</span><span class="s">&quot;DbgKdCheckLowMemoryApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdClearAllInternalBreakpointsApi</span><span class="p">:</span><span class="s">&quot;DbgKdClearAllInternalBreakpointsApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdFillMemoryApi</span><span class="p">:</span><span class="s">&quot;DbgKdFillMemoryApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdQueryMemoryApi</span><span class="p">:</span><span class="s">&quot;DbgKdQueryMemoryApi&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdSwitchPartition</span><span class="p">:</span><span class="s">&quot;DbgKdSwitchPartition&quot;</span><span class="p">,</span>
+    <span class="n">DbgKdMaximumManipulate</span><span class="p">:</span><span class="s">&quot;DbgKdMaximumManipulate&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c"># Debug I/O Types</span>
+<span class="n">DbgKdPrintStringApi</span>                 <span class="o">=</span> <span class="mh">0x00003230</span>
+<span class="n">DbgKdGetStringApi</span>                   <span class="o">=</span> <span class="mh">0x00003231</span>
+
+<span class="c"># Control Report Flags</span>
+<span class="n">REPORT_INCLUDES_SEGS</span>                <span class="o">=</span> <span class="mh">0x0001</span>
+<span class="n">REPORT_INCLUDES_CS</span>                  <span class="o">=</span> <span class="mh">0x0002</span>
+
+<span class="c"># Protocol Versions</span>
+<span class="n">DBGKD_64BIT_PROTOCOL_VERSION1</span>       <span class="o">=</span> <span class="mi">5</span>
+<span class="n">DBGKD_64BIT_PROTOCOL_VERSION2</span>       <span class="o">=</span> <span class="mi">6</span>
+
+<span class="c"># Query Memory Address Spaces</span>
+<span class="n">DBGKD_QUERY_MEMORY_VIRTUAL</span>          <span class="o">=</span> <span class="mi">0</span>
+<span class="n">DBGKD_QUERY_MEMORY_PROCESS</span>          <span class="o">=</span> <span class="mi">0</span>
+<span class="n">DBGKD_QUERY_MEMORY_SESSION</span>          <span class="o">=</span> <span class="mi">1</span>
+<span class="n">DBGKD_QUERY_MEMORY_KERNEL</span>           <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c"># Query Memory Flags</span>
+<span class="n">DBGKD_QUERY_MEMORY_READ</span>             <span class="o">=</span> <span class="mh">0x01</span>
+<span class="n">DBGKD_QUERY_MEMORY_WRITE</span>            <span class="o">=</span> <span class="mh">0x02</span>
+<span class="n">DBGKD_QUERY_MEMORY_EXECUTE</span>          <span class="o">=</span> <span class="mh">0x04</span>
+<span class="n">DBGKD_QUERY_MEMORY_FIXED</span>            <span class="o">=</span> <span class="mh">0x08</span>
+
+<span class="n">ULONG</span> <span class="o">=</span> <span class="n">v_uint32</span>
+<span class="n">ULONG64</span> <span class="o">=</span> <span class="n">v_uint64</span>
+<span class="n">BOOLEAN</span> <span class="o">=</span> <span class="n">v_uint32</span>
+
+<div class="viewcode-block" id="DBGKD_LOAD_SYMBOLS64"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.kdcom.DBGKD_LOAD_SYMBOLS64">[docs]</a><span class="k">class</span> <span class="nc">DBGKD_LOAD_SYMBOLS64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_field_align</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PathNameLength</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BaseOfDll</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ProcessId</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CheckSum</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfImage</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="c">#self.UnloadSymbols = v_uint8()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">UnloadSymbols</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span> <span class="c"># HACK must be 32 bit aligned</span>
+</div>
+<div class="viewcode-block" id="DBGKD_WAIT_STATE_CHANGE64"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.kdcom.DBGKD_WAIT_STATE_CHANGE64">[docs]</a><span class="k">class</span> <span class="nc">DBGKD_WAIT_STATE_CHANGE64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_field_align</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NewState</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ProcessorLevel</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Processor</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberProcessors</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Thread</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ProgramCounter</span> <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" >vstruct</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

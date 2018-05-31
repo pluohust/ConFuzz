@@ -1,0 +1,126 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vdb.extensions.i386 &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vdb.extensions" href="../extensions.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../extensions.html" accesskey="U">vdb.extensions</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vdb.extensions.i386</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">envi.archs.i386</span> <span class="kn">as</span> <span class="nn">e_i386</span>
+
+<span class="k">def</span> <span class="nf">eflags</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+<div class="viewcode-block" id="eflags"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.i386.eflags">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Show the status of the eflags register bits.</span>
+
+<span class="sd">    Usage: eflags</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">vdb</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">ef</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getRegisterByName</span><span class="p">(</span><span class="s">&quot;eflags&quot;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Carry&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_CF</span><span class="p">)))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Parity&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_PF</span><span class="p">)))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Adjust&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_AF</span><span class="p">)))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Zero&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_ZF</span><span class="p">)))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Sign&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_SF</span><span class="p">)))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Trap&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_TF</span><span class="p">)))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Interrupt&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_IF</span><span class="p">)))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Direction&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_DF</span><span class="p">)))</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%16s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s">&quot;Overflow&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">(</span><span class="n">ef</span> <span class="o">&amp;</span> <span class="n">e_i386</span><span class="o">.</span><span class="n">EFLAGS_OF</span><span class="p">)))</span>
+
+<span class="k">def</span> <span class="nf">vdbExtension</span><span class="p">(</span><span class="n">vdb</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="vdbExtension"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.i386.vdbExtension">[docs]</a>    <span class="n">vdb</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;Aliases&#39;</span><span class="p">,</span><span class="s">&#39;db&#39;</span><span class="p">,</span><span class="s">&#39;mem -F bytes&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;Aliases&#39;</span><span class="p">,</span><span class="s">&#39;dw&#39;</span><span class="p">,</span><span class="s">&#39;mem -F u_int_16&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;Aliases&#39;</span><span class="p">,</span><span class="s">&#39;dd&#39;</span><span class="p">,</span><span class="s">&#39;mem -F u_int_32&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;Aliases&#39;</span><span class="p">,</span><span class="s">&#39;dq&#39;</span><span class="p">,</span><span class="s">&#39;mem -F u_int_64&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;Aliases&#39;</span><span class="p">,</span><span class="s">&#39;dr&#39;</span><span class="p">,</span><span class="s">&#39;mem -F &quot;Deref View&quot;&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&#39;Aliases&#39;</span><span class="p">,</span><span class="s">&#39;ds&#39;</span><span class="p">,</span><span class="s">&#39;mem -F &quot;Symbols View&quot;&#39;</span><span class="p">)</span>
+    <span class="n">vdb</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">eflags</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../extensions.html" >vdb.extensions</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

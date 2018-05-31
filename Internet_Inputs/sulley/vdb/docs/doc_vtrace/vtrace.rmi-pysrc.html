@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vtrace.rmi</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vtrace-module.html">Package&nbsp;vtrace</a> ::
+        Module&nbsp;rmi
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vtrace.rmi-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vtrace.rmi-module.html">Module vtrace.rmi</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">Cobra integration for remote debugging</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">md5</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">socket</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package vtrace=vtrace-module.html"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-0', 'vtrace', 'link-0');">vtrace</a></tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">cobra</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt id="link-1" class="py-name" targets="Variable vtrace.callback_daemon=vtrace-module.html#callback_daemon,Variable vtrace.rmi.callback_daemon=vtrace.rmi-module.html#callback_daemon,Variable vtrace.watchpoints.callback_daemon=vtrace.watchpoints-module.html#callback_daemon"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-1', 'callback_daemon', 'link-1');">callback_daemon</a></tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"> </tt>
+<a name="getTracerFactory"></a><div id="getTracerFactory-def"><a name="L14"></a><tt class="py-lineno"> 14</tt> <a class="py-toggle" href="#" id="getTracerFactory-toggle" onclick="return toggle('getTracerFactory');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi-module.html#getTracerFactory">getTracerFactory</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getTracerFactory-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getTracerFactory-expanded"><a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-docstring">    Return a TracerFactory proxy object from the remote server</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">cobra</tt><tt class="py-op">.</tt><tt class="py-name">CobraProxy</tt><tt class="py-op">(</tt><tt class="py-string">"cobra://%s:%d/TracerFactory"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-2" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-2', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Variable vtrace.remote=vtrace-module.html#remote,Variable vtrace.watchpoints.remote=vtrace.watchpoints-module.html#remote"><a title="vtrace.remote
+vtrace.watchpoints.remote" class="py-name" href="#" onclick="return doclink('link-3', 'remote', 'link-3');">remote</a></tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-4', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-5" class="py-name" targets="Variable vtrace.port=vtrace-module.html#port,Variable vtrace.watchpoints.port=vtrace.watchpoints-module.html#port"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-5', 'port', 'link-5');">port</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="TraceProxyFactory"></a><div id="TraceProxyFactory-def"><a name="L20"></a><tt class="py-lineno"> 20</tt> <a class="py-toggle" href="#" id="TraceProxyFactory-toggle" onclick="return toggle('TraceProxyFactory');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.rmi.TraceProxyFactory-class.html">TraceProxyFactory</a><tt class="py-op">:</tt> </tt>
+</div><div id="TraceProxyFactory-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TraceProxyFactory-expanded"><a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-docstring">    A "factory" object for creating tracers and</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring">    wrapping them up in a proxy instance to the</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring">    *local* server.  This object is shared out</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-docstring">    via the pyro server for vtrace clients.</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="TraceProxyFactory.getTrace"></a><div id="TraceProxyFactory.getTrace-def"><a name="L27"></a><tt class="py-lineno"> 27</tt> <a class="py-toggle" href="#" id="TraceProxyFactory.getTrace-toggle" onclick="return toggle('TraceProxyFactory.getTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi.TraceProxyFactory-class.html#getTrace">getTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceProxyFactory.getTrace-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceProxyFactory.getTrace-expanded"><a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">        <tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt id="link-6" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-6', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method vtrace.TraceGroup.getTrace()=vtrace.TraceGroup-class.html#getTrace,Function vtrace.getTrace()=vtrace-module.html#getTrace,Function vtrace.platforms.android.getTrace()=vtrace.platforms.android-module.html#getTrace,Method vtrace.rmi.TraceProxyFactory.getTrace()=vtrace.rmi.TraceProxyFactory-class.html#getTrace"><a title="vtrace.TraceGroup.getTrace
+vtrace.getTrace
+vtrace.platforms.android.getTrace
+vtrace.rmi.TraceProxyFactory.getTrace" class="py-name" href="#" onclick="return doclink('link-7', 'getTrace', 'link-7');">getTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">        <tt class="py-name">host</tt><tt class="py-op">,</tt><tt id="link-8" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-8', 'port', 'link-5');">port</a></tt> <tt class="py-op">=</tt> <tt class="py-name">cobra</tt><tt class="py-op">.</tt><tt class="py-name">getLocalInfo</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">        <tt class="py-name">unique</tt> <tt class="py-op">=</tt> <tt class="py-name">md5</tt><tt class="py-op">.</tt><tt class="py-name">md5</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">urandom</tt><tt class="py-op">(</tt><tt class="py-number">20</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hexdigest</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt id="link-9" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-9', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name" targets="Variable vtrace.cobra_daemon=vtrace-module.html#cobra_daemon,Variable vtrace.watchpoints.cobra_daemon=vtrace.watchpoints-module.html#cobra_daemon"><a title="vtrace.cobra_daemon
+vtrace.watchpoints.cobra_daemon" class="py-name" href="#" onclick="return doclink('link-10', 'cobra_daemon', 'link-10');">cobra_daemon</a></tt><tt class="py-op">.</tt><tt class="py-name">shareObject</tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">,</tt> <tt class="py-name">unique</tt><tt class="py-op">)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">proxy</tt> <tt class="py-op">=</tt> <tt class="py-name">cobra</tt><tt class="py-op">.</tt><tt class="py-name">CobraProxy</tt><tt class="py-op">(</tt><tt class="py-string">"cobra://%s:%d/%s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">host</tt><tt class="py-op">,</tt><tt id="link-11" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-11', 'port', 'link-5');">port</a></tt><tt class="py-op">,</tt><tt class="py-name">unique</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">unique</tt> </tt>
+</div><a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"> </tt>
+<a name="TraceProxyFactory.releaseTrace"></a><div id="TraceProxyFactory.releaseTrace-def"><a name="L35"></a><tt class="py-lineno"> 35</tt> <a class="py-toggle" href="#" id="TraceProxyFactory.releaseTrace-toggle" onclick="return toggle('TraceProxyFactory.releaseTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi.TraceProxyFactory-class.html#releaseTrace">releaseTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">proxy</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceProxyFactory.releaseTrace-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceProxyFactory.releaseTrace-expanded"><a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-docstring">        When a remote system is done with a trace</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"><tt class="py-docstring">        and wants the server to clean him up, hand</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"><tt class="py-docstring">        the proxy object to this.</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt id="link-12" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-12', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="vtrace.cobra_daemon
+vtrace.watchpoints.cobra_daemon" class="py-name" href="#" onclick="return doclink('link-13', 'cobra_daemon', 'link-10');">cobra_daemon</a></tt><tt class="py-op">.</tt><tt class="py-name">unshareObject</tt><tt class="py-op">(</tt><tt class="py-name">proxy</tt><tt class="py-op">.</tt><tt class="py-name">__dict__</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-string">"__cobra_name"</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">t</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">            <tt class="py-name">t</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Method vtrace.Trace.release()=vtrace.Trace-class.html#release,Method vtrace.platforms.base.TracerBase.release()=vtrace.platforms.base.TracerBase-class.html#release,Method vtrace.rmi.RemoteTrace.release()=vtrace.rmi.RemoteTrace-class.html#release"><a title="vtrace.Trace.release
+vtrace.platforms.base.TracerBase.release
+vtrace.rmi.RemoteTrace.release" class="py-name" href="#" onclick="return doclink('link-14', 'release', 'link-14');">release</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"> </tt>
+<a name="RemoteTrace"></a><div id="RemoteTrace-def"><a name="L45"></a><tt class="py-lineno"> 45</tt> <a class="py-toggle" href="#" id="RemoteTrace-toggle" onclick="return toggle('RemoteTrace');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vtrace.rmi.RemoteTrace-class.html">RemoteTrace</a><tt class="py-op">(</tt><tt class="py-base-class">cobra</tt><tt class="py-op">.</tt><tt class="py-base-class">CobraProxy</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RemoteTrace-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="RemoteTrace-expanded"><a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="RemoteTrace.__init__"></a><div id="RemoteTrace.__init__-def"><a name="L47"></a><tt class="py-lineno"> 47</tt> <a class="py-toggle" href="#" id="RemoteTrace.__init__-toggle" onclick="return toggle('RemoteTrace.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi.RemoteTrace-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-param">kwargs</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RemoteTrace.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RemoteTrace.__init__-expanded"><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-name">cobra</tt><tt class="py-op">.</tt><tt class="py-name">CobraProxy</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method vtrace.AccessViolation.__init__()=vtrace.AccessViolation-class.html#__init__,Method vtrace.Trace.__init__()=vtrace.Trace-class.html#__init__,Method vtrace.TraceGroup.__init__()=vtrace.TraceGroup-class.html#__init__,Method vtrace.VtraceExpressionLocals.__init__()=vtrace.VtraceExpressionLocals-class.html#__init__,Method vtrace.archs.amd64.Amd64Mixin.__init__()=vtrace.archs.amd64.Amd64Mixin-class.html#__init__,Method vtrace.archs.arm.ArmMixin.__init__()=vtrace.archs.arm.ArmMixin-class.html#__init__,Method vtrace.archs.i386.i386Mixin.__init__()=vtrace.archs.i386.i386Mixin-class.html#__init__,Method vtrace.archs.i386.i386WatchMixin.__init__()=vtrace.archs.i386.i386WatchMixin-class.html#__init__,Method vtrace.breakpoints.Breakpoint.__init__()=vtrace.breakpoints.Breakpoint-class.html#__init__,Method vtrace.breakpoints.CallBreak.__init__()=vtrace.breakpoints.CallBreak-class.html#__init__,Method vtrace.envitools.TraceEmulator.__init__()=vtrace.envitools.TraceEmulator-class.html#__init__,Method vtrace.notifiers.DistributedNotifier.__init__()=vtrace.notifiers.DistributedNotifier-class.html#__init__,Method vtrace.notifiers.Notifier.__init__()=vtrace.notifiers.Notifier-class.html#__init__,Method vtrace.platforms.android.AndroidArmTrace.__init__()=vtrace.platforms.android.AndroidArmTrace-class.html#__init__,Method vtrace.platforms.base.TracerBase.__init__()=vtrace.platforms.base.TracerBase-class.html#__init__,Method vtrace.platforms.base.TracerThread.__init__()=vtrace.platforms.base.TracerThread-class.html#__init__,Method vtrace.platforms.darwin.DarwinAmd64Trace.__init__()=vtrace.platforms.darwin.DarwinAmd64Trace-class.html#__init__,Method vtrace.platforms.darwin.DarwinMixin.__init__()=vtrace.platforms.darwin.DarwinMixin-class.html#__init__,Method vtrace.platforms.darwin.Darwini386Trace.__init__()=vtrace.platforms.darwin.Darwini386Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__()=vtrace.platforms.freebsd.FreeBSDAmd64Trace-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDMixin.__init__()=vtrace.platforms.freebsd.FreeBSDMixin-class.html#__init__,Method vtrace.platforms.freebsd.FreeBSDi386Trace.__init__()=vtrace.platforms.freebsd.FreeBSDi386Trace-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin.__init__()=vtrace.platforms.gdbstub.GdbStubMixin-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubMixin_old.__init__()=vtrace.platforms.gdbstub.GdbStubMixin_old-class.html#__init__,Method vtrace.platforms.gdbstub.GdbStubTrace.__init__()=vtrace.platforms.gdbstub.GdbStubTrace-class.html#__init__,Method vtrace.platforms.gdbstub.KeBugCheckBreak.__init__()=vtrace.platforms.gdbstub.KeBugCheckBreak-class.html#__init__,Method vtrace.platforms.linux.LinuxAmd64Trace.__init__()=vtrace.platforms.linux.LinuxAmd64Trace-class.html#__init__,Method vtrace.platforms.linux.LinuxMixin.__init__()=vtrace.platforms.linux.LinuxMixin-class.html#__init__,Method vtrace.platforms.linux.Linuxi386Trace.__init__()=vtrace.platforms.linux.Linuxi386Trace-class.html#__init__,Method vtrace.platforms.posix.ElfMixin.__init__()=vtrace.platforms.posix.ElfMixin-class.html#__init__,Method vtrace.platforms.posix.PosixMixin.__init__()=vtrace.platforms.posix.PosixMixin-class.html#__init__,Method vtrace.platforms.posix.PtraceMixin.__init__()=vtrace.platforms.posix.PtraceMixin-class.html#__init__,Method vtrace.platforms.win32.Win32SymbolParser.__init__()=vtrace.platforms.win32.Win32SymbolParser-class.html#__init__,Method vtrace.platforms.win32.WindowsAmd64Trace.__init__()=vtrace.platforms.win32.WindowsAmd64Trace-class.html#__init__,Method vtrace.platforms.win32.WindowsMixin.__init__()=vtrace.platforms.win32.WindowsMixin-class.html#__init__,Method vtrace.platforms.win32.Windowsi386Trace.__init__()=vtrace.platforms.win32.Windowsi386Trace-class.html#__init__,Method vtrace.qt.RegColorDelegate.__init__()=vtrace.qt.RegColorDelegate-class.html#__init__,Method vtrace.qt.VQFileDescView.__init__()=vtrace.qt.VQFileDescView-class.html#__init__,Method vtrace.qt.VQMemoryMapView.__init__()=vtrace.qt.VQMemoryMapView-class.html#__init__,Method vtrace.qt.VQProcessListView.__init__()=vtrace.qt.VQProcessListView-class.html#__init__,Method vtrace.qt.VQProcessSelectDialog.__init__()=vtrace.qt.VQProcessSelectDialog-class.html#__init__,Method vtrace.qt.VQRegistersListView.__init__()=vtrace.qt.VQRegistersListView-class.html#__init__,Method vtrace.qt.VQRegistersView.__init__()=vtrace.qt.VQRegistersView-class.html#__init__,Method vtrace.qt.VQThreadsView.__init__()=vtrace.qt.VQThreadsView-class.html#__init__,Method vtrace.qt.VQTraceNotifier.__init__()=vtrace.qt.VQTraceNotifier-class.html#__init__,Method vtrace.qt.VQTraceToolBar.__init__()=vtrace.qt.VQTraceToolBar-class.html#__init__,Method vtrace.rmi.RemoteTrace.__init__()=vtrace.rmi.RemoteTrace-class.html#__init__,Method vtrace.snapshot.TraceSnapshot.__init__()=vtrace.snapshot.TraceSnapshot-class.html#__init__,Method vtrace.tools.iathook.IatHook.__init__()=vtrace.tools.iathook.IatHook-class.html#__init__,Method vtrace.tools.win32alloc.ReturnBreak.__init__()=vtrace.tools.win32alloc.ReturnBreak-class.html#__init__,Method vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__()=vtrace.tools.win32alloc.RtlAllocateHeapBreak-class.html#__init__,Method vtrace.tools.win32heap.FreeListCorruption.__init__()=vtrace.tools.win32heap.FreeListCorruption-class.html#__init__,Method vtrace.tools.win32heap.HeapCorruptionException.__init__()=vtrace.tools.win32heap.HeapCorruptionException-class.html#__init__,Method vtrace.tools.win32heap.Win32Chunk.__init__()=vtrace.tools.win32heap.Win32Chunk-class.html#__init__,Method vtrace.tools.win32heap.Win32Heap.__init__()=vtrace.tools.win32heap.Win32Heap-class.html#__init__,Method vtrace.tools.win32heap.Win32Segment.__init__()=vtrace.tools.win32heap.Win32Segment-class.html#__init__,Method vtrace.util.TraceManager.__init__()=vtrace.util.TraceManager-class.html#__init__,Method vtrace.watchpoints.PageWatchpoint.__init__()=vtrace.watchpoints.PageWatchpoint-class.html#__init__,Method vtrace.watchpoints.Watchpoint.__init__()=vtrace.watchpoints.Watchpoint-class.html#__init__"><a title="vtrace.AccessViolation.__init__
+vtrace.Trace.__init__
+vtrace.TraceGroup.__init__
+vtrace.VtraceExpressionLocals.__init__
+vtrace.archs.amd64.Amd64Mixin.__init__
+vtrace.archs.arm.ArmMixin.__init__
+vtrace.archs.i386.i386Mixin.__init__
+vtrace.archs.i386.i386WatchMixin.__init__
+vtrace.breakpoints.Breakpoint.__init__
+vtrace.breakpoints.CallBreak.__init__
+vtrace.envitools.TraceEmulator.__init__
+vtrace.notifiers.DistributedNotifier.__init__
+vtrace.notifiers.Notifier.__init__
+vtrace.platforms.android.AndroidArmTrace.__init__
+vtrace.platforms.base.TracerBase.__init__
+vtrace.platforms.base.TracerThread.__init__
+vtrace.platforms.darwin.DarwinAmd64Trace.__init__
+vtrace.platforms.darwin.DarwinMixin.__init__
+vtrace.platforms.darwin.Darwini386Trace.__init__
+vtrace.platforms.freebsd.FreeBSDAmd64Trace.__init__
+vtrace.platforms.freebsd.FreeBSDMixin.__init__
+vtrace.platforms.freebsd.FreeBSDi386Trace.__init__
+vtrace.platforms.gdbstub.GdbStubMixin.__init__
+vtrace.platforms.gdbstub.GdbStubMixin_old.__init__
+vtrace.platforms.gdbstub.GdbStubTrace.__init__
+vtrace.platforms.gdbstub.KeBugCheckBreak.__init__
+vtrace.platforms.linux.LinuxAmd64Trace.__init__
+vtrace.platforms.linux.LinuxMixin.__init__
+vtrace.platforms.linux.Linuxi386Trace.__init__
+vtrace.platforms.posix.ElfMixin.__init__
+vtrace.platforms.posix.PosixMixin.__init__
+vtrace.platforms.posix.PtraceMixin.__init__
+vtrace.platforms.win32.Win32SymbolParser.__init__
+vtrace.platforms.win32.WindowsAmd64Trace.__init__
+vtrace.platforms.win32.WindowsMixin.__init__
+vtrace.platforms.win32.Windowsi386Trace.__init__
+vtrace.qt.RegColorDelegate.__init__
+vtrace.qt.VQFileDescView.__init__
+vtrace.qt.VQMemoryMapView.__init__
+vtrace.qt.VQProcessListView.__init__
+vtrace.qt.VQProcessSelectDialog.__init__
+vtrace.qt.VQRegistersListView.__init__
+vtrace.qt.VQRegistersView.__init__
+vtrace.qt.VQThreadsView.__init__
+vtrace.qt.VQTraceNotifier.__init__
+vtrace.qt.VQTraceToolBar.__init__
+vtrace.rmi.RemoteTrace.__init__
+vtrace.snapshot.TraceSnapshot.__init__
+vtrace.tools.iathook.IatHook.__init__
+vtrace.tools.win32alloc.ReturnBreak.__init__
+vtrace.tools.win32alloc.RtlAllocateHeapBreak.__init__
+vtrace.tools.win32heap.FreeListCorruption.__init__
+vtrace.tools.win32heap.HeapCorruptionException.__init__
+vtrace.tools.win32heap.Win32Chunk.__init__
+vtrace.tools.win32heap.Win32Heap.__init__
+vtrace.tools.win32heap.Win32Segment.__init__
+vtrace.util.TraceManager.__init__
+vtrace.watchpoints.PageWatchpoint.__init__
+vtrace.watchpoints.Watchpoint.__init__" class="py-name" href="#" onclick="return doclink('link-15', '__init__', 'link-15');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-name">args</tt><tt class="py-op">,</tt> <tt class="py-op">**</tt><tt class="py-name">kwargs</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__dict__</tt><tt class="py-op">[</tt><tt class="py-string">'_remote_released'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+</div><a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"> </tt>
+<a name="RemoteTrace.isRemote"></a><div id="RemoteTrace.isRemote-def"><a name="L51"></a><tt class="py-lineno"> 51</tt> <a class="py-toggle" href="#" id="RemoteTrace.isRemote-toggle" onclick="return toggle('RemoteTrace.isRemote');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi.RemoteTrace-class.html#isRemote">isRemote</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RemoteTrace.isRemote-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RemoteTrace.isRemote-expanded"><a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+</div><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="RemoteTrace.buildNewTrace"></a><div id="RemoteTrace.buildNewTrace-def"><a name="L54"></a><tt class="py-lineno"> 54</tt> <a class="py-toggle" href="#" id="RemoteTrace.buildNewTrace-toggle" onclick="return toggle('RemoteTrace.buildNewTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi.RemoteTrace-class.html#buildNewTrace">buildNewTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RemoteTrace.buildNewTrace-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RemoteTrace.buildNewTrace-expanded"><a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-16" class="py-name" targets="Function vtrace.rmi.getRemoteTrace()=vtrace.rmi-module.html#getRemoteTrace"><a title="vtrace.rmi.getRemoteTrace" class="py-name" href="#" onclick="return doclink('link-16', 'getRemoteTrace', 'link-16');">getRemoteTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"> </tt>
+<a name="RemoteTrace.release"></a><div id="RemoteTrace.release-def"><a name="L57"></a><tt class="py-lineno"> 57</tt> <a class="py-toggle" href="#" id="RemoteTrace.release-toggle" onclick="return toggle('RemoteTrace.release');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi.RemoteTrace-class.html#release">release</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RemoteTrace.release-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RemoteTrace.release-expanded"><a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__dict__</tt><tt class="py-op">[</tt><tt class="py-string">'_remote_released'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">        <tt id="link-17" class="py-name" targets="Function vtrace.rmi.getTracerFactory()=vtrace.rmi-module.html#getTracerFactory"><a title="vtrace.rmi.getTracerFactory" class="py-name" href="#" onclick="return doclink('link-17', 'getTracerFactory', 'link-17');">getTracerFactory</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method vtrace.rmi.TraceProxyFactory.releaseTrace()=vtrace.rmi.TraceProxyFactory-class.html#releaseTrace"><a title="vtrace.rmi.TraceProxyFactory.releaseTrace" class="py-name" href="#" onclick="return doclink('link-18', 'releaseTrace', 'link-18');">releaseTrace</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"> </tt>
+<a name="RemoteTrace.__del__"></a><div id="RemoteTrace.__del__-def"><a name="L61"></a><tt class="py-lineno"> 61</tt> <a class="py-toggle" href="#" id="RemoteTrace.__del__-toggle" onclick="return toggle('RemoteTrace.__del__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi.RemoteTrace-class.html#__del__">__del__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RemoteTrace.__del__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RemoteTrace.__del__-expanded"><a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__dict__</tt><tt class="py-op">[</tt><tt class="py-string">'_remote_released'</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">            <tt class="py-keyword">print</tt> <tt class="py-string">'RemoteTrace del w/o release()!'</tt> </tt>
+</div></div><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"> </tt>
+<a name="getCallbackProxy"></a><div id="getCallbackProxy-def"><a name="L65"></a><tt class="py-lineno"> 65</tt> <a class="py-toggle" href="#" id="getCallbackProxy-toggle" onclick="return toggle('getCallbackProxy');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi-module.html#getCallbackProxy">getCallbackProxy</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">,</tt> <tt class="py-param">notifier</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getCallbackProxy-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getCallbackProxy-expanded"><a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line"><tt class="py-docstring">    Get a proxy object to reference *notifier* from the</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"><tt class="py-docstring">    perspective of *trace*.  The trace is specified so</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line"><tt class="py-docstring">    we may check on our side of the connected socket to</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line"><tt class="py-docstring">    give him the best possible ip address...</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">    <tt class="py-keyword">global</tt> <tt id="link-19" class="py-name"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-19', 'callback_daemon', 'link-1');">callback_daemon</a></tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">    <tt id="link-20" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-20', 'port', 'link-5');">port</a></tt> <tt class="py-op">=</tt> <tt id="link-21" class="py-name" targets="Function vtrace.rmi.getCallbackPort()=vtrace.rmi-module.html#getCallbackPort"><a title="vtrace.rmi.getCallbackPort" class="py-name" href="#" onclick="return doclink('link-21', 'getCallbackPort', 'link-21');">getCallbackPort</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">    <tt class="py-name">host</tt><tt class="py-op">,</tt> <tt class="py-name">nothing</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">_cobra_getsock</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">getSockName</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">    <tt class="py-name">unique</tt> <tt class="py-op">=</tt> <tt id="link-22" class="py-name"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-22', 'callback_daemon', 'link-1');">callback_daemon</a></tt><tt class="py-op">.</tt><tt class="py-name">getSharedName</tt><tt class="py-op">(</tt><tt class="py-name">notifier</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">unique</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">unique</tt> <tt class="py-op">=</tt> <tt class="py-name">md5</tt><tt class="py-op">.</tt><tt class="py-name">md5</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">urandom</tt><tt class="py-op">(</tt><tt class="py-number">20</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">hexdigest</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt id="link-23" class="py-name"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-23', 'callback_daemon', 'link-1');">callback_daemon</a></tt><tt class="py-op">.</tt><tt class="py-name">shareObject</tt><tt class="py-op">(</tt><tt class="py-name">notifier</tt><tt class="py-op">,</tt> <tt class="py-name">unique</tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">cobra</tt><tt class="py-op">.</tt><tt class="py-name">CobraProxy</tt><tt class="py-op">(</tt><tt class="py-string">"cobra://%s:%d/%s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">host</tt><tt class="py-op">,</tt> <tt id="link-24" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-24', 'port', 'link-5');">port</a></tt><tt class="py-op">,</tt> <tt class="py-name">unique</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line"> </tt>
+<a name="getCallbackPort"></a><div id="getCallbackPort-def"><a name="L81"></a><tt class="py-lineno"> 81</tt> <a class="py-toggle" href="#" id="getCallbackPort-toggle" onclick="return toggle('getCallbackPort');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi-module.html#getCallbackPort">getCallbackPort</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getCallbackPort-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getCallbackPort-expanded"><a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">    If necissary, start a callback daemon.  Return the</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring">    ephemeral port it was bound on.</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">    <tt class="py-keyword">global</tt> <tt id="link-25" class="py-name"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-25', 'callback_daemon', 'link-1');">callback_daemon</a></tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-26" class="py-name"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-26', 'callback_daemon', 'link-1');">callback_daemon</a></tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt id="link-27" class="py-name"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-27', 'callback_daemon', 'link-1');">callback_daemon</a></tt> <tt class="py-op">=</tt> <tt class="py-name">cobra</tt><tt class="py-op">.</tt><tt class="py-name">CobraDaemon</tt><tt class="py-op">(</tt><tt id="link-28" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-28', 'port', 'link-5');">port</a></tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt id="link-29" class="py-name"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-29', 'callback_daemon', 'link-1');">callback_daemon</a></tt><tt class="py-op">.</tt><tt class="py-name">fireThread</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-30" class="py-name"><a title="vtrace.callback_daemon
+vtrace.rmi.callback_daemon
+vtrace.watchpoints.callback_daemon" class="py-name" href="#" onclick="return doclink('link-30', 'callback_daemon', 'link-1');">callback_daemon</a></tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-31', 'port', 'link-5');">port</a></tt> </tt>
+</div><a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"> </tt>
+<a name="startCobraDaemon"></a><div id="startCobraDaemon-def"><a name="L92"></a><tt class="py-lineno"> 92</tt> <a class="py-toggle" href="#" id="startCobraDaemon-toggle" onclick="return toggle('startCobraDaemon');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi-module.html#startCobraDaemon">startCobraDaemon</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="startCobraDaemon-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="startCobraDaemon-expanded"><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-32" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-32', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="vtrace.cobra_daemon
+vtrace.watchpoints.cobra_daemon" class="py-name" href="#" onclick="return doclink('link-33', 'cobra_daemon', 'link-10');">cobra_daemon</a></tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt id="link-34" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-34', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="vtrace.cobra_daemon
+vtrace.watchpoints.cobra_daemon" class="py-name" href="#" onclick="return doclink('link-35', 'cobra_daemon', 'link-10');">cobra_daemon</a></tt> <tt class="py-op">=</tt> <tt class="py-name">cobra</tt><tt class="py-op">.</tt><tt class="py-name">CobraDaemon</tt><tt class="py-op">(</tt><tt id="link-36" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-36', 'port', 'link-5');">port</a></tt><tt class="py-op">=</tt><tt id="link-37" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-37', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-38" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-38', 'port', 'link-5');">port</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt id="link-39" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-39', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="vtrace.cobra_daemon
+vtrace.watchpoints.cobra_daemon" class="py-name" href="#" onclick="return doclink('link-40', 'cobra_daemon', 'link-10');">cobra_daemon</a></tt><tt class="py-op">.</tt><tt class="py-name">fireThread</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"> </tt>
+<a name="getRemoteTrace"></a><div id="getRemoteTrace-def"><a name="L97"></a><tt class="py-lineno"> 97</tt> <a class="py-toggle" href="#" id="getRemoteTrace-toggle" onclick="return toggle('getRemoteTrace');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi-module.html#getRemoteTrace">getRemoteTrace</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="getRemoteTrace-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="getRemoteTrace-expanded"><a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">    <tt class="py-name">factory</tt> <tt class="py-op">=</tt> <tt id="link-41" class="py-name"><a title="vtrace.rmi.getTracerFactory" class="py-name" href="#" onclick="return doclink('link-41', 'getTracerFactory', 'link-17');">getTracerFactory</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">    <tt class="py-name">unique</tt> <tt class="py-op">=</tt> <tt class="py-name">factory</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="vtrace.TraceGroup.getTrace
+vtrace.getTrace
+vtrace.platforms.android.getTrace
+vtrace.rmi.TraceProxyFactory.getTrace" class="py-name" href="#" onclick="return doclink('link-42', 'getTrace', 'link-7');">getTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-43" class="py-name" targets="Class vtrace.rmi.RemoteTrace=vtrace.rmi.RemoteTrace-class.html"><a title="vtrace.rmi.RemoteTrace" class="py-name" href="#" onclick="return doclink('link-43', 'RemoteTrace', 'link-43');">RemoteTrace</a></tt><tt class="py-op">(</tt><tt class="py-string">"cobra://%s:%d/%s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt id="link-44" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-44', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="vtrace.remote
+vtrace.watchpoints.remote" class="py-name" href="#" onclick="return doclink('link-45', 'remote', 'link-3');">remote</a></tt><tt class="py-op">,</tt> <tt id="link-46" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-46', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="vtrace.port
+vtrace.watchpoints.port" class="py-name" href="#" onclick="return doclink('link-47', 'port', 'link-5');">port</a></tt><tt class="py-op">,</tt> <tt class="py-name">unique</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt>
+<a name="releaseRemoteTrace"></a><div id="releaseRemoteTrace-def"><a name="L102"></a><tt class="py-lineno">102</tt> <a class="py-toggle" href="#" id="releaseRemoteTrace-toggle" onclick="return toggle('releaseRemoteTrace');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi-module.html#releaseRemoteTrace">releaseRemoteTrace</a><tt class="py-op">(</tt><tt class="py-param">proxy</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="releaseRemoteTrace-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="releaseRemoteTrace-expanded"><a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">    <tt id="link-48" class="py-name"><a title="vtrace.rmi.getTracerFactory" class="py-name" href="#" onclick="return doclink('link-48', 'getTracerFactory', 'link-17');">getTracerFactory</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name"><a title="vtrace.rmi.TraceProxyFactory.releaseTrace" class="py-name" href="#" onclick="return doclink('link-49', 'releaseTrace', 'link-18');">releaseTrace</a></tt><tt class="py-op">(</tt><tt class="py-name">proxy</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"> </tt>
+<a name="startVtraceServer"></a><div id="startVtraceServer-def"><a name="L105"></a><tt class="py-lineno">105</tt> <a class="py-toggle" href="#" id="startVtraceServer-toggle" onclick="return toggle('startVtraceServer');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vtrace.rmi-module.html#startVtraceServer">startVtraceServer</a><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="startVtraceServer-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="startVtraceServer-expanded"><a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-docstring">    Fire up the pyro server and share out our</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-docstring">    "trace factory"</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">    <tt id="link-50" class="py-name" targets="Function vtrace.rmi.startCobraDaemon()=vtrace.rmi-module.html#startCobraDaemon"><a title="vtrace.rmi.startCobraDaemon" class="py-name" href="#" onclick="return doclink('link-50', 'startCobraDaemon', 'link-50');">startCobraDaemon</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">    <tt class="py-name">factory</tt> <tt class="py-op">=</tt> <tt id="link-51" class="py-name" targets="Class vtrace.rmi.TraceProxyFactory=vtrace.rmi.TraceProxyFactory-class.html"><a title="vtrace.rmi.TraceProxyFactory" class="py-name" href="#" onclick="return doclink('link-51', 'TraceProxyFactory', 'link-51');">TraceProxyFactory</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">    <tt id="link-52" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-52', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="vtrace.cobra_daemon
+vtrace.watchpoints.cobra_daemon" class="py-name" href="#" onclick="return doclink('link-53', 'cobra_daemon', 'link-10');">cobra_daemon</a></tt><tt class="py-op">.</tt><tt class="py-name">shareObject</tt><tt class="py-op">(</tt><tt class="py-name">factory</tt><tt class="py-op">,</tt> <tt class="py-string">"TracerFactory"</tt><tt class="py-op">)</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-54" class="py-name"><a title="vtrace" class="py-name" href="#" onclick="return doclink('link-54', 'vtrace', 'link-0');">vtrace</a></tt><tt class="py-op">.</tt><tt id="link-55" class="py-name"><a title="vtrace.cobra_daemon
+vtrace.watchpoints.cobra_daemon" class="py-name" href="#" onclick="return doclink('link-55', 'cobra_daemon', 'link-10');">cobra_daemon</a></tt> </tt>
+</div><a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vtrace-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:45:01 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

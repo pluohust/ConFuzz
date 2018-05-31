@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.defs.macho &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vstruct" href="../../vstruct.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" accesskey="U">vstruct</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.defs.macho</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Structure definitions for the OSX MachO binary format.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+
+<span class="kn">from</span> <span class="nn">vstruct.defs.macho.fat</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vstruct.defs.macho.const</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vstruct.defs.macho.stabs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">vstruct.defs.macho.loader</span> <span class="kn">import</span> <span class="o">*</span>
+
+<div class="viewcode-block" id="mach_o"><a class="viewcode-back" href="../../../vstruct.defs.macho.html#vstruct.defs.macho.mach_o">[docs]</a><span class="k">class</span> <span class="nc">mach_o</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_symbols</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mach_header</span> <span class="o">=</span> <span class="n">mach_header</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_commands</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span>
+
+<div class="viewcode-block" id="mach_o.getSymbols"><a class="viewcode-back" href="../../../vstruct.defs.macho.html#vstruct.defs.macho.mach_o.getSymbols">[docs]</a>    <span class="k">def</span> <span class="nf">getSymbols</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symbols</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_symbols</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_symbols</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span><span class="n">vs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_commands</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">vs</span><span class="o">.</span><span class="n">cmd</span> <span class="o">!=</span> <span class="n">LC_SYMTAB</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">strbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes</span><span class="p">[</span><span class="n">vs</span><span class="o">.</span><span class="n">stroff</span><span class="p">:</span><span class="n">vs</span><span class="o">.</span><span class="n">stroff</span><span class="o">+</span><span class="n">vs</span><span class="o">.</span><span class="n">strsize</span><span class="p">]</span>
+            <span class="c">#print repr(strbytes)</span>
+            <span class="n">strtab</span> <span class="o">=</span> <span class="n">strbytes</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="c">#print strtab</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">vs</span><span class="o">.</span><span class="n">symoff</span>
+            <span class="k">print</span> <span class="s">&#39;NSYMS:&#39;</span><span class="p">,</span><span class="n">vs</span><span class="o">.</span><span class="n">nsyms</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">vs</span><span class="o">.</span><span class="n">nsyms</span><span class="p">):</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">nlist</span><span class="p">()</span> <span class="c"># FIXME 64!</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+                <span class="c">#symstr = strtab[n.n_strx]</span>
+                <span class="c"># FIXME this is slow!</span>
+                <span class="n">symstr</span> <span class="o">=</span> <span class="n">strbytes</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">n_strx</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c">#print n.tree()</span>
+                <span class="c">#print symstr</span>
+</div>
+<div class="viewcode-block" id="mach_o.getLibDeps"><a class="viewcode-back" href="../../../vstruct.defs.macho.html#vstruct.defs.macho.mach_o.getLibDeps">[docs]</a>    <span class="k">def</span> <span class="nf">getLibDeps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of the library files this Mach-O is dependant on</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">vs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_commands</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">vs</span><span class="o">.</span><span class="n">cmd</span> <span class="o">!=</span> <span class="n">LC_LOAD_DYLIB</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vs</span><span class="o">.</span><span class="n">namedata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="mach_o.getSegments"><a class="viewcode-back" href="../../../vstruct.defs.macho.html#vstruct.defs.macho.mach_o.getSegments">[docs]</a>    <span class="k">def</span> <span class="nf">getSegments</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return a list of (segname, rva, perms, bytes) tuples for the memory</span>
+<span class="sd">        segments defined by the loader commands</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">vs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_commands</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">vs</span><span class="o">.</span><span class="n">cmd</span> <span class="o">!=</span> <span class="n">LC_SEGMENT</span><span class="p">:</span>
+                <span class="k">print</span> <span class="nb">hex</span><span class="p">(</span><span class="n">vs</span><span class="o">.</span><span class="n">cmd</span><span class="p">),</span><span class="nb">hex</span><span class="p">(</span><span class="n">vs</span><span class="o">.</span><span class="n">cmdsize</span><span class="p">)</span> <span class="c"># 2, 5, b, e</span>
+                <span class="k">continue</span>
+            <span class="c"># Slice the segment bytes from raw bytes</span>
+            <span class="n">fbytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes</span><span class="p">[</span> <span class="n">vs</span><span class="o">.</span><span class="n">fileoff</span><span class="p">:</span> <span class="n">vs</span><span class="o">.</span><span class="n">fileoff</span> <span class="o">+</span> <span class="n">vs</span><span class="o">.</span><span class="n">filesize</span> <span class="p">]</span>
+            <span class="c"># Pad out to virtual size</span>
+            <span class="n">fbytes</span> <span class="o">=</span> <span class="n">fbytes</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">vs</span><span class="o">.</span><span class="n">vmsize</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\x00</span><span class="s">&#39;</span><span class="p">)</span>
+
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vs</span><span class="o">.</span><span class="n">segname</span><span class="p">,</span> <span class="n">vs</span><span class="o">.</span><span class="n">vmaddr</span><span class="p">,</span> <span class="n">vs</span><span class="o">.</span><span class="n">initprot</span><span class="p">,</span> <span class="n">fbytes</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="mach_o.vsParse"><a class="viewcode-back" href="../../../vstruct.defs.macho.html#vstruct.defs.macho.mach_o.vsParse">[docs]</a>    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mach_header</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+        <span class="c">#print bytes[offset:].encode(&#39;hex&#39;)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mach_header</span><span class="o">.</span><span class="n">ncmds</span><span class="p">):</span>
+            <span class="c"># should we use endian from header?</span>
+            <span class="n">cmdtype</span><span class="p">,</span> <span class="n">cmdlen</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&#39;&lt;II&#39;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="mi">8</span><span class="p">])</span>
+            <span class="n">cmdclass</span> <span class="o">=</span> <span class="n">getCommandClass</span><span class="p">(</span><span class="n">cmdtype</span><span class="p">)</span>
+            <span class="n">cmdobj</span> <span class="o">=</span> <span class="n">cmdclass</span><span class="p">()</span>
+            <span class="n">cmdobj</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load_commands</span><span class="o">.</span><span class="n">vsAddField</span><span class="p">(</span><span class="s">&#39;cmd</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">cmdobj</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">cmdobj</span><span class="o">.</span><span class="n">cmdsize</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" >vstruct</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

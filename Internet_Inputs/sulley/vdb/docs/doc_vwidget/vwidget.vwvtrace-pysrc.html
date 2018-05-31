@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vwidget.vwvtrace</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vwidget-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vwidget-module.html">Package&nbsp;vwidget</a> ::
+        Module&nbsp;vwvtrace
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vwidget.vwvtrace-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vwidget.vwvtrace-module.html">Module vwidget.vwvtrace</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">envi</tt><tt class="py-op">.</tt><tt class="py-name">memory</tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_mem</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">vtrace</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">gtk</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package vwidget=vwidget-module.html"><a title="vwidget" class="py-name" href="#" onclick="return doclink('link-0', 'vwidget', 'link-0');">vwidget</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module vwidget.views=vwidget.views-module.html"><a title="vwidget.views" class="py-name" href="#" onclick="return doclink('link-1', 'views', 'link-1');">views</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vw_views</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">envi</tt><tt class="py-op">.</tt><tt class="py-name">threads</tt> <tt class="py-keyword">import</tt> <tt class="py-name">firethread</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-2" class="py-name"><a title="vwidget" class="py-name" href="#" onclick="return doclink('link-2', 'vwidget', 'link-0');">vwidget</a></tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Module vwidget.main=vwidget.main-module.html,Function vwidget.main.main()=vwidget.main-module.html#main"><a title="vwidget.main
+vwidget.main.main" class="py-name" href="#" onclick="return doclink('link-3', 'main', 'link-3');">main</a></tt> <tt class="py-keyword">import</tt> <tt id="link-4" class="py-name" targets="Function vwidget.main.idlethread()=vwidget.main-module.html#idlethread"><a title="vwidget.main.idlethread" class="py-name" href="#" onclick="return doclink('link-4', 'idlethread', 'link-4');">idlethread</a></tt><tt class="py-op">,</tt> <tt id="link-5" class="py-name" targets="Function vwidget.main.idlethreadsync()=vwidget.main-module.html#idlethreadsync"><a title="vwidget.main.idlethreadsync" class="py-name" href="#" onclick="return doclink('link-5', 'idlethreadsync', 'link-5');">idlethreadsync</a></tt> </tt>
+<a name="VtraceView"></a><div id="VtraceView-def"><a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt> <a class="py-toggle" href="#" id="VtraceView-toggle" onclick="return toggle('VtraceView');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vwidget.vwvtrace.VtraceView-class.html">VtraceView</a><tt class="py-op">:</tt> </tt>
+</div><div id="VtraceView-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="VtraceView-expanded"><a name="VtraceView.__init__"></a><div id="VtraceView.__init__-def"><a name="L10"></a><tt class="py-lineno"> 10</tt> <a class="py-toggle" href="#" id="VtraceView.__init__-toggle" onclick="return toggle('VtraceView.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.VtraceView-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VtraceView.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VtraceView.__init__-expanded"><a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt> </tt>
+</div><a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"> </tt>
+<a name="VtraceView.setTrace"></a><div id="VtraceView.setTrace-def"><a name="L13"></a><tt class="py-lineno"> 13</tt> <a class="py-toggle" href="#" id="VtraceView.setTrace-toggle" onclick="return toggle('VtraceView.setTrace');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.VtraceView-class.html#setTrace">setTrace</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VtraceView.setTrace-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VtraceView.setTrace-expanded"><a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt> </tt>
+</div><a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"> </tt>
+<a name="VtraceView.traceIsReady"></a><div id="VtraceView.traceIsReady-def"><a name="L16"></a><tt class="py-lineno"> 16</tt> <a class="py-toggle" href="#" id="VtraceView.traceIsReady-toggle" onclick="return toggle('VtraceView.traceIsReady');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.VtraceView-class.html#traceIsReady">traceIsReady</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="VtraceView.traceIsReady-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="VtraceView.traceIsReady-expanded"><a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">isAttached</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">and</tt> <tt class="py-keyword">not</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">isRunning</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+</div></div><a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"> </tt>
+<a name="ProcessListView"></a><div id="ProcessListView-def"><a name="L21"></a><tt class="py-lineno"> 21</tt> <a class="py-toggle" href="#" id="ProcessListView-toggle" onclick="return toggle('ProcessListView');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vwidget.vwvtrace.ProcessListView-class.html">ProcessListView</a><tt class="py-op">(</tt><tt class="py-base-class">VtraceView</tt><tt class="py-op">,</tt> <tt class="py-base-class">vw_views</tt><tt class="py-op">.</tt><tt class="py-base-class">VTreeView</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessListView-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ProcessListView-expanded"><a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">    <tt id="link-6" class="py-name" targets="Variable vwidget.cluster.ClusterServerView.__cols__=vwidget.cluster.ClusterServerView-class.html#__cols__,Variable vwidget.views.VTreeView.__cols__=vwidget.views.VTreeView-class.html#__cols__,Variable vwidget.vwvstruct.VStructBrowser.__cols__=vwidget.vwvstruct.VStructBrowser-class.html#__cols__,Variable vwidget.vwvstruct.VStructBuilderView.__cols__=vwidget.vwvstruct.VStructBuilderView-class.html#__cols__,Variable vwidget.vwvstruct.VStructNamespaceSelector.__cols__=vwidget.vwvstruct.VStructNamespaceSelector-class.html#__cols__,Variable vwidget.vwvstruct.VStructView.__cols__=vwidget.vwvstruct.VStructView-class.html#__cols__,Variable vwidget.vwvtrace.FileDescView.__cols__=vwidget.vwvtrace.FileDescView-class.html#__cols__,Variable vwidget.vwvtrace.MemoryMapView.__cols__=vwidget.vwvtrace.MemoryMapView-class.html#__cols__,Variable vwidget.vwvtrace.ProcessListView.__cols__=vwidget.vwvtrace.ProcessListView-class.html#__cols__"><a title="vwidget.cluster.ClusterServerView.__cols__
+vwidget.views.VTreeView.__cols__
+vwidget.vwvstruct.VStructBrowser.__cols__
+vwidget.vwvstruct.VStructBuilderView.__cols__
+vwidget.vwvstruct.VStructNamespaceSelector.__cols__
+vwidget.vwvstruct.VStructView.__cols__
+vwidget.vwvtrace.FileDescView.__cols__
+vwidget.vwvtrace.MemoryMapView.__cols__
+vwidget.vwvtrace.ProcessListView.__cols__" class="py-name" href="#" onclick="return doclink('link-6', '__cols__', 'link-6');">__cols__</a></tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">object</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"Pid"</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">int</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"Name"</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">    <tt class="py-op">)</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
+<a name="ProcessListView.__init__"></a><div id="ProcessListView.__init__-def"><a name="L28"></a><tt class="py-lineno"> 28</tt> <a class="py-toggle" href="#" id="ProcessListView.__init__-toggle" onclick="return toggle('ProcessListView.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.ProcessListView-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessListView.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ProcessListView.__init__-expanded"><a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">        <tt id="link-7" class="py-name" targets="Class vwidget.vwvtrace.VtraceView=vwidget.vwvtrace.VtraceView-class.html"><a title="vwidget.vwvtrace.VtraceView" class="py-name" href="#" onclick="return doclink('link-7', 'VtraceView', 'link-7');">VtraceView</a></tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method vwidget.RefView.__init__()=vwidget.RefView-class.html#__init__,Method vwidget.SpaceView.__init__()=vwidget.SpaceView-class.html#__init__,Method vwidget.VWidget.__init__()=vwidget.VWidget-class.html#__init__,Method vwidget.cluster.ClusterServerView.__init__()=vwidget.cluster.ClusterServerView-class.html#__init__,Method vwidget.config.ConfigDialog.__init__()=vwidget.config.ConfigDialog-class.html#__init__,Method vwidget.layout.LayoutManager.__init__()=vwidget.layout.LayoutManager-class.html#__init__,Method vwidget.memview.MemoryView.__init__()=vwidget.memview.MemoryView-class.html#__init__,Method vwidget.memview.MemoryWindow.__init__()=vwidget.memview.MemoryWindow-class.html#__init__,Method vwidget.memview.VaTag.__init__()=vwidget.memview.VaTag-class.html#__init__,Method vwidget.menubuilder.FieldAdder.__init__()=vwidget.menubuilder.FieldAdder-class.html#__init__,Method vwidget.menubuilder.Menu.__init__()=vwidget.menubuilder.Menu-class.html#__init__,Method vwidget.menubuilder.MenuBar.__init__()=vwidget.menubuilder.MenuBar-class.html#__init__,Method vwidget.pydialog.PyDialog.__init__()=vwidget.pydialog.PyDialog-class.html#__init__,Method vwidget.pydialog.ScriptThread.__init__()=vwidget.pydialog.ScriptThread-class.html#__init__,Method vwidget.views.GladeView.__init__()=vwidget.views.GladeView-class.html#__init__,Method vwidget.views.VTextTag.__init__()=vwidget.views.VTextTag-class.html#__init__,Method vwidget.views.VTextView.__init__()=vwidget.views.VTextView-class.html#__init__,Method vwidget.views.VTreeView.__init__()=vwidget.views.VTreeView-class.html#__init__,Method vwidget.views.VView.__init__()=vwidget.views.VView-class.html#__init__,Method vwidget.vwvstruct.SelectNamespaceDialog.__init__()=vwidget.vwvstruct.SelectNamespaceDialog-class.html#__init__,Method vwidget.vwvstruct.SelectStructureDialog.__init__()=vwidget.vwvstruct.SelectStructureDialog-class.html#__init__,Method vwidget.vwvstruct.VStructBrowser.__init__()=vwidget.vwvstruct.VStructBrowser-class.html#__init__,Method vwidget.vwvstruct.VStructBuilderView.__init__()=vwidget.vwvstruct.VStructBuilderView-class.html#__init__,Method vwidget.vwvstruct.VStructNamespaceSelector.__init__()=vwidget.vwvstruct.VStructNamespaceSelector-class.html#__init__,Method vwidget.vwvstruct.VStructView.__init__()=vwidget.vwvstruct.VStructView-class.html#__init__,Method vwidget.vwvtrace.FileDescView.__init__()=vwidget.vwvtrace.FileDescView-class.html#__init__,Method vwidget.vwvtrace.MemoryMapView.__init__()=vwidget.vwvtrace.MemoryMapView-class.html#__init__,Method vwidget.vwvtrace.ProcessListView.__init__()=vwidget.vwvtrace.ProcessListView-class.html#__init__,Method vwidget.vwvtrace.SelectProcessDialog.__init__()=vwidget.vwvtrace.SelectProcessDialog-class.html#__init__,Method vwidget.vwvtrace.TraceToolBar.__init__()=vwidget.vwvtrace.TraceToolBar-class.html#__init__,Method vwidget.vwvtrace.VtraceView.__init__()=vwidget.vwvtrace.VtraceView-class.html#__init__,Method vwidget.windows.MainWindow.__init__()=vwidget.windows.MainWindow-class.html#__init__,Method vwidget.windows.VWindow.__init__()=vwidget.windows.VWindow-class.html#__init__"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-8', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">        <tt class="py-name">vw_views</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Class vwidget.views.VTreeView=vwidget.views.VTreeView-class.html"><a title="vwidget.views.VTreeView" class="py-name" href="#" onclick="return doclink('link-9', 'VTreeView', 'link-9');">VTreeView</a></tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-10', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"> </tt>
+<a name="ProcessListView.vwLoad"></a><div id="ProcessListView.vwLoad-def"><a name="L32"></a><tt class="py-lineno"> 32</tt> <a class="py-toggle" href="#" id="ProcessListView.vwLoad-toggle" onclick="return toggle('ProcessListView.vwLoad');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.ProcessListView-class.html#vwLoad">vwLoad</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ProcessListView.vwLoad-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="ProcessListView.vwLoad-expanded"><a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-11" class="py-name" targets="Method vwidget.views.VTreeView.vwClear()=vwidget.views.VTreeView-class.html#vwClear"><a title="vwidget.views.VTreeView.vwClear" class="py-name" href="#" onclick="return doclink('link-11', 'vwClear', 'link-11');">vwClear</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">pid</tt><tt class="py-op">,</tt><tt class="py-name">name</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">ps</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">model</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-name">pid</tt><tt class="py-op">,</tt><tt class="py-name">name</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"> </tt>
+<a name="SelectProcessDialog"></a><div id="SelectProcessDialog-def"><a name="L37"></a><tt class="py-lineno"> 37</tt> <a class="py-toggle" href="#" id="SelectProcessDialog-toggle" onclick="return toggle('SelectProcessDialog');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vwidget.vwvtrace.SelectProcessDialog-class.html">SelectProcessDialog</a><tt class="py-op">(</tt><tt class="py-base-class">gtk</tt><tt class="py-op">.</tt><tt class="py-base-class">Dialog</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SelectProcessDialog-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="SelectProcessDialog-expanded"><a name="SelectProcessDialog.__init__"></a><div id="SelectProcessDialog.__init__-def"><a name="L38"></a><tt class="py-lineno"> 38</tt> <a class="py-toggle" href="#" id="SelectProcessDialog.__init__-toggle" onclick="return toggle('SelectProcessDialog.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.SelectProcessDialog-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SelectProcessDialog.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SelectProcessDialog.__init__-expanded"><a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-name">buttons</tt><tt class="py-op">=</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">STOCK_CANCEL</tt><tt class="py-op">,</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">RESPONSE_CANCEL</tt><tt class="py-op">,</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">STOCK_OPEN</tt><tt class="py-op">,</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">RESPONSE_OK</tt><tt class="py-op">)</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">        <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">Dialog</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-12', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-string">"Select a process..."</tt><tt class="py-op">,</tt> <tt class="py-name">buttons</tt><tt class="py-op">=</tt><tt class="py-name">buttons</tt><tt class="py-op">)</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">proclist</tt> <tt class="py-op">=</tt> <tt id="link-13" class="py-name" targets="Class vwidget.vwvtrace.ProcessListView=vwidget.vwvtrace.ProcessListView-class.html"><a title="vwidget.vwvtrace.ProcessListView" class="py-name" href="#" onclick="return doclink('link-13', 'ProcessListView', 'link-13');">ProcessListView</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">vbox</tt><tt class="py-op">.</tt><tt class="py-name">pack_start</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">proclist</tt><tt class="py-op">,</tt> <tt class="py-name">expand</tt><tt class="py-op">=</tt><tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">proclist</tt><tt class="py-op">.</tt><tt class="py-name">treeview</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"row_activated"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Method vwidget.vwvtrace.SelectProcessDialog.procListActivated()=vwidget.vwvtrace.SelectProcessDialog-class.html#procListActivated"><a title="vwidget.vwvtrace.SelectProcessDialog.procListActivated" class="py-name" href="#" onclick="return doclink('link-14', 'procListActivated', 'link-14');">procListActivated</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">proclist</tt><tt class="py-op">.</tt><tt class="py-name">treeview</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"cursor_changed"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Method vwidget.vwvtrace.SelectProcessDialog.procListSelected()=vwidget.vwvtrace.SelectProcessDialog-class.html#procListSelected"><a title="vwidget.vwvtrace.SelectProcessDialog.procListSelected" class="py-name" href="#" onclick="return doclink('link-15', 'procListSelected', 'link-15');">procListSelected</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">pid</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">resize</tt><tt class="py-op">(</tt><tt class="py-number">300</tt><tt class="py-op">,</tt> <tt class="py-number">600</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"> </tt>
+<a name="SelectProcessDialog.procListActivated"></a><div id="SelectProcessDialog.procListActivated-def"><a name="L48"></a><tt class="py-lineno"> 48</tt> <a class="py-toggle" href="#" id="SelectProcessDialog.procListActivated-toggle" onclick="return toggle('SelectProcessDialog.procListActivated');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.SelectProcessDialog-class.html#procListActivated">procListActivated</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SelectProcessDialog.procListActivated-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SelectProcessDialog.procListActivated-expanded"><a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">response</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">RESPONSE_OK</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"> </tt>
+<a name="SelectProcessDialog.procListSelected"></a><div id="SelectProcessDialog.procListSelected-def"><a name="L51"></a><tt class="py-lineno"> 51</tt> <a class="py-toggle" href="#" id="SelectProcessDialog.procListSelected-toggle" onclick="return toggle('SelectProcessDialog.procListSelected');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.SelectProcessDialog-class.html#procListSelected">procListSelected</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-op">*</tt><tt class="py-param">args</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SelectProcessDialog.procListSelected-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SelectProcessDialog.procListSelected-expanded"><a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">pid</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">proclist</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Method vwidget.views.VTreeView.vwGetSelected()=vwidget.views.VTreeView-class.html#vwGetSelected"><a title="vwidget.views.VTreeView.vwGetSelected" class="py-name" href="#" onclick="return doclink('link-16', 'vwGetSelected', 'link-16');">vwGetSelected</a></tt><tt class="py-op">(</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="SelectProcessDialog.selectProcess"></a><div id="SelectProcessDialog.selectProcess-def"><a name="L54"></a><tt class="py-lineno"> 54</tt> <a class="py-toggle" href="#" id="SelectProcessDialog.selectProcess-toggle" onclick="return toggle('SelectProcessDialog.selectProcess');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.SelectProcessDialog-class.html#selectProcess">selectProcess</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SelectProcessDialog.selectProcess-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SelectProcessDialog.selectProcess-expanded"><a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">show_all</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-name">resp</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Method vwidget.pydialog.ScriptThread.run()=vwidget.pydialog.ScriptThread-class.html#run"><a title="vwidget.pydialog.ScriptThread.run" class="py-name" href="#" onclick="return doclink('link-17', 'run', 'link-17');">run</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method vwidget.windows.VWindow.hide()=vwidget.windows.VWindow-class.html#hide"><a title="vwidget.windows.VWindow.hide" class="py-name" href="#" onclick="return doclink('link-18', 'hide', 'link-18');">hide</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">resp</tt> <tt class="py-op">==</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">RESPONSE_OK</tt><tt class="py-op">:</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">pid</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+</div></div><a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"> </tt>
+<a name="TraceToolBar"></a><div id="TraceToolBar-def"><a name="L62"></a><tt class="py-lineno"> 62</tt> <a class="py-toggle" href="#" id="TraceToolBar-toggle" onclick="return toggle('TraceToolBar');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html">TraceToolBar</a><tt class="py-op">(</tt><tt class="py-base-class">gtk</tt><tt class="py-op">.</tt><tt class="py-base-class">Toolbar</tt><tt class="py-op">,</tt> <tt class="py-base-class">vtrace</tt><tt class="py-op">.</tt><tt class="py-base-class">Notifier</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TraceToolBar-expanded"><a name="TraceToolBar.__init__"></a><div id="TraceToolBar.__init__-def"><a name="L63"></a><tt class="py-lineno"> 63</tt> <a class="py-toggle" href="#" id="TraceToolBar.__init__-toggle" onclick="return toggle('TraceToolBar.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.__init__-expanded"><a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">Toolbar</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-19', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt class="py-name">Notifier</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-20', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">battach</tt> <tt class="py-op">=</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">ToolButton</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">STOCK_ADD</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bdetach</tt> <tt class="py-op">=</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">ToolButton</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">STOCK_REMOVE</tt><tt class="py-op">)</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bcontin</tt> <tt class="py-op">=</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">ToolButton</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">STOCK_MEDIA_PLAY</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bbreak</tt>  <tt class="py-op">=</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">ToolButton</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">STOCK_MEDIA_PAUSE</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bstep</tt>   <tt class="py-op">=</tt> <tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">ToolButton</tt><tt class="py-op">(</tt><tt class="py-name">gtk</tt><tt class="py-op">.</tt><tt class="py-name">STOCK_GO_FORWARD</tt><tt class="py-op">)</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-comment">#self.bstepo  = gtk.ToolButton(gtk.STOCK_GOTO_LAST)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">battach</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method vwidget.vwvtrace.TraceToolBar.attach()=vwidget.vwvtrace.TraceToolBar-class.html#attach"><a title="vwidget.vwvtrace.TraceToolBar.attach" class="py-name" href="#" onclick="return doclink('link-21', 'attach', 'link-21');">attach</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">battach</tt><tt class="py-op">.</tt><tt class="py-name">set_property</tt><tt class="py-op">(</tt><tt class="py-string">"label"</tt><tt class="py-op">,</tt> <tt class="py-string">"Attach"</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bdetach</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-22" class="py-name" targets="Method vwidget.vwvtrace.TraceToolBar.detach()=vwidget.vwvtrace.TraceToolBar-class.html#detach"><a title="vwidget.vwvtrace.TraceToolBar.detach" class="py-name" href="#" onclick="return doclink('link-22', 'detach', 'link-22');">detach</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bdetach</tt><tt class="py-op">.</tt><tt class="py-name">set_property</tt><tt class="py-op">(</tt><tt class="py-string">"label"</tt><tt class="py-op">,</tt> <tt class="py-string">"Detach"</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bcontin</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method vwidget.vwvtrace.TraceToolBar.tcontinue()=vwidget.vwvtrace.TraceToolBar-class.html#tcontinue"><a title="vwidget.vwvtrace.TraceToolBar.tcontinue" class="py-name" href="#" onclick="return doclink('link-23', 'tcontinue', 'link-23');">tcontinue</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bcontin</tt><tt class="py-op">.</tt><tt class="py-name">set_property</tt><tt class="py-op">(</tt><tt class="py-string">"label"</tt><tt class="py-op">,</tt> <tt class="py-string">"Continue"</tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bbreak</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method vwidget.vwvtrace.TraceToolBar.tbreak()=vwidget.vwvtrace.TraceToolBar-class.html#tbreak"><a title="vwidget.vwvtrace.TraceToolBar.tbreak" class="py-name" href="#" onclick="return doclink('link-24', 'tbreak', 'link-24');">tbreak</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bbreak</tt><tt class="py-op">.</tt><tt class="py-name">set_property</tt><tt class="py-op">(</tt><tt class="py-string">"label"</tt><tt class="py-op">,</tt> <tt class="py-string">"Break"</tt><tt class="py-op">)</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bstep</tt><tt class="py-op">.</tt><tt class="py-name">connect</tt><tt class="py-op">(</tt><tt class="py-string">"clicked"</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name" targets="Method vwidget.vwvtrace.TraceToolBar.tstep()=vwidget.vwvtrace.TraceToolBar-class.html#tstep"><a title="vwidget.vwvtrace.TraceToolBar.tstep" class="py-name" href="#" onclick="return doclink('link-25', 'tstep', 'link-25');">tstep</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bstep</tt><tt class="py-op">.</tt><tt class="py-name">set_property</tt><tt class="py-op">(</tt><tt class="py-string">"label"</tt><tt class="py-op">,</tt> <tt class="py-string">"Step"</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-comment">#self.bstepo.connect("clicked", self.tstep)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">        <tt class="py-comment">#self.bstepo.set_property("label", "Step Over")</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">insert</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">battach</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">insert</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bdetach</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">insert</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bcontin</tt><tt class="py-op">,</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">insert</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bbreak</tt><tt class="py-op">,</tt>  <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">insert</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bstep</tt><tt class="py-op">,</tt>  <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line"> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsnotattached</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">battach</tt><tt class="py-op">,</tt><tt class="py-op">]</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsrunning</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bbreak</tt><tt class="py-op">,</tt><tt class="py-op">]</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsnotrunning</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bdetach</tt><tt class="py-op">,</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bcontin</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">bstep</tt><tt class="py-op">]</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">registerNotifier</tt><tt class="py-op">(</tt><tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt class="py-name">NOTIFY_ALL</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method vwidget.vwvtrace.TraceToolBar.updateButtons()=vwidget.vwvtrace.TraceToolBar-class.html#updateButtons"><a title="vwidget.vwvtrace.TraceToolBar.updateButtons" class="py-name" href="#" onclick="return doclink('link-26', 'updateButtons', 'link-26');">updateButtons</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">isAttached</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">isRunning</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Method vwidget.vwvtrace.TraceToolBar.activateList()=vwidget.vwvtrace.TraceToolBar-class.html#activateList"><a title="vwidget.vwvtrace.TraceToolBar.activateList" class="py-name" href="#" onclick="return doclink('link-27', 'activateList', 'link-27');">activateList</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsrunning</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.activateList" class="py-name" href="#" onclick="return doclink('link-28', 'activateList', 'link-27');">activateList</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsnotrunning</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.activateList" class="py-name" href="#" onclick="return doclink('link-29', 'activateList', 'link-27');">activateList</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsnotattached</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">idlethread</tt> </tt>
+<a name="TraceToolBar.updateButtons"></a><div id="TraceToolBar.updateButtons-def"><a name="L106"></a><tt class="py-lineno">106</tt> <a class="py-toggle" href="#" id="TraceToolBar.updateButtons-toggle" onclick="return toggle('TraceToolBar.updateButtons');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#updateButtons">updateButtons</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">attached</tt><tt class="py-op">,</tt> <tt class="py-param">running</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.updateButtons-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.updateButtons-expanded"><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.activateList" class="py-name" href="#" onclick="return doclink('link-30', 'activateList', 'link-27');">activateList</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsnotattached</tt><tt class="py-op">,</tt> <tt class="py-keyword">not</tt> <tt class="py-name">attached</tt><tt class="py-op">)</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">attached</tt><tt class="py-op">:</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.activateList" class="py-name" href="#" onclick="return doclink('link-31', 'activateList', 'link-27');">activateList</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsrunning</tt><tt class="py-op">,</tt> <tt class="py-name">running</tt><tt class="py-op">)</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.activateList" class="py-name" href="#" onclick="return doclink('link-32', 'activateList', 'link-27');">activateList</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsnotrunning</tt><tt class="py-op">,</tt> <tt class="py-keyword">not</tt> <tt class="py-name">running</tt><tt class="py-op">)</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.activateList" class="py-name" href="#" onclick="return doclink('link-33', 'activateList', 'link-27');">activateList</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsrunning</tt><tt class="py-op">,</tt> <tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-34" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.activateList" class="py-name" href="#" onclick="return doclink('link-34', 'activateList', 'link-27');">activateList</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">wantsnotrunning</tt><tt class="py-op">,</tt> <tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">             </tt>
+<a name="TraceToolBar.activateList"></a><div id="TraceToolBar.activateList-def"><a name="L115"></a><tt class="py-lineno">115</tt> <a class="py-toggle" href="#" id="TraceToolBar.activateList-toggle" onclick="return toggle('TraceToolBar.activateList');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#activateList">activateList</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">objs</tt><tt class="py-op">,</tt> <tt class="py-param">sens</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.activateList-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.activateList-expanded"><a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">o</tt> <tt class="py-keyword">in</tt> <tt class="py-name">objs</tt><tt class="py-op">:</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt class="py-name">o</tt><tt class="py-op">.</tt><tt class="py-name">set_sensitive</tt><tt class="py-op">(</tt><tt class="py-name">sens</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">firethread</tt> </tt>
+<a name="TraceToolBar.tstep"></a><div id="TraceToolBar.tstep-def"><a name="L120"></a><tt class="py-lineno">120</tt> <a class="py-toggle" href="#" id="TraceToolBar.tstep-toggle" onclick="return toggle('TraceToolBar.tstep');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#tstep">tstep</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">button</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.tstep-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.tstep-expanded"><a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">stepi</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">firethread</tt> </tt>
+<a name="TraceToolBar.tbreak"></a><div id="TraceToolBar.tbreak-def"><a name="L124"></a><tt class="py-lineno">124</tt> <a class="py-toggle" href="#" id="TraceToolBar.tbreak-toggle" onclick="return toggle('TraceToolBar.tbreak');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#tbreak">tbreak</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">button</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.tbreak-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.tbreak-expanded"><a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'PendingBreak'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">setMeta</tt><tt class="py-op">(</tt><tt class="py-string">'PendingBreak'</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">sendBreak</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">firethread</tt> </tt>
+<a name="TraceToolBar.tcontinue"></a><div id="TraceToolBar.tcontinue-def"><a name="L131"></a><tt class="py-lineno">131</tt> <a class="py-toggle" href="#" id="TraceToolBar.tcontinue-toggle" onclick="return toggle('TraceToolBar.tcontinue');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#tcontinue">tcontinue</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">button</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.tcontinue-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.tcontinue-expanded"><a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="vwidget.pydialog.ScriptThread.run" class="py-name" href="#" onclick="return doclink('link-35', 'run', 'link-17');">run</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="TraceToolBar.attach"></a><div id="TraceToolBar.attach-def"><a name="L134"></a><tt class="py-lineno">134</tt> <a class="py-toggle" href="#" id="TraceToolBar.attach-toggle" onclick="return toggle('TraceToolBar.attach');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#attach">attach</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">button</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.attach-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.attach-expanded"><a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-name">dia</tt> <tt class="py-op">=</tt> <tt id="link-36" class="py-name" targets="Class vwidget.vwvtrace.SelectProcessDialog=vwidget.vwvtrace.SelectProcessDialog-class.html"><a title="vwidget.vwvtrace.SelectProcessDialog" class="py-name" href="#" onclick="return doclink('link-36', 'SelectProcessDialog', 'link-36');">SelectProcessDialog</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">pid</tt> <tt class="py-op">=</tt> <tt class="py-name">dia</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name" targets="Method vwidget.vwvtrace.SelectProcessDialog.selectProcess()=vwidget.vwvtrace.SelectProcessDialog-class.html#selectProcess"><a title="vwidget.vwvtrace.SelectProcessDialog.selectProcess" class="py-name" href="#" onclick="return doclink('link-37', 'selectProcess', 'link-37');">selectProcess</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">pid</tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-38" class="py-name" targets="Method vwidget.vwvtrace.TraceToolBar._doattach()=vwidget.vwvtrace.TraceToolBar-class.html#_doattach"><a title="vwidget.vwvtrace.TraceToolBar._doattach" class="py-name" href="#" onclick="return doclink('link-38', '_doattach', 'link-38');">_doattach</a></tt><tt class="py-op">(</tt><tt class="py-name">pid</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line"> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">firethread</tt> </tt>
+<a name="TraceToolBar._doattach"></a><div id="TraceToolBar._doattach-def"><a name="L141"></a><tt class="py-lineno">141</tt> <a class="py-toggle" href="#" id="TraceToolBar._doattach-toggle" onclick="return toggle('TraceToolBar._doattach');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#_doattach">_doattach</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">pid</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar._doattach-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar._doattach-expanded"><a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.attach" class="py-name" href="#" onclick="return doclink('link-39', 'attach', 'link-21');">attach</a></tt><tt class="py-op">(</tt><tt class="py-name">pid</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line"> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">firethread</tt> </tt>
+<a name="TraceToolBar.detach"></a><div id="TraceToolBar.detach-def"><a name="L145"></a><tt class="py-lineno">145</tt> <a class="py-toggle" href="#" id="TraceToolBar.detach-toggle" onclick="return toggle('TraceToolBar.detach');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#detach">detach</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">button</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.detach-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.detach-expanded"><a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">isAttached</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.detach" class="py-name" href="#" onclick="return doclink('link-40', 'detach', 'link-22');">detach</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"> </tt>
+<a name="TraceToolBar.notify"></a><div id="TraceToolBar.notify-def"><a name="L149"></a><tt class="py-lineno">149</tt> <a class="py-toggle" href="#" id="TraceToolBar.notify-toggle" onclick="return toggle('TraceToolBar.notify');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.TraceToolBar-class.html#notify">notify</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TraceToolBar.notify-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TraceToolBar.notify-expanded"><a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">event</tt> <tt class="py-op">==</tt> <tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt class="py-name">NOTIFY_DETACH</tt><tt class="py-op">:</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-41" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.updateButtons" class="py-name" href="#" onclick="return doclink('link-41', 'updateButtons', 'link-26');">updateButtons</a></tt><tt class="py-op">(</tt><tt class="py-name">False</tt><tt class="py-op">,</tt> <tt class="py-name">False</tt><tt class="py-op">)</tt> </tt>
+<a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">event</tt> <tt class="py-op">==</tt> <tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt class="py-name">NOTIFY_CONTINUE</tt><tt class="py-op">:</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.updateButtons" class="py-name" href="#" onclick="return doclink('link-42', 'updateButtons', 'link-26');">updateButtons</a></tt><tt class="py-op">(</tt><tt class="py-name">True</tt><tt class="py-op">,</tt> <tt class="py-name">True</tt><tt class="py-op">)</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="vwidget.vwvtrace.TraceToolBar.updateButtons" class="py-name" href="#" onclick="return doclink('link-43', 'updateButtons', 'link-26');">updateButtons</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">isAttached</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">shouldRunAgain</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"> </tt>
+<a name="MemoryMapView"></a><div id="MemoryMapView-def"><a name="L159"></a><tt class="py-lineno">159</tt> <a class="py-toggle" href="#" id="MemoryMapView-toggle" onclick="return toggle('MemoryMapView');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vwidget.vwvtrace.MemoryMapView-class.html">MemoryMapView</a><tt class="py-op">(</tt><tt class="py-base-class">VtraceView</tt><tt class="py-op">,</tt> <tt class="py-base-class">vw_views</tt><tt class="py-op">.</tt><tt class="py-base-class">VTreeView</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryMapView-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="MemoryMapView-expanded"><a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">    <tt id="link-44" class="py-name"><a title="vwidget.cluster.ClusterServerView.__cols__
+vwidget.views.VTreeView.__cols__
+vwidget.vwvstruct.VStructBrowser.__cols__
+vwidget.vwvstruct.VStructBuilderView.__cols__
+vwidget.vwvstruct.VStructNamespaceSelector.__cols__
+vwidget.vwvstruct.VStructView.__cols__
+vwidget.vwvtrace.FileDescView.__cols__
+vwidget.vwvtrace.MemoryMapView.__cols__
+vwidget.vwvtrace.ProcessListView.__cols__" class="py-name" href="#" onclick="return doclink('link-44', '__cols__', 'link-6');">__cols__</a></tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">int</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"Base"</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"Size"</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-name">int</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"Perms"</tt><tt class="py-op">,</tt> <tt class="py-number">3</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"File"</tt><tt class="py-op">,</tt> <tt class="py-number">4</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">    <tt class="py-op">)</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"> </tt>
+<a name="MemoryMapView.__init__"></a><div id="MemoryMapView.__init__-def"><a name="L168"></a><tt class="py-lineno">168</tt> <a class="py-toggle" href="#" id="MemoryMapView.__init__-toggle" onclick="return toggle('MemoryMapView.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.MemoryMapView-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryMapView.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryMapView.__init__-expanded"><a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt id="link-45" class="py-name"><a title="vwidget.vwvtrace.VtraceView" class="py-name" href="#" onclick="return doclink('link-45', 'VtraceView', 'link-7');">VtraceView</a></tt><tt class="py-op">.</tt><tt id="link-46" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-46', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-name">vw_views</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="vwidget.views.VTreeView" class="py-name" href="#" onclick="return doclink('link-47', 'VTreeView', 'link-9');">VTreeView</a></tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-48', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"> </tt>
+<a name="MemoryMapView.vwLoad"></a><div id="MemoryMapView.vwLoad-def"><a name="L172"></a><tt class="py-lineno">172</tt> <a class="py-toggle" href="#" id="MemoryMapView.vwLoad-toggle" onclick="return toggle('MemoryMapView.vwLoad');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.MemoryMapView-class.html#vwLoad">vwLoad</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="MemoryMapView.vwLoad-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="MemoryMapView.vwLoad-expanded"><a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Method vwidget.vwvtrace.VtraceView.traceIsReady()=vwidget.vwvtrace.VtraceView-class.html#traceIsReady"><a title="vwidget.vwvtrace.VtraceView.traceIsReady" class="py-name" href="#" onclick="return doclink('link-49', 'traceIsReady', 'link-49');">traceIsReady</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-50" class="py-name"><a title="vwidget.views.VTreeView.vwClear" class="py-name" href="#" onclick="return doclink('link-50', 'vwClear', 'link-11');">vwClear</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line">            <tt class="py-name">maps</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMemoryMaps</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">base</tt><tt class="py-op">,</tt><tt class="py-name">size</tt><tt class="py-op">,</tt><tt class="py-name">perms</tt><tt class="py-op">,</tt><tt class="py-name">fname</tt> <tt class="py-keyword">in</tt> <tt class="py-name">maps</tt><tt class="py-op">:</tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line">                <tt class="py-name">pname</tt> <tt class="py-op">=</tt> <tt class="py-name">e_mem</tt><tt class="py-op">.</tt><tt class="py-name">reprPerms</tt><tt class="py-op">(</tt><tt class="py-name">perms</tt><tt class="py-op">)</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">model</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">base</tt><tt class="py-op">,</tt> <tt class="py-string">"0x%.8x"</tt> <tt class="py-op">%</tt> <tt class="py-name">base</tt><tt class="py-op">,</tt> <tt class="py-name">size</tt><tt class="py-op">,</tt> <tt class="py-name">pname</tt><tt class="py-op">,</tt> <tt class="py-name">fname</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line"> </tt>
+<a name="FileDescView"></a><div id="FileDescView-def"><a name="L180"></a><tt class="py-lineno">180</tt> <a class="py-toggle" href="#" id="FileDescView-toggle" onclick="return toggle('FileDescView');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vwidget.vwvtrace.FileDescView-class.html">FileDescView</a><tt class="py-op">(</tt><tt class="py-base-class">VtraceView</tt><tt class="py-op">,</tt> <tt class="py-base-class">vw_views</tt><tt class="py-op">.</tt><tt class="py-base-class">VTreeView</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FileDescView-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="FileDescView-expanded"><a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">    <tt id="link-51" class="py-name"><a title="vwidget.cluster.ClusterServerView.__cols__
+vwidget.views.VTreeView.__cols__
+vwidget.vwvstruct.VStructBrowser.__cols__
+vwidget.vwvstruct.VStructBuilderView.__cols__
+vwidget.vwvstruct.VStructNamespaceSelector.__cols__
+vwidget.vwvstruct.VStructView.__cols__
+vwidget.vwvtrace.FileDescView.__cols__
+vwidget.vwvtrace.MemoryMapView.__cols__
+vwidget.vwvtrace.ProcessListView.__cols__" class="py-name" href="#" onclick="return doclink('link-51', '__cols__', 'link-6');">__cols__</a></tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">,</tt> <tt class="py-name">object</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"Fd"</tt><tt class="py-op">,</tt> <tt class="py-number">1</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"Type"</tt><tt class="py-op">,</tt> <tt class="py-number">2</tt><tt class="py-op">,</tt> <tt class="py-name">int</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L185"></a><tt class="py-lineno">185</tt>  <tt class="py-line">        <tt class="py-op">(</tt><tt class="py-string">"Name"</tt><tt class="py-op">,</tt> <tt class="py-number">3</tt><tt class="py-op">,</tt> <tt class="py-name">str</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">    <tt class="py-op">)</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line"> </tt>
+<a name="FileDescView.__init__"></a><div id="FileDescView.__init__-def"><a name="L188"></a><tt class="py-lineno">188</tt> <a class="py-toggle" href="#" id="FileDescView.__init__-toggle" onclick="return toggle('FileDescView.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.FileDescView-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FileDescView.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FileDescView.__init__-expanded"><a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line">        <tt id="link-52" class="py-name"><a title="vwidget.vwvtrace.VtraceView" class="py-name" href="#" onclick="return doclink('link-52', 'VtraceView', 'link-7');">VtraceView</a></tt><tt class="py-op">.</tt><tt id="link-53" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-53', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">        <tt class="py-name">vw_views</tt><tt class="py-op">.</tt><tt id="link-54" class="py-name"><a title="vwidget.views.VTreeView" class="py-name" href="#" onclick="return doclink('link-54', 'VTreeView', 'link-9');">VTreeView</a></tt><tt class="py-op">.</tt><tt id="link-55" class="py-name"><a title="vwidget.RefView.__init__
+vwidget.SpaceView.__init__
+vwidget.VWidget.__init__
+vwidget.cluster.ClusterServerView.__init__
+vwidget.config.ConfigDialog.__init__
+vwidget.layout.LayoutManager.__init__
+vwidget.memview.MemoryView.__init__
+vwidget.memview.MemoryWindow.__init__
+vwidget.memview.VaTag.__init__
+vwidget.menubuilder.FieldAdder.__init__
+vwidget.menubuilder.Menu.__init__
+vwidget.menubuilder.MenuBar.__init__
+vwidget.pydialog.PyDialog.__init__
+vwidget.pydialog.ScriptThread.__init__
+vwidget.views.GladeView.__init__
+vwidget.views.VTextTag.__init__
+vwidget.views.VTextView.__init__
+vwidget.views.VTreeView.__init__
+vwidget.views.VView.__init__
+vwidget.vwvstruct.SelectNamespaceDialog.__init__
+vwidget.vwvstruct.SelectStructureDialog.__init__
+vwidget.vwvstruct.VStructBrowser.__init__
+vwidget.vwvstruct.VStructBuilderView.__init__
+vwidget.vwvstruct.VStructNamespaceSelector.__init__
+vwidget.vwvstruct.VStructView.__init__
+vwidget.vwvtrace.FileDescView.__init__
+vwidget.vwvtrace.MemoryMapView.__init__
+vwidget.vwvtrace.ProcessListView.__init__
+vwidget.vwvtrace.SelectProcessDialog.__init__
+vwidget.vwvtrace.TraceToolBar.__init__
+vwidget.vwvtrace.VtraceView.__init__
+vwidget.windows.MainWindow.__init__
+vwidget.windows.VWindow.__init__" class="py-name" href="#" onclick="return doclink('link-55', '__init__', 'link-8');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"> </tt>
+<a name="FileDescView.vwLoad"></a><div id="FileDescView.vwLoad-def"><a name="L192"></a><tt class="py-lineno">192</tt> <a class="py-toggle" href="#" id="FileDescView.vwLoad-toggle" onclick="return toggle('FileDescView.vwLoad');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vwidget.vwvtrace.FileDescView-class.html#vwLoad">vwLoad</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="FileDescView.vwLoad-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="FileDescView.vwLoad-expanded"><a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-56" class="py-name"><a title="vwidget.vwvtrace.VtraceView.traceIsReady" class="py-name" href="#" onclick="return doclink('link-56', 'traceIsReady', 'link-49');">traceIsReady</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-57" class="py-name"><a title="vwidget.views.VTreeView.vwClear" class="py-name" href="#" onclick="return doclink('link-57', 'vwClear', 'link-11');">vwClear</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L195"></a><tt class="py-lineno">195</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">fd</tt><tt class="py-op">,</tt><tt class="py-name">fdtype</tt><tt class="py-op">,</tt><tt class="py-name">bestname</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getFds</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">model</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-name">fd</tt><tt class="py-op">,</tt> <tt class="py-name">fdtype</tt><tt class="py-op">,</tt> <tt class="py-name">bestname</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vwidget-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:45:12 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

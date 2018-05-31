@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vdb.recon.dopestack</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vdb-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vdb-module.html">Package&nbsp;vdb</a> ::
+        <a href="vdb.recon-module.html">Package&nbsp;recon</a> ::
+        Module&nbsp;dopestack
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vdb.recon.dopestack-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vdb.recon.dopestack-module.html">Module vdb.recon.dopestack</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">A quick set of tools for doing stack doping.</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">vtrace</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"> </tt>
+<a name="dopeThreadStack"></a><div id="dopeThreadStack-def"><a name="L6"></a><tt class="py-lineno"> 6</tt> <a class="py-toggle" href="#" id="dopeThreadStack-toggle" onclick="return toggle('dopeThreadStack');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.dopestack-module.html#dopeThreadStack">dopeThreadStack</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">,</tt> <tt class="py-param">threadid</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="dopeThreadStack-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="dopeThreadStack-expanded"><a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line">    <tt class="py-name">curthread</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getCurrentThread</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line">    <tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-0" class="py-name" targets="Method vdb.VdbTrace.selectThread()=vdb.VdbTrace-class.html#selectThread"><a title="vdb.VdbTrace.selectThread" class="py-name" href="#" onclick="return doclink('link-0', 'selectThread', 'link-0');">selectThread</a></tt><tt class="py-op">(</tt><tt class="py-name">threadid</tt><tt class="py-op">)</tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line">        <tt class="py-name">sp</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getStackCounter</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L11"></a><tt class="py-lineno">11</tt>  <tt class="py-line">        <tt class="py-name">map</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMemoryMap</tt><tt class="py-op">(</tt><tt class="py-name">sp</tt><tt class="py-op">)</tt> </tt>
+<a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">map</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">Exception</tt><tt class="py-op">(</tt><tt class="py-string">'Thread %d has invalid stack pointer 0x%.8x'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">threadid</tt><tt class="py-op">,</tt> <tt class="py-name">sp</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L14"></a><tt class="py-lineno">14</tt>  <tt class="py-line"> </tt>
+<a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">        <tt class="py-name">mapva</tt><tt class="py-op">,</tt> <tt class="py-name">mapsize</tt><tt class="py-op">,</tt> <tt class="py-name">mperms</tt><tt class="py-op">,</tt> <tt class="py-name">mfname</tt> <tt class="py-op">=</tt> <tt class="py-name">map</tt> </tt>
+<a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line">        <tt class="py-name">dopesize</tt> <tt class="py-op">=</tt> <tt class="py-name">sp</tt> <tt class="py-op">-</tt> <tt class="py-name">mapva</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">writeMemory</tt><tt class="py-op">(</tt><tt class="py-name">mapva</tt><tt class="py-op">,</tt> <tt class="py-string">'V'</tt> <tt class="py-op">*</tt> <tt class="py-name">dopesize</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno">19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">    <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">e</tt><tt class="py-op">:</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'dopeThreadStack Failed On %d'</tt> <tt class="py-op">%</tt> <tt class="py-name">threadid</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line">        <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-1" class="py-name"><a title="vdb.VdbTrace.selectThread" class="py-name" href="#" onclick="return doclink('link-1', 'selectThread', 'link-0');">selectThread</a></tt><tt class="py-op">(</tt><tt class="py-name">curthread</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line"> </tt>
+<a name="dopeAllThreadStacks"></a><div id="dopeAllThreadStacks-def"><a name="L24"></a><tt class="py-lineno">24</tt> <a class="py-toggle" href="#" id="dopeAllThreadStacks-toggle" onclick="return toggle('dopeAllThreadStacks');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.dopestack-module.html#dopeAllThreadStacks">dopeAllThreadStacks</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="dopeAllThreadStacks-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="dopeAllThreadStacks-expanded"><a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"><tt class="py-docstring">    Apply stack doping to all thread stacks.</tt> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">threadid</tt> <tt class="py-keyword">in</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getThreads</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt id="link-2" class="py-name" targets="Function vdb.recon.dopestack.dopeThreadStack()=vdb.recon.dopestack-module.html#dopeThreadStack"><a title="vdb.recon.dopestack.dopeThreadStack" class="py-name" href="#" onclick="return doclink('link-2', 'dopeThreadStack', 'link-2');">dopeThreadStack</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">,</tt> <tt class="py-name">threadid</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="ThreadDopeNotifier"></a><div id="ThreadDopeNotifier-def"><a name="L31"></a><tt class="py-lineno">31</tt> <a class="py-toggle" href="#" id="ThreadDopeNotifier-toggle" onclick="return toggle('ThreadDopeNotifier');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vdb.recon.dopestack.ThreadDopeNotifier-class.html">ThreadDopeNotifier</a><tt class="py-op">(</tt><tt class="py-base-class">vtrace</tt><tt class="py-op">.</tt><tt class="py-base-class">Notifier</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ThreadDopeNotifier-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="ThreadDopeNotifier-expanded"><a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line"> </tt>
+<a name="ThreadDopeNotifier.notify"></a><div id="ThreadDopeNotifier.notify-def"><a name="L33"></a><tt class="py-lineno">33</tt> <a class="py-toggle" href="#" id="ThreadDopeNotifier.notify-toggle" onclick="return toggle('ThreadDopeNotifier.notify');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.dopestack.ThreadDopeNotifier-class.html#notify">notify</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ThreadDopeNotifier.notify-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="ThreadDopeNotifier.notify-expanded"><a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt id="link-3" class="py-name" targets="Function vdb.recon.dopestack.dopeAllThreadStacks()=vdb.recon.dopestack-module.html#dopeAllThreadStacks"><a title="vdb.recon.dopestack.dopeAllThreadStacks" class="py-name" href="#" onclick="return doclink('link-3', 'dopeAllThreadStacks', 'link-3');">dopeAllThreadStacks</a></tt><tt class="py-op">(</tt><tt class="py-name">trace</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line"> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"><tt id="link-4" class="py-name" targets="Variable vdb.recon.dopestack.dopenotif=vdb.recon.dopestack-module.html#dopenotif"><a title="vdb.recon.dopestack.dopenotif" class="py-name" href="#" onclick="return doclink('link-4', 'dopenotif', 'link-4');">dopenotif</a></tt> <tt class="py-op">=</tt> <tt id="link-5" class="py-name" targets="Class vdb.recon.dopestack.ThreadDopeNotifier=vdb.recon.dopestack.ThreadDopeNotifier-class.html"><a title="vdb.recon.dopestack.ThreadDopeNotifier" class="py-name" href="#" onclick="return doclink('link-5', 'ThreadDopeNotifier', 'link-5');">ThreadDopeNotifier</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line"> </tt>
+<a name="enableEventDoping"></a><div id="enableEventDoping-def"><a name="L38"></a><tt class="py-lineno">38</tt> <a class="py-toggle" href="#" id="enableEventDoping-toggle" onclick="return toggle('enableEventDoping');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.dopestack-module.html#enableEventDoping">enableEventDoping</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="enableEventDoping-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="enableEventDoping-expanded"><a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">    <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method vdb.VdbTrace.registerNotifier()=vdb.VdbTrace-class.html#registerNotifier"><a title="vdb.VdbTrace.registerNotifier" class="py-name" href="#" onclick="return doclink('link-6', 'registerNotifier', 'link-6');">registerNotifier</a></tt><tt class="py-op">(</tt><tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Variable vdb.gui.NOTIFY_CONTINUE=vdb.gui-module.html#NOTIFY_CONTINUE"><a title="vdb.gui.NOTIFY_CONTINUE" class="py-name" href="#" onclick="return doclink('link-7', 'NOTIFY_CONTINUE', 'link-7');">NOTIFY_CONTINUE</a></tt><tt class="py-op">,</tt> <tt id="link-8" class="py-name"><a title="vdb.recon.dopestack.dopenotif" class="py-name" href="#" onclick="return doclink('link-8', 'dopenotif', 'link-4');">dopenotif</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line"> </tt>
+<a name="disableEventDoping"></a><div id="disableEventDoping-def"><a name="L41"></a><tt class="py-lineno">41</tt> <a class="py-toggle" href="#" id="disableEventDoping-toggle" onclick="return toggle('disableEventDoping');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.recon.dopestack-module.html#disableEventDoping">disableEventDoping</a><tt class="py-op">(</tt><tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="disableEventDoping-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="disableEventDoping-expanded"><a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line">    <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Method vdb.VdbTrace.deregisterNotifier()=vdb.VdbTrace-class.html#deregisterNotifier"><a title="vdb.VdbTrace.deregisterNotifier" class="py-name" href="#" onclick="return doclink('link-9', 'deregisterNotifier', 'link-9');">deregisterNotifier</a></tt><tt class="py-op">(</tt><tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt id="link-10" class="py-name"><a title="vdb.gui.NOTIFY_CONTINUE" class="py-name" href="#" onclick="return doclink('link-10', 'NOTIFY_CONTINUE', 'link-7');">NOTIFY_CONTINUE</a></tt><tt class="py-op">,</tt> <tt id="link-11" class="py-name"><a title="vdb.recon.dopestack.dopenotif" class="py-name" href="#" onclick="return doclink('link-11', 'dopenotif', 'link-4');">dopenotif</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vdb-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:44:14 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

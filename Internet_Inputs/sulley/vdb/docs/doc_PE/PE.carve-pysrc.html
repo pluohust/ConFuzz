@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>PE.carve</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="PE-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="PE-module.html">Package&nbsp;PE</a> ::
+        Module&nbsp;carve
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="PE.carve-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="PE.carve-module.html">Module PE.carve</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno"> 1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno"> 2</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L3"></a><tt class="py-lineno"> 3</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">sys</tt> </tt>
+<a name="L4"></a><tt class="py-lineno"> 4</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">struct</tt> </tt>
+<a name="L5"></a><tt class="py-lineno"> 5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno"> 6</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">cStringIO</tt> <tt class="py-keyword">import</tt> <tt class="py-name">StringIO</tt> </tt>
+<a name="L7"></a><tt class="py-lineno"> 7</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt class="py-name">itertools</tt> <tt class="py-keyword">import</tt> <tt class="py-name">izip</tt><tt class="py-op">,</tt> <tt class="py-name">cycle</tt> </tt>
+<a name="L8"></a><tt class="py-lineno"> 8</tt>  <tt class="py-line"> </tt>
+<a name="L9"></a><tt class="py-lineno"> 9</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package PE=PE-module.html,Class PE.PE=PE.PE-class.html"><a title="PE
+PE.PE" class="py-name" href="#" onclick="return doclink('link-0', 'PE', 'link-0');">PE</a></tt> </tt>
+<a name="L10"></a><tt class="py-lineno">10</tt>  <tt class="py-line">  </tt>
+<a name="xorbytes"></a><div id="xorbytes-def"><a name="L11"></a><tt class="py-lineno">11</tt> <a class="py-toggle" href="#" id="xorbytes-toggle" onclick="return toggle('xorbytes');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="PE.carve-module.html#xorbytes">xorbytes</a><tt class="py-op">(</tt><tt class="py-param">data</tt><tt class="py-op">,</tt> <tt class="py-param">key</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="xorbytes-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="xorbytes-expanded"><a name="L12"></a><tt class="py-lineno">12</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-string">''</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">chr</tt><tt class="py-op">(</tt><tt class="py-name">ord</tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">)</tt> <tt class="py-op">^</tt> <tt class="py-name">ord</tt><tt class="py-op">(</tt><tt class="py-name">y</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">,</tt><tt class="py-name">y</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">izip</tt><tt class="py-op">(</tt><tt class="py-name">data</tt><tt class="py-op">,</tt> <tt class="py-name">cycle</tt><tt class="py-op">(</tt><tt class="py-name">key</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L13"></a><tt class="py-lineno">13</tt>  <tt class="py-line"> </tt>
+<a name="xorstatic"></a><div id="xorstatic-def"><a name="L14"></a><tt class="py-lineno">14</tt> <a class="py-toggle" href="#" id="xorstatic-toggle" onclick="return toggle('xorstatic');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="PE.carve-module.html#xorstatic">xorstatic</a><tt class="py-op">(</tt><tt class="py-param">data</tt><tt class="py-op">,</tt> <tt class="py-param">i</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="xorstatic-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="xorstatic-expanded"><a name="L15"></a><tt class="py-lineno">15</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-string">''</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt> <tt class="py-name">chr</tt><tt class="py-op">(</tt> <tt class="py-name">ord</tt><tt class="py-op">(</tt><tt class="py-name">c</tt><tt class="py-op">)</tt> <tt class="py-op">^</tt> <tt id="link-1" class="py-name" targets="Variable PE.carve.i=PE.carve-module.html#i"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-1', 'i', 'link-1');">i</a></tt> <tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">c</tt> <tt class="py-keyword">in</tt> <tt class="py-name">data</tt> <tt class="py-op">)</tt> </tt>
+</div><a name="L16"></a><tt class="py-lineno">16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno">17</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable PE.carve.mz_xor=PE.carve-module.html#mz_xor"><a title="PE.carve.mz_xor" class="py-name" href="#" onclick="return doclink('link-2', 'mz_xor', 'link-2');">mz_xor</a></tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-op">(</tt><tt id="link-3" class="py-name" targets="Function PE.carve.xorstatic()=PE.carve-module.html#xorstatic"><a title="PE.carve.xorstatic" class="py-name" href="#" onclick="return doclink('link-3', 'xorstatic', 'link-3');">xorstatic</a></tt><tt class="py-op">(</tt><tt class="py-string">'MZ'</tt><tt class="py-op">,</tt> <tt id="link-4" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-4', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-5" class="py-name"><a title="PE.carve.xorstatic" class="py-name" href="#" onclick="return doclink('link-5', 'xorstatic', 'link-3');">xorstatic</a></tt><tt class="py-op">(</tt><tt class="py-string">'PE'</tt><tt class="py-op">,</tt> <tt id="link-6" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-6', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt id="link-7" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-7', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt id="link-8" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-8', 'i', 'link-1');">i</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">xrange</tt><tt class="py-op">(</tt><tt class="py-number">256</tt><tt class="py-op">)</tt> <tt class="py-op">]</tt> </tt>
+<a name="L18"></a><tt class="py-lineno">18</tt>  <tt class="py-line"> </tt>
+<a name="carve"></a><div id="carve-def"><a name="L19"></a><tt class="py-lineno">19</tt> <a class="py-toggle" href="#" id="carve-toggle" onclick="return toggle('carve');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="PE.carve-module.html#carve">carve</a><tt class="py-op">(</tt><tt class="py-param">pbytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="carve-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="carve-expanded"><a name="L20"></a><tt class="py-lineno">20</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L21"></a><tt class="py-lineno">21</tt>  <tt class="py-line"><tt class="py-docstring">    Return a list of (offset, size, xor) tuples of embedded PEs</tt> </tt>
+<a name="L22"></a><tt class="py-lineno">22</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L23"></a><tt class="py-lineno">23</tt>  <tt class="py-line">    <tt class="py-name">pblen</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">pbytes</tt><tt class="py-op">)</tt> </tt>
+<a name="L24"></a><tt class="py-lineno">24</tt>  <tt class="py-line">    <tt class="py-name">todo</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-op">(</tt><tt class="py-name">pbytes</tt><tt class="py-op">.</tt><tt class="py-name">find</tt><tt class="py-op">(</tt><tt class="py-name">mzx</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">mzx</tt><tt class="py-op">,</tt> <tt class="py-name">pex</tt><tt class="py-op">,</tt> <tt id="link-9" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-9', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">mzx</tt><tt class="py-op">,</tt><tt class="py-name">pex</tt><tt class="py-op">,</tt><tt id="link-10" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-10', 'i', 'link-1');">i</a></tt> <tt class="py-keyword">in</tt> <tt id="link-11" class="py-name"><a title="PE.carve.mz_xor" class="py-name" href="#" onclick="return doclink('link-11', 'mz_xor', 'link-2');">mz_xor</a></tt> <tt class="py-op">]</tt> </tt>
+<a name="L25"></a><tt class="py-lineno">25</tt>  <tt class="py-line">    <tt class="py-name">todo</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt> <tt class="py-op">(</tt><tt class="py-name">off</tt><tt class="py-op">,</tt> <tt class="py-name">mzx</tt><tt class="py-op">,</tt> <tt class="py-name">pex</tt><tt class="py-op">,</tt> <tt id="link-12" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-12', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-op">(</tt><tt class="py-name">off</tt><tt class="py-op">,</tt><tt class="py-name">mzx</tt><tt class="py-op">,</tt><tt class="py-name">pex</tt><tt class="py-op">,</tt><tt id="link-13" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-13', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">todo</tt> <tt class="py-keyword">if</tt> <tt class="py-name">off</tt> <tt class="py-op">!=</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt> <tt class="py-op">]</tt> </tt>
+<a name="L26"></a><tt class="py-lineno">26</tt>  <tt class="py-line"> </tt>
+<a name="L27"></a><tt class="py-lineno">27</tt>  <tt class="py-line">    <tt class="py-keyword">while</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">todo</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L28"></a><tt class="py-lineno">28</tt>  <tt class="py-line"> </tt>
+<a name="L29"></a><tt class="py-lineno">29</tt>  <tt class="py-line">        <tt class="py-name">off</tt><tt class="py-op">,</tt> <tt class="py-name">mzx</tt><tt class="py-op">,</tt> <tt class="py-name">pex</tt><tt class="py-op">,</tt> <tt id="link-14" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-14', 'i', 'link-1');">i</a></tt> <tt class="py-op">=</tt> <tt class="py-name">todo</tt><tt class="py-op">.</tt><tt class="py-name">pop</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno">30</tt>  <tt class="py-line"> </tt>
+<a name="L31"></a><tt class="py-lineno">31</tt>  <tt class="py-line">        <tt class="py-comment"># The MZ header has one field we will check</tt> </tt>
+<a name="L32"></a><tt class="py-lineno">32</tt>  <tt class="py-line">        <tt class="py-comment"># e_lfanew is at 0x3c</tt> </tt>
+<a name="L33"></a><tt class="py-lineno">33</tt>  <tt class="py-line">        <tt class="py-name">e_lfanew</tt> <tt class="py-op">=</tt> <tt class="py-name">off</tt> <tt class="py-op">+</tt> <tt class="py-number">0x3c</tt> </tt>
+<a name="L34"></a><tt class="py-lineno">34</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">pblen</tt> <tt class="py-op">&lt;</tt> <tt class="py-op">(</tt><tt class="py-name">e_lfanew</tt> <tt class="py-op">+</tt> <tt class="py-number">4</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L35"></a><tt class="py-lineno">35</tt>  <tt class="py-line">            <tt class="py-keyword">continue</tt> </tt>
+<a name="L36"></a><tt class="py-lineno">36</tt>  <tt class="py-line"> </tt>
+<a name="L37"></a><tt class="py-lineno">37</tt>  <tt class="py-line">        <tt class="py-name">newoff</tt> <tt class="py-op">=</tt> <tt class="py-name">struct</tt><tt class="py-op">.</tt><tt class="py-name">unpack</tt><tt class="py-op">(</tt><tt class="py-string">'&lt;I'</tt><tt class="py-op">,</tt> <tt id="link-15" class="py-name"><a title="PE.carve.xorstatic" class="py-name" href="#" onclick="return doclink('link-15', 'xorstatic', 'link-3');">xorstatic</a></tt><tt class="py-op">(</tt> <tt class="py-name">pbytes</tt><tt class="py-op">[</tt><tt class="py-name">e_lfanew</tt> <tt class="py-op">:</tt> <tt class="py-name">e_lfanew</tt> <tt class="py-op">+</tt> <tt class="py-number">4</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt id="link-16" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-16', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt> </tt>
+<a name="L38"></a><tt class="py-lineno">38</tt>  <tt class="py-line"> </tt>
+<a name="L39"></a><tt class="py-lineno">39</tt>  <tt class="py-line">        <tt class="py-name">peoff</tt> <tt class="py-op">=</tt> <tt class="py-name">off</tt> <tt class="py-op">+</tt> <tt class="py-name">newoff</tt> </tt>
+<a name="L40"></a><tt class="py-lineno">40</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">pblen</tt> <tt class="py-op">&lt;</tt> <tt class="py-op">(</tt><tt class="py-name">peoff</tt> <tt class="py-op">+</tt> <tt class="py-number">2</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L41"></a><tt class="py-lineno">41</tt>  <tt class="py-line">            <tt class="py-keyword">continue</tt> </tt>
+<a name="L42"></a><tt class="py-lineno">42</tt>  <tt class="py-line"> </tt>
+<a name="L43"></a><tt class="py-lineno">43</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">pbytes</tt><tt class="py-op">[</tt> <tt class="py-name">peoff</tt> <tt class="py-op">:</tt> <tt class="py-name">peoff</tt> <tt class="py-op">+</tt> <tt class="py-number">2</tt> <tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-name">pex</tt><tt class="py-op">:</tt> </tt>
+<a name="L44"></a><tt class="py-lineno">44</tt>  <tt class="py-line">            <tt class="py-keyword">yield</tt> <tt class="py-op">(</tt><tt class="py-name">off</tt><tt class="py-op">,</tt> <tt id="link-17" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-17', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L45"></a><tt class="py-lineno">45</tt>  <tt class="py-line"> </tt>
+<a name="L46"></a><tt class="py-lineno">46</tt>  <tt class="py-line">        <tt class="py-name">nextres</tt> <tt class="py-op">=</tt> <tt class="py-name">pbytes</tt><tt class="py-op">.</tt><tt class="py-name">find</tt><tt class="py-op">(</tt><tt class="py-name">mzx</tt><tt class="py-op">,</tt> <tt class="py-name">off</tt><tt class="py-op">+</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno">47</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">nextres</tt> <tt class="py-op">!=</tt> <tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L48"></a><tt class="py-lineno">48</tt>  <tt class="py-line">            <tt class="py-name">todo</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt> <tt class="py-op">(</tt><tt class="py-name">nextres</tt><tt class="py-op">,</tt> <tt class="py-name">mzx</tt><tt class="py-op">,</tt> <tt class="py-name">pex</tt><tt class="py-op">,</tt> <tt id="link-18" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-18', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt> <tt class="py-op">)</tt> </tt>
+</div><a name="L49"></a><tt class="py-lineno">49</tt>  <tt class="py-line"> </tt>
+<a name="CarvedPE"></a><div id="CarvedPE-def"><a name="L50"></a><tt class="py-lineno">50</tt> <a class="py-toggle" href="#" id="CarvedPE-toggle" onclick="return toggle('CarvedPE');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="PE.carve.CarvedPE-class.html">CarvedPE</a><tt class="py-op">(</tt><tt class="py-base-class">PE</tt><tt class="py-op">.</tt><tt class="py-base-class">PE</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CarvedPE-collapsed" style="display:none;" pad="++" indent="++++"></div><div id="CarvedPE-expanded"><a name="L51"></a><tt class="py-lineno">51</tt>  <tt class="py-line"> </tt>
+<a name="CarvedPE.__init__"></a><div id="CarvedPE.__init__-def"><a name="L52"></a><tt class="py-lineno">52</tt> <a class="py-toggle" href="#" id="CarvedPE.__init__-toggle" onclick="return toggle('CarvedPE.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="PE.carve.CarvedPE-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">fbytes</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">xkey</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CarvedPE.__init__-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CarvedPE.__init__-expanded"><a name="L53"></a><tt class="py-lineno">53</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">carved_offset</tt> <tt class="py-op">=</tt> <tt class="py-name">offset</tt> </tt>
+<a name="L54"></a><tt class="py-lineno">54</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fbytes</tt> <tt class="py-op">=</tt> <tt class="py-name">fbytes</tt> </tt>
+<a name="L55"></a><tt class="py-lineno">55</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">xorkey</tt> <tt class="py-op">=</tt> <tt class="py-name">xkey</tt> </tt>
+<a name="L56"></a><tt class="py-lineno">56</tt>  <tt class="py-line">        <tt id="link-19" class="py-name"><a title="PE
+PE.PE" class="py-name" href="#" onclick="return doclink('link-19', 'PE', 'link-0');">PE</a></tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="PE
+PE.PE" class="py-name" href="#" onclick="return doclink('link-20', 'PE', 'link-0');">PE</a></tt><tt class="py-op">.</tt><tt id="link-21" class="py-name" targets="Method PE.MemObjFile.__init__()=PE.MemObjFile-class.html#__init__,Method PE.PE.__init__()=PE.PE-class.html#__init__,Method PE.ResourceDirectory.__init__()=PE.ResourceDirectory-class.html#__init__,Method PE.VS_VERSIONINFO.__init__()=PE.VS_VERSIONINFO-class.html#__init__,Method PE.carve.CarvedPE.__init__()=PE.carve.CarvedPE-class.html#__init__,Method PE.cofflib.IMAGE_ARCHIVE.__init__()=PE.cofflib.IMAGE_ARCHIVE-class.html#__init__,Method PE.cofflib.IMAGE_ARCHIVE_COFF.__init__()=PE.cofflib.IMAGE_ARCHIVE_COFF-class.html#__init__,Method PE.cofflib.IMAGE_ARCHIVE_IMPORT.__init__()=PE.cofflib.IMAGE_ARCHIVE_IMPORT-class.html#__init__,Method PE.cofflib.IMAGE_ARCHIVE_LINKER1.__init__()=PE.cofflib.IMAGE_ARCHIVE_LINKER1-class.html#__init__,Method PE.cofflib.IMAGE_ARCHIVE_LINKER2.__init__()=PE.cofflib.IMAGE_ARCHIVE_LINKER2-class.html#__init__,Method PE.cofflib.IMAGE_ARCHIVE_MEMBER.__init__()=PE.cofflib.IMAGE_ARCHIVE_MEMBER-class.html#__init__,Method PE.cofflib.IMAGE_ARCHIVE_MEMBER_HEADER.__init__()=PE.cofflib.IMAGE_ARCHIVE_MEMBER_HEADER-class.html#__init__,Method PE.cofflib.IMAGE_COFF_SYMBOL.__init__()=PE.cofflib.IMAGE_COFF_SYMBOL-class.html#__init__"><a title="PE.MemObjFile.__init__
+PE.PE.__init__
+PE.ResourceDirectory.__init__
+PE.VS_VERSIONINFO.__init__
+PE.carve.CarvedPE.__init__
+PE.cofflib.IMAGE_ARCHIVE.__init__
+PE.cofflib.IMAGE_ARCHIVE_COFF.__init__
+PE.cofflib.IMAGE_ARCHIVE_IMPORT.__init__
+PE.cofflib.IMAGE_ARCHIVE_LINKER1.__init__
+PE.cofflib.IMAGE_ARCHIVE_LINKER2.__init__
+PE.cofflib.IMAGE_ARCHIVE_MEMBER.__init__
+PE.cofflib.IMAGE_ARCHIVE_MEMBER_HEADER.__init__
+PE.cofflib.IMAGE_COFF_SYMBOL.__init__" class="py-name" href="#" onclick="return doclink('link-21', '__init__', 'link-21');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt> <tt class="py-name">StringIO</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L57"></a><tt class="py-lineno">57</tt>  <tt class="py-line"> </tt>
+<a name="CarvedPE.readAtOffset"></a><div id="CarvedPE.readAtOffset-def"><a name="L58"></a><tt class="py-lineno">58</tt> <a class="py-toggle" href="#" id="CarvedPE.readAtOffset-toggle" onclick="return toggle('CarvedPE.readAtOffset');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="PE.carve.CarvedPE-class.html#readAtOffset">readAtOffset</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">size</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CarvedPE.readAtOffset-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CarvedPE.readAtOffset-expanded"><a name="L59"></a><tt class="py-lineno">59</tt>  <tt class="py-line">        <tt class="py-name">offset</tt> <tt class="py-op">+=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">carved_offset</tt> </tt>
+<a name="L60"></a><tt class="py-lineno">60</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-22" class="py-name" targets="Function PE.carve.xorbytes()=PE.carve-module.html#xorbytes"><a title="PE.carve.xorbytes" class="py-name" href="#" onclick="return doclink('link-22', 'xorbytes', 'link-22');">xorbytes</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fbytes</tt><tt class="py-op">[</tt><tt class="py-name">offset</tt><tt class="py-op">:</tt><tt class="py-name">offset</tt><tt class="py-op">+</tt><tt class="py-name">size</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">xorkey</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L61"></a><tt class="py-lineno">61</tt>  <tt class="py-line"> </tt>
+<a name="CarvedPE.getFileSize"></a><div id="CarvedPE.getFileSize-def"><a name="L62"></a><tt class="py-lineno">62</tt> <a class="py-toggle" href="#" id="CarvedPE.getFileSize-toggle" onclick="return toggle('CarvedPE.getFileSize');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="PE.carve.CarvedPE-class.html#getFileSize">getFileSize</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="CarvedPE.getFileSize-collapsed" style="display:none;" pad="++" indent="++++++++"></div><div id="CarvedPE.getFileSize-expanded"><a name="L63"></a><tt class="py-lineno">63</tt>  <tt class="py-line">        <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-number">0</tt> </tt>
+<a name="L64"></a><tt class="py-lineno">64</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">sec</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method PE.PE.getSections()=PE.PE-class.html#getSections"><a title="PE.PE.getSections" class="py-name" href="#" onclick="return doclink('link-23', 'getSections', 'link-23');">getSections</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L65"></a><tt class="py-lineno">65</tt>  <tt class="py-line">            <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-name">max</tt><tt class="py-op">(</tt><tt class="py-name">ret</tt><tt class="py-op">,</tt> <tt class="py-name">sec</tt><tt class="py-op">.</tt><tt class="py-name">PointerToRawData</tt> <tt class="py-op">+</tt> <tt class="py-name">sec</tt><tt class="py-op">.</tt><tt class="py-name">SizeOfRawData</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno">66</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">ret</tt> </tt>
+</div></div><a name="L67"></a><tt class="py-lineno">67</tt>  <tt class="py-line"> </tt>
+<a name="L68"></a><tt class="py-lineno">68</tt>  <tt class="py-line"><tt class="py-keyword">if</tt> <tt class="py-name">__name__</tt> <tt class="py-op">==</tt> <tt class="py-string">'__main__'</tt><tt class="py-op">:</tt> </tt>
+<a name="L69"></a><tt class="py-lineno">69</tt>  <tt class="py-line"> </tt>
+<a name="L70"></a><tt class="py-lineno">70</tt>  <tt class="py-line">    <tt class="py-name">fbytes</tt> <tt class="py-op">=</tt> <tt class="py-name">file</tt><tt class="py-op">(</tt><tt class="py-name">sys</tt><tt class="py-op">.</tt><tt class="py-name">argv</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-string">'rb'</tt><tt class="py-op">)</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name" targets="Method PE.MemObjFile.read()=PE.MemObjFile-class.html#read"><a title="PE.MemObjFile.read" class="py-name" href="#" onclick="return doclink('link-24', 'read', 'link-24');">read</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L71"></a><tt class="py-lineno">71</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt id="link-25" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-25', 'i', 'link-1');">i</a></tt> <tt class="py-keyword">in</tt>  <tt id="link-26" class="py-name" targets="Module PE.carve=PE.carve-module.html,Function PE.carve.carve()=PE.carve-module.html#carve"><a title="PE.carve
+PE.carve.carve" class="py-name" href="#" onclick="return doclink('link-26', 'carve', 'link-26');">carve</a></tt><tt class="py-op">(</tt><tt class="py-name">fbytes</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'OFFSET: %d (xor: %d)'</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt id="link-27" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-27', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line">        <tt id="link-28" class="py-name" targets="Variable PE.ordlookup.printord.p=PE.ordlookup.printord-module.html#p"><a title="PE.ordlookup.printord.p" class="py-name" href="#" onclick="return doclink('link-28', 'p', 'link-28');">p</a></tt> <tt class="py-op">=</tt> <tt id="link-29" class="py-name" targets="Class PE.carve.CarvedPE=PE.carve.CarvedPE-class.html"><a title="PE.carve.CarvedPE" class="py-name" href="#" onclick="return doclink('link-29', 'CarvedPE', 'link-29');">CarvedPE</a></tt><tt class="py-op">(</tt><tt class="py-name">fbytes</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">chr</tt><tt class="py-op">(</tt><tt id="link-30" class="py-name"><a title="PE.carve.i" class="py-name" href="#" onclick="return doclink('link-30', 'i', 'link-1');">i</a></tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line">        <tt class="py-keyword">print</tt> <tt class="py-string">'SIZE'</tt><tt class="py-op">,</tt><tt id="link-31" class="py-name"><a title="PE.ordlookup.printord.p" class="py-name" href="#" onclick="return doclink('link-31', 'p', 'link-28');">p</a></tt><tt class="py-op">.</tt><tt id="link-32" class="py-name" targets="Method PE.carve.CarvedPE.getFileSize()=PE.carve.CarvedPE-class.html#getFileSize"><a title="PE.carve.CarvedPE.getFileSize" class="py-name" href="#" onclick="return doclink('link-32', 'getFileSize', 'link-32');">getFileSize</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="PE-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:42:46 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

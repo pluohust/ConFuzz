@@ -1,0 +1,141 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.archs.i386 &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="envi" href="../../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.archs.i386</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.bits</span> <span class="kn">as</span> <span class="nn">e_bits</span>
+
+<span class="c">#TODO</span>
+<span class="c"># f0 0f c7 4d 00 75 f0 5d 5b - this is NOT right in disasm</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="c"># Gank in our bundled libdisassemble</span>
+<span class="kn">import</span> <span class="nn">opcode86</span>
+
+<span class="kn">from</span> <span class="nn">envi.archs.i386.regs</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">envi.archs.i386.disasm</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">i386Module</span><span class="p">(</span><span class="n">envi</span><span class="o">.</span><span class="n">ArchitectureModule</span><span class="p">):</span>
+<div class="viewcode-block" id="i386Module"><a class="viewcode-back" href="../../../envi.archs.i386.html#envi.archs.i386.i386Module">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">envi</span><span class="o">.</span><span class="n">ArchitectureModule</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&quot;i386&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_arch_dis</span> <span class="o">=</span> <span class="n">i386Disasm</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">archGetRegCtx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="i386Module.archGetRegCtx"><a class="viewcode-back" href="../../../envi.archs.i386.html#envi.archs.i386.i386Module.archGetRegCtx">[docs]</a>        <span class="k">return</span> <span class="n">i386RegisterContext</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">archGetBreakInstr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="i386Module.archGetBreakInstr"><a class="viewcode-back" href="../../../envi.archs.i386.html#envi.archs.i386.i386Module.archGetBreakInstr">[docs]</a>        <span class="k">return</span> <span class="s">&quot;</span><span class="se">\xcc</span><span class="s">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">getPointerSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="i386Module.getPointerSize"><a class="viewcode-back" href="../../../envi.archs.i386.html#envi.archs.i386.i386Module.getPointerSize">[docs]</a>        <span class="k">return</span> <span class="mi">4</span>
+
+    <span class="k">def</span> <span class="nf">pointerString</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span></div>
+<div class="viewcode-block" id="i386Module.pointerString"><a class="viewcode-back" href="../../../envi.archs.i386.html#envi.archs.i386.i386Module.pointerString">[docs]</a>        <span class="k">return</span> <span class="s">&quot;0x</span><span class="si">%.8x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">va</span>
+
+    <span class="k">def</span> <span class="nf">makeOpcode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span></div>
+<div class="viewcode-block" id="i386Module.makeOpcode"><a class="viewcode-back" href="../../../envi.archs.i386.html#envi.archs.i386.i386Module.makeOpcode">[docs]</a>        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse a sequence of bytes out into an envi.Opcode instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_arch_dis</span><span class="o">.</span><span class="n">disasm</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">getEmulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></div>
+<div class="viewcode-block" id="i386Module.getEmulator"><a class="viewcode-back" href="../../../envi.archs.i386.html#envi.archs.i386.i386Module.getEmulator">[docs]</a>        <span class="k">return</span> <span class="n">IntelEmulator</span><span class="p">()</span>
+
+<span class="c"># NOTE: This one must be after the definition of i386Module</span>
+<span class="kn">from</span> <span class="nn">envi.archs.i386.emu</span> <span class="kn">import</span> <span class="o">*</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

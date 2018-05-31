@@ -1,0 +1,379 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.builder &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="vstruct" href="../vstruct.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vstruct.html" accesskey="U">vstruct</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.builder</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">VStruct builder!  Used to serialize structure definitions etc...</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">types</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+<span class="kn">import</span> <span class="nn">vstruct.primitives</span> <span class="kn">as</span> <span class="nn">vs_prim</span>
+
+<span class="n">prim_types</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">None</span><span class="p">,</span> 
+               <span class="n">vs_prim</span><span class="o">.</span><span class="n">v_uint8</span><span class="p">,</span>
+               <span class="n">vs_prim</span><span class="o">.</span><span class="n">v_uint16</span><span class="p">,</span>
+               <span class="bp">None</span><span class="p">,</span>
+               <span class="n">vs_prim</span><span class="o">.</span><span class="n">v_uint32</span><span class="p">,</span>
+               <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span>
+               <span class="n">vs_prim</span><span class="o">.</span><span class="n">v_uint64</span>
+             <span class="p">]</span>
+
+<span class="c"># VStruct Field Flags</span>
+<span class="n">VSFF_POINTER</span> <span class="o">=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="VStructConstructor"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructConstructor">[docs]</a><span class="k">class</span> <span class="nc">VStructConstructor</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">builder</span><span class="p">,</span> <span class="n">vsname</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">builder</span> <span class="o">=</span> <span class="n">builder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vsname</span> <span class="o">=</span> <span class="n">vsname</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="o">.</span><span class="n">buildVStruct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vsname</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder">[docs]</a><span class="k">class</span> <span class="nc">VStructBuilder</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">defs</span><span class="o">=</span><span class="p">(),</span> <span class="n">enums</span><span class="o">=</span><span class="p">()):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_defs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_ctors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_enums</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_namespaces</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">vsdef</span> <span class="ow">in</span> <span class="n">defs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addVStructDef</span><span class="p">(</span><span class="n">vsdef</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">enum</span> <span class="ow">in</span> <span class="n">enums</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addVStructEnumeration</span><span class="p">(</span><span class="n">enum</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_namespaces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ns</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ns</span>
+
+        <span class="c"># Check if we have an added constructor</span>
+        <span class="n">ctor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_ctors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctor</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ctor</span>
+
+        <span class="n">vsdef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_defs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vsdef</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">VStructConstructor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="n">name</span>
+
+<div class="viewcode-block" id="VStructBuilder.getVStructCtorNames"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.getVStructCtorNames">[docs]</a>    <span class="k">def</span> <span class="nf">getVStructCtorNames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_ctors</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.addVStructCtor"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.addVStructCtor">[docs]</a>    <span class="k">def</span> <span class="nf">addVStructCtor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sname</span><span class="p">,</span> <span class="n">ctor</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_ctors</span><span class="p">[</span> <span class="n">sname</span> <span class="p">]</span> <span class="o">=</span> <span class="n">ctor</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.delVStructCtor"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.delVStructCtor">[docs]</a>    <span class="k">def</span> <span class="nf">delVStructCtor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sname</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_ctors</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span> <span class="n">sname</span> <span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.addVStructEnumeration"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.addVStructEnumeration">[docs]</a>    <span class="k">def</span> <span class="nf">addVStructEnumeration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_enums</span><span class="p">[</span><span class="n">enum</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">enum</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.addVStructNamespace"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.addVStructNamespace">[docs]</a>    <span class="k">def</span> <span class="nf">addVStructNamespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">builder</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_namespaces</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">builder</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.getVStructNamespaces"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.getVStructNamespaces">[docs]</a>    <span class="k">def</span> <span class="nf">getVStructNamespaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_namespaces</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.getVStructNamespaceNames"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.getVStructNamespaceNames">[docs]</a>    <span class="k">def</span> <span class="nf">getVStructNamespaceNames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_namespaces</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.hasVStructNamespace"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.hasVStructNamespace">[docs]</a>    <span class="k">def</span> <span class="nf">hasVStructNamespace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespace</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_namespaces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">namespace</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.getVStructNames"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.getVStructNames">[docs]</a>    <span class="k">def</span> <span class="nf">getVStructNames</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namespace</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">namespace</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_defs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_ctors</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">nsmod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_namespaces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">namespace</span><span class="p">)</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">nsmod</span><span class="p">):</span>
+            <span class="n">nobj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nsmod</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">nobj</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">nobj</span><span class="p">,</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="VStructBuilder.addVStructDef"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.addVStructDef">[docs]</a>    <span class="k">def</span> <span class="nf">addVStructDef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vsdef</span><span class="p">):</span>
+        <span class="n">vsname</span> <span class="o">=</span> <span class="n">vsdef</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_vs_defs</span><span class="p">[</span><span class="n">vsname</span><span class="p">]</span> <span class="o">=</span> <span class="n">vsdef</span>
+</div>
+    <span class="k">def</span> <span class="nf">_buildVsType</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tname</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">tflags</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">tflags</span> <span class="o">&amp;</span> <span class="n">VSFF_POINTER</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tsize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">vs_prim</span><span class="o">.</span><span class="n">v_ptr32</span><span class="p">()</span>
+
+            <span class="k">elif</span> <span class="n">tsize</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">vs_prim</span><span class="o">.</span><span class="n">v_ptr64</span><span class="p">()</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Invalid Pointer Width: </span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">tsize</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tname</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buildVStruct</span><span class="p">(</span><span class="n">tname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tsize</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">v_bytes</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">tsize</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">prim_types</span><span class="p">[</span><span class="n">tsize</span><span class="p">]()</span>
+
+<div class="viewcode-block" id="VStructBuilder.buildVStruct"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.buildVStruct">[docs]</a>    <span class="k">def</span> <span class="nf">buildVStruct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vsname</span><span class="p">):</span>
+        <span class="c"># Check for a namespace</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">vsname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_namespaces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">ns</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Namespace </span><span class="si">%s</span><span class="s"> is not present! (need symbols?)&#39;</span> <span class="o">%</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="c"># If a module gets added as a namespace, assume it has a class def...</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">):</span>
+                <span class="n">cls</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ns</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">cls</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Unknown VStruct Definition: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">vsname</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">cls</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">ns</span><span class="o">.</span><span class="n">buildVStruct</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">ctor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_ctors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vsname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctor</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ctor</span><span class="p">()</span>
+
+        <span class="n">vsdef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_defs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">vsname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vsdef</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Unknown VStruct Definition: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">vsname</span><span class="p">)</span>
+
+        <span class="n">vsname</span><span class="p">,</span> <span class="n">vssize</span><span class="p">,</span> <span class="n">vskids</span> <span class="o">=</span> <span class="n">vsdef</span>
+
+        <span class="n">vs</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span>
+        <span class="n">vs</span><span class="o">.</span><span class="n">_vs_name</span> <span class="o">=</span> <span class="n">vsname</span>
+    
+
+        <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">foffset</span><span class="p">,</span> <span class="n">fsize</span><span class="p">,</span> <span class="n">ftypename</span><span class="p">,</span> <span class="n">fflags</span><span class="p">,</span> <span class="n">fcount</span> <span class="ow">in</span> <span class="n">vskids</span><span class="p">:</span>
+
+            <span class="n">fieldval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buildVsType</span><span class="p">(</span><span class="n">ftypename</span><span class="p">,</span> <span class="n">fsize</span><span class="p">,</span> <span class="n">fflags</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">fcount</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">afields</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">fieldval</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">fcount</span><span class="p">)</span> <span class="p">]</span>
+                <span class="n">fieldval</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VArray</span><span class="p">(</span><span class="n">afields</span><span class="p">)</span>
+
+            <span class="n">cursize</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vs</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">foffset</span> <span class="o">&lt;</span> <span class="n">cursize</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">foffset</span> <span class="o">&gt;</span> <span class="n">cursize</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="s">&#39;_pad</span><span class="si">%.4x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">foffset</span><span class="p">,</span> <span class="n">vs_prim</span><span class="o">.</span><span class="n">v_bytes</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">foffset</span><span class="o">-</span><span class="n">cursize</span><span class="p">)))</span>
+
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">fieldval</span><span class="p">)</span>
+
+        <span class="n">final_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">vs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">final_len</span> <span class="o">&lt;</span> <span class="n">vssize</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">vs</span><span class="p">,</span> <span class="s">&#39;_pad</span><span class="si">%.4x</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">vssize</span><span class="p">,</span> <span class="n">vs_prim</span><span class="o">.</span><span class="n">v_bytes</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">vssize</span><span class="o">-</span><span class="n">final_len</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">vs</span>
+</div>
+    <span class="k">def</span> <span class="nf">_genTypeConstructor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tname</span><span class="p">,</span> <span class="n">tsize</span><span class="p">,</span> <span class="n">tflags</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">tflags</span> <span class="o">&amp;</span> <span class="n">VSFF_POINTER</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tsize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s">&#39;v_ptr32()&#39;</span>
+            <span class="k">elif</span> <span class="n">tsize</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s">&#39;v_ptr64()&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s">&#39;v_bytes(size=</span><span class="si">%d</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">tsize</span>
+
+        <span class="k">if</span> <span class="n">tname</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">()&#39;</span> <span class="o">%</span> <span class="n">tname</span>
+
+        <span class="c"># It&#39;s a base numeric type!</span>
+        <span class="k">if</span> <span class="n">tsize</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;v_uint8()&#39;</span>
+        <span class="k">elif</span> <span class="n">tsize</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;v_uint16()&#39;</span>
+        <span class="k">elif</span> <span class="n">tsize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;v_uint32()&#39;</span>
+        <span class="k">elif</span> <span class="n">tsize</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;v_uint64()&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s">&#39;v_bytes(size=</span><span class="si">%d</span><span class="s">)&#39;</span> <span class="o">%</span> <span class="n">tsize</span>
+
+<div class="viewcode-block" id="VStructBuilder.genVStructPyCode"><a class="viewcode-back" href="../../vstruct.html#vstruct.builder.VStructBuilder.genVStructPyCode">[docs]</a>    <span class="k">def</span> <span class="nf">genVStructPyCode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="s">&#39;import vstruct</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;from vstruct.primitives import *&#39;</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n\n</span><span class="s">&#39;</span>
+
+        <span class="k">for</span> <span class="n">ename</span><span class="p">,</span> <span class="n">esize</span><span class="p">,</span> <span class="n">ekids</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_enums</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> = v_enum()</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">ename</span>
+            <span class="k">for</span> <span class="n">kname</span><span class="p">,</span> <span class="n">kval</span> <span class="ow">in</span> <span class="n">ekids</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s">.</span><span class="si">%s</span><span class="s"> = </span><span class="si">%d</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ename</span><span class="p">,</span><span class="n">kname</span><span class="p">,</span><span class="n">kval</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n\n</span><span class="s">&#39;</span>
+
+
+        <span class="k">for</span> <span class="n">vsname</span><span class="p">,</span> <span class="n">vsize</span><span class="p">,</span> <span class="n">vskids</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vs_defs</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;class </span><span class="si">%s</span><span class="s">(vstruct.VStruct):</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">vsname</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;    def __init__(self):</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;        vstruct.VStruct.__init__(self)</span><span class="se">\n</span><span class="s">&#39;</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">fname</span><span class="p">,</span> <span class="n">foffset</span><span class="p">,</span> <span class="n">fsize</span><span class="p">,</span> <span class="n">ftypename</span><span class="p">,</span> <span class="n">fflags</span><span class="p">,</span> <span class="n">fcount</span> <span class="ow">in</span> <span class="n">vskids</span><span class="p">:</span>
+
+                <span class="c"># Skip overlapped fields</span>
+                <span class="k">if</span> <span class="n">foffset</span> <span class="o">&lt;</span> <span class="n">offset</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="c"># Add pad if needed to reach next offset</span>
+                <span class="k">if</span> <span class="n">foffset</span> <span class="o">&gt;</span> <span class="n">offset</span><span class="p">:</span>
+                    <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;        self._pad</span><span class="si">%.4x</span><span class="s"> = v_bytes(size=</span><span class="si">%d</span><span class="s">)</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">foffset</span><span class="p">,</span> <span class="n">foffset</span><span class="o">-</span><span class="n">offset</span><span class="p">)</span>
+                    <span class="n">offset</span> <span class="o">+=</span> <span class="p">(</span><span class="n">foffset</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span>
+
+                <span class="n">fconst</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_genTypeConstructor</span><span class="p">(</span><span class="n">ftypename</span><span class="p">,</span> <span class="n">fsize</span><span class="p">,</span> <span class="n">fflags</span><span class="p">)</span>
+
+                <span class="c"># If fcount != None, we&#39;re an array!</span>
+                <span class="k">if</span> <span class="n">fcount</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">fconst</span> <span class="o">=</span> <span class="s">&#39;vstruct.VArray([ </span><span class="si">%s</span><span class="s"> for i in xrange(</span><span class="si">%d</span><span class="s">) ])&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fconst</span><span class="p">,</span> <span class="n">fcount</span><span class="p">)</span>
+                    <span class="n">fsize</span> <span class="o">*=</span> <span class="n">fcount</span>
+
+                <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;        self.</span><span class="si">%s</span><span class="s"> = </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">fconst</span><span class="p">)</span>
+                <span class="n">offset</span> <span class="o">+=</span> <span class="n">fsize</span>
+            <span class="c"># Check if we need to do final pading</span>
+            <span class="k">if</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="n">vsize</span><span class="p">:</span>
+                <span class="n">psize</span> <span class="o">=</span> <span class="n">vsize</span> <span class="o">-</span> <span class="n">offset</span>
+                <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;        self._pad</span><span class="si">%.4x</span><span class="s"> = v_bytes(size=</span><span class="si">%d</span><span class="s">)</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">vsize</span><span class="p">,</span> <span class="n">psize</span><span class="p">)</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n\n</span><span class="s">&#39;</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+</div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c"># Parse windows structures from dll symbols...</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">platform</span>
+
+    <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+
+    <span class="kn">import</span> <span class="nn">PE</span>
+    <span class="kn">import</span> <span class="nn">vtrace.platforms.win32</span> <span class="kn">as</span> <span class="nn">vt_win32</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">PE</span><span class="p">(</span><span class="nb">file</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;rb&#39;</span><span class="p">))</span>
+    <span class="n">baseaddr</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">OptionalHeader</span><span class="o">.</span><span class="n">ImageBase</span>
+    <span class="n">osmajor</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">OptionalHeader</span><span class="o">.</span><span class="n">MajorOperatingSystemVersion</span>
+    <span class="n">osminor</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">OptionalHeader</span><span class="o">.</span><span class="n">MinorOperatingSystemVersion</span>
+    <span class="n">machine</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">IMAGE_NT_HEADERS</span><span class="o">.</span><span class="n">FileHeader</span><span class="o">.</span><span class="n">Machine</span>
+
+    <span class="n">vsver</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">getVS_VERSIONINFO</span><span class="p">()</span>
+
+    <span class="n">archname</span> <span class="o">=</span> <span class="n">PE</span><span class="o">.</span><span class="n">machine_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">machine</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">vt_win32</span><span class="o">.</span><span class="n">Win32SymbolParser</span><span class="p">(</span><span class="mh">0xffffffff</span><span class="p">,</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">baseaddr</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">_sym_types</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">_sym_enums</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="n">builder</span> <span class="o">=</span> <span class="n">VStructBuilder</span><span class="p">(</span><span class="n">defs</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">enums</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">print</span> <span class="s">&#39;# Version: </span><span class="si">%d</span><span class="s">.</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">osmajor</span><span class="p">,</span> <span class="n">osminor</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&#39;# Architecture: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">archname</span>
+    <span class="k">if</span> <span class="n">vsver</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">vsver</span><span class="o">.</span><span class="n">getVersionKeys</span><span class="p">()</span>
+        <span class="n">keys</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">vsver</span><span class="o">.</span><span class="n">getVersionValue</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">==</span> <span class="nb">unicode</span><span class="p">:</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;ascii&#39;</span><span class="p">,</span><span class="s">&#39;ignore&#39;</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&#39;# </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">val</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">builder</span><span class="o">.</span><span class="n">genVStructPyCode</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../vstruct.html" >vstruct</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

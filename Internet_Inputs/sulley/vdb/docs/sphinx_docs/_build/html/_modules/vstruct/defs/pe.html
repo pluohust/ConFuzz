@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.defs.pe &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vstruct" href="../../vstruct.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" accesskey="U">vstruct</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.defs.pe</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+<span class="kn">from</span> <span class="nn">vstruct.primitives</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_BASE_RELOCATION</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+<div class="viewcode-block" id="IMAGE_BASE_RELOCATION"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_BASE_RELOCATION">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VirtualAddress</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfBlock</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_DATA_DIRECTORY</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_DATA_DIRECTORY"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_DATA_DIRECTORY">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VirtualAddress</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Size</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_DOS_HEADER</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_DOS_HEADER"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_DOS_HEADER">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_magic</span>    <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_cblp</span>     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_cp</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_crlc</span>     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_cparhdr</span>  <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_minalloc</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_maxalloc</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_ss</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_sp</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_csum</span>     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_ip</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_cs</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_lfarlc</span>   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_ovno</span>     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_res</span>      <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VArray</span><span class="p">([</span><span class="n">v_uint16</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_oemid</span>    <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_oeminfo</span>  <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_res2</span>     <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VArray</span><span class="p">([</span><span class="n">v_uint16</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">e_lfanew</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_EXPORT_DIRECTORY</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_EXPORT_DIRECTORY"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_EXPORT_DIRECTORY">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Characteristics</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TimeDateStamp</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorVersion</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorVersion</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Name</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Base</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfFunctions</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfNames</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AddressOfFunctions</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AddressOfNames</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AddressOfOrdinals</span>  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_FILE_HEADER</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_FILE_HEADER"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_FILE_HEADER">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Machine</span>              <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfSections</span>     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TimeDateStamp</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PointerToSymbolTable</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfSymbols</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfOptionalHeader</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Characteristics</span>      <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_IMPORT_DIRECTORY</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_IMPORT_DIRECTORY"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_IMPORT_DIRECTORY">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OriginalFirstThunk</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TimeDateStamp</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ForwarderChain</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Name</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FirstThunk</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_IMPORT_BY_NAME</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_IMPORT_BY_NAME"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_IMPORT_BY_NAME">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">namelen</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hint</span>   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Name</span>   <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">namelen</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_LOAD_CONFIG_DIRECTORY</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_LOAD_CONFIG_DIRECTORY"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_LOAD_CONFIG_DIRECTORY">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Size</span>                          <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TimeDateStamp</span>                 <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorVersion</span>                  <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorVersion</span>                  <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">GlobalFlagsClear</span>              <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">GlobalFlagsSet</span>                <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CriticalSectionDefaultTimeout</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DeCommitFreeBlockThreshold</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DeCommitTotalFreeThreshold</span>    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LockPrefixTable</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MaximumAllocationSize</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VirtualMemoryThreshold</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ProcessHeapFlags</span>              <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ProcessAffinityMask</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CSDVersion</span>                    <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Reserved1</span>                     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EditList</span>                      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SecurityCookie</span>                <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SEHandlerTable</span>                <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SEHandlerCount</span>                <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_NT_HEADERS</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_NT_HEADERS"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_NT_HEADERS">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Signature</span>      <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileHeader</span>     <span class="o">=</span> <span class="n">IMAGE_FILE_HEADER</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OptionalHeader</span> <span class="o">=</span> <span class="n">IMAGE_OPTIONAL_HEADER</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_NT_HEADERS64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_NT_HEADERS64"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_NT_HEADERS64">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Signature</span>      <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileHeader</span>     <span class="o">=</span> <span class="n">IMAGE_FILE_HEADER</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OptionalHeader</span> <span class="o">=</span> <span class="n">IMAGE_OPTIONAL_HEADER64</span><span class="p">()</span>
+
+<span class="c"># FB BUG FIX, use uint16() for Magic value instead of v_bytes(2) [off by one error]</span>
+<span class="k">class</span> <span class="nc">IMAGE_OPTIONAL_HEADER</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_OPTIONAL_HEADER"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_OPTIONAL_HEADER">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Magic</span>                       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorLinkerVersion</span>          <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorLinkerVersion</span>          <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfCode</span>                  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfInitializedData</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfUninitializedData</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AddressOfEntryPoint</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BaseOfCode</span>                  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BaseOfData</span>                  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ImageBase</span>                   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SectionAlignment</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileAlignment</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorOperatingSystemVersion</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorOperatingSystemVersion</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorImageVersion</span>           <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorImageVersion</span>           <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorSubsystemVersion</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorSubsystemVersion</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Win32VersionValue</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfImage</span>                 <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfHeaders</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CheckSum</span>                    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Subsystem</span>                   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DllCharacteristics</span>          <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfStackReserve</span>          <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfStackCommit</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfHeapReserve</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfHeapCommit</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LoaderFlags</span>                 <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfRvaAndSizes</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DataDirectory</span>               <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VArray</span><span class="p">([</span><span class="n">IMAGE_DATA_DIRECTORY</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">)])</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_OPTIONAL_HEADER64</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_OPTIONAL_HEADER64"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_OPTIONAL_HEADER64">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Magic</span>                       <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorLinkerVersion</span>          <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorLinkerVersion</span>          <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfCode</span>                  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfInitializedData</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfUninitializedData</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AddressOfEntryPoint</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BaseOfCode</span>                  <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ImageBase</span>                   <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SectionAlignment</span>            <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileAlignment</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorOperatingSystemVersion</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorOperatingSystemVersion</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorImageVersion</span>           <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorImageVersion</span>           <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorSubsystemVersion</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorSubsystemVersion</span>       <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Win32VersionValue</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfImage</span>                 <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfHeaders</span>               <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CheckSum</span>                    <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Subsystem</span>                   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DllCharacteristics</span>          <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfStackReserve</span>          <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfStackCommit</span>           <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfHeapReserve</span>           <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfHeapCommit</span>            <span class="o">=</span> <span class="n">v_uint64</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LoaderFlags</span>                 <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfRvaAndSizes</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DataDirectory</span>               <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VArray</span><span class="p">([</span><span class="n">IMAGE_DATA_DIRECTORY</span><span class="p">()</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">)])</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_RESOURCE_DIRECTORY</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_RESOURCE_DIRECTORY"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_RESOURCE_DIRECTORY">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Characteristics</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TimeDateStamp</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MajorVersion</span>         <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MinorVersion</span>         <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfNamedEntries</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfIdEntries</span>    <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_RESOURCE_DIRECTORY_ENTRY</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_RESOURCE_DIRECTORY_ENTRY"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_RESOURCE_DIRECTORY_ENTRY">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Name</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OffsetToData</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_RESOURCE_DATA_ENTRY</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_RESOURCE_DATA_ENTRY"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_RESOURCE_DATA_ENTRY">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OffsetToData</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Size</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CodePage</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Reserved</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">VS_FIXEDFILEINFO</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="VS_FIXEDFILEINFO"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.VS_FIXEDFILEINFO">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Signature</span>          <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">StrucVersion</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileVersionMS</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileVersionLS</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ProductVersionMS</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ProductVersionLS</span>   <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileFlagsMask</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileFlags</span>          <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileOS</span>             <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileType</span>           <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileSubtype</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileDateMS</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FileDateLS</span>         <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">IMAGE_SECTION_HEADER</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_SECTION_HEADER"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_SECTION_HEADER">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Name</span>                 <span class="o">=</span> <span class="n">v_str</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VirtualSize</span>          <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">VirtualAddress</span>       <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SizeOfRawData</span>        <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PointerToRawData</span>     <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PointerToRelocations</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PointerToLineNumbers</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfRelocations</span>  <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NumberOfLineNumbers</span>  <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Characteristics</span>      <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">IMAGE_RUNTIME_FUNCTION_ENTRY</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="IMAGE_RUNTIME_FUNCTION_ENTRY"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.pe.IMAGE_RUNTIME_FUNCTION_ENTRY">[docs]</a>    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used in the .pdata section of a PE32+ for all non</span>
+<span class="sd">    leaf functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BeginAddress</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EndAddress</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">UnwindInfoAddress</span> <span class="o">=</span> <span class="n">v_uint32</span><span class="p">()</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" >vstruct</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

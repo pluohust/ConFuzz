@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>vdb.extensions.gdbstub</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vdb-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="vdb-module.html">Package&nbsp;vdb</a> ::
+        <a href="vdb.extensions-module.html">Package&nbsp;extensions</a> ::
+        Module&nbsp;gdbstub
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="vdb.extensions.gdbstub-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="vdb.extensions.gdbstub-module.html">Module vdb.extensions.gdbstub</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">vtrace</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package vdb=vdb-module.html"><a title="vdb" class="py-name" href="#" onclick="return doclink('link-0', 'vdb', 'link-0');">vdb</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Package vdb.extensions=vdb.extensions-module.html,Package vdb.gui.extensions=vdb.gui.extensions-module.html"><a title="vdb.extensions
+vdb.gui.extensions" class="py-name" href="#" onclick="return doclink('link-1', 'extensions', 'link-1');">extensions</a></tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Module vdb.extensions.windows=vdb.extensions.windows-module.html,Module vdb.gui.extensions.windows=vdb.gui.extensions.windows-module.html,Module vdb.qt.windows=vdb.qt.windows-module.html"><a title="vdb.extensions.windows
+vdb.gui.extensions.windows
+vdb.qt.windows" class="py-name" href="#" onclick="return doclink('link-2', 'windows', 'link-2');">windows</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">vdb_windows</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"> </tt>
+<a name="ethread"></a><div id="ethread-def"><a name="L5"></a><tt class="py-lineno">  5</tt> <a class="py-toggle" href="#" id="ethread-toggle" onclick="return toggle('ethread');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.extensions.gdbstub-module.html#ethread">ethread</a><tt class="py-op">(</tt><tt class="py-param">db</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="ethread-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ethread-expanded"><a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">    Display information about the currently stopped ethread.</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-docstring">    Usage: ethread</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-docstring">    #FIXME support listing them</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-docstring">    #FIXME support ethread interp arbitrary address</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line">    <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">db</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method vdb.Vdb.getTrace()=vdb.Vdb-class.html#getTrace"><a title="vdb.Vdb.getTrace" class="py-name" href="#" onclick="return doclink('link-3', 'getTrace', 'link-3');">getTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line">    <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">requireNotRunning</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line">    <tt class="py-name">fsbase</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getVariable</tt><tt class="py-op">(</tt><tt class="py-string">'fsbase'</tt><tt class="py-op">)</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line">    <tt id="link-4" class="py-name" targets="Function vdb.extensions.gdbstub.kpcr()=vdb.extensions.gdbstub-module.html#kpcr"><a title="vdb.extensions.gdbstub.kpcr" class="py-name" href="#" onclick="return doclink('link-4', 'kpcr', 'link-4');">kpcr</a></tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getStruct</tt><tt class="py-op">(</tt><tt class="py-string">'nt.KPCR'</tt><tt class="py-op">,</tt> <tt class="py-name">fsbase</tt><tt class="py-op">)</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line">    <tt class="py-name">ethraddr</tt> <tt class="py-op">=</tt> <tt id="link-5" class="py-name"><a title="vdb.extensions.gdbstub.kpcr" class="py-name" href="#" onclick="return doclink('link-5', 'kpcr', 'link-4');">kpcr</a></tt><tt class="py-op">.</tt><tt class="py-name">PrcbData</tt><tt class="py-op">.</tt><tt class="py-name">CurrentThread</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line">    <tt class="py-name">ethr</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getStruct</tt><tt class="py-op">(</tt><tt class="py-string">'nt.ETHREAD'</tt><tt class="py-op">,</tt> <tt class="py-name">ethraddr</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">    <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">vprint</tt><tt class="py-op">(</tt><tt class="py-name">ethr</tt><tt class="py-op">.</tt><tt class="py-name">tree</tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">=</tt><tt class="py-name">ethraddr</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"> </tt>
+<a name="eprocess"></a><div id="eprocess-def"><a name="L21"></a><tt class="py-lineno"> 21</tt> <a class="py-toggle" href="#" id="eprocess-toggle" onclick="return toggle('eprocess');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.extensions.gdbstub-module.html#eprocess">eprocess</a><tt class="py-op">(</tt><tt class="py-param">db</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="eprocess-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="eprocess-expanded"><a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring">    Display information about the currently stopped eprocess.</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-docstring">    Usage: eprocess</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-docstring">    #FIXME support listing</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-docstring">    #FIXME support eprocess interp address</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">    <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">db</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name"><a title="vdb.Vdb.getTrace" class="py-name" href="#" onclick="return doclink('link-6', 'getTrace', 'link-3');">getTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">    <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">requireNotRunning</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">    <tt class="py-name">fsbase</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getVariable</tt><tt class="py-op">(</tt><tt class="py-string">'fsbase'</tt><tt class="py-op">)</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">    <tt id="link-7" class="py-name"><a title="vdb.extensions.gdbstub.kpcr" class="py-name" href="#" onclick="return doclink('link-7', 'kpcr', 'link-4');">kpcr</a></tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getStruct</tt><tt class="py-op">(</tt><tt class="py-string">'nt.KPCR'</tt><tt class="py-op">,</tt> <tt class="py-name">fsbase</tt><tt class="py-op">)</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">    <tt class="py-name">ethraddr</tt> <tt class="py-op">=</tt> <tt id="link-8" class="py-name"><a title="vdb.extensions.gdbstub.kpcr" class="py-name" href="#" onclick="return doclink('link-8', 'kpcr', 'link-4');">kpcr</a></tt><tt class="py-op">.</tt><tt class="py-name">PrcbData</tt><tt class="py-op">.</tt><tt class="py-name">CurrentThread</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">    <tt class="py-name">ethr</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getStruct</tt><tt class="py-op">(</tt><tt class="py-string">'nt.ETHREAD'</tt><tt class="py-op">,</tt> <tt class="py-name">ethraddr</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">    <tt class="py-name">eprocaddr</tt> <tt class="py-op">=</tt> <tt class="py-name">ethr</tt><tt class="py-op">.</tt><tt class="py-name">Tcb</tt><tt class="py-op">.</tt><tt class="py-name">ApcState</tt><tt class="py-op">.</tt><tt class="py-name">Process</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">    <tt class="py-name">eproc</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getStruct</tt><tt class="py-op">(</tt><tt class="py-string">'nt.EPROCESS'</tt><tt class="py-op">,</tt> <tt class="py-name">eprocaddr</tt><tt class="py-op">)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">    <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">vprint</tt><tt class="py-op">(</tt><tt class="py-name">eproc</tt><tt class="py-op">.</tt><tt class="py-name">tree</tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">=</tt><tt class="py-name">eprocaddr</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line"> </tt>
+<a name="kpcr"></a><div id="kpcr-def"><a name="L39"></a><tt class="py-lineno"> 39</tt> <a class="py-toggle" href="#" id="kpcr-toggle" onclick="return toggle('kpcr');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.extensions.gdbstub-module.html#kpcr">kpcr</a><tt class="py-op">(</tt><tt class="py-param">db</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="kpcr-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="kpcr-expanded"><a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">    Show the kpcr structure for the currently stopped kernel.</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">    Usage: kpcr</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">    <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">db</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name"><a title="vdb.Vdb.getTrace" class="py-name" href="#" onclick="return doclink('link-9', 'getTrace', 'link-3');">getTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line">    <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">requireNotRunning</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">    <tt class="py-name">fsbase</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">_getVmwareReg</tt><tt class="py-op">(</tt><tt class="py-string">'fs'</tt><tt class="py-op">)</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">    <tt id="link-10" class="py-name"><a title="vdb.extensions.gdbstub.kpcr" class="py-name" href="#" onclick="return doclink('link-10', 'kpcr', 'link-4');">kpcr</a></tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">getStruct</tt><tt class="py-op">(</tt><tt class="py-string">'nt.KPCR'</tt><tt class="py-op">,</tt> <tt class="py-name">fsbase</tt><tt class="py-op">)</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line">    <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">vprint</tt><tt class="py-op">(</tt><tt id="link-11" class="py-name"><a title="vdb.extensions.gdbstub.kpcr" class="py-name" href="#" onclick="return doclink('link-11', 'kpcr', 'link-4');">kpcr</a></tt><tt class="py-op">.</tt><tt class="py-name">tree</tt><tt class="py-op">(</tt><tt class="py-name">va</tt><tt class="py-op">=</tt><tt class="py-name">fsbase</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-comment"># FIXME do we need to make gdbstub a package so it can have subs?</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"> </tt>
+<a name="armcore"></a><div id="armcore-def"><a name="L53"></a><tt class="py-lineno"> 53</tt> <a class="py-toggle" href="#" id="armcore-toggle" onclick="return toggle('armcore');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.extensions.gdbstub-module.html#armcore">armcore</a><tt class="py-op">(</tt><tt class="py-param">db</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="armcore-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="armcore-expanded"><a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line"><tt class="py-docstring">    Show / set the 'mode' of the arm core between arm and thumb.</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring">    Usage: armcore [arm|thumb]</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line">    <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">db</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name"><a title="vdb.Vdb.getTrace" class="py-name" href="#" onclick="return doclink('link-12', 'getTrace', 'link-3');">getTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line">    <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">requireNotRunning</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">line</tt><tt class="py-op">:</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">line</tt> <tt class="py-keyword">not</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-string">'arm'</tt><tt class="py-op">,</tt><tt class="py-string">'thumb'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">do_help</tt><tt class="py-op">(</tt><tt class="py-string">'armcore'</tt><tt class="py-op">)</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">cmdstr</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">_monitorCommand</tt><tt class="py-op">(</tt><tt class="py-string">'arm core_state %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">line</tt><tt class="py-op">)</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-name">cmdstr</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">_monitorCommand</tt><tt class="py-op">(</tt><tt class="py-string">'arm core_state'</tt><tt class="py-op">)</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">    <tt class="py-name">mode</tt> <tt class="py-op">=</tt> <tt class="py-name">cmdstr</tt><tt class="py-op">.</tt><tt class="py-name">split</tt><tt class="py-op">(</tt><tt class="py-string">':'</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">strip</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">    <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">vprint</tt><tt class="py-op">(</tt><tt class="py-string">'Arm Core Mode: %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">mode</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"> </tt>
+<a name="GdbStubNotifier"></a><div id="GdbStubNotifier-def"><a name="L72"></a><tt class="py-lineno"> 72</tt> <a class="py-toggle" href="#" id="GdbStubNotifier-toggle" onclick="return toggle('GdbStubNotifier');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="vdb.extensions.gdbstub.GdbStubNotifier-class.html">GdbStubNotifier</a><tt class="py-op">(</tt><tt class="py-base-class">vtrace</tt><tt class="py-op">.</tt><tt class="py-base-class">Notifier</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GdbStubNotifier-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="GdbStubNotifier-expanded"><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"> </tt>
+<a name="GdbStubNotifier.__init__"></a><div id="GdbStubNotifier.__init__-def"><a name="L74"></a><tt class="py-lineno"> 74</tt> <a class="py-toggle" href="#" id="GdbStubNotifier.__init__-toggle" onclick="return toggle('GdbStubNotifier.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.extensions.gdbstub.GdbStubNotifier-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">db</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GdbStubNotifier.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GdbStubNotifier.__init__-expanded"><a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">        <tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt class="py-name">Notifier</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method vdb.ScriptThread.__init__()=vdb.ScriptThread-class.html#__init__,Method vdb.Vdb.__init__()=vdb.Vdb-class.html#__init__,Method vdb.VdbLookup.__init__()=vdb.VdbLookup-class.html#__init__,Method vdb.VdbTrace.__init__()=vdb.VdbTrace-class.html#__init__,Method vdb.extensions.gdbstub.GdbStubNotifier.__init__()=vdb.extensions.gdbstub.GdbStubNotifier-class.html#__init__,Method vdb.gui.VdbFileDescWindow.__init__()=vdb.gui.VdbFileDescWindow-class.html#__init__,Method vdb.gui.VdbGui.__init__()=vdb.gui.VdbGui-class.html#__init__,Method vdb.gui.VdbMainWindow.__init__()=vdb.gui.VdbMainWindow-class.html#__init__,Method vdb.gui.VdbMemoryMapWindow.__init__()=vdb.gui.VdbMemoryMapWindow-class.html#__init__,Method vdb.gui.VdbMemoryView.__init__()=vdb.gui.VdbMemoryView-class.html#__init__,Method vdb.gui.VdbMemoryWindow.__init__()=vdb.gui.VdbMemoryWindow-class.html#__init__,Method vdb.gui.VdbRegisterWindow.__init__()=vdb.gui.VdbRegisterWindow-class.html#__init__,Method vdb.gui.VdbViewWindow.__init__()=vdb.gui.VdbViewWindow-class.html#__init__,Method vdb.gui.VdbWindow.__init__()=vdb.gui.VdbWindow-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapRenderer.__init__()=vdb.gui.extensions.windows.VdbHeapRenderer-class.html#__init__,Method vdb.gui.extensions.windows.VdbHeapWindow.__init__()=vdb.gui.extensions.windows.VdbHeapWindow-class.html#__init__,Method vdb.gui.extensions.windows.Win32HeapWindow.__init__()=vdb.gui.extensions.windows.Win32HeapWindow-class.html#__init__,Method vdb.qt.windows.VdbMemoryWindow.__init__()=vdb.qt.windows.VdbMemoryWindow-class.html#__init__,Method vdb.qt.windows.VdbWindow.__init__()=vdb.qt.windows.VdbWindow-class.html#__init__,Method vdb.recon.ReconBreak.__init__()=vdb.recon.ReconBreak-class.html#__init__,Method vdb.recon.sniper.SniperArgValueBreak.__init__()=vdb.recon.sniper.SniperArgValueBreak-class.html#__init__,Method vdb.recon.sniper.SniperDynArgBreak.__init__()=vdb.recon.sniper.SniperDynArgBreak-class.html#__init__,Method vdb.renderers.DerefRenderer.__init__()=vdb.renderers.DerefRenderer-class.html#__init__,Method vdb.renderers.OpcodeRenderer.__init__()=vdb.renderers.OpcodeRenderer-class.html#__init__,Method vdb.renderers.SymbolRenderer.__init__()=vdb.renderers.SymbolRenderer-class.html#__init__,Method vdb.stalker.StalkerBlockBreak.__init__()=vdb.stalker.StalkerBlockBreak-class.html#__init__,Method vdb.stalker.StalkerBreak.__init__()=vdb.stalker.StalkerBreak-class.html#__init__,Method vdb.stalker.StalkerCodeFlow.__init__()=vdb.stalker.StalkerCodeFlow-class.html#__init__,Method vdb.stalker.StalkerDynBreak.__init__()=vdb.stalker.StalkerDynBreak-class.html#__init__"><a title="vdb.ScriptThread.__init__
+vdb.Vdb.__init__
+vdb.VdbLookup.__init__
+vdb.VdbTrace.__init__
+vdb.extensions.gdbstub.GdbStubNotifier.__init__
+vdb.gui.VdbFileDescWindow.__init__
+vdb.gui.VdbGui.__init__
+vdb.gui.VdbMainWindow.__init__
+vdb.gui.VdbMemoryMapWindow.__init__
+vdb.gui.VdbMemoryView.__init__
+vdb.gui.VdbMemoryWindow.__init__
+vdb.gui.VdbRegisterWindow.__init__
+vdb.gui.VdbViewWindow.__init__
+vdb.gui.VdbWindow.__init__
+vdb.gui.extensions.windows.VdbHeapRenderer.__init__
+vdb.gui.extensions.windows.VdbHeapWindow.__init__
+vdb.gui.extensions.windows.Win32HeapWindow.__init__
+vdb.qt.windows.VdbMemoryWindow.__init__
+vdb.qt.windows.VdbWindow.__init__
+vdb.recon.ReconBreak.__init__
+vdb.recon.sniper.SniperArgValueBreak.__init__
+vdb.recon.sniper.SniperDynArgBreak.__init__
+vdb.renderers.DerefRenderer.__init__
+vdb.renderers.OpcodeRenderer.__init__
+vdb.renderers.SymbolRenderer.__init__
+vdb.stalker.StalkerBlockBreak.__init__
+vdb.stalker.StalkerBreak.__init__
+vdb.stalker.StalkerCodeFlow.__init__
+vdb.stalker.StalkerDynBreak.__init__" class="py-name" href="#" onclick="return doclink('link-13', '__init__', 'link-13');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_db</tt> <tt class="py-op">=</tt> <tt class="py-name">db</tt> </tt>
+</div><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"> </tt>
+<a name="GdbStubNotifier.notify"></a><div id="GdbStubNotifier.notify-def"><a name="L78"></a><tt class="py-lineno"> 78</tt> <a class="py-toggle" href="#" id="GdbStubNotifier.notify-toggle" onclick="return toggle('GdbStubNotifier.notify');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.extensions.gdbstub.GdbStubNotifier-class.html#notify">notify</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">event</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GdbStubNotifier.notify-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GdbStubNotifier.notify-expanded"><a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">event</tt> <tt class="py-op">!=</tt> <tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name" targets="Variable vdb.gui.NOTIFY_ATTACH=vdb.gui-module.html#NOTIFY_ATTACH"><a title="vdb.gui.NOTIFY_ATTACH" class="py-name" href="#" onclick="return doclink('link-14', 'NOTIFY_ATTACH', 'link-14');">NOTIFY_ATTACH</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">        <tt class="py-name">targarch</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'Architecture'</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-name">gdbplatform</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'GdbPlatform'</tt><tt class="py-op">)</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">        <tt class="py-name">targplatform</tt> <tt class="py-op">=</tt> <tt class="py-name">trace</tt><tt class="py-op">.</tt><tt class="py-name">getMeta</tt><tt class="py-op">(</tt><tt class="py-string">'GdbTargetPlatform'</tt><tt class="py-op">)</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">        <tt class="py-comment">#print 'Target Architecture: %s' % targarch</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">        <tt class="py-comment">#print 'Gdb Platform: %s' % gdbplatform</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">        <tt class="py-comment">#print 'Target Platform: %s' % targplatform</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">gdbplatform</tt> <tt class="py-keyword">in</tt> <tt class="py-op">(</tt><tt class="py-string">'VMware32'</tt><tt class="py-op">,</tt><tt class="py-string">'Qemu32'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">targplatform</tt> <tt class="py-op">==</tt> <tt class="py-string">'Windows'</tt><tt class="py-op">:</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_db</tt><tt class="py-op">.</tt><tt class="py-name">registerCmdExtension</tt><tt class="py-op">(</tt><tt class="py-name">vdb_windows</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name" targets="Function vdb.extensions.windows.aslr()=vdb.extensions.windows-module.html#aslr"><a title="vdb.extensions.windows.aslr" class="py-name" href="#" onclick="return doclink('link-15', 'aslr', 'link-15');">aslr</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_db</tt><tt class="py-op">.</tt><tt class="py-name">registerCmdExtension</tt><tt class="py-op">(</tt><tt class="py-name">vdb_windows</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name" targets="Function vdb.extensions.windows.pe()=vdb.extensions.windows-module.html#pe"><a title="vdb.extensions.windows.pe" class="py-name" href="#" onclick="return doclink('link-16', 'pe', 'link-16');">pe</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_db</tt><tt class="py-op">.</tt><tt class="py-name">registerCmdExtension</tt><tt class="py-op">(</tt><tt id="link-17" class="py-name" targets="Function vdb.extensions.gdbstub.ethread()=vdb.extensions.gdbstub-module.html#ethread"><a title="vdb.extensions.gdbstub.ethread" class="py-name" href="#" onclick="return doclink('link-17', 'ethread', 'link-17');">ethread</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_db</tt><tt class="py-op">.</tt><tt class="py-name">registerCmdExtension</tt><tt class="py-op">(</tt><tt id="link-18" class="py-name" targets="Function vdb.extensions.gdbstub.eprocess()=vdb.extensions.gdbstub-module.html#eprocess"><a title="vdb.extensions.gdbstub.eprocess" class="py-name" href="#" onclick="return doclink('link-18', 'eprocess', 'link-18');">eprocess</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">gdbplatform</tt> <tt class="py-op">==</tt> <tt class="py-string">'OpenOCD'</tt><tt class="py-op">:</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">            <tt class="py-comment"># If we are openocd, lets add some commands for jtag etc..</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">targarch</tt> <tt class="py-op">==</tt> <tt class="py-string">'arm'</tt><tt class="py-op">:</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">                <tt class="py-comment">#import vdb.extensions.arm as vdb_arm</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_db</tt><tt class="py-op">.</tt><tt class="py-name">registerCmdExtension</tt><tt class="py-op">(</tt><tt id="link-19" class="py-name" targets="Function vdb.extensions.gdbstub.armcore()=vdb.extensions.gdbstub-module.html#armcore"><a title="vdb.extensions.gdbstub.armcore" class="py-name" href="#" onclick="return doclink('link-19', 'armcore', 'link-19');">armcore</a></tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line">                <tt class="py-comment">#self._db.registerCmdExtension(vdb_arm.thumb)</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"> </tt>
+<a name="gdbmon"></a><div id="gdbmon-def"><a name="L106"></a><tt class="py-lineno">106</tt> <a class="py-toggle" href="#" id="gdbmon-toggle" onclick="return toggle('gdbmon');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.extensions.gdbstub-module.html#gdbmon">gdbmon</a><tt class="py-op">(</tt><tt class="py-param">db</tt><tt class="py-op">,</tt> <tt class="py-param">line</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="gdbmon-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="gdbmon-expanded"><a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">    <tt class="py-docstring">'''</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-docstring">    Issue a gdb "monitor" command which allows access to the extensions</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-docstring">    inside the gdb stub.</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"><tt class="py-docstring">    Example: gdbmon r fs</tt> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-docstring">    (try: "gdbmon help" for info on supported commands in the target stub)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">do_help</tt><tt class="py-op">(</tt><tt class="py-string">'gdbmon'</tt><tt class="py-op">)</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">    <tt class="py-name">t</tt> <tt class="py-op">=</tt> <tt class="py-name">db</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="vdb.Vdb.getTrace" class="py-name" href="#" onclick="return doclink('link-20', 'getTrace', 'link-3');">getTrace</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">    <tt class="py-comment">#t.requireNotRunning()</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">    <tt class="py-name">resp</tt> <tt class="py-op">=</tt> <tt class="py-name">t</tt><tt class="py-op">.</tt><tt class="py-name">_monitorCommand</tt><tt class="py-op">(</tt><tt class="py-name">line</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">    <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">vprint</tt><tt class="py-op">(</tt><tt class="py-string">'gdb&gt; %s'</tt> <tt class="py-op">%</tt> <tt class="py-name">line</tt><tt class="py-op">)</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">    <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">vprint</tt><tt class="py-op">(</tt><tt class="py-name">resp</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"> </tt>
+<a name="vdbExtension"></a><div id="vdbExtension-def"><a name="L123"></a><tt class="py-lineno">123</tt> <a class="py-toggle" href="#" id="vdbExtension-toggle" onclick="return toggle('vdbExtension');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="vdb.extensions.gdbstub-module.html#vdbExtension">vdbExtension</a><tt class="py-op">(</tt><tt class="py-param">db</tt><tt class="py-op">,</tt> <tt class="py-param">trace</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="vdbExtension-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="vdbExtension-expanded"><a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">    <tt class="py-name">notif</tt> <tt class="py-op">=</tt> <tt id="link-21" class="py-name" targets="Class vdb.extensions.gdbstub.GdbStubNotifier=vdb.extensions.gdbstub.GdbStubNotifier-class.html"><a title="vdb.extensions.gdbstub.GdbStubNotifier" class="py-name" href="#" onclick="return doclink('link-21', 'GdbStubNotifier', 'link-21');">GdbStubNotifier</a></tt><tt class="py-op">(</tt><tt class="py-name">db</tt><tt class="py-op">)</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">    <tt class="py-name">db</tt><tt class="py-op">.</tt><tt class="py-name">registerCmdExtension</tt><tt class="py-op">(</tt><tt id="link-22" class="py-name" targets="Function vdb.extensions.gdbstub.gdbmon()=vdb.extensions.gdbstub-module.html#gdbmon"><a title="vdb.extensions.gdbstub.gdbmon" class="py-name" href="#" onclick="return doclink('link-22', 'gdbmon', 'link-22');">gdbmon</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">    <tt class="py-name">db</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name" targets="Method vdb.VdbTrace.registerNotifier()=vdb.VdbTrace-class.html#registerNotifier"><a title="vdb.VdbTrace.registerNotifier" class="py-name" href="#" onclick="return doclink('link-23', 'registerNotifier', 'link-23');">registerNotifier</a></tt><tt class="py-op">(</tt><tt class="py-name">vtrace</tt><tt class="py-op">.</tt><tt id="link-24" class="py-name"><a title="vdb.gui.NOTIFY_ATTACH" class="py-name" href="#" onclick="return doclink('link-24', 'NOTIFY_ATTACH', 'link-14');">NOTIFY_ATTACH</a></tt><tt class="py-op">,</tt> <tt class="py-name">notif</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="vdb-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:44:15 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vdb.extensions.gdbstub &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vdb.extensions" href="../extensions.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../extensions.html" accesskey="U">vdb.extensions</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vdb.extensions.gdbstub</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">vtrace</span>
+<span class="kn">import</span> <span class="nn">vdb.extensions.windows</span> <span class="kn">as</span> <span class="nn">vdb_windows</span>
+
+<span class="k">def</span> <span class="nf">ethread</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+<div class="viewcode-block" id="ethread"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.gdbstub.ethread">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Display information about the currently stopped ethread.</span>
+
+<span class="sd">    Usage: ethread</span>
+<span class="sd">    #FIXME support listing them</span>
+<span class="sd">    #FIXME support ethread interp arbitrary address</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+    <span class="n">fsbase</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getVariable</span><span class="p">(</span><span class="s">&#39;fsbase&#39;</span><span class="p">)</span>
+    <span class="n">kpcr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.KPCR&#39;</span><span class="p">,</span> <span class="n">fsbase</span><span class="p">)</span>
+    <span class="n">ethraddr</span> <span class="o">=</span> <span class="n">kpcr</span><span class="o">.</span><span class="n">PrcbData</span><span class="o">.</span><span class="n">CurrentThread</span>
+    <span class="n">ethr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.ETHREAD&#39;</span><span class="p">,</span> <span class="n">ethraddr</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">ethr</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">va</span><span class="o">=</span><span class="n">ethraddr</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">eprocess</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span></div>
+<div class="viewcode-block" id="eprocess"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.gdbstub.eprocess">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Display information about the currently stopped eprocess.</span>
+
+<span class="sd">    Usage: eprocess</span>
+<span class="sd">    #FIXME support listing</span>
+<span class="sd">    #FIXME support eprocess interp address</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+    <span class="n">fsbase</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getVariable</span><span class="p">(</span><span class="s">&#39;fsbase&#39;</span><span class="p">)</span>
+    <span class="n">kpcr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.KPCR&#39;</span><span class="p">,</span> <span class="n">fsbase</span><span class="p">)</span>
+    <span class="n">ethraddr</span> <span class="o">=</span> <span class="n">kpcr</span><span class="o">.</span><span class="n">PrcbData</span><span class="o">.</span><span class="n">CurrentThread</span>
+    <span class="n">ethr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.ETHREAD&#39;</span><span class="p">,</span> <span class="n">ethraddr</span><span class="p">)</span>
+    <span class="n">eprocaddr</span> <span class="o">=</span> <span class="n">ethr</span><span class="o">.</span><span class="n">Tcb</span><span class="o">.</span><span class="n">ApcState</span><span class="o">.</span><span class="n">Process</span>
+    <span class="n">eproc</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.EPROCESS&#39;</span><span class="p">,</span> <span class="n">eprocaddr</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">eproc</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">va</span><span class="o">=</span><span class="n">eprocaddr</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">kpcr</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span></div>
+<div class="viewcode-block" id="kpcr"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.gdbstub.kpcr">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Show the kpcr structure for the currently stopped kernel.</span>
+
+<span class="sd">    Usage: kpcr</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+    <span class="n">fsbase</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_getVmwareReg</span><span class="p">(</span><span class="s">&#39;fs&#39;</span><span class="p">)</span>
+    <span class="n">kpcr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">getStruct</span><span class="p">(</span><span class="s">&#39;nt.KPCR&#39;</span><span class="p">,</span> <span class="n">fsbase</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">kpcr</span><span class="o">.</span><span class="n">tree</span><span class="p">(</span><span class="n">va</span><span class="o">=</span><span class="n">fsbase</span><span class="p">))</span>
+
+<span class="c"># FIXME do we need to make gdbstub a package so it can have subs?</span>
+
+<span class="k">def</span> <span class="nf">armcore</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span></div>
+<div class="viewcode-block" id="armcore"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.gdbstub.armcore">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Show / set the &#39;mode&#39; of the arm core between arm and thumb.</span>
+
+<span class="sd">    Usage: armcore [arm|thumb]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">requireNotRunning</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">line</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;arm&#39;</span><span class="p">,</span><span class="s">&#39;thumb&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;armcore&#39;</span><span class="p">)</span>
+        <span class="n">cmdstr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_monitorCommand</span><span class="p">(</span><span class="s">&#39;arm core_state </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cmdstr</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_monitorCommand</span><span class="p">(</span><span class="s">&#39;arm core_state&#39;</span><span class="p">)</span>
+
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">cmdstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;:&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;Arm Core Mode: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">GdbStubNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GdbStubNotifier"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.gdbstub.GdbStubNotifier">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db</span><span class="p">):</span>
+        <span class="n">vtrace</span><span class="o">.</span><span class="n">Notifier</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">db</span>
+
+    <span class="k">def</span> <span class="nf">notify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="GdbStubNotifier.notify"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.gdbstub.GdbStubNotifier.notify">[docs]</a>        <span class="k">if</span> <span class="n">event</span> <span class="o">!=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">targarch</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;Architecture&#39;</span><span class="p">)</span>
+        <span class="n">gdbplatform</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;GdbPlatform&#39;</span><span class="p">)</span>
+        <span class="n">targplatform</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&#39;GdbTargetPlatform&#39;</span><span class="p">)</span>
+
+        <span class="c">#print &#39;Target Architecture: %s&#39; % targarch</span>
+        <span class="c">#print &#39;Gdb Platform: %s&#39; % gdbplatform</span>
+        <span class="c">#print &#39;Target Platform: %s&#39; % targplatform</span>
+
+        <span class="k">if</span> <span class="n">gdbplatform</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;VMware32&#39;</span><span class="p">,</span><span class="s">&#39;Qemu32&#39;</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">targplatform</span> <span class="o">==</span> <span class="s">&#39;Windows&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">vdb_windows</span><span class="o">.</span><span class="n">aslr</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">vdb_windows</span><span class="o">.</span><span class="n">pe</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">ethread</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">eprocess</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">gdbplatform</span> <span class="o">==</span> <span class="s">&#39;OpenOCD&#39;</span><span class="p">:</span>
+
+            <span class="c"># If we are openocd, lets add some commands for jtag etc..</span>
+            <span class="k">if</span> <span class="n">targarch</span> <span class="o">==</span> <span class="s">&#39;arm&#39;</span><span class="p">:</span>
+                <span class="c">#import vdb.extensions.arm as vdb_arm</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">armcore</span><span class="p">)</span>
+                <span class="c">#self._db.registerCmdExtension(vdb_arm.thumb)</span>
+
+<span class="k">def</span> <span class="nf">gdbmon</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span></div></div>
+<div class="viewcode-block" id="gdbmon"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.gdbstub.gdbmon">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Issue a gdb &quot;monitor&quot; command which allows access to the extensions</span>
+<span class="sd">    inside the gdb stub.</span>
+
+<span class="sd">    Example: gdbmon r fs</span>
+
+<span class="sd">    (try: &quot;gdbmon help&quot; for info on supported commands in the target stub)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">db</span><span class="o">.</span><span class="n">do_help</span><span class="p">(</span><span class="s">&#39;gdbmon&#39;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+    <span class="c">#t.requireNotRunning()</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">_monitorCommand</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="s">&#39;gdb&gt; </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">line</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">vprint</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">vdbExtension</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">trace</span><span class="p">):</span></div>
+<div class="viewcode-block" id="vdbExtension"><a class="viewcode-back" href="../../../vdb.extensions.html#vdb.extensions.gdbstub.vdbExtension">[docs]</a>    <span class="n">notif</span> <span class="o">=</span> <span class="n">GdbStubNotifier</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerCmdExtension</span><span class="p">(</span><span class="n">gdbmon</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">registerNotifier</span><span class="p">(</span><span class="n">vtrace</span><span class="o">.</span><span class="n">NOTIFY_ATTACH</span><span class="p">,</span> <span class="n">notif</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vdb.html" >vdb</a> &raquo;</li>
+          <li><a href="../extensions.html" >vdb.extensions</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

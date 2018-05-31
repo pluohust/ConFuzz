@@ -1,0 +1,448 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>envi.memcanvas &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../index.html" />
+    <link rel="up" title="envi" href="../envi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" accesskey="U">envi</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for envi.memcanvas</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The envi.memcanvas module is the home of the base MemoryRenderer object and</span>
+<span class="sd">MemoryCanvas objects.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+
+<span class="kn">import</span> <span class="nn">envi</span>
+<span class="kn">import</span> <span class="nn">envi.memory</span> <span class="kn">as</span> <span class="nn">e_mem</span>
+<span class="kn">import</span> <span class="nn">envi.resolver</span> <span class="kn">as</span> <span class="nn">e_resolv</span>
+
+<div class="viewcode-block" id="MemoryRenderer"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryRenderer">[docs]</a><span class="k">class</span> <span class="nc">MemoryRenderer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A top level object for all memory renderers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MemoryRenderer.rendSymbol"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryRenderer.rendSymbol">[docs]</a>    <span class="k">def</span> <span class="nf">rendSymbol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcanv</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If there is a symbolic name for the current va, print it...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sym</span> <span class="o">=</span> <span class="n">mcanv</span><span class="o">.</span><span class="n">syms</span><span class="o">.</span><span class="n">getSymByAddr</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sym</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">mcanv</span><span class="o">.</span><span class="n">addVaText</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="nb">repr</span><span class="p">(</span><span class="n">sym</span><span class="p">),</span> <span class="n">va</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryRenderer.rendVa"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryRenderer.rendVa">[docs]</a>    <span class="k">def</span> <span class="nf">rendVa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcanv</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="n">mcanv</span><span class="o">.</span><span class="n">getVaTag</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="n">mcanv</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%.8x</span><span class="s">:&quot;</span> <span class="o">%</span> <span class="n">va</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryRenderer.rendChars"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryRenderer.rendChars">[docs]</a>    <span class="k">def</span> <span class="nf">rendChars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcanv</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">bytes</span><span class="p">:</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">bstr</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%.2x</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">val</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mh">0x20</span> <span class="ow">or</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="mh">0x7e</span><span class="p">:</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="s">&quot;.&quot;</span>
+            <span class="n">mcanv</span><span class="o">.</span><span class="n">addNameText</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">bstr</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryRenderer.render"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryRenderer.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcanv</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render one &quot;unit&quot; and return the size you ate.</span>
+<span class="sd">        mcanv will be a MemoryCanvas extender and va</span>
+<span class="sd">        is the virtual address you are expected to render.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Implement render!&quot;</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="MemoryCanvas"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas">[docs]</a><span class="k">class</span> <span class="nc">MemoryCanvas</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A memory canvas is a place where the textual representation</span>
+<span class="sd">    of memory will be displayed. The methods implemented here show</span>
+<span class="sd">    how a memory canvas which simply prints would be implemented.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">syms</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">syms</span> <span class="o">=</span> <span class="n">e_resolv</span><span class="o">.</span><span class="n">SymbolResolver</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mem</span> <span class="o">=</span> <span class="n">mem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">syms</span> <span class="o">=</span> <span class="n">syms</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currend</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_scrolled</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_navcallback</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="c"># A few things for tracking renders.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_beginva</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_endva</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="MemoryCanvas.setScrolledCanvas"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.setScrolledCanvas">[docs]</a>    <span class="k">def</span> <span class="nf">setScrolledCanvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scroll</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_scrolled</span> <span class="o">=</span> <span class="n">scroll</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.write"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+        <span class="c"># So a canvas can act like simple standard out</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.setNavCallback"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.setNavCallback">[docs]</a>    <span class="k">def</span> <span class="nf">setNavCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set a navigation &quot;callback&quot; that will be called with</span>
+<span class="sd">        a memory expression as it&#39;s first argument anytime the</span>
+<span class="sd">        canvas recieves user input which desires nav...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_navcallback</span> <span class="o">=</span> <span class="n">callback</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.addRenderer"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.addRenderer">[docs]</a>    <span class="k">def</span> <span class="nf">addRenderer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">rend</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">rend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currend</span> <span class="o">=</span> <span class="n">rend</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.getRenderer"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.getRenderer">[docs]</a>    <span class="k">def</span> <span class="nf">getRenderer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.getRendererNames"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.getRendererNames">[docs]</a>    <span class="k">def</span> <span class="nf">getRendererNames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.setRenderer"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.setRenderer">[docs]</a>    <span class="k">def</span> <span class="nf">setRenderer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">rend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">renderers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rend</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Unknown renderer: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currend</span> <span class="o">=</span> <span class="n">rend</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.getTag"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.getTag">[docs]</a>    <span class="k">def</span> <span class="nf">getTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">typename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a non-named tag (doesn&#39;t highlight or do</span>
+<span class="sd">        anything particularly special, but allows color</span>
+<span class="sd">        by typename).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.getNameTag"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.getNameTag">[docs]</a>    <span class="k">def</span> <span class="nf">getNameTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a &quot;tag&quot; object for a name.  &quot;Name&quot; tags will</span>
+<span class="sd">        (if possible) be highlighted in the rendered interface</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span> <span class="c"># No highlighting in plain text</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.getVaTag"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.getVaTag">[docs]</a>    <span class="k">def</span> <span class="nf">getVaTag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a tag object suitable for showing that the text</span>
+<span class="sd">        added with this tag should link through to the specified</span>
+<span class="sd">        virtual address in the memory canvas.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">None</span> <span class="c"># No linking in plain text</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.addText"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.addText">[docs]</a>    <span class="k">def</span> <span class="nf">addText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add text to the canvas with a specified tag.</span>
+
+<span class="sd">        NOTE: Implementors should probably check _canv_scrolled to</span>
+<span class="sd">        decide if they should scroll to the end of the view...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">encoding</span><span class="p">,</span><span class="s">&#39;replace&#39;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.addNameText"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.addNameText">[docs]</a>    <span class="k">def</span> <span class="nf">addNameText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNameTag</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">typename</span><span class="o">=</span><span class="n">typename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.addVaText"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.addVaText">[docs]</a>    <span class="k">def</span> <span class="nf">addVaText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getVaTag</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.render"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.render">[docs]</a>    <span class="k">def</span> <span class="nf">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Depricated!  use renderMemory!&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.clearCanvas"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.clearCanvas">[docs]</a>    <span class="k">def</span> <span class="nf">clearCanvas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+    <span class="k">def</span> <span class="nf">_beginRenderMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_endRenderMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_beginRenderVa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_endRenderVa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_beginUpdateVas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">valist</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Default canvas cant update!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_endUpdateVas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_beginRenderAppend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Default canvas cant append!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_endRenderAppend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_beginRenderPrepend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Default canvas cant prepend!&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_endRenderPrepend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_isRendered</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">maxva</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns true if any part of the current render overlaps</span>
+<span class="sd">        with the specified region.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_beginva</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_endva</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="n">va</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_endva</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">if</span> <span class="n">maxva</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_beginva</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+        <span class="k">return</span> <span class="bp">True</span>
+
+<div class="viewcode-block" id="MemoryCanvas.renderMemoryUpdate"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.renderMemoryUpdate">[docs]</a>    <span class="k">def</span> <span class="nf">renderMemoryUpdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+
+        <span class="n">maxva</span> <span class="o">=</span> <span class="n">va</span> <span class="o">+</span> <span class="n">size</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_isRendered</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">maxva</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="c"># Find the index of the first and last change</span>
+        <span class="n">iend</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ibegin</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">rendva</span><span class="p">,</span><span class="n">rendsize</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">ibegin</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">va</span> <span class="o">&lt;=</span> <span class="n">rendva</span><span class="p">:</span>
+                <span class="n">ibegin</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="k">if</span> <span class="n">iend</span> <span class="o">==</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">maxva</span> <span class="o">&lt;=</span> <span class="n">rendva</span><span class="p">:</span>
+                <span class="n">iend</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="k">if</span> <span class="n">ibegin</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">iend</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="n">saved_last</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="p">[</span><span class="n">iend</span><span class="p">:]</span>
+        <span class="n">saved_first</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="p">[:</span><span class="n">ibegin</span><span class="p">]</span>
+        <span class="n">updatedvas</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="p">[</span><span class="n">ibegin</span><span class="p">:</span><span class="n">iend</span><span class="p">]</span>
+        <span class="c">#print &#39;IBEGIN&#39;,hex(ibegin)</span>
+        <span class="c">#print &#39;IEND&#39;,hex(iend)</span>
+        <span class="c">#print &#39;FIRST&#39;,repr([hex(va) for va in saved_first])</span>
+        <span class="c">#print &#39;UPDATED&#39;,repr([hex(va) for va in updatedvas])</span>
+        <span class="c">#print &#39;LAST&#39;,repr([hex(va) for va in saved_last])</span>
+
+        <span class="c"># We must actually start rendering from the beginning</span>
+        <span class="c"># of the first updated VA index</span>
+        <span class="n">startva</span> <span class="o">=</span> <span class="n">updatedvas</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">endva</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_endva</span>
+        <span class="k">if</span> <span class="n">saved_last</span><span class="p">:</span>
+            <span class="n">endva</span> <span class="o">=</span> <span class="n">saved_last</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">newrendvas</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beginUpdateVas</span><span class="p">(</span><span class="n">updatedvas</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">while</span> <span class="n">startva</span> <span class="o">&lt;</span> <span class="n">endva</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_beginRenderVa</span><span class="p">(</span><span class="n">startva</span><span class="p">)</span>
+                <span class="n">rsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">currend</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">startva</span><span class="p">)</span>
+                <span class="n">newrendvas</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">startva</span><span class="p">,</span><span class="n">rsize</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_endRenderVa</span><span class="p">(</span><span class="n">startva</span><span class="p">)</span>
+                <span class="n">startva</span> <span class="o">+=</span> <span class="n">rsize</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Exception At </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">va</span><span class="p">),</span><span class="n">s</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span> <span class="o">=</span> <span class="n">saved_first</span> <span class="o">+</span> <span class="n">newrendvas</span> <span class="o">+</span> <span class="n">saved_last</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endUpdateVas</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.renderMemoryPrepend"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.renderMemoryPrepend">[docs]</a>    <span class="k">def</span> <span class="nf">renderMemoryPrepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">firstva</span><span class="p">,</span> <span class="n">firstsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">va</span> <span class="o">=</span> <span class="n">firstva</span> <span class="o">-</span> <span class="n">size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beginRenderPrepend</span><span class="p">()</span>
+
+        <span class="n">savedrendvas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canv_beginva</span> <span class="o">=</span> <span class="n">va</span>
+
+        <span class="n">rend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">currend</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">while</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">firstva</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_beginRenderVa</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+                <span class="n">rsize</span> <span class="o">=</span> <span class="n">rend</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">va</span><span class="p">,</span><span class="n">rsize</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_endRenderVa</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+                <span class="n">va</span> <span class="o">+=</span> <span class="n">rsize</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">savedrendvas</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Exception At </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">va</span><span class="p">),</span><span class="n">s</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endRenderPrepend</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.renderMemoryAppend"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.renderMemoryAppend">[docs]</a>    <span class="k">def</span> <span class="nf">renderMemoryAppend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">lastva</span><span class="p">,</span> <span class="n">lastsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">va</span> <span class="o">=</span> <span class="n">lastva</span> <span class="o">+</span> <span class="n">lastsize</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beginRenderAppend</span><span class="p">()</span>
+
+        <span class="n">rend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">currend</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">maxva</span> <span class="o">=</span> <span class="n">va</span> <span class="o">+</span> <span class="n">size</span>
+            <span class="k">while</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">maxva</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_beginRenderVa</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+                <span class="n">rsize</span> <span class="o">=</span> <span class="n">rend</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">va</span><span class="p">,</span><span class="n">rsize</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_endRenderVa</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+                <span class="n">va</span> <span class="o">+=</span> <span class="n">rsize</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canv_endva</span> <span class="o">=</span> <span class="n">maxva</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Exception At </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">va</span><span class="p">),</span><span class="n">s</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endRenderAppend</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="MemoryCanvas.renderMemory"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.MemoryCanvas.renderMemory">[docs]</a>    <span class="k">def</span> <span class="nf">renderMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+            <span class="c"># if this is not a &quot;scrolled&quot; canvas, clear it.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canv_scrolled</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clearCanvas</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">rend</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">rend</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">currend</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">currend</span> <span class="o">=</span> <span class="n">rend</span>
+
+            <span class="c"># Set our canvas render tracking variables.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canv_beginva</span> <span class="o">=</span> <span class="n">va</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canv_endva</span> <span class="o">=</span> <span class="n">va</span> <span class="o">+</span> <span class="n">size</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c"># A callback for &quot;bulk&quot; rendering (let the canvas cache...)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_beginRenderMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">maxva</span> <span class="o">=</span> <span class="n">va</span> <span class="o">+</span> <span class="n">size</span>
+                <span class="k">while</span> <span class="n">va</span> <span class="o">&lt;</span> <span class="n">maxva</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_beginRenderVa</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+                    <span class="n">rsize</span> <span class="o">=</span> <span class="n">rend</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">va</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_canv_rendvas</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">va</span><span class="p">,</span><span class="n">rsize</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_endRenderVa</span><span class="p">(</span><span class="n">va</span><span class="p">)</span>
+                    <span class="n">va</span> <span class="o">+=</span> <span class="n">rsize</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">format_exc</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addText</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Exception At </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="n">va</span><span class="p">),</span><span class="n">s</span><span class="p">))</span>
+
+            <span class="c"># Canvas callback for render completion (or error...)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_endRenderMemory</span><span class="p">(</span><span class="n">va</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">rend</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="StringMemoryCanvas"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.StringMemoryCanvas">[docs]</a><span class="k">class</span> <span class="nc">StringMemoryCanvas</span><span class="p">(</span><span class="n">MemoryCanvas</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">MemoryCanvas</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mem</span><span class="p">,</span> <span class="n">syms</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strval</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+
+<div class="viewcode-block" id="StringMemoryCanvas.addText"><a class="viewcode-back" href="../../envi.memcanvas.html#envi.memcanvas.StringMemoryCanvas.addText">[docs]</a>    <span class="k">def</span> <span class="nf">addText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strval</span> <span class="o">+=</span> <span class="n">text</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strval</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../envi.html" >envi</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

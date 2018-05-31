@@ -1,0 +1,543 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Elf Package &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="elf-package">
+<h1>Elf Package<a class="headerlink" href="#elf-package" title="Permalink to this headline">¶</a></h1>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The documentation for Elf hasn&#8217;t been touched yet! If you want to contribute (or have ideas for better documentation), feel free to <a class="reference external" href="https://github.com/Fitblip/vdb-fork">send me a pull request</a> or <a class="reference external" href="https://github.com/Fitblip">email me</a>.</p>
+</div>
+<div class="section" id="id1">
+<h2><a class="reference internal" href="#module-Elf" title="Elf"><tt class="xref py py-mod docutils literal"><span class="pre">Elf</span></tt></a> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-Elf"></span><p>Kenshoto&#8217;s Elf parser</p>
+<p>This package will let you use programatic ninja-fu
+when trying to parse Elf binaries.  The API is based
+around several objects representing constructs in the
+Elf binary format.  The Elf object itself contains
+parsed metadata and lists of things like section headers
+and relocation entries.  Additionally, most of the
+objects implement repr() in some form or another which
+allows you a bunch of readelf-like functionality.</p>
+<p><em>Eventually</em> this API will allow you to modify Elf binaries
+and spit them back out in working order (not complete, you
+may notice some of the initial code).</p>
+<p>Send bug reports to Invisigoth or Metr0.</p>
+<dl class="class">
+<dt id="Elf.Elf">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf</tt><big>(</big><em>fd</em>, <em>inmem=False</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf32" title="vstruct.defs.elf.Elf32"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf32</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf64" title="vstruct.defs.elf.Elf64"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf64</span></tt></a></p>
+<dl class="method">
+<dt id="Elf.Elf.addSymbol">
+<tt class="descname">addSymbol</tt><big>(</big><em>symbol</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.addSymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.addSymbol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getBaseAddress">
+<tt class="descname">getBaseAddress</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getBaseAddress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getBaseAddress" title="Permalink to this definition">¶</a></dt>
+<dd><p>For prelinked and main-exe elf binaries, return the
+value for the loaded base address...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getDynSyms">
+<tt class="descname">getDynSyms</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getDynSyms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getDynSyms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of dynamic symbol objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getDynamics">
+<tt class="descname">getDynamics</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getDynamics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getDynamics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the dynamics.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getPheaders">
+<tt class="descname">getPheaders</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getPheaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getPheaders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the program headers for this elf</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getRelocTypeName">
+<tt class="descname">getRelocTypeName</tt><big>(</big><em>rtype</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getRelocTypeName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getRelocTypeName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Because relocation type names are decided based on the
+arch, only the Elf knows for sure...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getRelocs">
+<tt class="descname">getRelocs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getRelocs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getRelocs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of relocations.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getSection">
+<tt class="descname">getSection</tt><big>(</big><em>secname</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getSection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getSectionBytes">
+<tt class="descname">getSectionBytes</tt><big>(</big><em>secname</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getSectionBytes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getSectionBytes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getSections">
+<tt class="descname">getSections</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getSections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getSections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the array of sections for this Elf</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getStrtabString">
+<tt class="descname">getStrtabString</tt><big>(</big><em>offset</em>, <em>section='.strtab'</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getStrtabString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getStrtabString" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.getSymbols">
+<tt class="descname">getSymbols</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.getSymbols"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.getSymbols" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.isPreLinked">
+<tt class="descname">isPreLinked</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.isPreLinked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.isPreLinked" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the Elf binary is prelinked.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.isSharedObject">
+<tt class="descname">isSharedObject</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.isSharedObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.isSharedObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the given Elf binary is a dynamically shared
+object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.lookupSymbolAddr">
+<tt class="descname">lookupSymbolAddr</tt><big>(</big><em>address</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.lookupSymbolAddr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.lookupSymbolAddr" title="Permalink to this definition">¶</a></dt>
+<dd><p>lookup symbols from this elf binary by address.
+This returns the name for the given symbol or None for not found</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.lookupSymbolName">
+<tt class="descname">lookupSymbolName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.lookupSymbolName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.lookupSymbolName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lookup symbol entries in this elf binary by name.  The result is
+a long representing the address for the given symbol. Or None if
+it&#8217;s not found.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.readAtOffset">
+<tt class="descname">readAtOffset</tt><big>(</big><em>off</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.readAtOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.readAtOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read from the given file offset.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.readAtRva">
+<tt class="descname">readAtRva</tt><big>(</big><em>rva</em>, <em>size</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.readAtRva"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.readAtRva" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the file offset for the given RVA and
+read from it...</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.rvaToOffset">
+<tt class="descname">rvaToOffset</tt><big>(</big><em>rva</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.rvaToOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.rvaToOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert an RVA for this ELF binary to a file offset.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.Elf.verbrepr">
+<tt class="descname">verbrepr</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf.verbrepr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf.verbrepr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf32Dynamic">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf32Dynamic</tt><a class="reference internal" href="_modules/Elf.html#Elf32Dynamic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf32Dynamic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfDynamic" title="Elf.ElfDynamic"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfDynamic</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf32Dynamic" title="vstruct.defs.elf.Elf32Dynamic"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf32Dynamic</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf32Pheader">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf32Pheader</tt><a class="reference internal" href="_modules/Elf.html#Elf32Pheader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf32Pheader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfPheader" title="Elf.ElfPheader"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfPheader</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf32Pheader" title="vstruct.defs.elf.Elf32Pheader"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf32Pheader</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf32Reloc">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf32Reloc</tt><big>(</big><em>r_types</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf32Reloc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf32Reloc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfReloc" title="Elf.ElfReloc"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfReloc</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf32Reloc" title="vstruct.defs.elf.Elf32Reloc"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf32Reloc</span></tt></a></p>
+<dl class="method">
+<dt id="Elf.Elf32Reloc.getSymTabIndex">
+<tt class="descname">getSymTabIndex</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf32Reloc.getSymTabIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf32Reloc.getSymTabIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf32Reloca">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf32Reloca</tt><big>(</big><em>r_types</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf32Reloca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf32Reloca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfReloc" title="Elf.ElfReloc"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfReloc</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf32Reloca" title="vstruct.defs.elf.Elf32Reloca"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf32Reloca</span></tt></a></p>
+<dl class="method">
+<dt id="Elf.Elf32Reloca.getSymTabIndex">
+<tt class="descname">getSymTabIndex</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf32Reloca.getSymTabIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf32Reloca.getSymTabIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf32Section">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf32Section</tt><a class="reference internal" href="_modules/Elf.html#Elf32Section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf32Section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfSection" title="Elf.ElfSection"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfSection</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf32Section" title="vstruct.defs.elf.Elf32Section"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf32Section</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf32Symbol">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf32Symbol</tt><a class="reference internal" href="_modules/Elf.html#Elf32Symbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf32Symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfSymbol" title="Elf.ElfSymbol"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfSymbol</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf32Symbol" title="vstruct.defs.elf.Elf32Symbol"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf32Symbol</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf64Dynamic">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf64Dynamic</tt><a class="reference internal" href="_modules/Elf.html#Elf64Dynamic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf64Dynamic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfDynamic" title="Elf.ElfDynamic"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfDynamic</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf64Dynamic" title="vstruct.defs.elf.Elf64Dynamic"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf64Dynamic</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf64Pheader">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf64Pheader</tt><a class="reference internal" href="_modules/Elf.html#Elf64Pheader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf64Pheader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfPheader" title="Elf.ElfPheader"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfPheader</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf64Pheader" title="vstruct.defs.elf.Elf64Pheader"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf64Pheader</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf64Reloc">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf64Reloc</tt><big>(</big><em>r_types</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf64Reloc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf64Reloc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfReloc" title="Elf.ElfReloc"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfReloc</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf64Reloc" title="vstruct.defs.elf.Elf64Reloc"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf64Reloc</span></tt></a></p>
+<dl class="method">
+<dt id="Elf.Elf64Reloc.getSymTabIndex">
+<tt class="descname">getSymTabIndex</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf64Reloc.getSymTabIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf64Reloc.getSymTabIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf64Reloca">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf64Reloca</tt><big>(</big><em>r_types</em><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf64Reloca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf64Reloca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfReloc" title="Elf.ElfReloc"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfReloc</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf64Reloca" title="vstruct.defs.elf.Elf64Reloca"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf64Reloca</span></tt></a></p>
+<dl class="method">
+<dt id="Elf.Elf64Reloca.getSymTabIndex">
+<tt class="descname">getSymTabIndex</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#Elf64Reloca.getSymTabIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf64Reloca.getSymTabIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf64Section">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf64Section</tt><a class="reference internal" href="_modules/Elf.html#Elf64Section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf64Section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfSection" title="Elf.ElfSection"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfSection</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf64Section" title="vstruct.defs.elf.Elf64Section"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf64Section</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.Elf64Symbol">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">Elf64Symbol</tt><a class="reference internal" href="_modules/Elf.html#Elf64Symbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.Elf64Symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Elf.ElfSymbol" title="Elf.ElfSymbol"><tt class="xref py py-class docutils literal"><span class="pre">Elf.ElfSymbol</span></tt></a>, <a class="reference internal" href="vstruct.defs.html#vstruct.defs.elf.Elf64Symbol" title="vstruct.defs.elf.Elf64Symbol"><tt class="xref py py-class docutils literal"><span class="pre">vstruct.defs.elf.Elf64Symbol</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.ElfDynamic">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">ElfDynamic</tt><big>(</big><em>bytes=None</em><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfDynamic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfDynamic" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Elf.ElfDynamic.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfDynamic.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfDynamic.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfDynamic.getTypeName">
+<tt class="descname">getTypeName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfDynamic.getTypeName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfDynamic.getTypeName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="Elf.ElfDynamic.has_string">
+<tt class="descname">has_string</tt><em class="property"> = [1, 14]</em><a class="headerlink" href="#Elf.ElfDynamic.has_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object to represent an Elf dynamic entry.
+(linker/loader directives)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfDynamic.setName">
+<tt class="descname">setName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfDynamic.setName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfDynamic.setName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.ElfPheader">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">ElfPheader</tt><a class="reference internal" href="_modules/Elf.html#ElfPheader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfPheader" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Elf.ElfPheader.getTypeName">
+<tt class="descname">getTypeName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfPheader.getTypeName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfPheader.getTypeName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.ElfReloc">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">ElfReloc</tt><big>(</big><em>r_types</em><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfReloc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfReloc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Elf relocation entries consist mostly of &#8220;fixup&#8221; address which
+are taken care of by the loader at runtime.  Things like
+GOT entries, PLT jmp codes etc all have an Elf relocation
+entry.</p>
+<dl class="method">
+<dt id="Elf.ElfReloc.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfReloc.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfReloc.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfReloc.getType">
+<tt class="descname">getType</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfReloc.getType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfReloc.getType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfReloc.getTypeName">
+<tt class="descname">getTypeName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfReloc.getTypeName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfReloc.getTypeName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfReloc.setName">
+<tt class="descname">setName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfReloc.setName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfReloc.setName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.ElfSection">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">ElfSection</tt><a class="reference internal" href="_modules/Elf.html#ElfSection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfSection" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Elf.ElfSection.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfSection.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfSection.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfSection.setName">
+<tt class="descname">setName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfSection.setName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfSection.setName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Elf.ElfSymbol">
+<em class="property">class </em><tt class="descclassname">Elf.</tt><tt class="descname">ElfSymbol</tt><a class="reference internal" href="_modules/Elf.html#ElfSymbol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfSymbol" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="Elf.ElfSymbol.getInfoBind">
+<tt class="descname">getInfoBind</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfSymbol.getInfoBind"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfSymbol.getInfoBind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfSymbol.getInfoType">
+<tt class="descname">getInfoType</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfSymbol.getInfoType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfSymbol.getInfoType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfSymbol.getName">
+<tt class="descname">getName</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfSymbol.getName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfSymbol.getName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="Elf.ElfSymbol.setName">
+<tt class="descname">setName</tt><big>(</big><em>name</em><big>)</big><a class="reference internal" href="_modules/Elf.html#ElfSymbol.setName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.ElfSymbol.setName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="Elf.elfFromBytes">
+<tt class="descclassname">Elf.</tt><tt class="descname">elfFromBytes</tt><big>(</big><em>fbytes</em><big>)</big><a class="headerlink" href="#Elf.elfFromBytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Elf class for a string of bytes. Basically just passes 
+your bytes into a StringIO() and hands that off to <a class="reference internal" href="#Elf.Elf" title="Elf.Elf"><tt class="xref py py-class docutils literal"><span class="pre">Elf.Elf</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fbytes</strong> (<em>str.</em>) &#8211; The bytestring comprising the Elf.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#Elf.Elf" title="Elf.Elf"><tt class="xref py py-class docutils literal"><span class="pre">Elf.Elf</span></tt></a> instance of the specified Elf.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#Elf.Elf" title="Elf.Elf"><tt class="xref py py-class docutils literal"><span class="pre">Elf.Elf</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Elf.elfFromFileName">
+<tt class="descclassname">Elf.</tt><tt class="descname">elfFromFileName</tt><big>(</big><em>fname</em><big>)</big><a class="headerlink" href="#Elf.elfFromFileName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an Elf class for a specified file path. Makes sure to open 
+the file in &#8220;rb&#8221; mode to read binary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str.</em>) &#8211; The filename of our Elf.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#Elf.Elf" title="Elf.Elf"><tt class="xref py py-class docutils literal"><span class="pre">Elf.Elf</span></tt></a> instance of the specified Elf.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#Elf.Elf" title="Elf.Elf"><tt class="xref py py-class docutils literal"><span class="pre">Elf.Elf</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Elf.elfFromMemoryObject">
+<tt class="descclassname">Elf.</tt><tt class="descname">elfFromMemoryObject</tt><big>(</big><em>memobj</em>, <em>baseaddr</em><big>)</big><a class="headerlink" href="#Elf.elfFromMemoryObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Elf class for a string of bytes. Basically just passes 
+your bytes into a StringIO() and hands that off to <a class="reference internal" href="#Elf.Elf" title="Elf.Elf"><tt class="xref py py-class docutils literal"><span class="pre">Elf.Elf</span></tt></a></p>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="c"># Import vtrace and Elf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">vtrace</span><span class="o">,</span> <span class="nn">Elf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Initilize our vtrace.Trace object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trace</span> <span class="o">=</span> <span class="n">vtrace</span><span class="o">.</span><span class="n">getTrace</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trace</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;/path/to/program&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Get our library bases</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">libBase</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">getMeta</span><span class="p">(</span><span class="s">&quot;LibraryBases&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Get the first address of our first entry (not realistic)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">base</span> <span class="o">=</span> <span class="n">libBase</span><span class="o">.</span><span class="n">items</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Create our Elf.Elf()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">Elf</span><span class="o">.</span><span class="n">peFromMemoryObject</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>memobj</strong> (<a class="reference internal" href="vtrace.html#vtrace.Trace" title="vtrace.Trace"><tt class="xref py py-class docutils literal"><span class="pre">vtrace.Trace</span></tt></a>) &#8211; Our memory object (trace object)</li>
+<li><strong>baseaddr</strong> (<em>long</em>) &#8211; Base address for our Elf</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><a class="reference internal" href="#Elf.Elf" title="Elf.Elf"><tt class="xref py py-class docutils literal"><span class="pre">Elf.Elf</span></tt></a> instance of the specified Elf (with inmem=True).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#Elf.Elf" title="Elf.Elf"><tt class="xref py py-class docutils literal"><span class="pre">Elf.Elf</span></tt></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Elf.getRelocSymTabIndex">
+<tt class="descclassname">Elf.</tt><tt class="descname">getRelocSymTabIndex</tt><big>(</big><em>val</em><big>)</big><a class="reference internal" href="_modules/Elf.html#getRelocSymTabIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.getRelocSymTabIndex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="Elf.getRelocType">
+<tt class="descclassname">Elf.</tt><tt class="descname">getRelocType</tt><big>(</big><em>val</em><big>)</big><a class="reference internal" href="_modules/Elf.html#getRelocType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Elf.getRelocType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-Elf.elf_lookup">
+<span id="elf-lookup-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">elf_lookup</span></tt> Module<a class="headerlink" href="#module-Elf.elf_lookup" title="Permalink to this headline">¶</a></h2>
+<p>ELF static definitions</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Elf Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">Elf</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-Elf.elf_lookup"><tt class="docutils literal"><span class="pre">elf_lookup</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/Elf.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">Visi Debugger  documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vstruct.defs.gif &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vstruct" href="../../vstruct.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" accesskey="U">vstruct</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vstruct.defs.gif</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">vstruct</span>
+<span class="kn">from</span> <span class="nn">vstruct.primitives</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">GIF_F_HAS_CMAP</span>  <span class="o">=</span> <span class="mh">0x80</span>
+<span class="n">GIF_F_BPP_MASK</span>  <span class="o">=</span> <span class="mh">0x07</span>
+
+<span class="n">GIF_IMG_SEP</span>     <span class="o">=</span> <span class="s">&#39;,&#39;</span>
+
+<span class="k">class</span> <span class="nc">GIF_FILE_HEADER</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span>
+<div class="viewcode-block" id="GIF_FILE_HEADER"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.gif.GIF_FILE_HEADER">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">magic</span>      <span class="o">=</span> <span class="n">v_bytes</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span>      <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span>     <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>      <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bgcolor</span>    <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zero</span>       <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">RGB</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="RGB"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.gif.RGB">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">red</span>    <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">green</span>  <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">blue</span>   <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">GIF_IMAGE_DESCRIPTOR</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GIF_IMAGE_DESCRIPTOR"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.gif.GIF_IMAGE_DESCRIPTOR">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sep</span>        <span class="o">=</span> <span class="n">v_uint8</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_left</span>   <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_top</span>    <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_width</span>  <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_height</span> <span class="o">=</span> <span class="n">v_uint16</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flags</span>      <span class="o">=</span> <span class="n">v_uing8</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">GIF8XA</span><span class="p">(</span><span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GIF8XA"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.gif.GIF8XA">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">isValidGif</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GIF8XA.isValidGif"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.gif.GIF8XA.isValidGif">[docs]</a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">magic</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;GIF87a&#39;</span><span class="p">,</span> <span class="s">&#39;GIF89a&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">zero</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+
+    <span class="k">def</span> <span class="nf">vsParse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span></div>
+<div class="viewcode-block" id="GIF8XA.vsParse"><a class="viewcode-back" href="../../../vstruct.defs.html#vstruct.defs.gif.GIF8XA.vsParse">[docs]</a>
+
+        <span class="c"># FIXME this is not functional yet...</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">vsClearFields</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">GIF_FILE_HEADER</span><span class="p">()</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+
+        <span class="c"># Do we have a global color table?</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">GIF_F_HAS_CMAP</span><span class="p">:</span>
+            <span class="n">bits_per_pixel</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">GIF_F_BPP_MASK</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gct</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">bits_per_pixel</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">gct</span><span class="o">.</span><span class="n">vsAddField</span><span class="p">(</span><span class="s">&#39;color</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">RGB</span><span class="p">())</span>
+
+            <span class="n">offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gct</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">images</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span>
+
+        <span class="n">imgidx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="nb">bytes</span><span class="p">[</span><span class="n">offset</span><span class="p">]</span> <span class="o">==</span> <span class="n">GIF_IMG_SEP</span><span class="p">:</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span>
+
+            <span class="n">img</span><span class="o">.</span><span class="n">descriptor</span> <span class="o">=</span> <span class="n">GIF_IMAGE_DESCRIPTOR</span><span class="p">()</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">GIF_F_HAS_CMAP</span><span class="p">:</span>
+                <span class="n">bits_per_pixel</span> <span class="o">=</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">descriptor</span><span class="o">.</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">GIF_F_BPP_MASK</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">img</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">vstruct</span><span class="o">.</span><span class="n">VStruct</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">bits_per_pixel</span><span class="p">):</span>
+                    <span class="n">img</span><span class="o">.</span><span class="n">cmap</span><span class="o">.</span><span class="n">vsAddField</span><span class="p">(</span><span class="s">&#39;color</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">RGB</span><span class="p">())</span>
+
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">cmap</span><span class="o">.</span><span class="n">vsParse</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vstruct.html" >vstruct</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

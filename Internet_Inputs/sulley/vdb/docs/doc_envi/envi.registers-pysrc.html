@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>envi.registers</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="envi-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="envi-module.html">Package&nbsp;envi</a> ::
+        Module&nbsp;registers
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="envi.registers-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="envi.registers-module.html">Module envi.registers</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">Similar to the memory subsystem, this is a unified way to</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">access information about objects which contain registers</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Package envi=envi-module.html"><a title="envi" class="py-name" href="#" onclick="return doclink('link-0', 'envi', 'link-0');">envi</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module envi.bits=envi.bits-module.html"><a title="envi.bits" class="py-name" href="#" onclick="return doclink('link-1', 'bits', 'link-1');">bits</a></tt> <tt class="py-keyword">as</tt> <tt class="py-name">e_bits</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"> </tt>
+<a name="InvalidRegisterName"></a><div id="InvalidRegisterName-def"><a name="L8"></a><tt class="py-lineno">  8</tt> <a class="py-toggle" href="#" id="InvalidRegisterName-toggle" onclick="return toggle('InvalidRegisterName');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.registers.InvalidRegisterName-class.html">InvalidRegisterName</a><tt class="py-op">(</tt><tt class="py-base-class">Exception</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="InvalidRegisterName-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="InvalidRegisterName-expanded"><a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line">    <tt class="py-keyword">pass</tt> </tt>
+</div><a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext"></a><div id="RegisterContext-def"><a name="L11"></a><tt class="py-lineno"> 11</tt> <a class="py-toggle" href="#" id="RegisterContext-toggle" onclick="return toggle('RegisterContext');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html">RegisterContext</a><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="RegisterContext-expanded"><a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.__init__"></a><div id="RegisterContext.__init__-def"><a name="L13"></a><tt class="py-lineno"> 13</tt> <a class="py-toggle" href="#" id="RegisterContext.__init__-toggle" onclick="return toggle('RegisterContext.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">regdef</tt><tt class="py-op">=</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-param">metas</tt><tt class="py-op">=</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-param">pcindex</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt> <tt class="py-param">spindex</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.__init__-expanded"><a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-docstring">        Hand in a register definition which consists of</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-docstring">        a list of (&lt;name&gt;, &lt;width&gt;) tuples.</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-2" class="py-name" targets="Method envi.registers.RegisterContext.loadRegDef()=envi.registers.RegisterContext-class.html#loadRegDef"><a title="envi.registers.RegisterContext.loadRegDef" class="py-name" href="#" onclick="return doclink('link-2', 'loadRegDef', 'link-2');">loadRegDef</a></tt><tt class="py-op">(</tt><tt class="py-name">regdef</tt><tt class="py-op">)</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method envi.registers.RegisterContext.loadRegMetas()=envi.registers.RegisterContext-class.html#loadRegMetas"><a title="envi.registers.RegisterContext.loadRegMetas" class="py-name" href="#" onclick="return doclink('link-3', 'loadRegMetas', 'link-3');">loadRegMetas</a></tt><tt class="py-op">(</tt><tt class="py-name">metas</tt><tt class="py-op">)</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Method envi.registers.RegisterContext.setRegisterIndexes()=envi.registers.RegisterContext-class.html#setRegisterIndexes"><a title="envi.registers.RegisterContext.setRegisterIndexes" class="py-name" href="#" onclick="return doclink('link-4', 'setRegisterIndexes', 'link-4');">setRegisterIndexes</a></tt><tt class="py-op">(</tt><tt class="py-name">pcindex</tt><tt class="py-op">,</tt> <tt class="py-name">spindex</tt><tt class="py-op">)</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_dirty</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+</div><a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisterSnap"></a><div id="RegisterContext.getRegisterSnap-def"><a name="L24"></a><tt class="py-lineno"> 24</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisterSnap-toggle" onclick="return toggle('RegisterContext.getRegisterSnap');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisterSnap">getRegisterSnap</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisterSnap-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisterSnap-expanded"><a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-docstring">        Use this to bulk save off the register state.</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setRegisterSnap"></a><div id="RegisterContext.setRegisterSnap-def"><a name="L30"></a><tt class="py-lineno"> 30</tt> <a class="py-toggle" href="#" id="RegisterContext.setRegisterSnap-toggle" onclick="return toggle('RegisterContext.setRegisterSnap');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setRegisterSnap">setRegisterSnap</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">snap</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setRegisterSnap-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setRegisterSnap-expanded"><a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-docstring">        Use this to bulk restore the register state.</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt class="py-docstring">        NOTE: This may only be used under the assumption that the</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line"><tt class="py-docstring">              RegisterContext has been initialized the same way</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line"><tt class="py-docstring">              (like context switches in tracers, or emulaction snaps)</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt> <tt class="py-op">=</tt> <tt class="py-name">list</tt><tt class="py-op">(</tt><tt class="py-name">snap</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.isDirty"></a><div id="RegisterContext.isDirty-def"><a name="L40"></a><tt class="py-lineno"> 40</tt> <a class="py-toggle" href="#" id="RegisterContext.isDirty-toggle" onclick="return toggle('RegisterContext.isDirty');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#isDirty">isDirty</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.isDirty-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.isDirty-expanded"><a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-docstring">        Returns true if registers in this context have been modififed</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-docstring">        since their import.</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_dirty</tt> </tt>
+</div><a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setIsDirty"></a><div id="RegisterContext.setIsDirty-def"><a name="L47"></a><tt class="py-lineno"> 47</tt> <a class="py-toggle" href="#" id="RegisterContext.setIsDirty-toggle" onclick="return toggle('RegisterContext.setIsDirty');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setIsDirty">setIsDirty</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">bool</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setIsDirty-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setIsDirty-expanded"><a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_dirty</tt> <tt class="py-op">=</tt> <tt class="py-name">bool</tt> </tt>
+</div><a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setRegisterIndexes"></a><div id="RegisterContext.setRegisterIndexes-def"><a name="L50"></a><tt class="py-lineno"> 50</tt> <a class="py-toggle" href="#" id="RegisterContext.setRegisterIndexes-toggle" onclick="return toggle('RegisterContext.setRegisterIndexes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setRegisterIndexes">setRegisterIndexes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">pcindex</tt><tt class="py-op">,</tt> <tt class="py-param">spindex</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setRegisterIndexes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setRegisterIndexes-expanded"><a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_pcindex</tt> <tt class="py-op">=</tt> <tt class="py-name">pcindex</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_spindex</tt> <tt class="py-op">=</tt> <tt class="py-name">spindex</tt> </tt>
+</div><a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.loadRegDef"></a><div id="RegisterContext.loadRegDef-def"><a name="L54"></a><tt class="py-lineno"> 54</tt> <a class="py-toggle" href="#" id="RegisterContext.loadRegDef-toggle" onclick="return toggle('RegisterContext.loadRegDef');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#loadRegDef">loadRegDef</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">regdef</tt><tt class="py-op">,</tt> <tt class="py-param">defval</tt><tt class="py-op">=</tt><tt class="py-number">0</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.loadRegDef-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.loadRegDef-expanded"><a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line"><tt class="py-docstring">        Load a register definition.  A register definition consists</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring">        of a list of tuples with the following format:</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-docstring">        (regname, regwidth)</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt class="py-docstring">        NOTE: All widths in envi RegisterContexts are in bits.</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_regdef</tt> <tt class="py-op">=</tt> <tt class="py-name">regdef</tt> <tt class="py-comment"># Save this for snaps etc..</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_ids</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_widths</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt>  <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_masks</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt id="link-5" class="py-name" targets="Variable envi.archs.i386.disasm.i=envi.archs.i386.disasm-module.html#i,Variable envi.archs.i386.emu.i=envi.archs.i386.emu-module.html#i,Variable envi.archs.i386.i=envi.archs.i386-module.html#i,Variable envi.bits.i=envi.bits-module.html#i"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-5', 'i', 'link-5');">i</a></tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">enumerate</tt><tt class="py-op">(</tt><tt class="py-name">regdef</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-6" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-6', 'i', 'link-5');">i</a></tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_ids</tt><tt class="py-op">[</tt><tt id="link-7" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-7', 'i', 'link-5');">i</a></tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">name</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_widths</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">width</tt><tt class="py-op">)</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_masks</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">**</tt><tt class="py-name">width</tt><tt class="py-op">)</tt><tt class="py-op">-</tt><tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">defval</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegDef"></a><div id="RegisterContext.getRegDef-def"><a name="L76"></a><tt class="py-lineno"> 76</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegDef-toggle" onclick="return toggle('RegisterContext.getRegDef');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegDef">getRegDef</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegDef-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegDef-expanded"><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_regdef</tt> </tt>
+</div><a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.loadRegMetas"></a><div id="RegisterContext.loadRegMetas-def"><a name="L79"></a><tt class="py-lineno"> 79</tt> <a class="py-toggle" href="#" id="RegisterContext.loadRegMetas-toggle" onclick="return toggle('RegisterContext.loadRegMetas');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#loadRegMetas">loadRegMetas</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">metas</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.loadRegMetas-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.loadRegMetas-expanded"><a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"><tt class="py-docstring">        Load a set of defined "meta" registers for this architecture.  Meta</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line"><tt class="py-docstring">        registers are defined as registers who exist as a subset of the bits</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line"><tt class="py-docstring">        in some other "real" register. The argument metas is a list of tuples</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring">        with the following format:</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-docstring">        (regname, reg_shift_offset, reg_width)</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-docstring">        The given example is for the AX register in the i386 subsystem</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-docstring">        regname: "ax"</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-docstring">        reg_shift_offset: 0</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring">        reg_width: 16</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_regmetas</tt> <tt class="py-op">=</tt> <tt class="py-name">metas</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">idx</tt><tt class="py-op">,</tt><tt class="py-name">offset</tt><tt class="py-op">,</tt><tt class="py-name">width</tt> <tt class="py-keyword">in</tt> <tt class="py-name">metas</tt><tt class="py-op">:</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-8" class="py-name" targets="Method envi.registers.RegisterContext.addMetaRegister()=envi.registers.RegisterContext-class.html#addMetaRegister"><a title="envi.registers.RegisterContext.addMetaRegister" class="py-name" href="#" onclick="return doclink('link-8', 'addMetaRegister', 'link-8');">addMetaRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">idx</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">width</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.addMetaRegister"></a><div id="RegisterContext.addMetaRegister-def"><a name="L95"></a><tt class="py-lineno"> 95</tt> <a class="py-toggle" href="#" id="RegisterContext.addMetaRegister-toggle" onclick="return toggle('RegisterContext.addMetaRegister');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#addMetaRegister">addMetaRegister</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">idx</tt><tt class="py-op">,</tt> <tt class="py-param">offset</tt><tt class="py-op">,</tt> <tt class="py-param">width</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.addMetaRegister-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.addMetaRegister-expanded"><a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-docstring">        Meta registers are registers which are really just directly</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-docstring">        addressable parts of already existing registers (eax -&gt; al).</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line"><tt class="py-docstring">        To add a meta register, you give the name, the idx of the *real*</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"><tt class="py-docstring">        register, the width of the meta reg, and it's left shifted (in bits)</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line"><tt class="py-docstring">        offset into the real register value.  The RegisterContext will take</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"><tt class="py-docstring">        care of accesses after that.</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line">        <tt class="py-name">newidx</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">offset</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">24</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-op">(</tt><tt class="py-name">width</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-name">idx</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">newidx</tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_ids</tt><tt class="py-op">[</tt><tt class="py-name">newidx</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">name</tt> </tt>
+</div><a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.isMetaRegister"></a><div id="RegisterContext.isMetaRegister-def"><a name="L109"></a><tt class="py-lineno">109</tt> <a class="py-toggle" href="#" id="RegisterContext.isMetaRegister-toggle" onclick="return toggle('RegisterContext.isMetaRegister');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#isMetaRegister">isMetaRegister</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">index</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.isMetaRegister-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.isMetaRegister-expanded"><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt class="py-name">index</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">index</tt> </tt>
+</div><a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext._rctx_Import"></a><div id="RegisterContext._rctx_Import-def"><a name="L112"></a><tt class="py-lineno">112</tt> <a class="py-toggle" href="#" id="RegisterContext._rctx_Import-toggle" onclick="return toggle('RegisterContext._rctx_Import');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#_rctx_Import">_rctx_Import</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sobj</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext._rctx_Import-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext._rctx_Import-expanded"><a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-docstring">        Given an object with attributes with the same names as</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-docstring">        registers in our context, populate our values from it.</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-docstring">        NOTE: This also clears the dirty flag</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">        <tt class="py-comment"># On import from a structure, we are clean again.</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_dirty</tt> <tt class="py-op">=</tt> <tt class="py-name">False</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">idx</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">            <tt class="py-comment"># Skip meta registers</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">idx</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">idx</tt><tt class="py-op">:</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">                <tt class="py-keyword">continue</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">            <tt id="link-9" class="py-name" targets="Variable envi.archs.arm.armdisasm.x=envi.archs.arm.armdisasm-module.html#x,Variable envi.archs.arm.disasm.x=envi.archs.arm.disasm-module.html#x,Variable envi.archs.arm.emu.x=envi.archs.arm.emu-module.html#x,Variable envi.archs.arm.regs.x=envi.archs.arm.regs-module.html#x,Variable envi.archs.arm.thumbdisasm.x=envi.archs.arm.thumbdisasm-module.html#x,Variable envi.archs.arm.x=envi.archs.arm-module.html#x,Variable envi.archs.i386.disasm.x=envi.archs.i386.disasm-module.html#x,Variable envi.archs.i386.emu.x=envi.archs.i386.emu-module.html#x,Variable envi.archs.i386.x=envi.archs.i386-module.html#x"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x" class="py-name" href="#" onclick="return doclink('link-9', 'x', 'link-9');">x</a></tt> <tt class="py-op">=</tt> <tt class="py-name">getattr</tt><tt class="py-op">(</tt><tt class="py-name">sobj</tt><tt class="py-op">,</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">None</tt><tt class="py-op">)</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt id="link-10" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x" class="py-name" href="#" onclick="return doclink('link-10', 'x', 'link-9');">x</a></tt> <tt class="py-op">!=</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt><tt class="py-op">[</tt><tt class="py-name">idx</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-11" class="py-name"><a title="envi.archs.arm.armdisasm.x
+envi.archs.arm.disasm.x
+envi.archs.arm.emu.x
+envi.archs.arm.regs.x
+envi.archs.arm.thumbdisasm.x
+envi.archs.arm.x
+envi.archs.i386.disasm.x
+envi.archs.i386.emu.x
+envi.archs.i386.x" class="py-name" href="#" onclick="return doclink('link-11', 'x', 'link-9');">x</a></tt> </tt>
+</div><a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext._rctx_Export"></a><div id="RegisterContext._rctx_Export-def"><a name="L129"></a><tt class="py-lineno">129</tt> <a class="py-toggle" href="#" id="RegisterContext._rctx_Export-toggle" onclick="return toggle('RegisterContext._rctx_Export');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#_rctx_Export">_rctx_Export</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">sobj</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext._rctx_Export-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext._rctx_Export-expanded"><a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"><tt class="py-docstring">        Given an object with attributes with the same names as</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"><tt class="py-docstring">        registers in our context, set the ones he has to match</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"><tt class="py-docstring">        our values.</tt> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">idx</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">            <tt class="py-comment"># Skip meta registers</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">idx</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">idx</tt><tt class="py-op">:</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">                <tt class="py-keyword">continue</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">hasattr</tt><tt class="py-op">(</tt><tt class="py-name">sobj</tt><tt class="py-op">,</tt> <tt class="py-name">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">                <tt class="py-name">setattr</tt><tt class="py-op">(</tt><tt class="py-name">sobj</tt><tt class="py-op">,</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt><tt class="py-op">[</tt><tt class="py-name">idx</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.reprRegister"></a><div id="RegisterContext.reprRegister-def"><a name="L142"></a><tt class="py-lineno">142</tt> <a class="py-toggle" href="#" id="RegisterContext.reprRegister-toggle" onclick="return toggle('RegisterContext.reprRegister');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#reprRegister">reprRegister</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">idx</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.reprRegister-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.reprRegister-expanded"><a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line"><tt class="py-docstring">        This may be used to allow a register context to provide</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"><tt class="py-docstring">        extended repr (flags breakouts, etc) info about a register.</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-name">width</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_widths</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line">        <tt class="py-name">reg</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">getRegisger</tt><tt class="py-op">(</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">e_bits</tt><tt class="py-op">.</tt><tt id="link-12" class="py-name" targets="Function envi.bits.hex()=envi.bits-module.html#hex"><a title="envi.bits.hex" class="py-name" href="#" onclick="return doclink('link-12', 'hex', 'link-12');">hex</a></tt><tt class="py-op">(</tt><tt class="py-name">reg</tt><tt class="py-op">,</tt> <tt class="py-name">width</tt><tt class="py-op">/</tt><tt class="py-number">8</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisterInfo"></a><div id="RegisterContext.getRegisterInfo-def"><a name="L151"></a><tt class="py-lineno">151</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisterInfo-toggle" onclick="return toggle('RegisterContext.getRegisterInfo');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisterInfo">getRegisterInfo</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">meta</tt><tt class="py-op">=</tt><tt class="py-name">False</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisterInfo-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisterInfo-expanded"><a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L153"></a><tt class="py-lineno">153</tt>  <tt class="py-line"><tt class="py-docstring">        Return an object which can be stored off, and restored</tt> </tt>
+<a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line"><tt class="py-docstring">        to re-initialize a register context.  (much like snapshot</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"><tt class="py-docstring">        but it takes the definitions with it)</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line">        <tt class="py-name">regdef</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_regdef</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line">        <tt class="py-name">regmeta</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_regmetas</tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line">        <tt class="py-name">pcindex</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_pcindex</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line">        <tt class="py-name">spindex</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_spindex</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">        <tt class="py-name">snap</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name" targets="Method envi.registers.RegisterContext.getRegisterSnap()=envi.registers.RegisterContext-class.html#getRegisterSnap"><a title="envi.registers.RegisterContext.getRegisterSnap" class="py-name" href="#" onclick="return doclink('link-13', 'getRegisterSnap', 'link-13');">getRegisterSnap</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">(</tt><tt class="py-name">regdef</tt><tt class="py-op">,</tt> <tt class="py-name">regmeta</tt><tt class="py-op">,</tt> <tt class="py-name">pcindex</tt><tt class="py-op">,</tt> <tt class="py-name">spindex</tt><tt class="py-op">,</tt> <tt class="py-name">snap</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setRegisterInfo"></a><div id="RegisterContext.setRegisterInfo-def"><a name="L165"></a><tt class="py-lineno">165</tt> <a class="py-toggle" href="#" id="RegisterContext.setRegisterInfo-toggle" onclick="return toggle('RegisterContext.setRegisterInfo');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setRegisterInfo">setRegisterInfo</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">info</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setRegisterInfo-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setRegisterInfo-expanded"><a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line"><tt class="py-docstring">        Import the exported data from </tt> </tt>
+<a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line">        <tt class="py-name">regdef</tt><tt class="py-op">,</tt> <tt class="py-name">regmeta</tt><tt class="py-op">,</tt> <tt class="py-name">pcindex</tt><tt class="py-op">,</tt> <tt class="py-name">spindex</tt><tt class="py-op">,</tt> <tt class="py-name">snap</tt> <tt class="py-op">=</tt> <tt class="py-name">info</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="envi.registers.RegisterContext.loadRegDef" class="py-name" href="#" onclick="return doclink('link-14', 'loadRegDef', 'link-2');">loadRegDef</a></tt><tt class="py-op">(</tt><tt class="py-name">regdef</tt><tt class="py-op">)</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="envi.registers.RegisterContext.loadRegMetas" class="py-name" href="#" onclick="return doclink('link-15', 'loadRegMetas', 'link-3');">loadRegMetas</a></tt><tt class="py-op">(</tt><tt class="py-name">regmeta</tt><tt class="py-op">)</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name"><a title="envi.registers.RegisterContext.setRegisterIndexes" class="py-name" href="#" onclick="return doclink('link-16', 'setRegisterIndexes', 'link-4');">setRegisterIndexes</a></tt><tt class="py-op">(</tt><tt class="py-name">pcindex</tt><tt class="py-op">,</tt> <tt class="py-name">spindex</tt><tt class="py-op">)</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-17" class="py-name" targets="Method envi.registers.RegisterContext.setRegisterSnap()=envi.registers.RegisterContext-class.html#setRegisterSnap"><a title="envi.registers.RegisterContext.setRegisterSnap" class="py-name" href="#" onclick="return doclink('link-17', 'setRegisterSnap', 'link-17');">setRegisterSnap</a></tt><tt class="py-op">(</tt><tt class="py-name">snap</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisterName"></a><div id="RegisterContext.getRegisterName-def"><a name="L175"></a><tt class="py-lineno">175</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisterName-toggle" onclick="return toggle('RegisterContext.getRegisterName');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisterName">getRegisterName</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">index</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisterName-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisterName-expanded"><a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_ids</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">index</tt><tt class="py-op">,</tt><tt class="py-string">"REG%.8x"</tt> <tt class="py-op">%</tt> <tt class="py-name">index</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getProgramCounter"></a><div id="RegisterContext.getProgramCounter-def"><a name="L178"></a><tt class="py-lineno">178</tt> <a class="py-toggle" href="#" id="RegisterContext.getProgramCounter-toggle" onclick="return toggle('RegisterContext.getProgramCounter');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getProgramCounter">getProgramCounter</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getProgramCounter-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getProgramCounter-expanded"><a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"><tt class="py-docstring">        Get the value of the program counter for this register</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line"><tt class="py-docstring">        context.</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method envi.archs.arm.emu.ArmEmulator.getRegister()=envi.archs.arm.emu.ArmEmulator-class.html#getRegister,Method envi.registers.RegisterContext.getRegister()=envi.registers.RegisterContext-class.html#getRegister"><a title="envi.archs.arm.emu.ArmEmulator.getRegister
+envi.registers.RegisterContext.getRegister" class="py-name" href="#" onclick="return doclink('link-18', 'getRegister', 'link-18');">getRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_pcindex</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setProgramCounter"></a><div id="RegisterContext.setProgramCounter-def"><a name="L185"></a><tt class="py-lineno">185</tt> <a class="py-toggle" href="#" id="RegisterContext.setProgramCounter-toggle" onclick="return toggle('RegisterContext.setProgramCounter');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setProgramCounter">setProgramCounter</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setProgramCounter-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setProgramCounter-expanded"><a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line"><tt class="py-docstring">        Set the value of the program counter for this register</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line"><tt class="py-docstring">        contex.</tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method envi.archs.amd64.regs.Amd64RegisterContext.setRegister()=envi.archs.amd64.regs.Amd64RegisterContext-class.html#setRegister,Method envi.archs.arm.emu.ArmEmulator.setRegister()=envi.archs.arm.emu.ArmEmulator-class.html#setRegister,Method envi.registers.RegisterContext.setRegister()=envi.registers.RegisterContext-class.html#setRegister"><a title="envi.archs.amd64.regs.Amd64RegisterContext.setRegister
+envi.archs.arm.emu.ArmEmulator.setRegister
+envi.registers.RegisterContext.setRegister" class="py-name" href="#" onclick="return doclink('link-19', 'setRegister', 'link-19');">setRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_pcindex</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getStackCounter"></a><div id="RegisterContext.getStackCounter-def"><a name="L192"></a><tt class="py-lineno">192</tt> <a class="py-toggle" href="#" id="RegisterContext.getStackCounter-toggle" onclick="return toggle('RegisterContext.getStackCounter');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getStackCounter">getStackCounter</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getStackCounter-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getStackCounter-expanded"><a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-20" class="py-name"><a title="envi.archs.arm.emu.ArmEmulator.getRegister
+envi.registers.RegisterContext.getRegister" class="py-name" href="#" onclick="return doclink('link-20', 'getRegister', 'link-18');">getRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_spindex</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setStackCounter"></a><div id="RegisterContext.setStackCounter-def"><a name="L195"></a><tt class="py-lineno">195</tt> <a class="py-toggle" href="#" id="RegisterContext.setStackCounter-toggle" onclick="return toggle('RegisterContext.setStackCounter');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setStackCounter">setStackCounter</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setStackCounter-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setStackCounter-expanded"><a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-21" class="py-name"><a title="envi.archs.amd64.regs.Amd64RegisterContext.setRegister
+envi.archs.arm.emu.ArmEmulator.setRegister
+envi.registers.RegisterContext.setRegister" class="py-name" href="#" onclick="return doclink('link-21', 'setRegister', 'link-19');">setRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_spindex</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisterByName"></a><div id="RegisterContext.getRegisterByName-def"><a name="L198"></a><tt class="py-lineno">198</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisterByName-toggle" onclick="return toggle('RegisterContext.getRegisterByName');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisterByName">getRegisterByName</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisterByName-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisterByName-expanded"><a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line">        <tt class="py-name">idx</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">idx</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-22" class="py-name" targets="Class envi.registers.InvalidRegisterName=envi.registers.InvalidRegisterName-class.html"><a title="envi.registers.InvalidRegisterName" class="py-name" href="#" onclick="return doclink('link-22', 'InvalidRegisterName', 'link-22');">InvalidRegisterName</a></tt><tt class="py-op">(</tt><tt class="py-string">"Unknown Register: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L202"></a><tt class="py-lineno">202</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-23" class="py-name"><a title="envi.archs.arm.emu.ArmEmulator.getRegister
+envi.registers.RegisterContext.getRegister" class="py-name" href="#" onclick="return doclink('link-23', 'getRegister', 'link-18');">getRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setRegisterByName"></a><div id="RegisterContext.setRegisterByName-def"><a name="L204"></a><tt class="py-lineno">204</tt> <a class="py-toggle" href="#" id="RegisterContext.setRegisterByName-toggle" onclick="return toggle('RegisterContext.setRegisterByName');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setRegisterByName">setRegisterByName</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setRegisterByName-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setRegisterByName-expanded"><a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line">        <tt class="py-name">idx</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">idx</tt> <tt class="py-op">==</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-24" class="py-name"><a title="envi.registers.InvalidRegisterName" class="py-name" href="#" onclick="return doclink('link-24', 'InvalidRegisterName', 'link-22');">InvalidRegisterName</a></tt><tt class="py-op">(</tt><tt class="py-string">"Unknown Register: %s"</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="envi.archs.amd64.regs.Amd64RegisterContext.setRegister
+envi.archs.arm.emu.ArmEmulator.setRegister
+envi.registers.RegisterContext.setRegister" class="py-name" href="#" onclick="return doclink('link-25', 'setRegister', 'link-19');">setRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">idx</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisterNames"></a><div id="RegisterContext.getRegisterNames-def"><a name="L210"></a><tt class="py-lineno">210</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisterNames-toggle" onclick="return toggle('RegisterContext.getRegisterNames');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisterNames">getRegisterNames</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisterNames-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisterNames-expanded"><a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L213"></a><tt class="py-lineno">213</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">.</tt><tt class="py-name">keys</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisterNameIndexes"></a><div id="RegisterContext.getRegisterNameIndexes-def"><a name="L215"></a><tt class="py-lineno">215</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisterNameIndexes-toggle" onclick="return toggle('RegisterContext.getRegisterNameIndexes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisterNameIndexes">getRegisterNameIndexes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisterNameIndexes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisterNameIndexes-expanded"><a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line">        <tt class="py-docstring">'''</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line"><tt class="py-docstring">        Return a list of all the "real" (non meta) registers and their indexes.</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"><tt class="py-docstring">        Example: for regname, regidx in x.getRegisterNameIndexes():</tt> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisters"></a><div id="RegisterContext.getRegisters-def"><a name="L223"></a><tt class="py-lineno">223</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisters-toggle" onclick="return toggle('RegisterContext.getRegisters');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisters">getRegisters</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisters-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisters-expanded"><a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line"><tt class="py-docstring">        Get all the *real* registers from this context as a dictionary of name</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line"><tt class="py-docstring">        value pairs.</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">        <tt class="py-name">ret</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">idx</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-op">(</tt><tt class="py-name">idx</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt><tt class="py-op">)</tt> <tt class="py-op">!=</tt> <tt class="py-name">idx</tt><tt class="py-op">:</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">                <tt class="py-keyword">continue</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">            <tt class="py-name">ret</tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name"><a title="envi.archs.arm.emu.ArmEmulator.getRegister
+envi.registers.RegisterContext.getRegister" class="py-name" href="#" onclick="return doclink('link-26', 'getRegister', 'link-18');">getRegister</a></tt><tt class="py-op">(</tt><tt class="py-name">idx</tt><tt class="py-op">)</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">ret</tt> </tt>
+</div><a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setRegisters"></a><div id="RegisterContext.setRegisters-def"><a name="L235"></a><tt class="py-lineno">235</tt> <a class="py-toggle" href="#" id="RegisterContext.setRegisters-toggle" onclick="return toggle('RegisterContext.setRegisters');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setRegisters">setRegisters</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">regdict</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setRegisters-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setRegisters-expanded"><a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L237"></a><tt class="py-lineno">237</tt>  <tt class="py-line"><tt class="py-docstring">        For any name value pairs in the specified dictionary, set the current</tt> </tt>
+<a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line"><tt class="py-docstring">        register values in this context.</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">value</tt> <tt class="py-keyword">in</tt> <tt class="py-name">regdict</tt><tt class="py-op">.</tt><tt class="py-name">items</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name" targets="Method envi.registers.RegisterContext.setRegisterByName()=envi.registers.RegisterContext-class.html#setRegisterByName"><a title="envi.registers.RegisterContext.setRegisterByName" class="py-name" href="#" onclick="return doclink('link-27', 'setRegisterByName', 'link-27');">setRegisterByName</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisterIndex"></a><div id="RegisterContext.getRegisterIndex-def"><a name="L243"></a><tt class="py-lineno">243</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisterIndex-toggle" onclick="return toggle('RegisterContext.getRegisterIndex');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisterIndex">getRegisterIndex</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisterIndex-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisterIndex-expanded"><a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line"><tt class="py-docstring">        Get a register index by name.</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line"><tt class="py-docstring">        (faster to use the index multiple times)</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_names</tt><tt class="py-op">.</tt><tt class="py-name">get</tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegisterWidth"></a><div id="RegisterContext.getRegisterWidth-def"><a name="L250"></a><tt class="py-lineno">250</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegisterWidth-toggle" onclick="return toggle('RegisterContext.getRegisterWidth');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegisterWidth">getRegisterWidth</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">index</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegisterWidth-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegisterWidth-expanded"><a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line"><tt class="py-docstring">        Return the width of the register which lives at the specified</tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line"><tt class="py-docstring">        index (width is always in bits).</tt> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">        <tt class="py-name">ridx</tt> <tt class="py-op">=</tt> <tt class="py-name">index</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ridx</tt> <tt class="py-op">==</tt> <tt class="py-name">index</tt><tt class="py-op">:</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_widths</tt><tt class="py-op">[</tt><tt class="py-name">index</tt><tt class="py-op">]</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">        <tt class="py-name">width</tt>  <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">index</tt> <tt class="py-op">&gt;&gt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xff</tt> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">width</tt> </tt>
+</div><a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getRegister"></a><div id="RegisterContext.getRegister-def"><a name="L261"></a><tt class="py-lineno">261</tt> <a class="py-toggle" href="#" id="RegisterContext.getRegister-toggle" onclick="return toggle('RegisterContext.getRegister');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getRegister">getRegister</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">index</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getRegister-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getRegister-expanded"><a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line"><tt class="py-docstring">        Return the current value of the specified register index.</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">        <tt class="py-name">ridx</tt> <tt class="py-op">=</tt> <tt class="py-name">index</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">        <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt><tt class="py-op">[</tt><tt class="py-name">ridx</tt><tt class="py-op">]</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ridx</tt> <tt class="py-op">!=</tt> <tt class="py-name">index</tt><tt class="py-op">:</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">            <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-28" class="py-name" targets="Method envi.registers.RegisterContext._xlateToMetaReg()=envi.registers.RegisterContext-class.html#_xlateToMetaReg"><a title="envi.registers.RegisterContext._xlateToMetaReg" class="py-name" href="#" onclick="return doclink('link-28', '_xlateToMetaReg', 'link-28');">_xlateToMetaReg</a></tt><tt class="py-op">(</tt><tt class="py-name">index</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> </tt>
+</div><a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.getMetaRegInfo"></a><div id="RegisterContext.getMetaRegInfo-def"><a name="L271"></a><tt class="py-lineno">271</tt> <a class="py-toggle" href="#" id="RegisterContext.getMetaRegInfo-toggle" onclick="return toggle('RegisterContext.getMetaRegInfo');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#getMetaRegInfo">getMetaRegInfo</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">index</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.getMetaRegInfo-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.getMetaRegInfo-expanded"><a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt class="py-docstring">'''</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line"><tt class="py-docstring">        Return the appropriate realreg, shift, mask info</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line"><tt class="py-docstring">        for the specified metareg idx (or None if it's not</tt> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line"><tt class="py-docstring">        meta).</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line"><tt class="py-docstring">        Example:</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line"><tt class="py-docstring">            real_reg, lshift, mask = r.getMetaRegInfo(x)</tt> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">        <tt class="py-name">ridx</tt> <tt class="py-op">=</tt> <tt class="py-name">index</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ridx</tt> <tt class="py-op">==</tt> <tt class="py-name">index</tt><tt class="py-op">:</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">None</tt> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line"> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">        <tt class="py-name">offset</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">index</tt> <tt class="py-op">&gt;&gt;</tt> <tt class="py-number">24</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xff</tt> </tt>
+<a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line">        <tt class="py-name">width</tt>  <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">index</tt> <tt class="py-op">&gt;&gt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xff</tt> </tt>
+<a name="L286"></a><tt class="py-lineno">286</tt>  <tt class="py-line"> </tt>
+<a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line">        <tt class="py-name">mask</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">**</tt><tt class="py-name">width</tt><tt class="py-op">)</tt><tt class="py-op">-</tt><tt class="py-number">1</tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">ridx</tt><tt class="py-op">,</tt> <tt class="py-name">offset</tt><tt class="py-op">,</tt> <tt class="py-name">mask</tt> </tt>
+</div><a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext._xlateToMetaReg"></a><div id="RegisterContext._xlateToMetaReg-def"><a name="L290"></a><tt class="py-lineno">290</tt> <a class="py-toggle" href="#" id="RegisterContext._xlateToMetaReg-toggle" onclick="return toggle('RegisterContext._xlateToMetaReg');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#_xlateToMetaReg">_xlateToMetaReg</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">index</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext._xlateToMetaReg-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext._xlateToMetaReg-expanded"><a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line">        <tt class="py-docstring">'''</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line"><tt class="py-docstring">        Translate a register value to the meta register value</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line"><tt class="py-docstring">        (used when getting a meta register)</tt> </tt>
+<a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
+<a name="L295"></a><tt class="py-lineno">295</tt>  <tt class="py-line">        <tt class="py-name">ridx</tt> <tt class="py-op">=</tt> <tt class="py-name">index</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt> </tt>
+<a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">        <tt class="py-name">offset</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">index</tt> <tt class="py-op">&gt;&gt;</tt> <tt class="py-number">24</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xff</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line">        <tt class="py-name">width</tt>  <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">index</tt> <tt class="py-op">&gt;&gt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xff</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line"> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line">        <tt class="py-name">mask</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">**</tt><tt class="py-name">width</tt><tt class="py-op">)</tt><tt class="py-op">-</tt><tt class="py-number">1</tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line"> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">offset</tt> <tt class="py-op">!=</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line">            <tt class="py-name">value</tt> <tt class="py-op">&gt;&gt;=</tt> <tt class="py-name">offset</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line"> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> <tt class="py-op">&amp;</tt> <tt class="py-name">mask</tt> </tt>
+</div><a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line"> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext._xlateToNativeReg"></a><div id="RegisterContext._xlateToNativeReg-def"><a name="L307"></a><tt class="py-lineno">307</tt> <a class="py-toggle" href="#" id="RegisterContext._xlateToNativeReg-toggle" onclick="return toggle('RegisterContext._xlateToNativeReg');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#_xlateToNativeReg">_xlateToNativeReg</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">index</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext._xlateToNativeReg-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext._xlateToNativeReg-expanded"><a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">        <tt class="py-docstring">'''</tt> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line"><tt class="py-docstring">        Translate a register value to the native register value</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line"><tt class="py-docstring">        (used when setting a meta register)</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line">        <tt class="py-name">ridx</tt> <tt class="py-op">=</tt> <tt class="py-name">index</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">        <tt class="py-name">offset</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">index</tt> <tt class="py-op">&gt;&gt;</tt> <tt class="py-number">24</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xff</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">        <tt class="py-name">width</tt>  <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">index</tt> <tt class="py-op">&gt;&gt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xff</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line"> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line">        <tt class="py-comment">#FIXME is it faster to generate or look thses up?</tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">        <tt class="py-name">mask</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">**</tt><tt class="py-name">width</tt><tt class="py-op">)</tt><tt class="py-op">-</tt><tt class="py-number">1</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line">        <tt class="py-name">mask</tt> <tt class="py-op">=</tt> <tt class="py-name">mask</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-name">offset</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line"> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">        <tt class="py-comment"># NOTE: basewidth is in *bits*</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line">        <tt class="py-name">basewidth</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_widths</tt><tt class="py-op">[</tt><tt class="py-name">ridx</tt><tt class="py-op">]</tt> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line">        <tt class="py-name">basemask</tt>  <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-number">2</tt><tt class="py-op">**</tt><tt class="py-name">basewidth</tt><tt class="py-op">)</tt><tt class="py-op">-</tt><tt class="py-number">1</tt> </tt>
+<a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line"> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line">        <tt class="py-comment"># cut a whole in basemask at the size/offset of mask</tt> </tt>
+<a name="L325"></a><tt class="py-lineno">325</tt>  <tt class="py-line">        <tt class="py-name">finalmask</tt> <tt class="py-op">=</tt> <tt class="py-name">basemask</tt> <tt class="py-op">^</tt> <tt class="py-name">mask</tt> </tt>
+<a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line"> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line">        <tt class="py-name">curval</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt><tt class="py-op">[</tt><tt class="py-name">ridx</tt><tt class="py-op">]</tt> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line"> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">offset</tt><tt class="py-op">:</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line">            <tt class="py-name">value</tt> <tt class="py-op">&lt;&lt;=</tt> <tt class="py-name">offset</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line">        <tt class="py-comment">#NOTE value is first for object stuff in symboliks</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">value</tt> <tt class="py-op">|</tt> <tt class="py-op">(</tt><tt class="py-name">curval</tt> <tt class="py-op">&amp;</tt> <tt class="py-name">finalmask</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L334"></a><tt class="py-lineno">334</tt>  <tt class="py-line"> </tt>
+<a name="RegisterContext.setRegister"></a><div id="RegisterContext.setRegister-def"><a name="L335"></a><tt class="py-lineno">335</tt> <a class="py-toggle" href="#" id="RegisterContext.setRegister-toggle" onclick="return toggle('RegisterContext.setRegister');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers.RegisterContext-class.html#setRegister">setRegister</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">index</tt><tt class="py-op">,</tt> <tt class="py-param">value</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="RegisterContext.setRegister-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="RegisterContext.setRegister-expanded"><a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line"><tt class="py-docstring">        Set a register value by index.</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_dirty</tt> <tt class="py-op">=</tt> <tt class="py-name">True</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line"> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line">        <tt class="py-name">ridx</tt> <tt class="py-op">=</tt> <tt class="py-name">index</tt> <tt class="py-op">&amp;</tt> <tt class="py-number">0xffff</tt> </tt>
+<a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line"> </tt>
+<a name="L343"></a><tt class="py-lineno">343</tt>  <tt class="py-line">        <tt class="py-comment"># If it's a meta register index, lets mask it into</tt> </tt>
+<a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line">        <tt class="py-comment"># the real thing...</tt> </tt>
+<a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">ridx</tt> <tt class="py-op">!=</tt> <tt class="py-name">index</tt><tt class="py-op">:</tt> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line">            <tt class="py-name">value</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name" targets="Method envi.registers.RegisterContext._xlateToNativeReg()=envi.registers.RegisterContext-class.html#_xlateToNativeReg"><a title="envi.registers.RegisterContext._xlateToNativeReg" class="py-name" href="#" onclick="return doclink('link-29', '_xlateToNativeReg', 'link-29');">_xlateToNativeReg</a></tt><tt class="py-op">(</tt><tt class="py-name">index</tt><tt class="py-op">,</tt> <tt class="py-name">value</tt><tt class="py-op">)</tt> </tt>
+<a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line"> </tt>
+<a name="L348"></a><tt class="py-lineno">348</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_vals</tt><tt class="py-op">[</tt><tt class="py-name">ridx</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">value</tt> <tt class="py-op">&amp;</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_rctx_masks</tt><tt class="py-op">[</tt><tt class="py-name">ridx</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L349"></a><tt class="py-lineno">349</tt>  <tt class="py-line"> </tt>
+<a name="addLocalEnums"></a><div id="addLocalEnums-def"><a name="L350"></a><tt class="py-lineno">350</tt> <a class="py-toggle" href="#" id="addLocalEnums-toggle" onclick="return toggle('addLocalEnums');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers-module.html#addLocalEnums">addLocalEnums</a><tt class="py-op">(</tt><tt class="py-param">l</tt><tt class="py-op">,</tt> <tt class="py-param">regdef</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="addLocalEnums-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="addLocalEnums-expanded"><a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line"><tt class="py-docstring">    Update a dictionary (or module locals) with REG_FOO index</tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line"><tt class="py-docstring">    values for all the base registers defined in regdef.</tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt id="link-30" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-30', 'i', 'link-5');">i</a></tt><tt class="py-op">,</tt><tt class="py-op">(</tt><tt class="py-name">rname</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">)</tt> <tt class="py-keyword">in</tt> <tt class="py-name">enumerate</tt><tt class="py-op">(</tt><tt class="py-name">regdef</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line">        <tt id="link-31" class="py-name" targets="Variable envi.archs.amd64.disasm.l=envi.archs.amd64.disasm-module.html#l,Variable envi.archs.amd64.l=envi.archs.amd64-module.html#l,Variable envi.archs.amd64.regs.l=envi.archs.amd64.regs-module.html#l,Variable envi.archs.arm.armdisasm.l=envi.archs.arm.armdisasm-module.html#l,Variable envi.archs.arm.disasm.l=envi.archs.arm.disasm-module.html#l,Variable envi.archs.arm.emu.l=envi.archs.arm.emu-module.html#l,Variable envi.archs.arm.l=envi.archs.arm-module.html#l,Variable envi.archs.arm.regs.l=envi.archs.arm.regs-module.html#l,Variable envi.archs.arm.thumbdisasm.l=envi.archs.arm.thumbdisasm-module.html#l,Variable envi.archs.i386.disasm.l=envi.archs.i386.disasm-module.html#l,Variable envi.archs.i386.emu.l=envi.archs.i386.emu-module.html#l,Variable envi.archs.i386.l=envi.archs.i386-module.html#l,Variable envi.archs.i386.regs.l=envi.archs.i386.regs-module.html#l,Variable envi.archs.z80.regs.l=envi.archs.z80.regs-module.html#l"><a title="envi.archs.amd64.disasm.l
+envi.archs.amd64.l
+envi.archs.amd64.regs.l
+envi.archs.arm.armdisasm.l
+envi.archs.arm.disasm.l
+envi.archs.arm.emu.l
+envi.archs.arm.l
+envi.archs.arm.regs.l
+envi.archs.arm.thumbdisasm.l
+envi.archs.i386.disasm.l
+envi.archs.i386.emu.l
+envi.archs.i386.l
+envi.archs.i386.regs.l
+envi.archs.z80.regs.l" class="py-name" href="#" onclick="return doclink('link-31', 'l', 'link-31');">l</a></tt><tt class="py-op">[</tt><tt class="py-string">"REG_%s"</tt> <tt class="py-op">%</tt> <tt class="py-name">rname</tt><tt class="py-op">.</tt><tt class="py-name">upper</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt id="link-32" class="py-name"><a title="envi.archs.i386.disasm.i
+envi.archs.i386.emu.i
+envi.archs.i386.i
+envi.bits.i" class="py-name" href="#" onclick="return doclink('link-32', 'i', 'link-5');">i</a></tt> </tt>
+</div><a name="L357"></a><tt class="py-lineno">357</tt>  <tt class="py-line"> </tt>
+<a name="addLocalMetas"></a><div id="addLocalMetas-def"><a name="L358"></a><tt class="py-lineno">358</tt> <a class="py-toggle" href="#" id="addLocalMetas-toggle" onclick="return toggle('addLocalMetas');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="envi.registers-module.html#addLocalMetas">addLocalMetas</a><tt class="py-op">(</tt><tt class="py-param">l</tt><tt class="py-op">,</tt> <tt class="py-param">metas</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="addLocalMetas-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="addLocalMetas-expanded"><a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L360"></a><tt class="py-lineno">360</tt>  <tt class="py-line"><tt class="py-docstring">    Update a dictionary (or module locals) with REG_FOO index</tt> </tt>
+<a name="L361"></a><tt class="py-lineno">361</tt>  <tt class="py-line"><tt class="py-docstring">    values for all meta registers defined in metas.</tt> </tt>
+<a name="L362"></a><tt class="py-lineno">362</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L363"></a><tt class="py-lineno">363</tt>  <tt class="py-line">    <tt class="py-keyword">for</tt> <tt class="py-name">name</tt><tt class="py-op">,</tt><tt class="py-name">idx</tt><tt class="py-op">,</tt><tt class="py-name">offset</tt><tt class="py-op">,</tt><tt class="py-name">width</tt> <tt class="py-keyword">in</tt> <tt class="py-name">metas</tt><tt class="py-op">:</tt> </tt>
+<a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line">        <tt id="link-33" class="py-name"><a title="envi.archs.amd64.disasm.l
+envi.archs.amd64.l
+envi.archs.amd64.regs.l
+envi.archs.arm.armdisasm.l
+envi.archs.arm.disasm.l
+envi.archs.arm.emu.l
+envi.archs.arm.l
+envi.archs.arm.regs.l
+envi.archs.arm.thumbdisasm.l
+envi.archs.i386.disasm.l
+envi.archs.i386.emu.l
+envi.archs.i386.l
+envi.archs.i386.regs.l
+envi.archs.z80.regs.l" class="py-name" href="#" onclick="return doclink('link-33', 'l', 'link-31');">l</a></tt><tt class="py-op">[</tt><tt class="py-string">"REG_%s"</tt> <tt class="py-op">%</tt> <tt class="py-name">name</tt><tt class="py-op">.</tt><tt class="py-name">upper</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-op">(</tt><tt class="py-name">offset</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">24</tt><tt class="py-op">)</tt> <tt class="py-op">|</tt> <tt class="py-op">(</tt><tt class="py-name">width</tt> <tt class="py-op">&lt;&lt;</tt> <tt class="py-number">16</tt><tt class="py-op">)</tt> <tt class="py-op">|</tt> <tt class="py-name">idx</tt> </tt>
+</div><a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="envi-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Fri Nov 16 17:43:37 2012
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

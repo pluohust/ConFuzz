@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>vtrace.platforms.solaris &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="vtrace" href="../../vtrace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" accesskey="U">vtrace</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for vtrace.platforms.solaris</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Solaris Platform Module (Incomplete)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Copyright (C) 2007 Invisigoth - See LICENSE file for details</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">array</span>
+
+<span class="c"># Control codes (long values) for messages written to ctl and lwpctl files.</span>
+<span class="n">PCNULL</span>   <span class="o">=</span> <span class="il">0L</span><span class="c"># null request, advance to next message */</span>
+<span class="n">PCSTOP</span>   <span class="o">=</span> <span class="il">1L</span><span class="c"># direct process or lwp to stop and wait for stop */</span>
+<span class="n">PCDSTOP</span>  <span class="o">=</span> <span class="il">2L</span><span class="c"># direct process or lwp to stop */</span>
+<span class="n">PCWSTOP</span>  <span class="o">=</span> <span class="il">3L</span><span class="c"># wait for process or lwp to stop, no timeout */</span>
+<span class="n">PCTWSTOP</span> <span class="o">=</span> <span class="il">4L</span><span class="c"># wait for stop, with long millisecond timeout arg */</span>
+<span class="n">PCRUN</span>    <span class="o">=</span> <span class="il">5L</span><span class="c"># make process/lwp runnable, w/ long flags argument */</span>
+<span class="n">PCCSIG</span>   <span class="o">=</span> <span class="il">6L</span><span class="c"># clear current signal from lwp */</span>
+<span class="n">PCCFAULT</span> <span class="o">=</span> <span class="il">7L</span><span class="c"># clear current fault from lwp */</span>
+<span class="n">PCSSIG</span>   <span class="o">=</span> <span class="il">8L</span><span class="c"># set current signal from siginfo_t argument */</span>
+<span class="n">PCKILL</span>   <span class="o">=</span> <span class="il">9L</span><span class="c"># post a signal to process/lwp, long argument */</span>
+<span class="n">PCUNKILL</span> <span class="o">=</span> <span class="il">10L</span><span class="c"># delete a pending signal from process/lwp, long arg */</span>
+<span class="n">PCSHOLD</span>  <span class="o">=</span> <span class="il">11L</span><span class="c"># set lwp signal mask from sigset_t argument */</span>
+<span class="n">PCSTRACE</span> <span class="o">=</span> <span class="il">12L</span><span class="c"># set traced signal set from sigset_t argument */</span>
+<span class="n">PCSFAULT</span> <span class="o">=</span> <span class="il">13L</span><span class="c"># set traced fault set from fltset_t argument */</span>
+<span class="n">PCSENTRY</span> <span class="o">=</span> <span class="il">14L</span><span class="c"># set traced syscall entry set from sysset_t arg */</span>
+<span class="n">PCSEXIT</span>  <span class="o">=</span> <span class="il">15L</span><span class="c"># set traced syscall exit set from sysset_t arg */</span>
+<span class="n">PCSET</span>    <span class="o">=</span> <span class="il">16L</span><span class="c"># set modes from long argument */</span>
+<span class="n">PCUNSET</span>  <span class="o">=</span> <span class="il">17L</span><span class="c"># unset modes from long argument */</span>
+<span class="n">PCSREG</span>   <span class="o">=</span> <span class="il">18L</span><span class="c"># set lwp general registers from prgregset_t arg */</span>
+<span class="n">PCSFPREG</span> <span class="o">=</span> <span class="il">19L</span><span class="c"># set lwp floating-point registers from prfpregset_t */</span>
+<span class="n">PCSXREG</span>  <span class="o">=</span> <span class="il">20L</span><span class="c"># set lwp extra registers from prxregset_t arg */</span>
+<span class="n">PCNICE</span>   <span class="o">=</span> <span class="il">21L</span><span class="c"># set nice priority from long argument */</span>
+<span class="n">PCSVADDR</span> <span class="o">=</span> <span class="il">22L</span><span class="c"># set %pc virtual address from long argument */</span>
+<span class="n">PCWATCH</span>  <span class="o">=</span> <span class="il">23L</span><span class="c"># set/unset watched memory area from prwatch_t arg */</span>
+<span class="n">PCAGENT</span>  <span class="o">=</span> <span class="il">24L</span><span class="c"># create agent lwp with regs from prgregset_t arg */</span>
+<span class="n">PCREAD</span>   <span class="o">=</span> <span class="il">25L</span><span class="c"># read from the address space via priovec_t arg */</span>
+<span class="n">PCWRITE</span>  <span class="o">=</span> <span class="il">26L</span><span class="c"># write to the address space via priovec_t arg */</span>
+<span class="n">PCSCRED</span>  <span class="o">=</span> <span class="il">27L</span><span class="c"># set process credentials from prcred_t argument */</span>
+<span class="n">PCSASRS</span>  <span class="o">=</span> <span class="il">28L</span><span class="c"># set ancillary state registers from asrset_t arg */</span>
+<span class="n">PCSPRIV</span>  <span class="o">=</span> <span class="il">29L</span><span class="c"># set process privileges from prpriv_t argument */</span>
+<span class="n">PCSZONE</span>  <span class="o">=</span> <span class="il">30L</span><span class="c"># set zoneid from zoneid_t argument */</span>
+<span class="n">PCSCREDX</span> <span class="o">=</span> <span class="il">31L</span><span class="c"># as PCSCRED but with supplemental groups */</span>
+
+<span class="c"># PCRUN long operand flags.</span>
+<span class="n">PRCSIG</span>   <span class="o">=</span> <span class="mh">0x01</span><span class="c"># clear current signal, if any */</span>
+<span class="n">PRCFAULT</span> <span class="o">=</span> <span class="mh">0x02</span><span class="c"># clear current fault, if any */</span>
+<span class="n">PRSTEP</span>   <span class="o">=</span> <span class="mh">0x04</span><span class="c"># direct the lwp to single-step */</span>
+<span class="n">PRSABORT</span> <span class="o">=</span> <span class="mh">0x08</span><span class="c"># abort syscall, if in syscall */</span>
+<span class="n">PRSTOP</span>   <span class="o">=</span> <span class="mh">0x10</span><span class="c"># set directed stop request */</span>
+
+<span class="c"># Status flags</span>
+<span class="n">PR_STOPPED</span>  <span class="o">=</span> <span class="mh">0x00000001</span><span class="c"># lwp is stopped */</span>
+<span class="n">PR_ISTOP</span>    <span class="o">=</span> <span class="mh">0x00000002</span><span class="c"># lwp is stopped on an event of interest */</span>
+<span class="n">PR_DSTOP</span>    <span class="o">=</span> <span class="mh">0x00000004</span><span class="c"># lwp has a stop directive in effect */</span>
+<span class="n">PR_STEP</span>     <span class="o">=</span> <span class="mh">0x00000008</span><span class="c"># lwp has a single-step directive in effect */</span>
+<span class="n">PR_ASLEEP</span>   <span class="o">=</span> <span class="mh">0x00000010</span><span class="c"># lwp is sleeping in a system call */</span>
+<span class="n">PR_PCINVAL</span>  <span class="o">=</span> <span class="mh">0x00000020</span><span class="c"># contents of pr_instr undefined */</span>
+<span class="n">PR_ASLWP</span>    <span class="o">=</span> <span class="mh">0x00000040</span><span class="c"># obsolete flag; never set */</span>
+<span class="n">PR_AGENT</span>    <span class="o">=</span> <span class="mh">0x00000080</span><span class="c"># this lwp is the /proc agent lwp */</span>
+<span class="n">PR_DETACH</span>   <span class="o">=</span> <span class="mh">0x00000100</span><span class="c"># this is a detached lwp */</span>
+<span class="n">PR_DAEMON</span>   <span class="o">=</span> <span class="mh">0x00000200</span><span class="c"># this is a daemon lwp */</span>
+<span class="c"># The following flags apply to the process, not to an individual lwp */</span>
+<span class="n">PR_ISSYS</span>    <span class="o">=</span> <span class="mh">0x00001000</span><span class="c"># this is a system process */</span>
+<span class="n">PR_VFORKP</span>   <span class="o">=</span> <span class="mh">0x00002000</span><span class="c"># process is the parent of a vfork()d child */</span>
+<span class="n">PR_ORPHAN</span>   <span class="o">=</span> <span class="mh">0x00004000</span><span class="c"># process&#39;s process group is orphaned */</span>
+<span class="c"># The following process flags are modes settable by PCSET/PCUNSET */</span>
+<span class="n">PR_FORK</span>     <span class="o">=</span> <span class="mh">0x00100000</span><span class="c"># inherit-on-fork is in effect */</span>
+<span class="n">PR_RLC</span>      <span class="o">=</span> <span class="mh">0x00200000</span><span class="c"># run-on-last-close is in effect */</span>
+<span class="n">PR_KLC</span>      <span class="o">=</span> <span class="mh">0x00400000</span><span class="c"># kill-on-last-close is in effect */</span>
+<span class="n">PR_ASYNC</span>    <span class="o">=</span> <span class="mh">0x00800000</span><span class="c"># asynchronous-stop is in effect */</span>
+<span class="n">PR_MSACCT</span>   <span class="o">=</span> <span class="mh">0x01000000</span><span class="c"># micro-state usage accounting is in effect */</span>
+<span class="n">PR_BPTADJ</span>   <span class="o">=</span> <span class="mh">0x02000000</span><span class="c"># breakpoint trap pc adjustment is in effect */</span>
+<span class="n">PR_PTRACE</span>   <span class="o">=</span> <span class="mh">0x04000000</span><span class="c"># ptrace-compatibility mode is in effect */</span>
+<span class="n">PR_MSFORK</span>   <span class="o">=</span> <span class="mh">0x08000000</span><span class="c"># micro-state accounting inherited on fork */</span>
+<span class="n">PR_IDLE</span>     <span class="o">=</span> <span class="mh">0x10000000</span><span class="c"># lwp is a cpu&#39;s idle thread */</span>
+
+
+<span class="c"># Permissions...</span>
+<span class="n">MA_READ</span>    <span class="o">=</span> <span class="mh">0x04</span><span class="c"># readable by the traced process */</span>
+<span class="n">MA_WRITE</span>   <span class="o">=</span> <span class="mh">0x02</span><span class="c"># writable by the traced process */</span>
+<span class="n">MA_EXEC</span>    <span class="o">=</span> <span class="mh">0x01</span><span class="c"># executable by the traced process */</span>
+<span class="n">MA_SHARED</span>  <span class="o">=</span> <span class="mh">0x08</span><span class="c"># changes are shared by mapped object */</span>
+<span class="n">MA_ANON</span>    <span class="o">=</span> <span class="mh">0x40</span><span class="c"># anonymous memory (e.g. /dev/zero) */</span>
+<span class="n">MA_ISM</span>     <span class="o">=</span> <span class="mh">0x80</span><span class="c"># intimate shared mem (shared MMU resources) */</span>
+<span class="n">MA_NORESERVE</span> <span class="o">=</span> <span class="mh">0x100</span><span class="c"># mapped with MAP_NORESERVE */</span>
+<span class="n">MA_SHM</span>     <span class="o">=</span> <span class="mh">0x200</span><span class="c"># System V shared memory */</span>
+<span class="n">MA_RESERVED1</span> <span class="o">=</span> <span class="mh">0x400</span><span class="c"># reserved for future use */</span>
+
+<div class="viewcode-block" id="SolarisMixin"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisMixin">[docs]</a><span class="k">class</span> <span class="nc">SolarisMixin</span><span class="p">:</span>
+
+<div class="viewcode-block" id="SolarisMixin.initMixin"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisMixin.initMixin">[docs]</a>    <span class="k">def</span> <span class="nf">initMixin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#import sunprocfs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctl</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="SolarisMixin.platformGetRegs"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisMixin.platformGetRegs">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetRegs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPid</span><span class="p">()</span>
+
+    <span class="c">#def platformGetThreads(self):</span>
+        <span class="c">#ret = []</span>
+        <span class="c">#for name in os.listdir(&quot;/proc/%d/lwp&quot; % self.pid):</span>
+            <span class="c">#ret.append(int(name))</span>
+        <span class="c">#return ret</span>
+</div>
+<div class="viewcode-block" id="SolarisMixin.platformAttach"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisMixin.platformAttach">[docs]</a>    <span class="k">def</span> <span class="nf">platformAttach</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctl</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="s">&quot;/proc/</span><span class="si">%d</span><span class="s">/ctl&quot;</span> <span class="o">%</span> <span class="n">pid</span><span class="p">,</span> <span class="s">&quot;ab&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="n">PRSTOP</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="SolarisMixin.platformContinue"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisMixin.platformContinue">[docs]</a>    <span class="k">def</span> <span class="nf">platformContinue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tell the process to continue running</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeCtl</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;LL&quot;</span><span class="p">,</span> <span class="n">PCRUN</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="SolarisMixin.platformWait"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisMixin.platformWait">[docs]</a>    <span class="k">def</span> <span class="nf">platformWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wait for the process to do someting &quot;interesting&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeCtl</span><span class="p">(</span><span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="n">PCWSTOP</span><span class="p">))</span>
+        <span class="nb">bytes</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="s">&quot;/proc/</span><span class="si">%d</span><span class="s">/psinfo&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">bytes</span>
+</div>
+<div class="viewcode-block" id="SolarisMixin.writeCtl"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisMixin.writeCtl">[docs]</a>    <span class="k">def</span> <span class="nf">writeCtl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctl</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="nb">bytes</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SolarisMixin.platformDetach"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisMixin.platformDetach">[docs]</a>    <span class="k">def</span> <span class="nf">platformDetach</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span> <span class="s">&quot;SOLARIS DETACH&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctl</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctl</span> <span class="o">=</span> <span class="bp">None</span>
+</div></div>
+<div class="viewcode-block" id="SolarisIntelMixin"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisIntelMixin">[docs]</a><span class="k">class</span> <span class="nc">SolarisIntelMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle register formats for the intel solaris stuff</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SolarisIntelMixin.getRegisterFormat"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisIntelMixin.getRegisterFormat">[docs]</a>    <span class="k">def</span> <span class="nf">getRegisterFormat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&quot;</span>
+</div>
+<div class="viewcode-block" id="SolarisIntelMixin.getRegisterNames"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisIntelMixin.getRegisterNames">[docs]</a>    <span class="k">def</span> <span class="nf">getRegisterNames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[]</span>
+</div>
+<div class="viewcode-block" id="SolarisIntelMixin.platformReadMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisIntelMixin.platformReadMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformReadMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s">&#39;c&#39;</span><span class="p">,</span><span class="s">&quot;</span><span class="se">\x00</span><span class="s">&quot;</span> <span class="o">*</span> <span class="n">size</span><span class="p">)</span>
+        <span class="n">baddr</span><span class="p">,</span> <span class="n">blen</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">buffer_info</span><span class="p">()</span>
+        <span class="n">priovec</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;4L&quot;</span><span class="p">,</span><span class="n">PCREAD</span><span class="p">,</span> <span class="n">baddr</span><span class="p">,</span> <span class="n">blen</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">priovec</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeCtl</span><span class="p">(</span><span class="n">priovec</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="SolarisIntelMixin.platformWriteMemory"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisIntelMixin.platformWriteMemory">[docs]</a>    <span class="k">def</span> <span class="nf">platformWriteMemory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s">&#39;c&#39;</span><span class="p">,</span><span class="nb">bytes</span><span class="p">)</span>
+        <span class="n">baddr</span><span class="p">,</span><span class="n">blen</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">buffer_info</span><span class="p">()</span>
+        <span class="n">priovec</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s">&quot;&lt;LLLL&quot;</span><span class="p">,</span> <span class="n">PCWRITE</span><span class="p">,</span> <span class="n">baddr</span><span class="p">,</span> <span class="n">blen</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">writeCtl</span><span class="p">(</span><span class="n">priovec</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="SolarisIntelMixin.platformGetMaps"><a class="viewcode-back" href="../../../vtrace.platforms.html#vtrace.platforms.solaris.SolarisIntelMixin.platformGetMaps">[docs]</a>    <span class="k">def</span> <span class="nf">platformGetMaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPid</span><span class="p">()</span>
+        <span class="n">mapdata</span> <span class="o">=</span> <span class="nb">file</span><span class="p">(</span><span class="s">&quot;/proc/</span><span class="si">%d</span><span class="s">/map&quot;</span> <span class="o">%</span> <span class="n">pid</span><span class="p">,</span> <span class="s">&quot;rb&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">mapdata</span><span class="p">:</span>
+            <span class="n">addr</span><span class="p">,</span><span class="n">size</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;LL&quot;</span><span class="p">,</span> <span class="n">mapdata</span><span class="p">[:</span><span class="mi">8</span><span class="p">])</span>
+            <span class="n">perms</span><span class="p">,</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s">&quot;&lt;L&quot;</span><span class="p">,</span> <span class="n">mapdata</span><span class="p">[</span><span class="mi">80</span><span class="p">:</span><span class="mi">84</span><span class="p">])</span>
+            <span class="n">perms</span> <span class="o">=</span> <span class="n">perms</span> <span class="o">&amp;</span> <span class="mh">0x7</span>
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">addr</span><span class="p">,</span><span class="n">size</span><span class="p">,</span> <span class="n">perms</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">))</span>
+            <span class="n">mapdata</span> <span class="o">=</span> <span class="n">mapdata</span><span class="p">[</span><span class="mi">96</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="n">ret</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../../vtrace.html" >vtrace</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+#include "Output.h"
+
+extern map<UINT32, ThreadVecTime> AllThread;
+extern size_t MaxSum;
+extern ofstream ErrorLog;
+
+void GetMaxMemory() //count memory used
+{
+    size_t mysum=0;
+    map<UINT32, ThreadVecTime>::iterator AllIT;
+    for(AllIT=AllThread.begin();AllIT!=AllThread.end();AllIT++)
+    {
+        mysum+=sizeof(UINT32);
+        mysum+=sizeof((AllIT->second).ListAddress);
+
+        list<struct RWVecTime>::iterator listIT;
+        for(listIT=((AllIT->second).VecTimeList).begin();listIT!=((AllIT->second).VecTimeList).end();listIT++)
+        {
+            mysum+=sizeof(listIT->SynName);
+            mysum+=(listIT->VecTime).size() * (sizeof(UINT32) + sizeof(long));
+            mysum+=(listIT->SharedLocation).size() * (sizeof(ADDRINT) + sizeof(SharedMemoryAccessInf));
+
+        }
+    }
+    if(mysum > MaxSum)
+        MaxSum=mysum;
+}
+
+void printList(list<struct RWVecTime>::iterator ListforPrint, UINT32 threadID)
+{
+/*  map<UINT32, long>::iterator mapforvec;
+    map<ADDRINT, SharedMemoryInf>::iterator mapforsharedmemory;
+    set<ADDRINT>::iterator setforlock;
+    if((ListforPrint->SharedMemory).empty())
+        return;
+    DataRaceOut<<"*****"<<endl;
+    DataRaceOut<<"Thread ID: "<<threadID<<endl;
+    DataRaceOut<<"VecTime:"<<endl;
+    for(mapforvec=(ListforPrint->VecTime).begin(); mapforvec!=(ListforPrint->VecTime).end(); mapforvec++)
+        DataRaceOut<<"Thread ID: "<<mapforvec->first<<" Vec: "<<mapforvec->second<<endl;
+    for(mapforsharedmemory=(ListforPrint->SharedMemory).begin(); mapforsharedmemory!=(ListforPrint->SharedMemory).end(); mapforsharedmemory++)
+    {
+        DataRaceOut<<"Address: "<<hex<<mapforsharedmemory->first<<dec<<endl;
+        if((mapforsharedmemory->second).Rstatus)
+        {
+            DataRaceOut<<"R: "<<((mapforsharedmemory->second).RLockAcquired).size()<<endl<<hex;
+            DataRaceOut<<dec<<endl;
+        }
+        if((mapforsharedmemory->second).Wstatus)
+        {
+            DataRaceOut<<"W: "<<((mapforsharedmemory->second).RLockAcquired).size()<<endl<<hex;
+            DataRaceOut<<dec<<endl;
+        }
+    }*/
+}

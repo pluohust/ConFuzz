@@ -1,0 +1,632 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>visgraph.layouts.dynadag &mdash; Visi Debugger  documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Visi Debugger  documentation" href="../../../index.html" />
+    <link rel="up" title="visgraph.layouts" href="../layouts.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../layouts.html" accesskey="U">visgraph.layouts</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for visgraph.layouts.dynadag</h1><div class="highlight"><pre>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">A dynadag-ish graph layout calculator...</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">visgraph</span>
+<span class="kn">import</span> <span class="nn">visgraph.layouts</span> <span class="kn">as</span> <span class="nn">vg_layout</span>
+<span class="kn">import</span> <span class="nn">visgraph.graphcore</span> <span class="kn">as</span> <span class="nn">vg_graphcore</span>
+<span class="kn">import</span> <span class="nn">visgraph.drawing.bezier</span> <span class="kn">as</span> <span class="nn">vg_bezier</span>
+<span class="kn">import</span> <span class="nn">visgraph.drawing.catmullrom</span> <span class="kn">as</span> <span class="nn">vg_catmullrom</span>
+
+<span class="n">zero_zero</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">revenumerate</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+<div class="viewcode-block" id="revenumerate"><a class="viewcode-back" href="../../../visgraph.layouts.html#visgraph.layouts.dynadag.revenumerate">[docs]</a>    <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">izip</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
+
+<span class="n">SCOOCH_LEFT</span>     <span class="o">=</span> <span class="mi">0</span></div>
+<span class="n">SCOOCH_RIGHT</span>    <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">class</span> <span class="nc">DynadagLayout</span><span class="p">(</span><span class="n">vg_layout</span><span class="o">.</span><span class="n">GraphLayout</span><span class="p">):</span>
+<div class="viewcode-block" id="DynadagLayout"><a class="viewcode-back" href="../../../visgraph.layouts.html#visgraph.layouts.dynadag.DynadagLayout">[docs]</a>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+
+        <span class="n">vg_layout</span><span class="o">.</span><span class="n">GraphLayout</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_addGhostNodes</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">width_pad</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height_pad</span> <span class="o">=</span> <span class="mi">40</span>
+
+    <span class="k">def</span> <span class="nf">getLayoutSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DynadagLayout.getLayoutSize"><a class="viewcode-back" href="../../../visgraph.layouts.html#visgraph.layouts.dynadag.DynadagLayout.getLayoutSize">[docs]</a>        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Return the width,height of this layout.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">width</span>  <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+
+            <span class="n">lheight</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">lwidth</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">zero_zero</span><span class="p">)</span>
+                <span class="n">lheight</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lheight</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">height_pad</span><span class="p">)</span>
+                <span class="n">lwidth</span> <span class="o">+=</span> <span class="n">xsize</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">width_pad</span>
+
+            <span class="n">height</span> <span class="o">+=</span> <span class="n">lheight</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">lwidth</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span>
+
+    <span class="k">def</span> <span class="nf">_baryCenter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">):</span></div>
+        <span class="n">tot</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fnode</span><span class="p">,</span> <span class="n">tnode</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeInfo</span><span class="p">(</span><span class="n">tnode</span><span class="p">,</span> <span class="s">&#39;layerpos&#39;</span><span class="p">)</span>
+            <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fnode</span><span class="p">,</span> <span class="n">tnode</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getRefsTo</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+            <span class="n">tot</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeInfo</span><span class="p">(</span><span class="n">fnode</span><span class="p">,</span> <span class="s">&#39;layerpos&#39;</span><span class="p">)</span>
+            <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">tot</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
+        <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;barycenter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+
+    <span class="k">def</span> <span class="nf">_cmpBaryCenter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">):</span>
+        <span class="n">n1bary</span> <span class="o">=</span> <span class="n">node1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;barycenter&#39;</span><span class="p">)</span>
+        <span class="n">n2bary</span> <span class="o">=</span> <span class="n">node2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;barycenter&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">cmp</span><span class="p">(</span><span class="n">n1bary</span><span class="p">,</span> <span class="n">n2bary</span><span class="p">)</span>
+
+    <span class="c"># Try out &quot;barycenter&quot; averaging and re-ordering.</span>
+    <span class="k">def</span> <span class="nf">_orderNodesByBary</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># Go through the layers and do barycenter calcs first.</span>
+        <span class="c"># FIXME how do we tell when we&#39;re done?</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_baryCenter</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+                <span class="n">layer</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="nb">cmp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmpBaryCenter</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,(</span><span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+                    <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;layerpos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="k">def</span> <span class="nf">_getNodeRelPos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">):</span>
+
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span>
+
+        <span class="n">abovepos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getRefsTo</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+            <span class="n">fprops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">fromid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fprops</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">weight</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">abovepos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fprops</span><span class="p">[</span><span class="s">&#39;layerpos&#39;</span><span class="p">])</span>
+        <span class="n">abovepos</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="n">belowpos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+            <span class="n">tprops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">toid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tprops</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">weight</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">belowpos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tprops</span><span class="p">[</span><span class="s">&#39;layerpos&#39;</span><span class="p">])</span>
+        <span class="n">belowpos</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">abovepos</span><span class="p">,</span> <span class="n">belowpos</span>
+
+    <span class="k">def</span> <span class="nf">_getLayerCross</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layernum</span><span class="p">):</span>
+        <span class="n">ccount</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">layernum</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">)):</span>
+
+            <span class="n">myabove</span><span class="p">,</span> <span class="n">mybelow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getNodeRelPos</span><span class="p">(</span><span class="o">*</span><span class="n">layer</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">hisabove</span><span class="p">,</span> <span class="n">hisbelow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getNodeRelPos</span><span class="p">(</span><span class="o">*</span><span class="n">layer</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c"># If I have any nodes above with position lower</span>
+            <span class="c"># than any of his, those are cross overs...</span>
+            <span class="k">for</span> <span class="n">mya</span> <span class="ow">in</span> <span class="n">myabove</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">hisa</span> <span class="ow">in</span> <span class="n">hisabove</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">mya</span> <span class="o">&lt;</span> <span class="n">hisa</span><span class="p">:</span>
+                        <span class="n">ccount</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c"># If I have any nodes below with position lower</span>
+            <span class="c"># than any of his, those acre cross overs...</span>
+            <span class="k">for</span> <span class="n">myb</span> <span class="ow">in</span> <span class="n">mybelow</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">hisb</span> <span class="ow">in</span> <span class="n">hisbelow</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">myb</span> <span class="o">&lt;</span> <span class="n">hisb</span><span class="p">:</span>
+                        <span class="n">ccount</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">ccount</span>
+
+    <span class="k">def</span> <span class="nf">_bubSortNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c"># Go through nodes and see if we can re-order children to</span>
+        <span class="c"># reduce crossovers...</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">)):</span>
+
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="n">reduced</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">while</span> <span class="n">reduced</span><span class="p">:</span>
+
+                <span class="n">reduced</span> <span class="o">=</span> <span class="bp">False</span>
+
+                <span class="c"># Get the current crossover count for this layer</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLayerCross</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+                <span class="c"># TODO should we do this multipliciative rather than</span>
+                <span class="c"># neighbors only?</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+                    <span class="n">n1</span> <span class="o">=</span> <span class="n">layer</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">n2</span> <span class="o">=</span> <span class="n">layer</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+                    <span class="n">layer</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">n2</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">n1</span>
+
+                    <span class="n">newscore</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_getLayerCross</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="c"># If this was optimal, keep it and continue</span>
+                    <span class="k">if</span> <span class="n">newscore</span> <span class="o">&lt;</span> <span class="n">score</span><span class="p">:</span>
+                        <span class="n">reduced</span> <span class="o">=</span> <span class="bp">True</span>
+                        <span class="n">n1</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;layerpos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+                        <span class="n">n2</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;layerpos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+                        <span class="k">break</span>
+
+                    <span class="c"># Nope, put it back...</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">n1</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">n2</span>
+                    
+    <span class="k">def</span> <span class="nf">_addGhostNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Translate the hierarchical graph we are given into dynadag</span>
+<span class="sd">        friendly graph with ghost nodes....</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeWeights</span><span class="p">()</span>
+
+        <span class="c"># First lets take care of any loop edges</span>
+        <span class="c"># (These will be nodes in the graph which are marked &quot;reverse=True&quot;</span>
+        <span class="c"># but have been added with src/dst swapped to make graphing easier)</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">einfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;reverse&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">topweight</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fromid</span><span class="p">)</span>
+            <span class="n">botweight</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">toid</span><span class="p">)</span>
+
+            <span class="c"># In the case of a single block loop, add one ghost and</span>
+            <span class="c"># connect them all</span>
+            <span class="c">#if fromid == toid:</span>
+            <span class="k">if</span> <span class="n">topweight</span> <span class="o">==</span> <span class="n">botweight</span><span class="p">:</span>
+                <span class="n">bridgenode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">ghost</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">topweight</span><span class="p">)</span>
+                <span class="n">weights</span><span class="p">[</span><span class="n">bridgenode</span><span class="p">]</span> <span class="o">=</span> <span class="n">topweight</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">delEdge</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">fromid</span><span class="p">,</span> <span class="n">bridgenode</span><span class="p">,</span> <span class="n">looptop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">bridgenode</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">loopbot</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c"># For a &quot;reverse&quot; edge, add a node in the weight for each</span>
+            <span class="c"># and connect them.</span>
+            <span class="n">topnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">ghost</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">topweight</span><span class="p">)</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">topnode</span><span class="p">]</span> <span class="o">=</span> <span class="n">topweight</span>
+            <span class="n">botnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">ghost</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">botweight</span><span class="p">)</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">botnode</span><span class="p">]</span> <span class="o">=</span> <span class="n">botweight</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">topnode</span><span class="p">,</span> <span class="n">botnode</span><span class="p">)</span> <span class="c"># For rendering, these will be normal!</span>
+
+            <span class="c"># Now, remove the &quot;reverse&quot; edge, and add a &#39;looptop&#39; and &#39;loopbot&#39; edge</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">delEdge</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">fromid</span><span class="p">,</span> <span class="n">topnode</span><span class="p">,</span> <span class="n">looptop</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">botnode</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">loopbot</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="c"># Create ghost nodes for edges which pass through a weight layer</span>
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
+            <span class="n">xweight</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">fromid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">yweight</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">toid</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">xweight</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">yweight</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">delEdge</span><span class="p">(</span><span class="n">eid</span><span class="p">)</span>
+                <span class="k">while</span> <span class="n">xweight</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="n">yweight</span><span class="p">:</span>
+                    <span class="n">xweight</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">ghostid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="n">ghost</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">xweight</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">fromid</span><span class="p">,</span> <span class="n">ghostid</span><span class="p">)</span>
+                    <span class="c">#print &#39;ADDED GHOST %d (%d -&gt; %d)&#39; % (ghostid,fromid,toid)</span>
+                    <span class="n">fromid</span> <span class="o">=</span> <span class="n">ghostid</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">addEdge</span><span class="p">(</span><span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">layoutGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DynadagLayout.layoutGraph"><a class="viewcode-back" href="../../../visgraph.layouts.html#visgraph.layouts.dynadag.DynadagLayout.layoutGraph">[docs]</a>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxweight</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodes</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxweight</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;weight&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxweight</span><span class="p">)</span>
+        <span class="c">#print &#39;Max Weight: %d&#39; % self.maxweight</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxweight</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">]</span>
+
+        <span class="n">doit_done</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">def</span> <span class="nf">doit</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">doit_done</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+                <span class="k">return</span>
+
+            <span class="n">doit_done</span><span class="p">[</span><span class="n">nid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+                <span class="n">doit</span><span class="p">(</span><span class="n">toid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">toid</span><span class="p">))</span>
+
+            <span class="n">w</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;weight&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">w</span><span class="p">]</span>
+            <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;layerpos&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+            <span class="n">layer</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span><span class="p">))</span>
+
+        <span class="c"># FIXME support more than one root!</span>
+        <span class="n">rootnode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getRootNodes</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">doit</span><span class="p">(</span><span class="n">rootnode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">rootnode</span><span class="p">))</span>
+
+        <span class="c"># Now lets use positional averaging to order nodes in the layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_orderNodesByBary</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bubSortNodes</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxwidth</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c"># Calculate the width / height of each layer...</span>
+        <span class="n">lwidths</span> <span class="o">=</span> <span class="p">[]</span>        <span class="c"># The width of this total layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lheights</span> <span class="o">=</span> <span class="p">[]</span>       <span class="c"># The tallest node in this layer</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width_pad</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="n">heightmax</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">zero_zero</span><span class="p">)</span>
+                <span class="n">xx</span><span class="p">,</span><span class="n">yy</span> <span class="o">=</span> <span class="n">size</span>
+
+                <span class="n">heightmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">heightmax</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
+
+                <span class="n">x</span> <span class="o">+=</span> <span class="n">xx</span>
+                <span class="n">y</span> <span class="o">+=</span> <span class="n">yy</span>
+
+            <span class="n">lwidths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lheights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">heightmax</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">maxwidth</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxwidth</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+        <span class="c"># Now that we have them sorted, lets set their individual positions...</span>
+        <span class="n">vpad</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+            <span class="n">hpad</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maxwidth</span> <span class="o">-</span> <span class="n">lwidths</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">hpad</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width_pad</span>
+            <span class="k">for</span> <span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
+                <span class="n">xpos</span> <span class="o">=</span> <span class="n">hpad</span>
+                <span class="n">ypos</span> <span class="o">=</span> <span class="n">vpad</span>
+
+                <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">zero_zero</span><span class="p">)</span>
+
+                <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">xpos</span><span class="p">,</span><span class="n">ypos</span><span class="p">)</span>
+                <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;vert_pad&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lheights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">ysize</span>
+
+                <span class="n">hpad</span> <span class="o">+=</span> <span class="n">xsize</span>
+
+                <span class="n">hpad</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width_pad</span>
+
+            <span class="n">vpad</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lheights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">vpad</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height_pad</span>
+
+
+        <span class="c"># Optimize the positions of nodes by moving them outward to align</span>
+
+        <span class="c"># First from top to bottom</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+
+            <span class="n">layermid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="c"># From the left side, scooch kids out...</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ghost&#39;</span><span class="p">):</span>
+                    <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scoochXKids</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">SCOOCH_LEFT</span><span class="p">)</span>
+
+            <span class="c"># From the right side, scooch kids out...</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">)</span> <span class="ow">in</span> <span class="n">revenumerate</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ghost&#39;</span><span class="p">):</span>
+                    <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scoochXKids</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">SCOOCH_RIGHT</span><span class="p">)</span>
+
+        <span class="c"># From the bottom to the top!</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">revenumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">):</span>
+
+            <span class="n">layermid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="c"># From the left side, scooch kids out...</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">nid</span><span class="p">,</span><span class="n">ninfo</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ghost&#39;</span><span class="p">):</span>
+                    <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scoochXParents</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">SCOOCH_LEFT</span><span class="p">)</span>
+
+            <span class="c"># From the right side, scooch kids out...</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">)</span> <span class="ow">in</span> <span class="n">revenumerate</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ghost&#39;</span><span class="p">):</span>
+                    <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_scoochXParents</span><span class="p">(</span><span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">SCOOCH_RIGHT</span><span class="p">)</span>
+
+        <span class="c"># Finally, we calculate the drawing for the edge lines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calcEdgeLines</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_scoochXParents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></div>
+
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getRefsTo</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+
+            <span class="n">pinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">n1</span><span class="p">)</span>
+
+            <span class="c"># Only do ghost nodes (for now...)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">pinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ghost&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="c"># Only do this to parents in the layer above us...</span>
+            <span class="k">if</span> <span class="n">pinfo</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">weight</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scoochXAlign</span><span class="p">(</span><span class="n">ninfo</span><span class="p">,</span> <span class="n">pinfo</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_scoochXKids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nid</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getRefsFrom</span><span class="p">(</span><span class="n">nid</span><span class="p">):</span>
+
+            <span class="n">kinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">n2</span><span class="p">)</span>
+
+            <span class="c"># Only do ghost nodes (for now...)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">kinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ghost&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="c"># Only do this to kids in the layer beneath us...</span>
+            <span class="k">if</span> <span class="n">kinfo</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">weight</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scoochXAlign</span><span class="p">(</span><span class="n">ninfo</span><span class="p">,</span> <span class="n">kinfo</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_scoochXAlign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">kinfo</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        If possible, move the &quot;kidinfo&quot; node toward ninfo</span>
+<span class="sd">        along the X axis...  If &quot;lr&quot; is specified, only move</span>
+<span class="sd">        the &quot;kidnode&quot; (which may be &quot;above&quot; you...) if it is</span>
+<span class="sd">        moving either SCOOCH_LEFT or SCOOCH_RIGHT as specified.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">xpos</span><span class="p">,</span> <span class="n">ypos</span> <span class="o">=</span> <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span>
+        <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">zero_zero</span><span class="p">)</span>
+        <span class="n">xmid</span> <span class="o">=</span> <span class="n">xpos</span> <span class="o">+</span> <span class="p">(</span> <span class="n">xsize</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span>
+
+        <span class="n">kxpos</span><span class="p">,</span> <span class="n">kypos</span> <span class="o">=</span> <span class="n">kinfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span>
+        <span class="n">kxsize</span><span class="p">,</span> <span class="n">kysize</span> <span class="o">=</span> <span class="n">kinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">zero_zero</span><span class="p">)</span>
+        <span class="n">kxmid</span> <span class="o">=</span> <span class="n">kxpos</span> <span class="o">+</span> <span class="p">(</span> <span class="n">kxsize</span> <span class="o">/</span> <span class="mi">2</span> <span class="p">)</span>
+
+        <span class="n">xdelta</span> <span class="o">=</span> <span class="n">xmid</span> <span class="o">-</span> <span class="n">kxmid</span>
+
+        <span class="c"># If they only want us to go left, and the delta</span>
+        <span class="c"># is right, bail...</span>
+        <span class="k">if</span> <span class="n">lr</span> <span class="o">==</span> <span class="n">SCOOCH_LEFT</span> <span class="ow">and</span> <span class="n">xdelta</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c"># If they only want us to go right, and the delta</span>
+        <span class="c"># is left, bail...</span>
+        <span class="k">if</span> <span class="n">lr</span> <span class="o">==</span> <span class="n">SCOOCH_RIGHT</span> <span class="ow">and</span> <span class="n">xdelta</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scoochX</span><span class="p">(</span><span class="n">kinfo</span><span class="p">,</span> <span class="n">xdelta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_scoochX</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ninfo</span><span class="p">,</span> <span class="n">xdelta</span><span class="p">):</span>
+
+        <span class="n">layerpos</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;layerpos&#39;</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span>
+        <span class="n">xsize</span><span class="p">,</span> <span class="n">ysize</span> <span class="o">=</span> <span class="n">ninfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">zero_zero</span><span class="p">)</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;weight&#39;</span><span class="p">]]</span>
+        <span class="n">layermax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="c"># There&#39;s always room on the left if we&#39;re the first...</span>
+        <span class="k">if</span> <span class="n">layerpos</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">xdelta</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">xdelta</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c"># Always room on the right if we&#39;re last!</span>
+        <span class="k">if</span> <span class="n">layerpos</span> <span class="o">==</span> <span class="n">layermax</span> <span class="ow">and</span> <span class="n">xdelta</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">xdelta</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c"># Sigh... now we have to get fancy...</span>
+
+        <span class="c"># If they&#39;re asking us to go left, find out about our</span>
+        <span class="c"># left sibling</span>
+        <span class="k">if</span> <span class="n">xdelta</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">snid</span><span class="p">,</span> <span class="n">sinfo</span> <span class="o">=</span> <span class="n">layer</span><span class="p">[</span><span class="n">layerpos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span> <span class="o">=</span> <span class="n">sinfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span>
+            <span class="n">sxsize</span><span class="p">,</span> <span class="n">sysize</span> <span class="o">=</span> <span class="n">sinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">zero_zero</span><span class="p">)</span>
+
+            <span class="n">sright</span> <span class="o">=</span> <span class="p">(</span><span class="n">sx</span> <span class="o">+</span> <span class="n">sxsize</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">width_pad</span>
+
+            <span class="c">#leftroom = sright - x</span>
+            <span class="c"># &quot;greater&quot; is less movement here...</span>
+            <span class="n">xdelta</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">xdelta</span><span class="p">,</span> <span class="n">sright</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>
+            <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">xdelta</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c"># If they&#39;re asking us to go right, find out about our</span>
+        <span class="c"># right sibling</span>
+        <span class="k">if</span> <span class="n">xdelta</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">snid</span><span class="p">,</span> <span class="n">sinfo</span> <span class="o">=</span> <span class="n">layer</span><span class="p">[</span><span class="n">layerpos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span> <span class="o">=</span> <span class="n">sinfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span>
+            <span class="n">sxsize</span><span class="p">,</span> <span class="n">sysize</span> <span class="o">=</span> <span class="n">sinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="n">zero_zero</span><span class="p">)</span>
+
+            <span class="n">myright</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">xsize</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">width_pad</span>
+
+            <span class="n">xdelta</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">xdelta</span><span class="p">,</span> <span class="n">sx</span><span class="o">-</span><span class="n">myright</span><span class="p">)</span>
+            <span class="n">ninfo</span><span class="p">[</span><span class="s">&#39;position&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">xdelta</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="k">def</span> <span class="nf">_calcEdgeLines</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">h_hpad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width_pad</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">h_vpad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">height_pad</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="k">for</span> <span class="n">eid</span><span class="p">,</span> <span class="n">fromid</span><span class="p">,</span> <span class="n">toid</span><span class="p">,</span> <span class="n">einfo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getEdges</span><span class="p">():</span>
+
+            <span class="n">pre_lines</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">post_lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">pinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">fromid</span><span class="p">)</span>
+            <span class="n">kinfo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">getNodeProps</span><span class="p">(</span><span class="n">toid</span><span class="p">)</span>
+
+            <span class="n">pwidth</span><span class="p">,</span> <span class="n">pheight</span> <span class="o">=</span> <span class="n">pinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+            <span class="n">pweight</span> <span class="o">=</span> <span class="n">pinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;weight&#39;</span><span class="p">)</span>
+            <span class="n">lheight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lheights</span><span class="p">[</span><span class="n">pweight</span><span class="p">]</span>
+            <span class="n">voffset</span> <span class="o">=</span> <span class="n">lheight</span> <span class="o">-</span> <span class="n">pheight</span>
+
+            <span class="k">if</span> <span class="n">einfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;looptop&#39;</span><span class="p">):</span>
+
+                <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">vg_layout</span><span class="o">.</span><span class="n">entry_pos</span><span class="p">(</span><span class="n">pinfo</span><span class="p">)</span>
+                <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">vg_layout</span><span class="o">.</span><span class="n">entry_pos</span><span class="p">(</span><span class="n">kinfo</span><span class="p">)</span>
+
+                <span class="n">xhalf</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+                <span class="n">b</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">h_vpad</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">h_vpad</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">),</span>
+                    <span class="p">]</span>
+                
+            <span class="k">elif</span> <span class="n">einfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;loopbot&#39;</span><span class="p">):</span>
+
+                <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">vg_layout</span><span class="o">.</span><span class="n">exit_pos</span><span class="p">(</span><span class="n">pinfo</span><span class="p">)</span>
+                <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">vg_layout</span><span class="o">.</span><span class="n">exit_pos</span><span class="p">(</span><span class="n">kinfo</span><span class="p">)</span>
+
+                <span class="n">kwidth</span><span class="p">,</span> <span class="n">kheight</span> <span class="o">=</span> <span class="n">kinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;size&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+                <span class="n">kweight</span> <span class="o">=</span> <span class="n">kinfo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;weight&#39;</span><span class="p">)</span>
+                <span class="n">klheight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lheights</span><span class="p">[</span><span class="n">kweight</span><span class="p">]</span>
+
+                <span class="n">kvoffset</span> <span class="o">=</span> <span class="n">klheight</span> <span class="o">-</span> <span class="n">kheight</span>
+
+                <span class="n">pre_lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">voffset</span><span class="p">)]</span>
+                <span class="n">post_lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">),</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">+</span> <span class="n">kvoffset</span><span class="p">)]</span>
+
+                <span class="n">b</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">voffset</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">voffset</span> <span class="o">+</span> <span class="n">h_vpad</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">+</span> <span class="n">kvoffset</span> <span class="o">+</span> <span class="n">h_vpad</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">+</span> <span class="n">kvoffset</span><span class="p">),</span>
+                    <span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">vg_layout</span><span class="o">.</span><span class="n">exit_pos</span><span class="p">(</span><span class="n">pinfo</span><span class="p">)</span>
+                <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">vg_layout</span><span class="o">.</span><span class="n">entry_pos</span><span class="p">(</span><span class="n">kinfo</span><span class="p">)</span>
+
+                <span class="n">pre_lines</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x1</span><span class="p">,</span><span class="n">y1</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">voffset</span><span class="p">)]</span>
+
+                <span class="n">b</span> <span class="o">=</span> <span class="p">[</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">voffset</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">+</span> <span class="n">voffset</span> <span class="o">+</span> <span class="n">h_vpad</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">h_vpad</span><span class="p">),</span>
+                      <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">),</span>
+                    <span class="p">]</span>
+
+            <span class="n">bez_lines</span> <span class="o">=</span> <span class="n">vg_bezier</span><span class="o">.</span><span class="n">calculate_bezier</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+            <span class="n">einfo</span><span class="p">[</span><span class="s">&#39;edge_points&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pre_lines</span> <span class="o">+</span> <span class="n">bez_lines</span> <span class="o">+</span> <span class="n">post_lines</span>
+            <span class="c">#einfo[&#39;edge_points&#39;] = bez_lines</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Visi Debugger  documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../layouts.html" >visgraph.layouts</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, @invisig0th.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
